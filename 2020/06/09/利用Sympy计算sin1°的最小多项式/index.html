@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
-  <title>利用Sympy做数学 - Hexo</title>
+  <title>利用Sympy计算sin1°的最小多项式 - Hexo</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 
@@ -152,7 +152,7 @@
               
   <div class="mt-3 post-meta">
     <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-    <time datetime="2020-06-09 22:05">
+    <time datetime="2020-06-09 22:07">
       June 9, 2020 pm
     </time>
   </div>
@@ -163,7 +163,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      470 字
+      388 字
     </span>
   
 
@@ -204,22 +204,24 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>　　SymPy是一个符号计算的Python库。它的目标是成为一个全功能的计算机代数系统，同时保持代码简洁、易于理解和扩展。它完全由Python写成，不依赖于外部库。它的详细教程的网址为：<a href="http://docs.sympy.org/latest/tutorial/index.html" target="_blank" rel="noopener">http://docs.sympy.org/latest/tutorial/index.html</a>.<br>　　本文将介绍Sympy的在数学计算和公式上的几个精彩应用，这绝对是数学爱好者和Python爱好者的福音！</p>
-<ul>
-<li>因式分解</li>
-<li>$1^{k}+2^{k}+...+n^{k}(k=1,2,...,8)的公式计算$</li>
-<li>多项式的最大公因式</li>
-<li>三次多项式的判别式</li>
-</ul>
-　　接下来将结合程序具体展示：
-　　
- 1. 因式分解
-
-<p>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEzMTY0MDQ5Nzk3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="Sympy_factor1"><br>　　在IPython中运行init_printing()是为了用Latex输出数学公式。接下来因式分解$x^{3}+y^{3}+z^{3}-3xyz$，它在数学上应用广泛。<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEzMTY0NDQ1Njg3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="Sympy_factor2"><br>　　<br> 2. $1^{k}+2^{k}+…+n^{k}(k=1,2,…,8)$的公式计算</p>
-<p> 　　利用summation(expr,(arg,range1,range2))函数可以计算连加，expr为表达式，(arg,range1,range2)为变量范围。<br> 　　<br> 　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEzMTY1MzA4MTY3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="Sympy_summation1"><br> 　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEzMTcyMDQwNjM3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
-<p>3.多项式的最大公因式</p>
-<p>　　计算两个多项式的最大公因式，可以用辗转相除法，但是在这里我们先计算出它们的公共根，然后再展开即可。我们以计算$f(x)=x^{4}+x^{3}+2x^{2}+x+1$和$g(x)=x^{3}+x^{2}+x+1$的最大公因式为例：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEzMTcwMzA0OTE1?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="Sympy_gcd1"><br>　　<br>　　运行结果如下：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEzMTcwMzQ2NDM2?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="Sympy_gcd2"><br>　　<br>4.三次多项式的判别式</p>
-<p> 　　设三次多项式为$ax^{3}+b^{2}+cx+d$的三个根为$x_{1},x_{2},x_{3}$，则它的判别式为$a^{4}(x_{1}-x_{2})^{2}(x_{1}-x_{3})^{2}(x_{2}-x_{3})^{2}.$<br> 　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEzMTcxMzEzMzQ3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="三次判别式"><br> 　　<br> 　　但是我们用同样的方法在计算四次方程的判别式时，就遇到了困难，因为你可能花几个小时也算不出，需要借助数学理论的帮助。这会在下一篇分享中会讲到~</p>
+              <p>　　首先我们有$\cos36^{\circ}=\frac{\sqrt{5}+1}{4}$,可以利用顶角为$36^{\circ}$ 的等腰三角形求出，它满足方程$4x^{2}-2x-1=0$.<br>　　利用二倍角公式$\cos2x=2\cos^{2}x-1$ 迭代两次，求出$\cos9^{\circ}$ 满足的多项式，可以发现它是一个关于$\cos^{2}9^{\circ}$ 的多项式，因此我们可以求出$\sin^{2}9^{\circ}$ 满足的多项式。<br>　　接着，我们利用三倍角公式$\sin3x=3sinx-4\sin^{3}x$ 迭代两次即可求出$\sin1^{\circ}$ 满足的多项式，在此基础上因此分解，并代入求值即可得到$\sin1^{\circ}$ 的最小多项式。<br>　　上Python代码~</p>
+<pre><code class="hljs python"><span class="hljs-keyword">from</span> sympy <span class="hljs-keyword">import</span> *
+<span class="hljs-keyword">import</span> math
+init_printing()
+x = symbols(<span class="hljs-string">'x'</span>)
+t1=<span class="hljs-number">4</span>*x**<span class="hljs-number">2</span><span class="hljs-number">-2</span>*x<span class="hljs-number">-1</span>
+t2=t1.subs(&#123;x:<span class="hljs-number">2</span>*x**<span class="hljs-number">2</span><span class="hljs-number">-1</span>&#125;)
+t3=t2.subs(&#123;x:<span class="hljs-number">2</span>*x**<span class="hljs-number">2</span><span class="hljs-number">-1</span>&#125;)
+t4=t3.subs(&#123;x**<span class="hljs-number">2</span>:(<span class="hljs-number">1</span>-x**<span class="hljs-number">2</span>)&#125;)
+t5=t4.subs(&#123;x:<span class="hljs-number">3</span>*x<span class="hljs-number">-4</span>*x**<span class="hljs-number">3</span>&#125;)
+t6=t5.subs(&#123;x:<span class="hljs-number">3</span>*x<span class="hljs-number">-4</span>*x**<span class="hljs-number">3</span>&#125;)
+factor(t6)</code></pre>
+<p>　　t6即为$\sin1^{\circ}$ 满足的多项式，因式分解的结果如下：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODE1MjIyODMzMzQy?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="sin1因式分解"><br>　　我们只要依次将$\sin1^{\circ}$ 代入以上三个多项式中验证即可。<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODE1MjIzMjI4MTAz?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="sin1代入1"><br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODE1MjIzMjQ0MjYz?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="sin1代入2"><br>　　只需验证$\sin1^{\circ}$ 满足上述的48次多项式即可。</p>
+<pre><code class="hljs python">s=factor(t6)/(<span class="hljs-number">256</span>*x**<span class="hljs-number">8</span><span class="hljs-number">-512</span>*x**<span class="hljs-number">6</span>+<span class="hljs-number">304</span>*x**<span class="hljs-number">4</span><span class="hljs-number">-48</span>*x**<span class="hljs-number">2</span>+<span class="hljs-number">1</span>)
+r=s/(<span class="hljs-number">65536</span>*x**<span class="hljs-number">16</span><span class="hljs-number">-262144</span>*x**<span class="hljs-number">14</span>+<span class="hljs-number">430080</span>*x**<span class="hljs-number">12</span><span class="hljs-number">-372736</span>*x**<span class="hljs-number">10</span>+<span class="hljs-number">182784</span>*x**<span class="hljs-number">8</span><span class="hljs-number">-50176</span>*x**<span class="hljs-number">6</span>+<span class="hljs-number">7040</span>*x**<span class="hljs-number">4</span><span class="hljs-number">-384</span>*x**<span class="hljs-number">2</span>+<span class="hljs-number">1</span>)
+r.subs(&#123;x:math.sin(math.pi/<span class="hljs-number">180</span>)&#125;)</code></pre>
+<p>运行结果如下：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODE1MjIzNjEwODM3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="sin1代入2"></p>
+<p>　　因此，$\sin1^{\circ}$ 的最小多项式次数为48.<br>　　如有不足之处，还望批评指正。期待下一次分享~</p>
 
             </article>
             <hr>
@@ -250,9 +252,9 @@
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/2020/06/09/%E7%94%A8Sympy%E8%AE%A1%E7%AE%97%E9%AB%98%E6%AC%A1%E6%96%B9%E7%A8%8B%E7%9A%84%E5%88%A4%E5%88%AB%E5%BC%8F/">
+                      <a href="/2020/06/09/Python%E7%88%AC%E8%99%AB%E2%80%94%E2%80%94%E7%88%AC%E5%8F%96%E4%B8%AD%E5%9B%BD%E9%AB%98%E6%A0%A1%E6%8E%92%E5%90%8D%E5%89%8D100%E5%90%8D%E5%B9%B6%E5%86%99%E5%85%A5MySQL/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">用Sympy计算高次方程的判别式</span>
+                        <span class="hidden-mobile">Python爬虫——爬取中国高校排名前100名并写入MySQL</span>
                         <span class="visible-mobile">Previous</span>
                       </a>
                     
@@ -260,8 +262,8 @@
                   <div class="post-next col-6">
                     
                     
-                      <a href="/2020/06/09/Python%E7%88%AC%E8%99%AB%E2%80%94%E2%80%94%E7%99%BE%E5%BA%A6-%E6%96%B0%E6%B5%AA%E5%BE%AE%E7%9B%98%E4%B8%8B%E8%BD%BD%E6%AD%8C%E6%9B%B2/">
-                        <span class="hidden-mobile">Python爬虫——百度+新浪微盘下载歌曲</span>
+                      <a href="/2020/06/09/%E7%94%A8Sympy%E8%AE%A1%E7%AE%97%E9%AB%98%E6%AC%A1%E6%96%B9%E7%A8%8B%E7%9A%84%E5%88%A4%E5%88%AB%E5%BC%8F/">
+                        <span class="hidden-mobile">用Sympy计算高次方程的判别式</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -407,7 +409,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "利用Sympy做数学&nbsp;",
+        "利用Sympy计算sin1°的最小多项式&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,
