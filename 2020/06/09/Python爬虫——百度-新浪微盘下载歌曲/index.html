@@ -205,7 +205,7 @@
             
             <article class="markdown-body">
               <p>　　本篇分享将讲解如何利用Python爬虫在百度上下载新浪微盘里自己想要的歌手的歌曲，随便你喜欢的歌手！<br>　　首先我们先探索一下我们操作的步骤（以下载Westlife的歌曲为例）：打开百度，输入”Westlife 微盘”，将弹出如下页面：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEzMDkzOTU1OTcz?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="百度Westlife"><br>　　第1，2条是新浪微盘的搜索记录，但第1条记录中的歌曲大于1首，我们将不对其进行下载，下载的网页类似于一下页面：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEzMDk0MjU2MTA5?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="新浪微盘 一首歌"><br>　　接下来点击该页面的下载按钮即可下载，等待一会儿关闭当前网页回到原所搜页面，再对下一条记录进行处理。我们写Python爬虫程序的爬取网页的基本过程就如上所述啦。<br>　　在<a href="http://blog.csdn.net/jclian91/article/details/77113594" target="_blank" rel="noopener">上一篇分享</a>中，我们已了解了如何运行爬虫程序。所以这一次，直接上程序！哈哈~~</p>
-<pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span>
+<div class="hljs"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span>
 <span class="hljs-string">"""</span>
 <span class="hljs-string">Created on Mon Aug  7 09:22:12 2017</span>
 <span class="hljs-string">@author: JClian</span>
@@ -323,7 +323,7 @@
     print(<span class="hljs-string">"结束时间："</span>,d2)
     print(<span class="hljs-string">"一共花费的时间："</span>,d2-d1)
     
-main()</code></pre>
+main()</code></pre></div>
 <p>　　笔者利用睡觉时间让程序自己运行（注意设置电脑不休眠），运行结果如下（网速貌似有点不给力呢）：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEzMDk1MDIxOTc0?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="运行结果"><br>　　再去电脑上查看下载的文件：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEzMDk1MzA1Njg3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="文件夹"><br>　　在进入Westlife文件夹查看：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEzMDk1NTAxOTIw?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="69个项目"><br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEzMDk1NTIyMzAw?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="Westlife下载结果"><br>　　哈哈，厉害了，我的爬虫！在网速不给力的情况下，程序还是跑了7个多小时，下载了674个文件，已经很不错啦，就是有部分下载文件不是歌曲罢了，但已经符合笔者的期待了……</p>
 <hr>
 　　笔者已将源程序放在[码云网站](http://git.oschina.net/Jclian91/PythonPaChongZhiLiYongBaiDuHeXinLangWeiPanXiaZaiGeQu/tree/master)上，欢迎大家下载，测试，批评指正。

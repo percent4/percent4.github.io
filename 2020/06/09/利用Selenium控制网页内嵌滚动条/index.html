@@ -207,7 +207,7 @@
               <p>在利用Selenium写网页爬虫的时候，我们会经常碰到网页内嵌滚动条，如下网页：<br>    [外链图片转存失败,源站可能有防盗链机制,建议将图片保存下来直接上传(img-BMQTcmKA-1591711255321)(<a href="http://img.blog.csdn.net/20170812094733013?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvamNsaWFuOTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)]" target="_blank" rel="noopener">http://img.blog.csdn.net/20170812094733013?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvamNsaWFuOTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)]</a></p>
 <p>那么该如何控制该内嵌滚动条的行为呢？我们的主要思路是：先找到滚动条，再利用Selenium中的命令：ActionChains(browser).drag_and_drop_by_offset(element, xOffset, yOffset).perform()</p>
 <p>找到元素element,设置好里面的xOffset和yOffset,这样便能够控制滚动条的上下移动了。<br>    笔者写了这样一段Python程序代码以展示如何控制网页内嵌滚动条：</p>
-<pre><code class="hljs Python"><span class="hljs-keyword">from</span> selenium <span class="hljs-keyword">import</span> webdriver
+<div class="hljs"><pre><code class="hljs Python"><span class="hljs-keyword">from</span> selenium <span class="hljs-keyword">import</span> webdriver
 <span class="hljs-keyword">from</span> selenium.webdriver.common.action_chains <span class="hljs-keyword">import</span> ActionChains
 
 browser = webdriver.Chrome() <span class="hljs-comment">#加载Chrome浏览器</span>
@@ -217,7 +217,7 @@ browser.get(<span class="hljs-string">'http://vdisk.weibo.com/s/arjVBmagFKiLy'</
     Drag = browser.find_element_by_class_name(<span class="hljs-string">"jspDrag"</span>) <span class="hljs-comment">#找到滚动条</span>
     <span class="hljs-comment">#控制滚动条的行为，每次向y轴(及向下)移动10个单位</span>
     ActionChains(browser).drag_and_drop_by_offset(Drag, <span class="hljs-number">0</span>, <span class="hljs-number">10</span>).perform()
-    time.sleep(<span class="hljs-number">2</span>) <span class="hljs-comment">#休眠2秒</span></code></pre>
+    time.sleep(<span class="hljs-number">2</span>) <span class="hljs-comment">#休眠2秒</span></code></pre></div>
 
 <p>当我们能够控制网页内嵌滚动条的行为时，我们就能够进行一些更为有趣的操作了，期待下一篇分享~</p>
 

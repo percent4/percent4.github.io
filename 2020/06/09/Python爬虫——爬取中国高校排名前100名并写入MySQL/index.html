@@ -205,7 +205,7 @@
             
             <article class="markdown-body">
               <p>　　本篇分享讲爬取中国高校排名前100名并将其写入MySQL，这样做的好处是：1.将数据存入数据库，能永久利用；2.能利用数据库技术做一些其他操作。爬取的网页是:<a href="http://gaokao.xdf.cn/201702/10612921.html" target="_blank" rel="noopener">http://gaokao.xdf.cn/201702/10612921.html</a>, 截图如下（部分）：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODE4MjA0MTEwMDIx?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="中国高校排名前100名"><br>　　我们的程序在Linux平台上运行，需要用到MySQL和Python中的MySQLdb模块，其中MySQLdb 是封装MySQL访问和操作的模块。我们的思路是：先利用urllib和BeautifulSoup爬取前100名的表格，返回list形式，再利用MySQLdb将list写入数据中。</p>
-<pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_html</span><span class="hljs-params">(url)</span>:</span>
+<div class="hljs"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_html</span><span class="hljs-params">(url)</span>:</span>
         html = urllib.request.urlopen(url)  
         content = html.read()  
         html.close()
@@ -220,9 +220,9 @@
                     lst.append([td[i](<span class="hljs-string">'p'</span>)[<span class="hljs-number">0</span>].string.replace(<span class="hljs-string">'\n'</span>,<span class="hljs-string">''</span>).replace(<span class="hljs-string">'\t'</span>,<span class="hljs-string">''</span>) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(<span class="hljs-number">8</span>) <span class="hljs-keyword">if</span> i != <span class="hljs-number">3</span>])
                 count += <span class="hljs-number">1</span>
         
-        <span class="hljs-keyword">return</span> lst</code></pre>
+        <span class="hljs-keyword">return</span> lst</code></pre></div>
 <p>　　该段代码实现了爬取中国高校前100名的表格，并保留了名次、学校名称、地区、总分、办学类型、星级排名、办学层次这7个字段。其中的url即为开始提到的网站网址。</p>
-<pre><code class="hljs python">url = <span class="hljs-string">'http://gaokao.xdf.cn/201702/10612921.html'</span>
+<div class="hljs"><pre><code class="hljs python">url = <span class="hljs-string">'http://gaokao.xdf.cn/201702/10612921.html'</span>
 universities_lst = get_html(url)
 <span class="hljs-comment"># 打开数据库连接</span>
 db = MySQLdb.connect(<span class="hljs-string">"localhost"</span>,<span class="hljs-string">"root"</span>,<span class="hljs-string">"147369"</span>,<span class="hljs-string">"test"</span>,charset=<span class="hljs-string">'utf8'</span>)
@@ -239,10 +239,10 @@ db.commit()
 
 <span class="hljs-comment"># 关闭数据库连接</span>
 db.close()  
-print(<span class="hljs-string">"Create table already! Please check Mysql!"</span>)</code></pre>
+print(<span class="hljs-string">"Create table already! Please check Mysql!"</span>)</code></pre></div>
 <p>　　该段代码将上述爬取的表格写入MySQL数据库中，先新建一张university_rank表格，再讲值插入。我们可以去MySQL中查看。<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODE4MjA1NjU3Mjgz?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="大学排名MySQL"><br>　　这说明我们确实将爬取的高校排名写入了MySQL，接下来我们就只需要对数据库进行操作了，比如说我想知道在这前100中，每个省份的学校数量，可以通过以下命令实现：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODE4MjEwNjE5MDEy?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="count group"><br>　　从中我们可以，前100名中的高校中，北京最多，有19所，江苏其次，11所，上海第三，有9所。当然，我们还可以用该数据库做一些其他有趣的事情~~<br>　　<hr><br>　　本次分享到此结束，如有不足之处，还往批评指正。<br>　　P.S.附上本篇分享的整个程序：
 　　</p>
-<pre><code class="hljs python"><span class="hljs-string">'''</span>
+<div class="hljs"><pre><code class="hljs python"><span class="hljs-string">'''</span>
 <span class="hljs-string">Created on Aug 16, 2017</span>
 <span class="hljs-string"></span>
 <span class="hljs-string">@author: vagrant</span>
@@ -288,7 +288,7 @@ print(<span class="hljs-string">"Create table already! Please check Mysql!"</spa
 
     <span class="hljs-comment"># 关闭数据库连接</span>
     db.close()  
-    print(<span class="hljs-string">"Create table already! Please check Mysql!"</span>)</code></pre>
+    print(<span class="hljs-string">"Create table already! Please check Mysql!"</span>)</code></pre></div>
 
             </article>
             <hr>

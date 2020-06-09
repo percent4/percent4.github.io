@@ -205,7 +205,7 @@
             
             <article class="markdown-body">
               <p>　　经过一段时间的使用，笔者发现Sympy还是非常强大的存在！本次分享中，笔者将解决上一篇分享的结尾遗留的问题，那就是计算高次方程的判别式。<br>　　高次方程的判别式在数学上是个困难的问题，一般数学书上最多就讲到3次方程的判别式，笔者搜索了一下午只有在Wikipedia和Wolfram MathWorld上找到了四次方程的判别式公式。本文将展示2，3，4，5，6次方程的判别式（7次方程计算时间过长，故暂不展示）。<br>　　在数学中，n次方程$f(x)=a_{n}x^{n}+a_{n-1}x^{n-1}+…+a_{1}x+a_{0}=0$ 的判别式定义为$\Delta=a_{n}^{2n-2}\prod\limits_{i,j,i&lt;j}^{n}(x_{i}-x_{j})^{2}.$因为5次及以上方程没有求根公式，故利用Sympy按照原始定义是无法求出判别式的！<br>　　但是！我们可以幸运地通过结式来求，因为$\Delta = (-1)^{\frac{n(n-1)}{2}}a_{n}^{-1}R(f,f^{‘})$,其中$R(f,f^{‘})$为$f(x)$与$f^{‘}(x)$的结式.(可以在<a href="http://www2.math.uu.se/~svante/papers/sjN5.pdf" target="_blank" rel="noopener">http://www2.math.uu.se/~svante/papers/sjN5.pdf</a> 上找到结式的定义与相关证明)。<br>　　接下来，我们将利用Python代码来展示具体计算过程，其中最为关键的是结式矩阵的构建。</p>
-<pre><code class="hljs python"><span class="hljs-keyword">from</span> sympy <span class="hljs-keyword">import</span> *
+<div class="hljs"><pre><code class="hljs python"><span class="hljs-keyword">from</span> sympy <span class="hljs-keyword">import</span> *
 <span class="hljs-keyword">from</span> sympy.abc <span class="hljs-keyword">import</span> a,b,c,d,e,f,g,h,x
 init_printing()
 <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">list_move</span><span class="hljs-params">(cof_lst,i)</span>:</span> <span class="hljs-comment"># cof_lst为系数列表，i为循环移动的位数</span>
@@ -232,10 +232,10 @@ init_printing()
     dict_a[<span class="hljs-string">'5'</span>] = [a,b,c,d,e,f,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>]
     dict_b[<span class="hljs-string">'5'</span>] = [<span class="hljs-number">5</span>*a,<span class="hljs-number">4</span>*b,<span class="hljs-number">3</span>*c,<span class="hljs-number">2</span>*d,e,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>]
     dict_a[<span class="hljs-string">'6'</span>] = [a,b,c,d,e,f,g,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>]
-    dict_b[<span class="hljs-string">'6'</span>] = [<span class="hljs-number">6</span>*a,<span class="hljs-number">5</span>*b,<span class="hljs-number">4</span>*c,<span class="hljs-number">3</span>*d,<span class="hljs-number">2</span>*e,f,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>]</code></pre>
+    dict_b[<span class="hljs-string">'6'</span>] = [<span class="hljs-number">6</span>*a,<span class="hljs-number">5</span>*b,<span class="hljs-number">4</span>*c,<span class="hljs-number">3</span>*d,<span class="hljs-number">2</span>*e,f,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>]</code></pre></div>
 <p>　　需要将该文件保存在.ipython文件夹下，并运行，这样便于我们后面公式的Latex化展示。其中的make_matrix为构建结式矩阵，而多项式$f(x)$与$f^{‘}(x)$ 的系数分别放在dict_a与dict_b中。<br>　　接着再编写一个程序，计算出2，3，4，5，6次方程的判别式。
 　　</p>
-<pre><code class="hljs python"><span class="hljs-keyword">from</span> dis_of_poly <span class="hljs-keyword">import</span> *
+<div class="hljs"><pre><code class="hljs python"><span class="hljs-keyword">from</span> dis_of_poly <span class="hljs-keyword">import</span> *
 <span class="hljs-keyword">from</span> sympy <span class="hljs-keyword">import</span> *
 <span class="hljs-keyword">from</span> sympy.abc <span class="hljs-keyword">import</span> a,b,c,d,e,f,g,h,x
 <span class="hljs-keyword">import</span> math
@@ -254,7 +254,7 @@ s = n*(n<span class="hljs-number">-1</span>)/<span class="hljs-number">2</span>
     result = simplify(<span class="hljs-number">-1</span>/a*dis_matrix.det())
 <span class="hljs-comment">#输出    </span>
 d2 = datetime.datetime.now()    
-print(<span class="hljs-string">"Run successfully!一共用时："</span>,d2-d1)</code></pre>
+print(<span class="hljs-string">"Run successfully!一共用时："</span>,d2-d1)</code></pre></div>
 <p>这个文件的运行依赖于上一个Python文件，并将结果储存在result变量中。测试员只需输入方程次数，运行完后再输入result即可查看其判别式。<br>　　2次方程的判别式：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODE0MjExOTQ1NDQ1?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="2次方程的判别式："><br>　　<br>　　3次方程判别式：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODE0MjEyMDI1MTE5?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="3次方程的判别式："><br>　　4次方程判别式：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODE0MjEyMDQxNjgy?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="4次方程的判别式："><br>　　可以看到4次方程的判别式已经非常复杂了，更不用说5，6次方程了，也不便在此展示，而7次方程的计算时间可能要很久，笔者正在测试中。<br>　　以上运行的结果，笔者已经放在<a href="http://git.oschina.net/Jclian91/PanBieShi" target="_blank" rel="noopener">码云网站</a>上，欢迎有兴趣的同学查阅！当然，也希望大家能提出建设性意见。<br>　　本次分享到此结束，欢迎交流与批评。具体代码及运行结果可查看：<a href="http://git.oschina.net/Jclian91/PanBieShi" target="_blank" rel="noopener">http://git.oschina.net/Jclian91/PanBieShi</a> . Have a nice dream tonight~</p>
 
             </article>

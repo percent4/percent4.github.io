@@ -215,14 +215,14 @@
 <h4 id="创建Github仓库"><a href="#创建Github仓库" class="headerlink" title="创建Github仓库"></a>创建Github仓库</h4><p>&emsp;&emsp;在Github中新建一个名为username.github.io的空仓库，其中username是你在GitHub上的用户名，比如笔者的仓库名为percent.github.io。</p>
 <h4 id="配置SSH"><a href="#配置SSH" class="headerlink" title="配置SSH"></a>配置SSH</h4><p>&emsp;&emsp;如果想要使用远程从你的电脑上传文件至你的github仓库，那么，你就需要配置SSH。点击你个人Github上的Settings选项，在<code>SSH and GPG keys</code>中配置SSH的公钥，一般公钥位于<code>.ssh/id_rsa.pub</code>中，如下图：<br><img src="https://img-blog.csdnimg.cn/20200609212936859.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2pjbGlhbjkx,size_16,color_FFFFFF,t_70#pic_center" srcset="/img/loading.gif" alt="配置SSH"></p>
 <h4 id="博客初始化"><a href="#博客初始化" class="headerlink" title="博客初始化"></a>博客初始化</h4><p>&emsp;&emsp;新建一个空的文件夹，比如笔者新建了文件夹<code>github_blog</code>，使用<code>hexo init</code>命令初始化博客。初始化后的文件夹结构如下：</p>
-<pre><code class="hljs sqf">.
+<div class="hljs"><pre><code class="hljs sqf">.
 ├── <span class="hljs-variable">_config</span>.yml
 ├── package.json
 ├── scaffolds
 ├── source
 |   ├── <span class="hljs-variable">_drafts</span>
 |   └── <span class="hljs-variable">_posts</span>
-└── themes</code></pre>
+└── themes</code></pre></div>
 <p>上述文件说明如下：</p>
 <ul>
 <li>_config.yml 网站的 配置 信息，您可以在此配置大部分的参数。</li>
@@ -232,27 +232,27 @@
 <li>themes：主题文件夹。Hexo 会根据主题来生成静态页面。</li>
 </ul>
 <h4 id="生成个人博客网站"><a href="#生成个人博客网站" class="headerlink" title="生成个人博客网站"></a>生成个人博客网站</h4><p>&emsp;&emsp;配置_config.yml文件，配置信息如下：</p>
-<pre><code class="hljs yaml"><span class="hljs-comment"># Deployment</span>
+<div class="hljs"><pre><code class="hljs yaml"><span class="hljs-comment"># Deployment</span>
 <span class="hljs-comment">## Docs: https://hexo.io/docs/deployment.html</span>
 <span class="hljs-attr">deploy:</span>
   <span class="hljs-attr">type:</span> <span class="hljs-string">git</span>
   <span class="hljs-attr">repo:</span> <span class="hljs-string">https://github.com/percent4/percent4.github.io.git(第一步创建的Github仓库)</span>
-  <span class="hljs-attr">branch:</span> <span class="hljs-string">master</span></code></pre>
+  <span class="hljs-attr">branch:</span> <span class="hljs-string">master</span></code></pre></div>
 <p>安装插件<code>npm install hexo-deployer-git --save</code>后，运行如下命令：</p>
-<pre><code class="hljs nginx"><span class="hljs-attribute">hexo</span> clean	<span class="hljs-comment"># 清除数据</span>
-hexo d -g	<span class="hljs-comment"># 生成博客</span></code></pre>
+<div class="hljs"><pre><code class="hljs nginx"><span class="hljs-attribute">hexo</span> clean	<span class="hljs-comment"># 清除数据</span>
+hexo d -g	<span class="hljs-comment"># 生成博客</span></code></pre></div>
 <p>这时候，你会看到博客数据会提交至Github的信息，而第一步创建的空仓库也有了提交内容，当然，你的个人博客也搭建搭建完毕，访问网址为：<a href="https://username.github.io/" target="_blank" rel="noopener">https://username.github.io/</a> ，其中username是你在GitHub上的用户名。界面如下：<br><img src="https://img-blog.csdnimg.cn/20200609214152321.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2pjbGlhbjkx,size_16,color_FFFFFF,t_70#pic_center" srcset="/img/loading.gif" alt="Hexo界面"></p>
 <h3 id="博客维护"><a href="#博客维护" class="headerlink" title="博客维护"></a>博客维护</h3><p>&emsp;&emsp;Hexo提供了一套维护博客的优雅的办法。笔者在此仅介绍如何新建一篇博客。新建博客格式为markdown格式，比如我想创建一篇名为<code>利用Tornado搭建文档预览系统</code>的博客，可以使用以下命令：</p>
-<pre><code class="hljs haxe">hexo <span class="hljs-keyword">new</span> <span class="hljs-type"></span>利用Tornado搭建文档预览系统</code></pre>
+<div class="hljs"><pre><code class="hljs haxe">hexo <span class="hljs-keyword">new</span> <span class="hljs-type"></span>利用Tornado搭建文档预览系统</code></pre></div>
 <p>这时候会在你当前目录下的source/_posts文件夹下生成<code>利用Tornado搭建文档预览系统.md</code>,其中内容如下：</p>
-<pre><code class="hljs yaml"><span class="hljs-meta">---</span>
+<div class="hljs"><pre><code class="hljs yaml"><span class="hljs-meta">---</span>
 <span class="hljs-attr">title:</span> <span class="hljs-string">利用Tornado搭建文档预览系统</span>
 <span class="hljs-attr">date:</span> <span class="hljs-number">2020</span><span class="hljs-number">-06</span><span class="hljs-number">-09</span> <span class="hljs-number">18</span><span class="hljs-string">:32:29</span>
 <span class="hljs-attr">tags:</span>
-<span class="hljs-meta">---</span></code></pre>
+<span class="hljs-meta">---</span></code></pre></div>
 <p>其中title为博客标题，date为博客时间，tags为博客标签。在<code>---</code>后面可以写博客正文的内容。<br>&emsp;&emsp;写完博客后，使用命令</p>
-<pre><code class="hljs nginx"><span class="hljs-attribute">hexo</span> clean	<span class="hljs-comment"># 清除数据</span>
-hexo d -g	<span class="hljs-comment"># 生成博客</span></code></pre>
+<div class="hljs"><pre><code class="hljs nginx"><span class="hljs-attribute">hexo</span> clean	<span class="hljs-comment"># 清除数据</span>
+hexo d -g	<span class="hljs-comment"># 生成博客</span></code></pre></div>
 <p>就会更新个人博客。<br>&emsp;&emsp;当然，Hexo还提供了许多丰富的功能，比如theme（主题）等，这会使得你的博客内容更加丰富，功能更加完善。</p>
 <p>&emsp;&emsp;笔者大家的个人博客网站为：<a href="https://percent4.github.io/" target="_blank" rel="noopener">https://percent4.github.io/</a> ，欢迎大家访问。以后，笔者将会逐渐往个人博客网站倾斜，而减少使用公开的博客社区。</p>
 
