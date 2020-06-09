@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
-  <title>使用Hexo+Github搭建个人博客网站 - Hexo</title>
+  <title>利用Sympy做数学 - Hexo</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 
@@ -152,7 +152,7 @@
               
   <div class="mt-3 post-meta">
     <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-    <time datetime="2020-06-09 21:56">
+    <time datetime="2020-06-09 22:05">
       June 9, 2020 pm
     </time>
   </div>
@@ -163,7 +163,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1k 字
+      478 字
     </span>
   
 
@@ -173,7 +173,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      12
+      5
        分钟
     </span>
   
@@ -204,57 +204,21 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>&emsp;&emsp;曾几何时，笔者也幻想过写个项目来搭建属于自己的个人博客。<br>&emsp;&emsp;但是，写程序以及维护的成本，不禁让我犹豫再三，最后还是选择了CSDN等博客网站。将近三年的博客生涯，我尝试了不同的博客网站，各有各的利和弊，不变的是广告，这让人很不爽。<br>&emsp;&emsp;直到今天，我看到了别人写的利用Hexo+Github来搭建个人博客网站，如获至宝。折腾了一阵以后，轻松完成了个人博客的搭建，这种清爽的界面风格，让人耳目一新，同时它又是免费的，功能繁多的，便于维护的。<br>&emsp;&emsp;下面，我将会介绍如何来使用Hexo+Github搭建个人博客网站。</p>
-<h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><p>&emsp;&emsp;为了顺利地完成个人博客网站的搭建，需要做以下准备工作：</p>
+              <p>　　SymPy是一个符号计算的Python库。它的目标是成为一个全功能的计算机代数系统，同时保持代码简洁、易于理解和扩展。它完全由Python写成，不依赖于外部库。它的详细教程的网址为：<a href="http://docs.sympy.org/latest/tutorial/index.html" target="_blank" rel="noopener">http://docs.sympy.org/latest/tutorial/index.html</a>.<br>　　本文将介绍Sympy的在数学计算和公式上的几个精彩应用，这绝对是数学爱好者和Python爱好者的福音！</p>
 <ul>
-<li>安装Git和NodeJs（版本在8.10以上）；</li>
-<li>安装Hexo（命令为<code>npm i -g hexo</code>）;</li>
-<li>Github账号</li>
+<li>因式分解</li>
+<li>$1^{k}+2^{k}+...+n^{k}(k=1,2,...,8)的公式计算$</li>
+<li>多项式的最大公因式</li>
+<li>三次多项式的判别式</li>
 </ul>
-<h3 id="搭建博客"><a href="#搭建博客" class="headerlink" title="搭建博客"></a>搭建博客</h3><p>&emsp;&emsp;下面将分步来介绍如何使用Hexo和Github来搭建个人博客网站。</p>
-<h4 id="创建Github仓库"><a href="#创建Github仓库" class="headerlink" title="创建Github仓库"></a>创建Github仓库</h4><p>&emsp;&emsp;在Github中新建一个名为username.github.io的空仓库，其中username是你在GitHub上的用户名，比如笔者的仓库名为percent.github.io。</p>
-<h4 id="配置SSH"><a href="#配置SSH" class="headerlink" title="配置SSH"></a>配置SSH</h4><p>&emsp;&emsp;如果想要使用远程从你的电脑上传文件至你的github仓库，那么，你就需要配置SSH。点击你个人Github上的Settings选项，在<code>SSH and GPG keys</code>中配置SSH的公钥，一般公钥位于<code>.ssh/id_rsa.pub</code>中，如下图：<br><img src="https://img-blog.csdnimg.cn/20200609212936859.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2pjbGlhbjkx,size_16,color_FFFFFF,t_70#pic_center" srcset="/img/loading.gif" alt="配置SSH"></p>
-<h4 id="博客初始化"><a href="#博客初始化" class="headerlink" title="博客初始化"></a>博客初始化</h4><p>&emsp;&emsp;新建一个空的文件夹，比如笔者新建了文件夹<code>github_blog</code>，使用<code>hexo init</code>命令初始化博客。初始化后的文件夹结构如下：</p>
-<pre><code class="hljs sqf">.
-├── <span class="hljs-variable">_config</span>.yml
-├── package.json
-├── scaffolds
-├── source
-|   ├── <span class="hljs-variable">_drafts</span>
-|   └── <span class="hljs-variable">_posts</span>
-└── themes</code></pre>
-<p>上述文件说明如下：</p>
-<ul>
-<li>_config.yml 网站的 配置 信息，您可以在此配置大部分的参数。</li>
-<li>package.json：应用程序的信息。EJS, Stylus 和 Markdown renderer 已默认安装，您可以自由移除。</li>
-<li>scaffolds：模版文件夹。当您新建文章时，Hexo会根据 scaffold 来建立文件。</li>
-<li>source：资源文件夹是存放用户资源的地方。</li>
-<li>themes：主题文件夹。Hexo 会根据主题来生成静态页面。</li>
-</ul>
-<h4 id="生成个人博客网站"><a href="#生成个人博客网站" class="headerlink" title="生成个人博客网站"></a>生成个人博客网站</h4><p>&emsp;&emsp;配置_config.yml文件，配置信息如下：</p>
-<pre><code class="hljs yaml"><span class="hljs-comment"># Deployment</span>
-<span class="hljs-comment">## Docs: https://hexo.io/docs/deployment.html</span>
-<span class="hljs-attr">deploy:</span>
-  <span class="hljs-attr">type:</span> <span class="hljs-string">git</span>
-  <span class="hljs-attr">repo:</span> <span class="hljs-string">https://github.com/percent4/percent4.github.io.git(第一步创建的Github仓库)</span>
-  <span class="hljs-attr">branch:</span> <span class="hljs-string">master</span></code></pre>
-<p>安装插件<code>npm install hexo-deployer-git --save</code>后，运行如下命令：</p>
-<pre><code class="hljs nginx"><span class="hljs-attribute">hexo</span> clean	<span class="hljs-comment"># 清除数据</span>
-hexo d -g	<span class="hljs-comment"># 生成博客</span></code></pre>
-<p>这时候，你会看到博客数据会提交至Github的信息，而第一步创建的空仓库也有了提交内容，当然，你的个人博客也搭建搭建完毕，访问网址为：<a href="https://username.github.io/" target="_blank" rel="noopener">https://username.github.io/</a> ，其中username是你在GitHub上的用户名。界面如下：<br><img src="https://img-blog.csdnimg.cn/20200609214152321.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2pjbGlhbjkx,size_16,color_FFFFFF,t_70#pic_center" srcset="/img/loading.gif" alt="Hexo界面"></p>
-<h3 id="博客维护"><a href="#博客维护" class="headerlink" title="博客维护"></a>博客维护</h3><p>&emsp;&emsp;Hexo提供了一套维护博客的优雅的办法。笔者在此仅介绍如何新建一篇博客。新建博客格式为markdown格式，比如我想创建一篇名为<code>利用Tornado搭建文档预览系统</code>的博客，可以使用以下命令：</p>
-<pre><code class="hljs haxe">hexo <span class="hljs-keyword">new</span> <span class="hljs-type"></span>利用Tornado搭建文档预览系统</code></pre>
-<p>这时候会在你当前目录下的source/_posts文件夹下生成<code>利用Tornado搭建文档预览系统.md</code>,其中内容如下：</p>
-<pre><code class="hljs yaml"><span class="hljs-meta">---</span>
-<span class="hljs-attr">title:</span> <span class="hljs-string">利用Tornado搭建文档预览系统</span>
-<span class="hljs-attr">date:</span> <span class="hljs-number">2020</span><span class="hljs-number">-06</span><span class="hljs-number">-09</span> <span class="hljs-number">18</span><span class="hljs-string">:32:29</span>
-<span class="hljs-attr">tags:</span>
-<span class="hljs-meta">---</span></code></pre>
-<p>其中title为博客标题，date为博客时间，tags为博客标签。在<code>---</code>后面可以写博客正文的内容。<br>&emsp;&emsp;写完博客后，使用命令</p>
-<pre><code class="hljs nginx"><span class="hljs-attribute">hexo</span> clean	<span class="hljs-comment"># 清除数据</span>
-hexo d -g	<span class="hljs-comment"># 生成博客</span></code></pre>
-<p>就会更新个人博客。<br>&emsp;&emsp;当然，Hexo还提供了许多丰富的功能，比如theme（主题）等，这会使得你的博客内容更加丰富，功能更加完善。</p>
-<p>&emsp;&emsp;笔者大家的个人博客网站为：<a href="https://percent4.github.io/" target="_blank" rel="noopener">https://percent4.github.io/</a> ，欢迎大家访问。以后，笔者将会逐渐往个人博客网站倾斜，而减少使用公开的博客社区。</p>
+　　接下来将结合程序具体展示：　　
+ 1. 因式分解
+
+<p>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEzMTY0MDQ5Nzk3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="Sympy_factor1"><br>　　在IPython中运行init_printing()是为了用Latex输出数学公式。接下来因式分解$x^{3}+y^{3}+z^{3}-3xyz$，它在数学上应用广泛。<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEzMTY0NDQ1Njg3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="Sympy_factor2"><br>　　<br> 2. $1^{k}+2^{k}+…+n^{k}(k=1,2,…,8)$的公式计算</p>
+<p> 　　利用summation(expr,(arg,range1,range2))函数可以计算连加，expr为表达式，(arg,range1,range2)为变量范围。<br> 　　<br> 　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEzMTY1MzA4MTY3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="Sympy_summation1"><br> 　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEzMTcyMDQwNjM3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<p>3.多项式的最大公因式</p>
+<p>　　计算两个多项式的最大公因式，可以用辗转相除法，但是在这里我们先计算出它们的公共根，然后再展开即可。我们以计算$f(x)=x^{4}+x^{3}+2x^{2}+x+1$和$g(x)=x^{3}+x^{2}+x+1$的最大公因式为例：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEzMTcwMzA0OTE1?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="Sympy_gcd1"><br>　　<br>　　运行结果如下：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEzMTcwMzQ2NDM2?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="Sympy_gcd2"><br>　　<br>4.三次多项式的判别式</p>
+<p> 　　设三次多项式为$ax^{3}+b^{2}+cx+d$的三个根为$x_{1},x_{2},x_{3}$，则它的判别式为$a^{4}(x_{1}-x_{2})^{2}(x_{1}-x_{3})^{2}(x_{2}-x_{3})^{2}.$<br> 　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEzMTcxMzEzMzQ3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="三次判别式"><br> 　　<br> 　　但是我们用同样的方法在计算四次方程的判别式时，就遇到了困难，因为你可能花几个小时也算不出，需要借助数学理论的帮助。这会在下一篇分享中会讲到~~<br> <hr><br> 　　期待下一篇分享^o^</p>
 
             </article>
             <hr>
@@ -265,11 +229,7 @@ hexo d -g	<span class="hljs-comment"># 生成博客</span></code></pre>
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/Hexo/">Hexo</a>
-                    
-                      <a class="hover-with-bg" href="/tags/Github/">Github</a>
-                    
-                      <a class="hover-with-bg" href="/tags/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%BD%91%E7%AB%99/">个人博客网站</a>
+                      <a class="hover-with-bg" href="/tags/Sympy/">Sympy</a>
                     
                   </div>
                 
@@ -282,15 +242,21 @@ hexo d -g	<span class="hljs-comment"># 生成博客</span></code></pre>
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/2020/06/09/%E5%88%A9%E7%94%A8Selenium%E6%8E%A7%E5%88%B6%E7%BD%91%E9%A1%B5%E5%86%85%E5%B5%8C%E6%BB%9A%E5%8A%A8%E6%9D%A1/">
+                      <a href="/2020/06/09/%E7%94%A8Sympy%E8%AE%A1%E7%AE%97%E9%AB%98%E6%AC%A1%E6%96%B9%E7%A8%8B%E7%9A%84%E5%88%A4%E5%88%AB%E5%BC%8F/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">利用Selenium控制网页内嵌滚动条</span>
+                        <span class="hidden-mobile">用Sympy计算高次方程的判别式</span>
                         <span class="visible-mobile">Previous</span>
                       </a>
                     
                   </div>
                   <div class="post-next col-6">
                     
+                    
+                      <a href="/2020/06/09/Python%E7%88%AC%E8%99%AB%E2%80%94%E2%80%94%E7%99%BE%E5%BA%A6-%E6%96%B0%E6%B5%AA%E5%BE%AE%E7%9B%98%E4%B8%8B%E8%BD%BD%E6%AD%8C%E6%9B%B2/">
+                        <span class="hidden-mobile">Python爬虫——百度+新浪微盘下载歌曲</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
                     
                   </div>
                 </div>
@@ -426,7 +392,7 @@ hexo d -g	<span class="hljs-comment"># 生成博客</span></code></pre>
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "使用Hexo+Github搭建个人博客网站&nbsp;",
+        "利用Sympy做数学&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,

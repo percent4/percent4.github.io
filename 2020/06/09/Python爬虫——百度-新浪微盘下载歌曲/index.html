@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  <title>Python爬虫——百度+新浪微盘下载歌曲 - Hexo</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script>
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Fluid</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2020-06-09 22:04">
+      June 9, 2020 pm
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.3k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      17
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <p>　　本篇分享将讲解如何利用Python爬虫在百度上下载新浪微盘里自己想要的歌手的歌曲，随便你喜欢的歌手！<br>　　首先我们先探索一下我们操作的步骤（以下载Westlife的歌曲为例）：打开百度，输入”Westlife 微盘”，将弹出如下页面：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEzMDkzOTU1OTcz?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="百度Westlife"><br>　　第1，2条是新浪微盘的搜索记录，但第1条记录中的歌曲大于1首，我们将不对其进行下载，下载的网页类似于一下页面：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEzMDk0MjU2MTA5?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="新浪微盘 一首歌"><br>　　接下来点击该页面的下载按钮即可下载，等待一会儿关闭当前网页回到原所搜页面，再对下一条记录进行处理。我们写Python爬虫程序的爬取网页的基本过程就如上所述啦。<br>　　在<a href="http://blog.csdn.net/jclian91/article/details/77113594" target="_blank" rel="noopener">上一篇分享</a>中，我们已了解了如何运行爬虫程序。所以这一次，直接上程序！哈哈~~</p>
+<pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span>
+<span class="hljs-string">"""</span>
+<span class="hljs-string">Created on Mon Aug  7 09:22:12 2017</span>
+<span class="hljs-string">@author: JClian</span>
+<span class="hljs-string">"""</span>
+<span class="hljs-keyword">import</span> os
+<span class="hljs-keyword">import</span> re
+<span class="hljs-keyword">import</span> time
+<span class="hljs-keyword">import</span> datetime 
+<span class="hljs-keyword">from</span> selenium <span class="hljs-keyword">import</span> webdriver  <span class="hljs-comment">#导入Selenium的webdriver</span>
+<span class="hljs-keyword">from</span> selenium.webdriver.common.keys <span class="hljs-keyword">import</span> Keys  <span class="hljs-comment">#导入Keys</span>
+<span class="hljs-keyword">from</span> selenium.webdriver.common.action_chains <span class="hljs-keyword">import</span> ActionChains
+<span class="hljs-comment">#导入selenium的异常</span>
+<span class="hljs-keyword">from</span> selenium.common.exceptions <span class="hljs-keyword">import</span> TimeoutException,NoSuchElementException,WebDriverException
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getSong</span><span class="hljs-params">(songer)</span>:</span>
+    chrome_options = webdriver.ChromeOptions()
+    <span class="hljs-comment"># 不加载图片(提升加载速度)；设置默认保存文件路径</span>
+    prefs = &#123;<span class="hljs-string">"profile.managed_default_content_settings.images"</span>:<span class="hljs-number">2</span>,\
+             <span class="hljs-string">"download.default_directory"</span>: <span class="hljs-string">'F:\\download_music\%s'</span> %songer&#125;
+    chrome_options.add_experimental_option(<span class="hljs-string">"prefs"</span>,prefs)
+    browser = webdriver.Chrome(chrome_options=chrome_options) <span class="hljs-comment">#启动浏览器 </span>
+    browser.maximize_window() <span class="hljs-comment">#最大化</span>
+    <span class="hljs-comment">#设置网页加载等待时间为20s,超过20s后则停止加载</span>
+    browser.set_page_load_timeout(<span class="hljs-number">20</span>) 
+    <span class="hljs-keyword">try</span>:
+        browser.get(<span class="hljs-string">'https://www.baidu.com/'</span>) <span class="hljs-comment">#获取百度网页</span>
+    <span class="hljs-keyword">except</span> TimeoutException:
+        browser.execute_script(<span class="hljs-string">'window.stop()'</span>)
+    <span class="hljs-comment">#在百度搜索栏搜索“歌手 微盘”，并点击“百度一下”按钮</span>
+    browser.find_element_by_id(<span class="hljs-string">"kw"</span>).send_keys(<span class="hljs-string">'%s 微盘'</span>% songer)
+    browser.find_element_by_id(<span class="hljs-string">"su"</span>).click()
+    time.sleep(<span class="hljs-number">5</span>)
+    <span class="hljs-comment">#对每一页的搜索记录进行处理</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">each_page</span><span class="hljs-params">(j)</span>:</span>
+        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(<span class="hljs-number">1</span>+<span class="hljs-number">10</span>*j,<span class="hljs-number">11</span>+<span class="hljs-number">10</span>*j):
+            print(datetime.datetime.now(),<span class="hljs-string">"第%d页~~~~~~~~~~~~~~~~~~~"</span>%i)
+            <span class="hljs-comment">#找到该条搜索记录，并点击</span>
+            elem = browser.find_element_by_xpath(<span class="hljs-string">"//*[@id='%d']/h3/a"</span>%i)
+            elem.click()
+            time.sleep(<span class="hljs-number">10</span>)
+            <span class="hljs-comment">#切换到新弹出的窗口</span>
+            browser.switch_to_window(browser.window_handles[<span class="hljs-number">1</span>])
+            <span class="hljs-comment">#判断是否是新浪微盘网页，若是，则再判断里面分享的歌曲是否大于一首</span>
+            <span class="hljs-keyword">if</span> re.match(<span class="hljs-string">'^http://vdisk.weibo.com/s'</span>,browser.current_url):
+                print(<span class="hljs-string">"这是一个新浪微盘的网页！"</span>)
+                t = browser.find_elements_by_class_name(<span class="hljs-string">"short_name"</span>)
+                <span class="hljs-keyword">if</span> len(t) &gt; <span class="hljs-number">0</span>:
+                    print(<span class="hljs-string">"歌曲大于1首，不进行下载！\n"</span>)
+                <span class="hljs-keyword">else</span>:
+                    print(<span class="hljs-string">"可以进行下载！"</span>)
+                    <span class="hljs-comment">#统计此时下载文件夹中的文件数量，作为下载成功的标志</span>
+                    music_exit_flg = len(os.listdir(<span class="hljs-string">"F:\\download_music\%s"</span>%songer))
+                    <span class="hljs-comment">#找到该页面的“下载”按钮，并按下</span>
+                    elem = browser.find_element_by_id(<span class="hljs-string">"download_big_btn"</span>).click()
+                    print(<span class="hljs-string">"歌曲正在下载中..."</span>)
+                    time.sleep(<span class="hljs-number">8</span>)
+                    <span class="hljs-comment">#获取歌曲的歌名信息</span>
+                    file_name = browser.find_element_by_class_name(<span class="hljs-string">"page_down_filename"</span>).text
+                    exit_flg = <span class="hljs-number">0</span> <span class="hljs-comment">#歌曲重新下载的标志</span>
+                    <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:
+                        <span class="hljs-comment">#如果下载文件夹文件数量增加1，则下载成功，否则重新下载</span>
+                        <span class="hljs-keyword">if</span> len(os.listdir(<span class="hljs-string">"F:\\download_music\%s"</span>%songer)) == (music_exit_flg+<span class="hljs-number">1</span>):
+                            print(<span class="hljs-string">"%s 下载成功！\n"</span>%file_name)
+                            <span class="hljs-keyword">break</span>
+                        <span class="hljs-keyword">else</span>:
+                            browser.refresh() <span class="hljs-comment">#刷新网页</span>
+                            time.sleep(<span class="hljs-number">5</span>)
+                            music_exit_flg = len(os.listdir(<span class="hljs-string">"F:\\download_music\%s"</span>%songer))
+                            elem = browser.find_element_by_id(<span class="hljs-string">"download_big_btn"</span>).click()
+                            print(<span class="hljs-string">"正在尝试重新下载..."</span>)
+                            time.sleep(<span class="hljs-number">8</span>)
+                            exit_flg += <span class="hljs-number">1</span>
+                            <span class="hljs-keyword">if</span> exit_flg == <span class="hljs-number">3</span>: <span class="hljs-comment">#尝试重新下载3次仍未下载后，则下载失败</span>
+                                print(<span class="hljs-string">"%s下载失败啦~~\n"</span> %file_name)
+                                <span class="hljs-keyword">break</span>
+                        
+            <span class="hljs-keyword">else</span>:
+                print((<span class="hljs-string">"这不是一个新浪微盘的网页！\n"</span>))
+            <span class="hljs-comment">#关闭当前窗口，并切换到原来的搜索页面</span>
+            browser.close()
+            time.sleep(<span class="hljs-number">2</span>)
+            browser.switch_to_window(browser.window_handles[<span class="hljs-number">0</span>])
+    
+    pages = <span class="hljs-number">20</span> <span class="hljs-comment">#设置爬取网页的数量为20，即200条搜索记录</span>
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(pages):
+        each_page(i)
+        <span class="hljs-comment">#点击该页面中的“下一页”按钮</span>
+        <span class="hljs-keyword">if</span> i ==<span class="hljs-number">0</span>:
+            browser.find_element_by_class_name(<span class="hljs-string">"n"</span>).click()
+        <span class="hljs-keyword">else</span>:
+            browser.find_elements_by_class_name(<span class="hljs-string">"n"</span>)[<span class="hljs-number">1</span>].click()
+        time.sleep(<span class="hljs-number">8</span>)
+        
+    browser.close()<span class="hljs-comment">#关闭窗口</span>
+    print(datetime.datetime.now(),<span class="hljs-string">"%s的歌曲已操作完毕啦！"</span> % songer)
+    
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>:</span>
+    d1 = datetime.datetime.now()
+    <span class="hljs-comment">#要搜索的歌手的列表</span>
+    songer_lst = [<span class="hljs-string">'Westlife'</span>, <span class="hljs-string">'Backstreet Boys'</span>, <span class="hljs-string">'Michael Jackson'</span>, <span class="hljs-string">'Owl City'</span>, <span class="hljs-string">'James Blunt'</span>, \
+                  <span class="hljs-string">'Avril Lavigne'</span>,<span class="hljs-string">'Tylor Swift'</span>,<span class="hljs-string">'Beyonce'</span>, <span class="hljs-string">'Groove Coverage'</span>, <span class="hljs-string">'Jewel'</span>, <span class="hljs-string">'Beyond'</span>]
+    <span class="hljs-keyword">for</span> songer <span class="hljs-keyword">in</span> songer_lst: <span class="hljs-comment">#运行getSong()函数，并加入异常处理</span>
+        <span class="hljs-keyword">try</span>:
+            print(datetime.datetime.now(),<span class="hljs-string">"开始搜索%s的歌曲啦！"</span>% songer)
+            os.mkdir(os.path.join(<span class="hljs-string">"F:\\download_music"</span>,songer)) <span class="hljs-comment">#创建新文件夹</span>
+            getSong(songer)
+        <span class="hljs-keyword">except</span> TimeoutException:
+            print(datetime.datetime.now(),<span class="hljs-string">"%s的歌曲下载超时啦！嘿嘿~~"</span>% songer)
+        <span class="hljs-keyword">except</span> NoSuchElementException:
+            print(datetime.datetime.now(),<span class="hljs-string">"哎呦，除了点小问题... NoSuchElementException"</span>)
+        <span class="hljs-keyword">except</span> WebDriverException:
+            print(datetime.datetime.now(),<span class="hljs-string">"哎呦，除了点小问题...WebDriverException"</span>)
+    d2 = datetime.datetime.now()
+    print(<span class="hljs-string">"开始时间："</span>,d1)
+    print(<span class="hljs-string">"结束时间："</span>,d2)
+    print(<span class="hljs-string">"一共花费的时间："</span>,d2-d1)
+    
+main()</code></pre>
+<p>　　笔者利用睡觉时间让程序自己运行（注意设置电脑不休眠），运行结果如下（网速貌似有点不给力呢）：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEzMDk1MDIxOTc0?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="运行结果"><br>　　再去电脑上查看下载的文件：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEzMDk1MzA1Njg3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="文件夹"><br>　　在进入Westlife文件夹查看：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEzMDk1NTAxOTIw?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="69个项目"><br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEzMDk1NTIyMzAw?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="Westlife下载结果"><br>　　哈哈，厉害了，我的爬虫！在网速不给力的情况下，程序还是跑了7个多小时，下载了674个文件，已经很不错啦，就是有部分下载文件不是歌曲罢了，但已经符合笔者的期待了……</p>
+<hr>
+　　笔者已将源程序放在[码云网站](http://git.oschina.net/Jclian91/PythonPaChongZhiLiYongBaiDuHeXinLangWeiPanXiaZaiGeQu/tree/master)上，欢迎大家下载，测试，批评指正。
+　　有了这个程序，你就能在电脑上，一边看电影，一边下载自己喜欢的歌手的歌曲啦。你也可以在自己上班或不用电脑的时候下载歌曲（注意设置电脑不休眠，网速要好！！！），回来后说不定满满的都是惊喜呢~~~
+　　期待下一篇分享^O^
+
+<p><strong><em>注意：</em></strong>本人现已开通微信公众号：Python爬虫与算法（微信号为：easy_web_scrape）， 欢迎大家关注哦~~</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E7%88%AC%E8%99%AB/">爬虫</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" target="_blank" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/06/09/%E5%88%A9%E7%94%A8Sympy%E5%81%9A%E6%95%B0%E5%AD%A6/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">利用Sympy做数学</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/2020/06/09/Python%E7%88%AC%E8%99%AB%E2%80%94%E2%80%94%E5%88%A9%E7%94%A8%E6%96%B0%E6%B5%AA%E5%BE%AE%E7%9B%98%E4%B8%8B%E8%BD%BD%E5%91%A8%E6%9D%B0%E4%BC%A6%E7%9A%84%E6%AD%8C%E6%9B%B2%EF%BC%88%E5%85%B1190%E9%A6%96%EF%BC%89/">
+                        <span class="hidden-mobile">Python爬虫——利用新浪微盘下载周杰伦的歌曲（共190首）</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "Python爬虫——百度+新浪微盘下载歌曲&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
