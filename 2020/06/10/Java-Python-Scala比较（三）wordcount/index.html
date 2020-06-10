@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="Jclian91">
   <meta name="keywords" content="">
-  <title>Java,Pyhon,Scala比较(一)map，reduce - Blog</title>
+  <title>Java,Python,Scala比较（三）wordcount - Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 
@@ -152,7 +152,7 @@
               
   <div class="mt-3 post-meta">
     <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-    <time datetime="2020-06-10 16:15">
+    <time datetime="2020-06-10 18:23">
       June 10, 2020 pm
     </time>
   </div>
@@ -163,7 +163,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      146 字
+      536 字
     </span>
   
 
@@ -173,7 +173,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      5
+      19
        分钟
     </span>
   
@@ -212,32 +212,85 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>使用map,reduce函数，将字符串数组[‘1’,’2’,’3’,’4’,’5’,’6’,’7’,’8’,’9’]转化为数字123456789.</p>
-<p>Java</p>
-<div class="hljs"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.util.List;
-<span class="hljs-keyword">import</span> java.util.Arrays;
-<span class="hljs-keyword">import</span> java.util.stream.Stream;
-
-<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">strToInt</span> </span>&#123;
+              <p>　　众所周知，wordcount在大数据中的地位相当于helloworld在各种编程语言中的地位。本文并不分析wordcount的计算方法，而是直接给出代码，目的是为了比较Spark中Java，Python，Scala的区别。<br>　　显然，Java写法较为复杂，Python简单易懂，Scala是Spark的原生代码，故即为简洁。<br>Java完整代码：</p>
+<div class="hljs"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.util.Arrays;
+<span class="hljs-keyword">import</span> java.util.Iterator;
+<span class="hljs-keyword">import</span> org.apache.spark.SparkConf; 
+<span class="hljs-keyword">import</span> org.apache.spark.api.java.JavaPairRDD; 
+<span class="hljs-keyword">import</span> org.apache.spark.api.java.JavaRDD; 
+<span class="hljs-keyword">import</span> org.apache.spark.api.java.JavaSparkContext; 
+<span class="hljs-keyword">import</span> org.apache.spark.api.java.function.FlatMapFunction; 
+<span class="hljs-keyword">import</span> org.apache.spark.api.java.function.Function2; 
+<span class="hljs-keyword">import</span> org.apache.spark.api.java.function.PairFunction;
+<span class="hljs-keyword">import</span> org.apache.spark.api.java.function.VoidFunction;
+<span class="hljs-keyword">import</span> scala.Tuple2;
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">wordcount</span> </span>&#123;
 	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;
-	    List&lt;String&gt; lst = Arrays.asList(<span class="hljs-string">"1"</span>, <span class="hljs-string">"2"</span>, <span class="hljs-string">"3"</span>, <span class="hljs-string">"4"</span>, <span class="hljs-string">"5"</span>, <span class="hljs-string">"6"</span>, <span class="hljs-string">"7"</span>, <span class="hljs-string">"8"</span>, <span class="hljs-string">"9"</span>);
-        System.out.println(lst.stream().map((x) -&gt; Integer.valueOf(x)).reduce((x,y) -&gt; <span class="hljs-number">10</span>*x+y));
-
+        SparkConf conf = <span class="hljs-keyword">new</span> SparkConf().setMaster(<span class="hljs-string">"local"</span>).setAppName(<span class="hljs-string">"wc"</span>);
+        JavaSparkContext sc = <span class="hljs-keyword">new</span> JavaSparkContext(conf);
+        <span class="hljs-comment">//read a txtfile</span>
+        JavaRDD&lt;String&gt; text = sc.textFile(<span class="hljs-string">"/home/vagrant/speech.txt"</span>);
+        <span class="hljs-comment">//split(" ")</span>
+        JavaRDD&lt;String&gt; words = text.flatMap(<span class="hljs-keyword">new</span> FlatMapFunction&lt;String, String&gt;() &#123;
+            <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">long</span> serialVersionUID = <span class="hljs-number">1L</span>;
+            <span class="hljs-meta">@Override</span>
+            <span class="hljs-function"><span class="hljs-keyword">public</span> Iterator&lt;String&gt; <span class="hljs-title">call</span><span class="hljs-params">(String line)</span> <span class="hljs-keyword">throws</span> Exception </span>&#123;
+                <span class="hljs-keyword">return</span> Arrays.asList(line.split(<span class="hljs-string">" "</span>)).iterator();
+            &#125;
+        &#125;);
+        <span class="hljs-comment">//word =&gt; (word,1)</span>
+        JavaPairRDD&lt;String,Integer&gt; counts=words.mapToPair(
+                <span class="hljs-keyword">new</span> PairFunction&lt;String, String, Integer&gt;() &#123;
+                    <span class="hljs-function"><span class="hljs-keyword">public</span> Tuple2&lt;String, Integer&gt; <span class="hljs-title">call</span><span class="hljs-params">(String s)</span> <span class="hljs-keyword">throws</span> Exception </span>&#123;
+                        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Tuple2(s, <span class="hljs-number">1</span>);
+                    &#125;
+                &#125;
+        );
+        <span class="hljs-comment">//reduceByKey</span>
+        JavaPairRDD &lt;String,Integer&gt; results=counts.reduceByKey(
+                <span class="hljs-keyword">new</span> Function2&lt;Integer, Integer, Integer&gt;() &#123;
+                    <span class="hljs-function"><span class="hljs-keyword">public</span> Integer <span class="hljs-title">call</span><span class="hljs-params">(Integer v1, Integer v2)</span> <span class="hljs-keyword">throws</span> Exception </span>&#123;
+                        <span class="hljs-keyword">return</span> v1 + v2;
+                    &#125;
+                &#125;
+        ) ;
+        <span class="hljs-comment">//print</span>
+        results.foreach(<span class="hljs-keyword">new</span> VoidFunction&lt;Tuple2&lt;String, Integer&gt;&gt;()&#123;
+        	  <span class="hljs-meta">@Override</span>
+        	  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">call</span><span class="hljs-params">(Tuple2&lt;String, Integer&gt; t)</span> <span class="hljs-keyword">throws</span> Exception </span>&#123; 
+        	                  System.out.println(<span class="hljs-string">"("</span>+t._1()+<span class="hljs-string">":"</span>+t._2()+<span class="hljs-string">")"</span>);
+        	  &#125;
+        	  &#125;);     		
 	&#125;
 &#125;</code></pre></div>
 
+<p>Pyspark完整代码：</p>
+<div class="hljs"><pre><code class="hljs python"><span class="hljs-comment"># Imports the PySpark libraries</span>
+<span class="hljs-keyword">from</span> pyspark <span class="hljs-keyword">import</span> SparkConf, SparkContext  
+<span class="hljs-comment"># Configure the Spark context to give a name to the application</span>
+sparkConf = SparkConf().setAppName(<span class="hljs-string">"MyWordCounts"</span>)
+sc = SparkContext(conf = sparkConf)
+<span class="hljs-comment"># The text file containing the words to count (this is the Spark README file)</span>
+textFile = sc.textFile(<span class="hljs-string">'/home/vagrant/speech.txt'</span>)
+<span class="hljs-comment"># The code for counting the words (note that the execution mode is lazy)</span>
+<span class="hljs-comment"># Uses the same paradigm Map and Reduce of Hadoop, but fully in memory</span>
+wordCounts = textFile.flatMap(<span class="hljs-keyword">lambda</span> line: line.split()).map(<span class="hljs-keyword">lambda</span> word: (word, <span class="hljs-number">1</span>)).reduceByKey(<span class="hljs-keyword">lambda</span> a, b: a+b)
+<span class="hljs-comment"># Executes the DAG (Directed Acyclic Graph) for counting and collecting the result</span>
+<span class="hljs-keyword">for</span> wc <span class="hljs-keyword">in</span> wordCounts.collect():
+    print(wc)</code></pre></div>
 
-<p>Python</p>
-<div class="hljs"><pre><code class="hljs python"><span class="hljs-keyword">from</span> functools <span class="hljs-keyword">import</span> reduce
-lst = [<span class="hljs-string">'1'</span>,<span class="hljs-string">'2'</span>,<span class="hljs-string">'3'</span>,<span class="hljs-string">'4'</span>,<span class="hljs-string">'5'</span>,<span class="hljs-string">'6'</span>,<span class="hljs-string">'7'</span>,<span class="hljs-string">'8'</span>,<span class="hljs-string">'9'</span>]
-reduce(<span class="hljs-keyword">lambda</span> x,y: <span class="hljs-number">10</span>*x+y,map(<span class="hljs-keyword">lambda</span> x:int(x), lst))</code></pre></div>
+<p>Scala完整代码：</p>
+<div class="hljs"><pre><code class="hljs scala"><span class="hljs-keyword">import</span> org.apache.spark.&#123;<span class="hljs-type">SparkContext</span>,<span class="hljs-type">SparkConf</span>&#125;
 
-<p>scala</p>
-<div class="hljs"><pre><code class="hljs scala"><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">mapReduce</span></span>&#123;
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span></span>(args:<span class="hljs-type">Array</span>[<span class="hljs-type">String</span>])&#123;
-        println(<span class="hljs-type">Array</span>(<span class="hljs-string">"1"</span>,<span class="hljs-string">"2"</span>,<span class="hljs-string">"3"</span>,<span class="hljs-string">"4"</span>,<span class="hljs-string">"5"</span>,<span class="hljs-string">"6"</span>,<span class="hljs-string">"7"</span>,<span class="hljs-string">"8"</span>,<span class="hljs-string">"9"</span>).map(_.toInt).reduce(_*<span class="hljs-number">10</span>+_));
-    &#125;
+<span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">test</span></span>&#123;
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span></span>(args:<span class="hljs-type">Array</span>[<span class="hljs-type">String</span>])&#123;
+    <span class="hljs-keyword">val</span> sparkConf = <span class="hljs-keyword">new</span> <span class="hljs-type">SparkConf</span>().setMaster(<span class="hljs-string">"local"</span>).setAppName(<span class="hljs-string">"MyWordCounts"</span>)
+    <span class="hljs-keyword">val</span> sc = <span class="hljs-keyword">new</span> <span class="hljs-type">SparkContext</span>(sparkConf)
+    sc.textFile(<span class="hljs-string">"/home/vagrant/speech.txt"</span>).flatMap(_.split(' ')).map((_,<span class="hljs-number">1</span>)).reduceByKey(_+_).foreach(println)
+  &#125;
 &#125;</code></pre></div>
+<hr>
+本次分享到此结束，欢迎大家批评与交流~~
 
             </article>
             <hr>
@@ -272,18 +325,12 @@ reduce(<span class="hljs-keyword">lambda</span> x,y: <span class="hljs-number">1
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/2020/06/10/Java-Python-Scala%E6%AF%94%E8%BE%83%EF%BC%88%E4%BA%8C%EF%BC%89%E7%B1%BB%E4%B8%8E%E7%BB%A7%E6%89%BF/">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Java,Python,Scala比较（二）类与继承</span>
-                        <span class="visible-mobile">Previous</span>
-                      </a>
-                    
                   </div>
                   <div class="post-next col-6">
                     
                     
-                      <a href="/2020/06/10/Hive%E4%B9%8B%E5%AF%BC%E5%85%A5%E5%A4%96%E9%83%A8%E6%95%B0%E6%8D%AE/">
-                        <span class="hidden-mobile">Hive之导入外部数据</span>
+                      <a href="/2020/06/10/%E5%88%A9%E7%94%A8Shell%E5%B0%86MySQL%E6%95%B0%E6%8D%AE%E8%A1%A8%E5%AF%BC%E5%87%BA%E4%B8%BAcsv%E6%96%87%E4%BB%B6/">
+                        <span class="hidden-mobile">利用Shell将MySQL数据表导出为csv文件</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -503,7 +550,7 @@ reduce(<span class="hljs-keyword">lambda</span> x,y: <span class="hljs-number">1
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "Java,Pyhon,Scala比较(一)map，reduce&nbsp;",
+        "Java,Python,Scala比较（三）wordcount&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,

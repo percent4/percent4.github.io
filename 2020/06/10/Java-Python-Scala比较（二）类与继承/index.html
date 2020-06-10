@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  <title>Java,Python,Scala比较（二）类与继承 - Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/darcula.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script>
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Jclian91</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('/img/dunhuang.jpeg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2020-06-10 18:20">
+      June 10, 2020 pm
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.1k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      42
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <p>UML图如下：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTEzMTQwMTE4ODg4?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>完整的Java代码如下：<br>SimpleGeometricObject.java</p>
+<div class="hljs"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">SimpleGeometricObject</span> </span>&#123;
+	<span class="hljs-keyword">private</span> String color = <span class="hljs-string">"white"</span>;
+	<span class="hljs-keyword">private</span> <span class="hljs-keyword">boolean</span> filled;
+	<span class="hljs-keyword">private</span> java.util.Date dateCreated;
+	
+	<span class="hljs-comment">/**Construct a default geometric object */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">SimpleGeometricObject</span><span class="hljs-params">()</span></span>&#123;
+		dateCreated = <span class="hljs-keyword">new</span> java.util.Date();
+	&#125;
+	
+	<span class="hljs-comment">/**Construct a geometric object with the specified color</span>
+<span class="hljs-comment">	 * and filled value*/</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">SimpleGeometricObject</span><span class="hljs-params">(String color, <span class="hljs-keyword">boolean</span> filled)</span> </span>&#123;
+		dateCreated = <span class="hljs-keyword">new</span> java.util.Date();
+		<span class="hljs-keyword">this</span>.color = color;
+		<span class="hljs-keyword">this</span>.filled = filled;
+	&#125;
+	
+	<span class="hljs-comment">/**Return color*/</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getColor</span><span class="hljs-params">()</span> </span>&#123;
+		<span class="hljs-keyword">return</span> color;
+	&#125;
+	
+	<span class="hljs-comment">/**set a new color*/</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setColor</span><span class="hljs-params">(String color)</span> </span>&#123;
+		<span class="hljs-keyword">this</span>.color = color;
+	&#125;
+	
+	<span class="hljs-comment">/**Return filled. Since filled is boolean,</span>
+<span class="hljs-comment">	 * its better method is named isFilled*/</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">isFilled</span><span class="hljs-params">()</span> </span>&#123;
+		<span class="hljs-keyword">return</span> filled;
+	&#125;
+	
+	<span class="hljs-comment">/**Set a new filled*/</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setFilled</span><span class="hljs-params">(<span class="hljs-keyword">boolean</span> filled)</span> </span>&#123;
+		<span class="hljs-keyword">this</span>.filled = filled;
+	&#125;
+	
+	<span class="hljs-comment">/**Get dateCreated*/</span>
+	<span class="hljs-keyword">public</span> java.util.<span class="hljs-function">Date <span class="hljs-title">getDateCreated</span><span class="hljs-params">()</span></span>&#123;
+		<span class="hljs-keyword">return</span> dateCreated;
+	&#125;
+	
+	<span class="hljs-comment">/**Return a string representation of this object*/</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">toString</span><span class="hljs-params">()</span> </span>&#123;
+		<span class="hljs-keyword">return</span> <span class="hljs-string">"created on "</span>+dateCreated+<span class="hljs-string">"\ncolor: "</span>+color+<span class="hljs-string">" and filled: "</span>+filled;
+	&#125;
+&#125;</code></pre></div>
+
+<p>CircleFromSimpleGeometricObject.java</p>
+<div class="hljs"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CircleFromSimpleGeometricObject</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">SimpleGeometricObject</span></span>&#123;
+	<span class="hljs-keyword">private</span> <span class="hljs-keyword">double</span> radius;
+	
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">CircleFromSimpleGeometricObject</span><span class="hljs-params">()</span> </span>&#123;&#125;
+	
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">CircleFromSimpleGeometricObject</span><span class="hljs-params">(<span class="hljs-keyword">double</span> radius)</span> </span>&#123;
+		<span class="hljs-keyword">this</span>.radius = radius;
+	&#125;
+	
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">CircleFromSimpleGeometricObject</span><span class="hljs-params">(<span class="hljs-keyword">double</span> radius, String color, <span class="hljs-keyword">boolean</span> filled)</span> </span>&#123;
+		<span class="hljs-keyword">super</span>(color, filled);
+		<span class="hljs-keyword">this</span>.radius = radius;	
+	&#125;
+	
+	<span class="hljs-comment">/**Return radius*/</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">double</span> <span class="hljs-title">getRadius</span><span class="hljs-params">()</span> </span>&#123;
+		<span class="hljs-keyword">return</span> radius;
+	&#125;
+	
+	<span class="hljs-comment">/**Set a new radius*/</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setRadius</span><span class="hljs-params">(<span class="hljs-keyword">double</span> radius)</span> </span>&#123;
+		<span class="hljs-keyword">this</span>.radius = radius;
+	&#125;
+	
+	<span class="hljs-comment">/**Return area*/</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">double</span> <span class="hljs-title">getArea</span><span class="hljs-params">()</span> </span>&#123;
+		<span class="hljs-keyword">return</span> radius*radius*Math.PI;
+	&#125;
+	
+	<span class="hljs-comment">/**Return diameter*/</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">double</span> <span class="hljs-title">getDiameter</span><span class="hljs-params">()</span> </span>&#123;
+		<span class="hljs-keyword">return</span> <span class="hljs-number">2</span>*radius;
+	&#125;
+	
+	<span class="hljs-comment">/**Return perimeter*/</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">double</span> <span class="hljs-title">getPerimeter</span><span class="hljs-params">()</span> </span>&#123;
+		<span class="hljs-keyword">return</span> <span class="hljs-number">2</span>*radius*Math.PI;
+	&#125;
+	
+	<span class="hljs-comment">/**Return the circle info*/</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">printCircle</span><span class="hljs-params">()</span> </span>&#123;
+		System.out.println(<span class="hljs-string">"The circle is created "</span>+getDateCreated()+<span class="hljs-string">" and the radius is "</span>+radius);
+	&#125;	
+&#125;</code></pre></div>
+
+<p>RectangleFromSimpleGeometricObject.java</p>
+<div class="hljs"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">RectangleFromSimpleGeometricObject</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">SimpleGeometricObject</span></span>&#123;
+	<span class="hljs-keyword">private</span> <span class="hljs-keyword">double</span> width;
+	<span class="hljs-keyword">private</span> <span class="hljs-keyword">double</span> height;
+	
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">RectangleFromSimpleGeometricObject</span><span class="hljs-params">()</span> </span>&#123;&#125;
+	
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">RectangleFromSimpleGeometricObject</span><span class="hljs-params">(<span class="hljs-keyword">double</span> width, <span class="hljs-keyword">double</span> height)</span> </span>&#123;
+		<span class="hljs-keyword">this</span>.width = width;
+		<span class="hljs-keyword">this</span>.height = height;
+	&#125;
+	
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">RectangleFromSimpleGeometricObject</span><span class="hljs-params">(<span class="hljs-keyword">double</span> width, <span class="hljs-keyword">double</span> height, String color, <span class="hljs-keyword">boolean</span> filled)</span> </span>&#123;
+		<span class="hljs-keyword">super</span>(color, filled);
+		<span class="hljs-keyword">this</span>.width = width;
+		<span class="hljs-keyword">this</span>.height = height;
+	&#125;
+	
+	<span class="hljs-comment">/**Return width*/</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">double</span> <span class="hljs-title">getWidth</span><span class="hljs-params">()</span> </span>&#123;
+		<span class="hljs-keyword">return</span> width;
+	&#125;
+	
+	<span class="hljs-comment">/**Set a new width*/</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setWidth</span><span class="hljs-params">(<span class="hljs-keyword">double</span> width)</span> </span>&#123;
+		<span class="hljs-keyword">this</span>.width = width;
+	&#125;
+	
+	<span class="hljs-comment">/**Return height*/</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">double</span> <span class="hljs-title">getHeight</span><span class="hljs-params">()</span> </span>&#123;
+		<span class="hljs-keyword">return</span> height;
+	&#125;
+	
+	<span class="hljs-comment">/**Set a new width*/</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setHeight</span><span class="hljs-params">(<span class="hljs-keyword">double</span> height)</span> </span>&#123;
+		<span class="hljs-keyword">this</span>.height=height;
+	&#125;	
+	
+	<span class="hljs-comment">/**Return area*/</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">double</span> <span class="hljs-title">gerArea</span><span class="hljs-params">()</span> </span>&#123;
+		<span class="hljs-keyword">return</span> width*height;
+	&#125;
+	
+	<span class="hljs-comment">/**Return perimeter*/</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">double</span> <span class="hljs-title">getPerimeter</span><span class="hljs-params">()</span> </span>&#123;
+		<span class="hljs-keyword">return</span> <span class="hljs-number">2</span>*(width+height);
+	&#125;
+&#125;</code></pre></div>
+
+<p>Test.java</p>
+<div class="hljs"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span></span>&#123;
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span></span>&#123;
+    	CircleFromSimpleGeometricObject circle = <span class="hljs-keyword">new</span> CircleFromSimpleGeometricObject(<span class="hljs-number">1</span>,<span class="hljs-string">"red"</span>, <span class="hljs-keyword">true</span>);
+    	System.out.println(<span class="hljs-string">"A circle "</span>+circle.toString());
+    	System.out.println(<span class="hljs-string">"The color is "</span>+circle.getColor());
+    	System.out.println(<span class="hljs-string">"The radius is "</span>+circle.getRadius());
+    	System.out.println(<span class="hljs-string">"The area is "</span>+circle.getArea());
+    	System.out.println(<span class="hljs-string">"The diameter is "</span>+circle.getDiameter());
+    	
+    	RectangleFromSimpleGeometricObject rect = <span class="hljs-keyword">new</span> RectangleFromSimpleGeometricObject(<span class="hljs-number">2</span>,<span class="hljs-number">4</span>);
+    	System.out.println(<span class="hljs-string">"\nA rectangle is "</span>+rect.toString());
+    	System.out.println(<span class="hljs-string">"The area is "</span>+rect.gerArea());
+    	System.out.println(<span class="hljs-string">"The perimeter is "</span>+rect.getPerimeter());
+    &#125;
+&#125;</code></pre></div>
+
+<p>完整的Python代码如下：</p>
+<div class="hljs"><pre><code class="hljs python"><span class="hljs-keyword">import</span> math
+<span class="hljs-keyword">import</span> datetime
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">SimpleGeometricObject</span><span class="hljs-params">(object)</span>:</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self, color, filled)</span>:</span>
+        self.__color = color
+        self.__filled = filled 
+        self.__date = datetime.datetime.now()
+    
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getColor</span><span class="hljs-params">(self)</span>:</span>
+        <span class="hljs-keyword">return</span> self.__color
+    
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">setColor</span><span class="hljs-params">(self, color)</span>:</span>
+        self.__color = color
+    
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">isFilled</span><span class="hljs-params">(self)</span>:</span>
+        <span class="hljs-keyword">return</span> self.__filled
+    
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">setFilled</span><span class="hljs-params">(self, filled)</span>:</span>
+        self.__filled = filled
+    
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getDateCreated</span><span class="hljs-params">(self)</span>:</span>
+        <span class="hljs-keyword">return</span> self.__date.strftime(<span class="hljs-string">"%Y/%m/%d/%H:%M"</span>)
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__str__</span><span class="hljs-params">(self)</span>:</span>
+        <span class="hljs-keyword">return</span>  <span class="hljs-string">"is created on "</span>+self.getDateCreated()+<span class="hljs-string">", color: "</span>+self.__color\
+                +<span class="hljs-string">" and filled: "</span>+str(self.__filled)
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CircleFromSimpleGeometricObject</span><span class="hljs-params">(SimpleGeometricObject)</span>:</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self, color, filled, radius)</span>:</span>
+        super(CircleFromSimpleGeometricObject, self).__init__(color, filled)
+        self.__radius = radius
+        
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getRadius</span><span class="hljs-params">(self)</span>:</span>
+        <span class="hljs-keyword">return</span> self.__radius
+    
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">setRadius</span><span class="hljs-params">(self, radius)</span>:</span>
+        self.__radius = radius
+        
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getArea</span><span class="hljs-params">(self)</span>:</span>
+        <span class="hljs-keyword">return</span> self.__radius*self.__radius*math.pi
+    
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getPerimeter</span><span class="hljs-params">(self)</span>:</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-number">2</span>*self.__radius*math.pi
+    
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getDiameter</span><span class="hljs-params">(self)</span>:</span>
+        <span class="hljs-keyword">return</span> self.__radius*<span class="hljs-number">2</span>
+    
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">printCircle</span><span class="hljs-params">(self)</span>:</span>
+        print(self.__str__()+<span class="hljs-string">" and the radius is "</span>+str(self.__radius))
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">RectangleFromSimpleGeometricObject</span><span class="hljs-params">(SimpleGeometricObject)</span>:</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self, color, filled, width, height)</span>:</span>
+        super(RectangleFromSimpleGeometricObject, self).__init__(color, filled)
+        self.__width = width
+        self.__height = height
+        
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getWidth</span><span class="hljs-params">(self)</span>:</span>
+        <span class="hljs-keyword">return</span> self.__width
+    
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">setWidth</span><span class="hljs-params">(self, width)</span>:</span>
+        self.__width = width
+    
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getHeight</span><span class="hljs-params">(self)</span>:</span>
+        <span class="hljs-keyword">return</span> self.__height
+    
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">setHeight</span><span class="hljs-params">(self, height)</span>:</span>
+        self.__height = height 
+        
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getArea</span><span class="hljs-params">(self)</span>:</span>
+        <span class="hljs-keyword">return</span> self.__width * self.__height
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getPerimeter</span><span class="hljs-params">(self)</span>:</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-number">2</span>*(self.__width+self.__height)
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>:</span>
+    circle = CircleFromSimpleGeometricObject(<span class="hljs-string">"red"</span>, <span class="hljs-literal">True</span>, <span class="hljs-number">5</span>)
+    print(<span class="hljs-string">"A circle "</span>, circle)
+    print(<span class="hljs-string">"The color is "</span>, circle.getColor())
+    print(<span class="hljs-string">"The radius is %s"</span>%circle.getRadius())
+    print(<span class="hljs-string">"The area is %s"</span>%circle.getArea())
+    print(<span class="hljs-string">"The diameter is %s"</span>%circle.getDiameter())
+    
+    rect = RectangleFromSimpleGeometricObject(<span class="hljs-string">"white"</span>, <span class="hljs-literal">False</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>);
+    print(<span class="hljs-string">"\nA rectangle"</span>, rect);
+    print(<span class="hljs-string">"The area is %s"</span>%rect.getArea());
+    print(<span class="hljs-string">"The perimeter is %s"</span>%rect.getPerimeter());
+    
+main()</code></pre></div>
+
+<p>完整的Scala代码如下：</p>
+<div class="hljs"><pre><code class="hljs scala"><span class="hljs-keyword">import</span> java.util.<span class="hljs-type">Date</span>;
+<span class="hljs-keyword">import</span> scala.math._;
+
+<span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">demo</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">App</span> </span>&#123;
+  <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">SimpleGeometricObject</span> (<span class="hljs-params">private var color:<span class="hljs-type">String</span>="white", private var filled:<span class="hljs-type">Boolean</span>=false</span>)</span>&#123;
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> dateCreated:java.util.<span class="hljs-type">Date</span> = <span class="hljs-keyword">new</span> <span class="hljs-type">Date</span>()
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getColor</span></span>() = color
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">setColor</span></span>(color:<span class="hljs-type">String</span>) = &#123;<span class="hljs-keyword">this</span>.color = color&#125;
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">isFilled</span></span>() = filled
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">setFilled</span></span>(filled:<span class="hljs-type">Boolean</span>) = &#123;<span class="hljs-keyword">this</span>.filled = filled&#125;
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getDateCreated</span></span>() = dateCreated 
+
+    <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">toString</span></span>()= <span class="hljs-string">"created on "</span>+dateCreated+<span class="hljs-string">"\ncolor: "</span>+color+<span class="hljs-string">" and filled: "</span>+filled
+  &#125;
+
+  <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CircleFromSimpleGeometricObject</span>(<span class="hljs-params">color:<span class="hljs-type">String</span>, filled:<span class="hljs-type">Boolean</span>, private var radius:<span class="hljs-type">Double</span></span>) <span class="hljs-keyword">extends</span> <span class="hljs-title">SimpleGeometricObject</span>(<span class="hljs-params">color,filled</span>)</span>&#123;
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">this</span></span>() = <span class="hljs-keyword">this</span>(<span class="hljs-string">"white"</span>, <span class="hljs-literal">false</span>, <span class="hljs-number">1.0</span>)
+    
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getRadius</span></span>() = radius
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">setRadius</span></span>(radius:<span class="hljs-type">Double</span>) = &#123;<span class="hljs-keyword">this</span>.radius = radius&#125;
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getArea</span></span>() = radius*radius*<span class="hljs-type">Pi</span>
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getDiameter</span></span>() = radius*<span class="hljs-number">2</span>
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getPerimeter</span></span>() = radius*<span class="hljs-number">2</span>*<span class="hljs-type">Pi</span>
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">printCircle</span></span>() = &#123;println(<span class="hljs-string">"The circle is created "</span>+getDateCreated+<span class="hljs-string">" and the radius is "</span>+radius)&#125;
+  &#125;
+  
+  <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">RectangleFromSimpleGeometricObject</span>(<span class="hljs-params">color:<span class="hljs-type">String</span>, filled:<span class="hljs-type">Boolean</span>, private var width:<span class="hljs-type">Double</span>, private var height:<span class="hljs-type">Double</span></span>) <span class="hljs-keyword">extends</span> <span class="hljs-title">SimpleGeometricObject</span>(<span class="hljs-params">color, filled</span>) </span>&#123;
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">this</span></span>() = <span class="hljs-keyword">this</span>(<span class="hljs-string">"white"</span>, <span class="hljs-literal">false</span>, <span class="hljs-number">1.0</span>, <span class="hljs-number">1.0</span>)
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getWidth</span></span>() = width
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">setWidth</span></span>(width:<span class="hljs-type">Double</span>) = &#123;<span class="hljs-keyword">this</span>.width = width&#125;
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getHeight</span></span>() = height
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">setHeight</span></span>(height:<span class="hljs-type">Double</span>) = &#123;<span class="hljs-keyword">this</span>.height = height&#125;
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getArea</span></span>() = width*height
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getPerimeter</span></span>() = <span class="hljs-number">2</span>*(width+height)
+  &#125;
+
+  <span class="hljs-keyword">var</span> circle = <span class="hljs-keyword">new</span> <span class="hljs-type">CircleFromSimpleGeometricObject</span>(<span class="hljs-string">"red"</span>, <span class="hljs-literal">true</span>, <span class="hljs-number">2.0</span>)
+  println(<span class="hljs-string">"A circle is "</span>+circle.toString())
+  println(<span class="hljs-string">"The color is "</span>+circle.getColor())
+  println(<span class="hljs-string">"The radius is "</span>+circle.getRadius())
+  println(<span class="hljs-string">"The area is "</span>+circle.getArea())
+  println(<span class="hljs-string">"The diameter is "</span>+circle.getPerimeter()) 
+
+  <span class="hljs-keyword">var</span> rect = <span class="hljs-keyword">new</span> <span class="hljs-type">RectangleFromSimpleGeometricObject</span>(<span class="hljs-string">"green"</span>, <span class="hljs-literal">true</span>, <span class="hljs-number">3.0</span>, <span class="hljs-number">4.0</span>)
+  println(<span class="hljs-string">"\nA rectangle is "</span>+rect.toString())
+  println(<span class="hljs-string">"The area is "</span>+rect.getArea())
+  println(<span class="hljs-string">"The perimeter is "</span>+rect.getPerimeter())
+&#125;</code></pre></div>
+<p>读者可以自己从上述代码中体验三种语言的相同点与不同之处，显然，Python与Scala语言较为简洁~<br>本次分享到此结束，欢迎大家交流~</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Java/">Java</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Python/">Python</a>
+                    
+                      <a class="hover-with-bg" href="/tags/Java/">Java</a>
+                    
+                      <a class="hover-with-bg" href="/tags/Scala/">Scala</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" target="_blank" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/06/10/%E5%88%A9%E7%94%A8Shell%E5%B0%86MySQL%E6%95%B0%E6%8D%AE%E8%A1%A8%E5%AF%BC%E5%87%BA%E4%B8%BAcsv%E6%96%87%E4%BB%B6/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">利用Shell将MySQL数据表导出为csv文件</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/2020/06/10/Java-Pyhon-Scala%E6%AF%94%E8%BE%831/">
+                        <span class="hidden-mobile">Java,Pyhon,Scala比较(一)map，reduce</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <div class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    function loadValine() {
+      addScript('https://cdn.staticfile.org/valine/1.4.14/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz",
+          app_key: "MCARXkAOuxb8aiWTb3WdAsyn",
+          placeholder: "说点什么吧",
+          path: window.location.pathname,
+          avatar: "retro",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: true,
+          recordIP: true,
+          serverURLs: "https://yusfsnlf.lc-cn-n1-shared.com",
+        });
+      });
+    }
+    createObserver(loadValine, 'vcomments');
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://valine.js.org" target="_blank" rel="nofollow noopener noopener">comments
+      powered by Valine.</a></noscript>
+
+
+              </div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+    <!-- APlayer 音乐播放器 -->
+    <div id="aplayer"></div>
+    <script defer src="https://cdn.staticfile.org/aplayer/1.10.1/APlayer.min.js" ></script>
+<link  rel="stylesheet" href="https://cdn.staticfile.org/aplayer/1.10.1/APlayer.min.css" />
+<script type="text/javascript">
+  var oldLoadAp = window.onload;
+  window.onload = function () {
+    oldLoadAp && oldLoadAp();
+
+    new APlayer({
+      container: document.getElementById('aplayer'),
+      fixed: true,
+      autoplay: 'false' === 'true',
+      loop: 'all',
+      order: 'random',
+      theme: '#b7daff',
+      preload: 'none',
+      audio: [{"name":"name","artist":"artist","url":"/songs/reality.mp3","cover":"https://pic.xiami.net/images/album/img12/1119392412/21003936321476257468.jpg"}]
+    });
+  }
+</script>
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "Java,Python,Scala比较（二）类与继承&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.0.5/es5/tex-svg.js" ></script>
+
+  
+
+
+
+  
+  
+    <script>
+      !function (e, t, a) {
+        function r() {
+          for (var e = 0; e < s.length; e++) s[e].alpha <= 0 ? (t.body.removeChild(s[e].el), s.splice(e, 1)) : (s[e].y--, s[e].scale += .004, s[e].alpha -= .013, s[e].el.style.cssText = "left:" + s[e].x + "px;top:" + s[e].y + "px;opacity:" + s[e].alpha + ";transform:scale(" + s[e].scale + "," + s[e].scale + ") rotate(45deg);background:" + s[e].color + ";z-index:99999");
+          requestAnimationFrame(r)
+        }
+
+        function n() {
+          var t = "function" == typeof e.onclick && e.onclick;
+          e.onclick = function (e) {
+            t && t(), o(e)
+          }
+        }
+
+        function o(e) {
+          var a = t.createElement("div");
+          a.className = "heart", s.push({
+            el: a,
+            x: e.clientX - 5,
+            y: e.clientY - 5,
+            scale: 1,
+            alpha: 1,
+            color: c()
+          }), t.body.appendChild(a)
+        }
+
+        function i(e) {
+          var a = t.createElement("style");
+          a.type = "text/css";
+          try {
+            a.appendChild(t.createTextNode(e))
+          } catch (t) {
+            a.styleSheet.cssText = e
+          }
+          t.getElementsByTagName("head")[0].appendChild(a)
+        }
+
+        function c() {
+          return "rgb(" + ~~(255 * Math.random()) + "," + ~~(255 * Math.random()) + "," + ~~(255 * Math.random()) + ")"
+        }
+
+        var s = [];
+        e.requestAnimationFrame = e.requestAnimationFrame || e.webkitRequestAnimationFrame || e.mozRequestAnimationFrame || e.oRequestAnimationFrame || e.msRequestAnimationFrame || function (e) {
+          setTimeout(e, 1e3 / 60)
+        }, i(".heart{width: 10px;height: 10px;position: fixed;background: #f00;transform: rotate(45deg);-webkit-transform: rotate(45deg);-moz-transform: rotate(45deg);}.heart:after,.heart:before{content: '';width: inherit;height: inherit;background: inherit;border-radius: 50%;-webkit-border-radius: 50%;-moz-border-radius: 50%;position: fixed;}.heart:after{top: -5px;}.heart:before{left: -5px;}"), n(), r()
+      }(window, document);
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
