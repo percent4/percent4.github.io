@@ -163,7 +163,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      262 字
+      270 字
     </span>
   
 
@@ -212,10 +212,12 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>在利用Selenium写网页爬虫的时候，我们会经常碰到网页内嵌滚动条，如下网页：</p>
+              <p>&emsp;&emsp;在利用Selenium写网页爬虫的时候，我们会经常碰到网页内嵌滚动条，如下网页：</p>
 <p><img src="https://upload-images.jianshu.io/upload_images/9419034-015716887090082b?imageMogr2/auto-orient/strip%7CimageView2/2/w/1200/format/webp" srcset="/img/loading.gif" alt=""></p>
-<p>那么该如何控制该内嵌滚动条的行为呢？我们的主要思路是：先找到滚动条，再利用Selenium中的命令：ActionChains(browser).drag_and_drop_by_offset(element, xOffset, yOffset).perform()</p>
-<p>找到元素element,设置好里面的xOffset和yOffset,这样便能够控制滚动条的上下移动了。<br>    笔者写了这样一段Python程序代码以展示如何控制网页内嵌滚动条：</p>
+<p>&emsp;&emsp;那么该如何控制该内嵌滚动条的行为呢？我们的主要思路是：先找到滚动条，再利用Selenium中的命令：</p>
+<div class="hljs"><pre><code class="hljs pgsql">ActionChains(browser).drag_and_drop_by_offset(element, xOffset, yOffset).<span class="hljs-keyword">perform</span>()</code></pre></div>
+
+<p>找到元素element,设置好里面的xOffset和yOffset,这样便能够控制滚动条的上下移动了。<br>&emsp;&emsp;笔者写了这样一段Python程序代码以展示如何控制网页内嵌滚动条：</p>
 <div class="hljs"><pre><code class="hljs Python"><span class="hljs-keyword">from</span> selenium <span class="hljs-keyword">import</span> webdriver
 <span class="hljs-keyword">from</span> selenium.webdriver.common.action_chains <span class="hljs-keyword">import</span> ActionChains
 
@@ -228,7 +230,7 @@ browser.get(<span class="hljs-string">'http://vdisk.weibo.com/s/arjVBmagFKiLy'</
     ActionChains(browser).drag_and_drop_by_offset(Drag, <span class="hljs-number">0</span>, <span class="hljs-number">10</span>).perform()
     time.sleep(<span class="hljs-number">2</span>) <span class="hljs-comment">#休眠2秒</span></code></pre></div>
 
-<p>当我们能够控制网页内嵌滚动条的行为时，我们就能够进行一些更为有趣的操作了，期待下一篇分享~</p>
+<p>&emsp;&emsp;当我们能够控制网页内嵌滚动条的行为时，我们就能够进行一些更为有趣的操作了，期待下一篇分享~</p>
 
             </article>
             <hr>

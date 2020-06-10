@@ -212,19 +212,19 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>　　本篇分享将实现在新浪微盘上下载周杰伦的歌曲，一共190首，下载的网页网址为<a href="http://vdisk.weibo.com/s/arjVBmagFKiLy" target="_blank" rel="noopener">http://vdisk.weibo.com/s/arjVBmagFKiLy</a> ，页面如下：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEyMTIxMzExNTQx?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="新浪微盘 周杰伦歌曲"><br>　　先定一个小目标：下载本页面中的所有190首歌曲！怎么样，有没有一点心动的感觉呢？哈哈，当然讲解爬虫前，需要一些准备工作：</p>
+              <p>　　本篇分享将实现在新浪微盘上下载周杰伦的歌曲，一共190首，下载的网页网址为 <a href="http://vdisk.weibo.com/s/arjVBmagFKiLy" target="_blank" rel="noopener">http://vdisk.weibo.com/s/arjVBmagFKiLy</a> ，页面如下：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEyMTIxMzExNTQx?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="新浪微盘 周杰伦歌曲"><br>　　先定一个小目标：下载本页面中的所有190首歌曲！怎么样，有没有一点心动的感觉呢？哈哈，当然讲解爬虫前，需要一些准备工作：</p>
 <ul>
 <li>安装Anaconda以及Selenium模块；</li>
 <li>安装Chrome浏览器驱动</li>
 <li>一些基础的Python编程知识；</li>
 <li>一颗好奇的心.</li>
 </ul>
-　　首先在[Anaconda官网](https://www.continuum.io/downloads)上下载适合自己电脑的Anaconda版本。下载完后打开Anaconda Prompt,输入pip install selenium安装selenium模块。
+　　首先在[Anaconda官网](https://anaconda.en.softonic.com/)上下载适合自己电脑的Anaconda版本。下载完后打开Anaconda Prompt,输入pip install selenium安装selenium模块。
 　　![pip install selenium](https://upload-images.jianshu.io/upload_images/9419034-eae01ed23082de1f?imageMogr2/auto-orient/strip|imageView2/2/w/641/format/webp)
 　　耐心等待安装，安装完后再输入conda list selenium,如出现以下信息，则表示安装成功。
    ![conda list selenium](https://upload-images.jianshu.io/upload_images/9419034-faa695845f94e295?imageMogr2/auto-orient/strip|imageView2/2/w/638/format/webp)
-　　接下来安装Chrome浏览器驱动，可以在http://npm.taobao.org/mirrors/chromedriver/2.31/ 上下载，Windows系统选择chromedriver_win32.zip 文件。这是一个压缩包，解压后存到一个目录中，然后把该目录添加到环境变量。
-　　在Spyder上运行Python程序源代码（或者在码云网站上下载[Python源代码](http://git.oschina.net/Jclian91/PythonPaChongZhiLiYongXinLangWeiPanXiaZaiZhouJieLunDeGeQu/tree/master)Chrome_song_download_with_Class.py），源代码如下：
+　　接下来安装Chrome浏览器驱动，可以在 http://npm.taobao.org/mirrors/chromedriver/2.31/ 上下载，Windows系统选择chromedriver_win32.zip 文件。这是一个压缩包，解压后存到一个目录中，然后把该目录添加到环境变量。
+　　在Spyder上运行Python程序源代码（或者在码云网站上下载 [Python源代码](http://git.oschina.net/Jclian91/PythonPaChongZhiLiYongXinLangWeiPanXiaZaiZhouJieLunDeGeQu/tree/master) Chrome_song_download_with_Class.py），源代码如下：
 
 <div class="hljs"><pre><code class="hljs Python"><span class="hljs-keyword">import</span> os
 <span class="hljs-keyword">import</span> re
@@ -353,7 +353,7 @@
     print(<span class="hljs-string">"一共用时："</span>,d2-d1)
     
 main()</code></pre></div>
-<p>　　笔者利用空余时间，在自己的电脑上运行后的结果如下：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEyMTMwNDEyNTc2?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="运行结果"><br>　　190首歌曲下载花了102.5分钟，平均每首歌32.2s,运行结果还是相当可以的,how exiting!!!<br>　　该程序适合下载新浪微盘上分享的歌曲，类似于本例，这样的网址还是很多的，可以在码云网站上下载<a href="http://git.oschina.net/Jclian91/PythonPaChongZhiLiYongXinLangWeiPanXiaZaiZhouJieLunDeGeQu/tree/master" target="_blank" rel="noopener">新浪微盘网址文档.txt.</a>欢迎大家进行测试，可以单个测试，也可以写成字典dict测试。</p>
+<p>　　笔者利用空余时间，在自己的电脑上运行后的结果如下：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODEyMTMwNDEyNTc2?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="运行结果"><br>　　190首歌曲下载花了102.5分钟，平均每首歌32.2s,运行结果还是相当可以的,how exiting!!!<br>　　该程序适合下载新浪微盘上分享的歌曲，类似于本例，这样的网址还是很多的，可以在码云网站上下载<a href="http://git.oschina.net/Jclian91/PythonPaChongZhiLiYongXinLangWeiPanXiaZaiZhouJieLunDeGeQu/tree/master" target="_blank" rel="noopener">新浪微盘网址文档.txt</a>欢迎大家进行测试，可以单个测试，也可以写成字典dict测试。</p>
 <hr>
 <p>　　由于笔者时间仓促和技术水平有限，代码中可能会存在一些错误和不足之处，希望广大网友能批评指导！！！欢迎大家下载代码，欢迎大家一起交流<del>~<br><strong><em>注意：</em></strong> 本人现已开通微信公众号Python爬虫与算法（微信号为：easy_web_scrape）， 欢迎大家关注哦</del></p>
 
