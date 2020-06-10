@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
-  <title>Python爬虫——自制简单搜索引擎GUI版 - Hexo</title>
+  <title>Python爬虫——解决urlretrieve下载不完整问题且避免用时过长 - Hexo</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 
@@ -152,8 +152,8 @@
               
   <div class="mt-3 post-meta">
     <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-    <time datetime="2020-06-09 23:24">
-      June 9, 2020 pm
+    <time datetime="2020-06-10 10:04">
+      June 10, 2020 am
     </time>
   </div>
 
@@ -163,7 +163,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      898 字
+      320 字
     </span>
   
 
@@ -173,7 +173,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      25
+      8
        分钟
     </span>
   
@@ -212,137 +212,37 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>　　在<a href="http://blog.csdn.net/jclian91/article/details/77387842" target="_blank" rel="noopener">上一篇分享</a>中，笔者已经介绍了如何利用Python爬虫来制作一个简单的搜索引擎。我们将继续这个工作，来建立一个该搜索引擎的GUI版本，来获得更好地搜索体验。<br>　　主要程序还是<a href="http://blog.csdn.net/jclian91/article/details/77387842" target="_blank" rel="noopener">上一篇分享</a>中的搜索程序，在此基础上加入UI设计，得到图形化操作界面。<br>　　直接上程序！</p>
-<div class="hljs"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">introduction</span><span class="hljs-params">(self,citiao)</span>:</span> <span class="hljs-comment"># 詞條的百度百科簡介部分函數</span>
-        url =  <span class="hljs-string">'https://baike.baidu.com/item/'</span>+urllib.parse.quote(citiao)
-        <span class="hljs-comment"># 讀取網頁</span>
-        html = urllib.request.urlopen(url)  
-        content = html.read().decode(<span class="hljs-string">'utf-8'</span>)
-        html.close()
-        <span class="hljs-comment">#網頁解析</span>
-        soup = BeautifulSoup(content, <span class="hljs-string">"lxml"</span>)  
-        text = soup.find(<span class="hljs-string">'div'</span>, class_=<span class="hljs-string">"lemma-summary"</span>).children <span class="hljs-comment">#簡介部分</span>
-        intro_text=<span class="hljs-string">''</span>
-        <span class="hljs-comment">#文本處理，主要利用正則表達式</span>
-        <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> text:
-            word = re.sub(re.compile(<span class="hljs-string">r"&lt;(.+?)&gt;"</span>),<span class="hljs-string">''</span>,str(x))
-            words = re.sub(re.compile(<span class="hljs-string">r"\[(.+?)\]"</span>),<span class="hljs-string">''</span>,word)
-            intro_text += words
-        
-        <span class="hljs-keyword">return</span> intro_text <span class="hljs-comment"># 返回文本(str格式)</span></code></pre></div>
-<p>　　该段代码与上一篇分享类似，就不在具体讲述，主要功能为：输入参数为citiao，得到该词条的百度百科的简介部分的文字。</p>
-<div class="hljs"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">intro_final</span><span class="hljs-params">(self,citiao)</span>:</span> <span class="hljs-comment"># 異常處理函數</span>
-        <span class="hljs-keyword">try</span>:
-            <span class="hljs-keyword">return</span> self.introduction(citiao)
-        <span class="hljs-keyword">except</span> AttributeError:
-            <span class="hljs-keyword">return</span> <span class="hljs-string">"请再输入详细点，亲~~"</span></code></pre></div>
-<p>　　intro_final（）为异常处理函数，如果introduction（）函数没有搜索到结果，则提示输入详细点，因为某个词条可能存在多义词。</p>
-<div class="hljs"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">initUI</span><span class="hljs-params">(self)</span>:</span>
-        <span class="hljs-comment">#GUI布局及控件放置</span>
-        search_label = QLabel(<span class="hljs-string">"请输入搜索词条："</span>)
-        search_item = QLineEdit()
-        btn1 = QPushButton(<span class="hljs-string">"开始搜索"</span>, self)
-        btn2 = QPushButton(<span class="hljs-string">"清空"</span>, self)
-        search_result = QTextEdit()
-        grid = QGridLayout()
-        grid.setSpacing(<span class="hljs-number">5</span>)
-        grid.addWidget(search_label, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>)
-        grid.addWidget(search_item,<span class="hljs-number">2</span>, <span class="hljs-number">0</span>)
-        grid.addWidget(btn1, <span class="hljs-number">3</span>, <span class="hljs-number">0</span>)
-        grid.addWidget(btn2, <span class="hljs-number">3</span>, <span class="hljs-number">1</span>)
-        grid.addWidget(search_result, <span class="hljs-number">4</span>, <span class="hljs-number">0</span>, <span class="hljs-number">5</span>, <span class="hljs-number">0</span>)
-        self.setLayout(grid)
-    
-        <span class="hljs-comment">#爲兩個按鈕關聯處理函數，當按下“開始搜索”按鈕開始開搜並輸出，當按下“清空”清空內容</span>
-        <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">searching</span><span class="hljs-params">()</span>:</span>
-            search_result.setText(self.intro_final(search_item.text()))
-        btn1.clicked.connect(searching)
-        
-        <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">clear</span><span class="hljs-params">()</span>:</span>
-            search_result.setText(<span class="hljs-string">""</span>)
-            search_item.setText(<span class="hljs-string">""</span>)
-        btn2.clicked.connect(clear)
-        
-        <span class="hljs-comment">#設置窗口</span>
-        self.setGeometry(<span class="hljs-number">400</span>, <span class="hljs-number">150</span>, <span class="hljs-number">600</span>, <span class="hljs-number">500</span>)
-        self.setWindowTitle(<span class="hljs-string">"搜索引擎GUI"</span>)</code></pre></div>
-<p>　　该段代码主要是利用PyQt5模块来设计GUI界面，图形化界面如下：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODE5MTA1MjA0NDI5?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="搜索GUI"><br>　　接下来是欢乐的测试时间~~<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODE5MTEwMDAzNTE4?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="搜索GUI1"><br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODE5MTEwMTA3NDc5?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="搜索GUI2"><br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODE5MTEwNDExMzkw?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="搜索GUI3"><br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODE5MTEwNDM1NDA5?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="搜索GUI4"></p>
-<hr>
-　　本次分享主要是上一次分享的优化，得到GUI界面，便于用户操作。如有不足之处，还请批评指正~~
-　　附上全部源程序：　
-<div class="hljs"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span>
-<span class="hljs-keyword">import</span> sys
-<span class="hljs-keyword">import</span> re
-<span class="hljs-keyword">import</span> bs4
-<span class="hljs-keyword">import</span> urllib.request  
-<span class="hljs-keyword">from</span> bs4 <span class="hljs-keyword">import</span> BeautifulSoup 
-<span class="hljs-keyword">import</span> urllib.parse
-<span class="hljs-keyword">from</span> PyQt5.QtWidgets <span class="hljs-keyword">import</span> (QPushButton,QWidget, QLabel, QLineEdit, QTextEdit, QGridLayout,QApplication)
+              <p>&emsp;&emsp;在这篇博客中：<a href="http://blog.csdn.net/Innovation_Z/article/details/51106601" target="_blank" rel="noopener">http://blog.csdn.net/Innovation_Z/article/details/51106601</a> ，作者利用递归方法解决了urlretrieve下载文件不完整的方法，其代码如下：</p>
+<div class="hljs"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">auto_down</span><span class="hljs-params">(url,filename)</span>:</span>
+    <span class="hljs-keyword">try</span>:
+        urllib.urlretrieve(url,filename)
+    <span class="hljs-keyword">except</span> urllib.ContentTooShortError:
+        <span class="hljs-keyword">print</span> <span class="hljs-string">'Network conditions is not good.Reloading.'</span>
+        auto_down(url,filename)</code></pre></div>
 
-<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Example</span><span class="hljs-params">(QWidget)</span>:</span> 
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self)</span>:</span> <span class="hljs-comment"># 初始化</span>
-        super().__init__()
-        self.initUI()
-        
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">introduction</span><span class="hljs-params">(self,citiao)</span>:</span> <span class="hljs-comment"># 詞條的百度百科簡介部分函數</span>
-        url = <span class="hljs-string">'https://baike.baidu.com/item/'</span>+urllib.parse.quote(citiao)
-        <span class="hljs-comment"># 讀取網頁</span>
-        html = urllib.request.urlopen(url)  
-        content = html.read().decode(<span class="hljs-string">'utf-8'</span>)
-        html.close()
-        <span class="hljs-comment">#網頁解析</span>
-        soup = BeautifulSoup(content, <span class="hljs-string">"lxml"</span>)  
-        text = soup.find(<span class="hljs-string">'div'</span>, class_=<span class="hljs-string">"lemma-summary"</span>).children <span class="hljs-comment">#簡介部分</span>
-        intro_text=<span class="hljs-string">''</span>
-        <span class="hljs-comment">#文本處理，主要利用正則表達式</span>
-        <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> text:
-            word = re.sub(re.compile(<span class="hljs-string">r"&lt;(.+?)&gt;"</span>),<span class="hljs-string">''</span>,str(x))
-            words = re.sub(re.compile(<span class="hljs-string">r"\[(.+?)\]"</span>),<span class="hljs-string">''</span>,word)
-            intro_text += words
-        
-        <span class="hljs-keyword">return</span> intro_text <span class="hljs-comment"># 返回文本(str格式)</span>
+<p>&emsp;&emsp;但是经笔者测试，下载文件出现urllib.ContentTooShortError且重新下载文件会存在用时过长的问题，而且往往会尝试好几次，甚至十几次，偶尔会陷入死循环，这种情况是非常不理想的。为此，笔者利用socket模块，使得每次重新下载的时间变短，且避免陷入死循环，从而提高运行效率。<br>&emsp;&emsp;以下为代码：</p>
+<div class="hljs"><pre><code class="hljs python"><span class="hljs-keyword">import</span> socket
+<span class="hljs-keyword">import</span> urllib.request
+<span class="hljs-comment">#设置超时时间为30s</span>
+socket.setdefaulttimeout(<span class="hljs-number">30</span>)
+<span class="hljs-comment">#解决下载不完全问题且避免陷入死循环</span>
+<span class="hljs-keyword">try</span>:
+	urllib.request.urlretrieve(url,image_name)
+<span class="hljs-keyword">except</span> socket.timeout:
+	count = <span class="hljs-number">1</span>
+	<span class="hljs-keyword">while</span> count &lt;= <span class="hljs-number">5</span>:
+		<span class="hljs-keyword">try</span>:
+			urllib.request.urlretrieve(url,image_name)                        						  
+			<span class="hljs-keyword">break</span>
+		<span class="hljs-keyword">except</span> socket.timeout:
+			err_info = <span class="hljs-string">'Reloading for %d time'</span>%count <span class="hljs-keyword">if</span> count == <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-string">'Reloading for %d times'</span>%count
+			print(err_info)
+			count += <span class="hljs-number">1</span>
+	<span class="hljs-keyword">if</span> count &gt; <span class="hljs-number">5</span>:
+		print(<span class="hljs-string">"downloading picture fialed!"</span>)</code></pre></div>
 
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">intro_final</span><span class="hljs-params">(self,citiao)</span>:</span> <span class="hljs-comment"># 異常處理函數</span>
-        <span class="hljs-keyword">try</span>:
-            <span class="hljs-keyword">return</span> self.introduction(citiao)
-        <span class="hljs-keyword">except</span> AttributeError:
-            <span class="hljs-keyword">return</span> <span class="hljs-string">"请再输入详细点，亲~~"</span>
-    
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">initUI</span><span class="hljs-params">(self)</span>:</span>
-        <span class="hljs-comment">#GUI布局及控件放置</span>
-        search_label = QLabel(<span class="hljs-string">"请输入搜索词条："</span>)
-        search_item = QLineEdit()
-        btn1 = QPushButton(<span class="hljs-string">"开始搜索"</span>, self)
-        btn2 = QPushButton(<span class="hljs-string">"清空"</span>, self)
-        search_result = QTextEdit()
-        grid = QGridLayout()
-        grid.setSpacing(<span class="hljs-number">5</span>)
-        grid.addWidget(search_label, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>)
-        grid.addWidget(search_item,<span class="hljs-number">2</span>, <span class="hljs-number">0</span>)
-        grid.addWidget(btn1, <span class="hljs-number">3</span>, <span class="hljs-number">0</span>)
-        grid.addWidget(btn2, <span class="hljs-number">3</span>, <span class="hljs-number">1</span>)
-        grid.addWidget(search_result, <span class="hljs-number">4</span>, <span class="hljs-number">0</span>, <span class="hljs-number">5</span>, <span class="hljs-number">0</span>)
-        self.setLayout(grid)
-    
-        <span class="hljs-comment">#爲兩個按鈕關聯處理函數，當按下“開始搜索”按鈕開始開搜並輸出，當按下“清空”清空內容</span>
-        <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">searching</span><span class="hljs-params">()</span>:</span>
-            search_result.setText(self.intro_final(search_item.text()))
-        btn1.clicked.connect(searching)
-        
-        <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">clear</span><span class="hljs-params">()</span>:</span>
-            search_result.setText(<span class="hljs-string">""</span>)
-            search_item.setText(<span class="hljs-string">""</span>)
-        btn2.clicked.connect(clear)
-        
-        <span class="hljs-comment">#設置窗口</span>
-        self.setGeometry(<span class="hljs-number">400</span>, <span class="hljs-number">150</span>, <span class="hljs-number">600</span>, <span class="hljs-number">500</span>)
-        self.setWindowTitle(<span class="hljs-string">"搜索引擎GUI"</span>)
-
-<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">"__main__"</span>:
-    app = QApplication(sys.argv)
-    ex = Example()
-    ex.show()
-    sys.exit(app.exec_())</code></pre></div>
+<p>本次分享到此结束，如有不足之处，还请批评指正！欢迎大家交流~~</p>
+<p><strong><em>注意：</em></strong> 本人现已开通微信公众号：Python爬虫与算法（微信号为：easy_web_scrape）， 欢迎大家关注哦~~</p>
 
             </article>
             <hr>
@@ -373,18 +273,12 @@
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/2020/06/10/Python%E7%88%AC%E8%99%AB%E2%80%94%E2%80%94%E5%88%A9%E7%94%A8PhantomJS%E4%B8%8B%E8%BD%BD%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E5%9B%BE%E7%89%87/">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Python爬虫——利用PhantomJS下载动态加载图片</span>
-                        <span class="visible-mobile">Previous</span>
-                      </a>
-                    
                   </div>
                   <div class="post-next col-6">
                     
                     
-                      <a href="/2020/06/09/Python%E7%88%AC%E8%99%AB%E2%80%94%E2%80%94%E8%87%AA%E5%88%B6%E7%AE%80%E5%8D%95%E7%9A%84%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/">
-                        <span class="hidden-mobile">Python爬虫——自制简单的搜索引擎</span>
+                      <a href="/2020/06/10/Python%E7%88%AC%E8%99%AB%E2%80%94%E2%80%94%E5%88%A9%E7%94%A8PhantomJS%E4%B8%8B%E8%BD%BD%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E5%9B%BE%E7%89%87/">
+                        <span class="hidden-mobile">Python爬虫——利用PhantomJS下载动态加载图片</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -604,7 +498,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "Python爬虫——自制简单搜索引擎GUI版&nbsp;",
+        "Python爬虫——解决urlretrieve下载不完整问题且避免用时过长&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,

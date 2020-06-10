@@ -4,6 +4,56 @@
   
   
   <entry>
+    <title>Python爬虫——解决urlretrieve下载不完整问题且避免用时过长</title>
+    <link href="/2020/06/10/Python%E7%88%AC%E8%99%AB%E2%80%94%E2%80%94%E8%A7%A3%E5%86%B3urlretrieve%E4%B8%8B%E8%BD%BD%E4%B8%8D%E5%AE%8C%E6%95%B4%E9%97%AE%E9%A2%98%E4%B8%94%E9%81%BF%E5%85%8D%E7%94%A8%E6%97%B6%E8%BF%87%E9%95%BF/"/>
+    <url>/2020/06/10/Python%E7%88%AC%E8%99%AB%E2%80%94%E2%80%94%E8%A7%A3%E5%86%B3urlretrieve%E4%B8%8B%E8%BD%BD%E4%B8%8D%E5%AE%8C%E6%95%B4%E9%97%AE%E9%A2%98%E4%B8%94%E9%81%BF%E5%85%8D%E7%94%A8%E6%97%B6%E8%BF%87%E9%95%BF/</url>
+    
+    <content type="html"><![CDATA[<p>&emsp;&emsp;在这篇博客中：<a href="http://blog.csdn.net/Innovation_Z/article/details/51106601" target="_blank" rel="noopener">http://blog.csdn.net/Innovation_Z/article/details/51106601</a> ，作者利用递归方法解决了urlretrieve下载文件不完整的方法，其代码如下：</p><div class="hljs"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">auto_down</span><span class="hljs-params">(url,filename)</span>:</span>    <span class="hljs-keyword">try</span>:        urllib.urlretrieve(url,filename)    <span class="hljs-keyword">except</span> urllib.ContentTooShortError:        <span class="hljs-keyword">print</span> <span class="hljs-string">'Network conditions is not good.Reloading.'</span>        auto_down(url,filename)</code></pre></div><p>&emsp;&emsp;但是经笔者测试，下载文件出现urllib.ContentTooShortError且重新下载文件会存在用时过长的问题，而且往往会尝试好几次，甚至十几次，偶尔会陷入死循环，这种情况是非常不理想的。为此，笔者利用socket模块，使得每次重新下载的时间变短，且避免陷入死循环，从而提高运行效率。<br>&emsp;&emsp;以下为代码：</p><div class="hljs"><pre><code class="hljs python"><span class="hljs-keyword">import</span> socket<span class="hljs-keyword">import</span> urllib.request<span class="hljs-comment">#设置超时时间为30s</span>socket.setdefaulttimeout(<span class="hljs-number">30</span>)<span class="hljs-comment">#解决下载不完全问题且避免陷入死循环</span><span class="hljs-keyword">try</span>:urllib.request.urlretrieve(url,image_name)<span class="hljs-keyword">except</span> socket.timeout:count = <span class="hljs-number">1</span><span class="hljs-keyword">while</span> count &lt;= <span class="hljs-number">5</span>:<span class="hljs-keyword">try</span>:urllib.request.urlretrieve(url,image_name)                          <span class="hljs-keyword">break</span><span class="hljs-keyword">except</span> socket.timeout:err_info = <span class="hljs-string">'Reloading for %d time'</span>%count <span class="hljs-keyword">if</span> count == <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-string">'Reloading for %d times'</span>%countprint(err_info)count += <span class="hljs-number">1</span><span class="hljs-keyword">if</span> count &gt; <span class="hljs-number">5</span>:print(<span class="hljs-string">"downloading picture fialed!"</span>)</code></pre></div><p>本次分享到此结束，如有不足之处，还请批评指正！欢迎大家交流~~</p><p><strong><em>注意：</em></strong> 本人现已开通微信公众号：Python爬虫与算法（微信号为：easy_web_scrape）， 欢迎大家关注哦~~</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>爬虫</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>爬虫</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Python爬虫——利用PhantomJS下载动态加载图片</title>
+    <link href="/2020/06/10/Python%E7%88%AC%E8%99%AB%E2%80%94%E2%80%94%E5%88%A9%E7%94%A8PhantomJS%E4%B8%8B%E8%BD%BD%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E5%9B%BE%E7%89%87/"/>
+    <url>/2020/06/10/Python%E7%88%AC%E8%99%AB%E2%80%94%E2%80%94%E5%88%A9%E7%94%A8PhantomJS%E4%B8%8B%E8%BD%BD%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E5%9B%BE%E7%89%87/</url>
+    
+    <content type="html"><![CDATA[<p>&emsp;&emsp;在浏览网页过程中，我们会遇到一些让人心动的图片，这时我们需要将它保存在本地。一般我们用BeautifulSoup可以解析静态网页，但很多时候我们遇到的都是动态加载的图片，无法再利用urllib模块操作了。<br>&emsp;&emsp;本次分享将讲述如何利用PhantomJS来下载动态图片。我们的示例网址为：<a href="http://comic.kukudm.com/comiclist/43/395/4.htm" target="_blank" rel="noopener">http://comic.kukudm.com/comiclist/43/395/4.htm</a> ，该网页只有一张动漫，读者不难发现，该图片是动态加载的。<br>&emsp;&emsp;我们解决问题的思路为：利用PhantomJS加载网页，然后利用page_source获取加载后网页的源代码，里面就有我们需要的图片的下载网址！接着运行BeautifulSoup解析得到图片网址，再用urllib.request.urlretrieve()函数下载图片即可。<br>&emsp;&emsp;以下为示例代码：</p><div class="hljs"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><span class="hljs-keyword">import</span> bs4<span class="hljs-keyword">import</span> urllib.request  <span class="hljs-keyword">from</span> bs4 <span class="hljs-keyword">import</span> BeautifulSoup  <span class="hljs-keyword">from</span> selenium <span class="hljs-keyword">import</span> webdriver<span class="hljs-keyword">from</span> selenium.common.exceptions <span class="hljs-keyword">import</span> TimeoutException<span class="hljs-comment">#利用PhantomJS加载网页</span>browser = webdriver.PhantomJS()browser.set_page_load_timeout(<span class="hljs-number">30</span>) <span class="hljs-comment"># 最大等待时间为30s</span><span class="hljs-comment">#当加载时间超过30秒后，自动停止加载该页面</span><span class="hljs-keyword">try</span>:browser.get(<span class="hljs-string">'http://comic.kukudm.com/comiclist/43/395/4.htm'</span>)<span class="hljs-keyword">except</span> TimeoutException:    browser.execute_script(<span class="hljs-string">'window.stop()'</span>)source = browser.page_source <span class="hljs-comment">#获取网页源代码</span>browser.quit()<span class="hljs-comment">#解析网页，获取下载图片的网址</span>soup = BeautifulSoup(source,<span class="hljs-string">'lxml'</span>)      image = soup.find(<span class="hljs-string">'img'</span>)url =image.get(<span class="hljs-string">'src'</span>)<span class="hljs-comment">#下载图片</span>urllib.request.urlretrieve(url,<span class="hljs-string">"G:\\爬虫图片\浪客剑心.jpg"</span>)print(<span class="hljs-string">"Download picture successfully!"</span>)</code></pre></div><p>&emsp;&emsp;查看文件夹，我们发现图片已经下载完毕了。</p><p>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODIzMjIwMDQzMzg4?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="动态图片下载"><br>　　<br>&emsp;&emsp;这样我们就能下载我们喜欢的动态图片啦<del>~<br>&emsp;&emsp;本次分享到此结束，如有不足之处，还请批评指正，欢迎交流</del><br>&emsp;&emsp;期待下一次分享^o^</p><p><strong><em>注意：</em></strong> 本人现已开通微信公众号： Python爬虫与算法（微信号为：easy_web_scrape）， 欢迎大家关注哦~~</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>爬虫</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>-爬虫</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Python爬虫——自制简单搜索引擎GUI版</title>
     <link href="/2020/06/09/Python%E7%88%AC%E8%99%AB%E2%80%94%E2%80%94%E8%87%AA%E5%88%B6%E7%AE%80%E5%8D%95%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8EGUI%E7%89%88/"/>
     <url>/2020/06/09/Python%E7%88%AC%E8%99%AB%E2%80%94%E2%80%94%E8%87%AA%E5%88%B6%E7%AE%80%E5%8D%95%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8EGUI%E7%89%88/</url>
