@@ -213,7 +213,7 @@
             
             <article class="markdown-body">
               <p>&emsp;&emsp;在利用Selenium写网页爬虫的时候，我们会经常碰到网页内嵌滚动条，如下网页：</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/9419034-015716887090082b?imageMogr2/auto-orient/strip%7CimageView2/2/w/1200/format/webp" srcset="/img/loading.gif" alt=""></p>
+<p><img src="https://img-blog.csdn.net/20170812094733013?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvamNsaWFuOTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" srcset="/img/loading.gif" alt="">    </p>
 <p>&emsp;&emsp;那么该如何控制该内嵌滚动条的行为呢？我们的主要思路是：先找到滚动条，再利用Selenium中的命令：</p>
 <div class="hljs"><pre><code class="hljs pgsql">ActionChains(browser).drag_and_drop_by_offset(element, xOffset, yOffset).<span class="hljs-keyword">perform</span>()</code></pre></div>
 
