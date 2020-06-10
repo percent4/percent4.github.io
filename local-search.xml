@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>MySQL学习之使用视图</title>
+    <link href="/2020/06/10/MySQL%E5%AD%A6%E4%B9%A0%E4%B9%8B%E4%BD%BF%E7%94%A8%E8%A7%86%E5%9B%BE/"/>
+    <url>/2020/06/10/MySQL%E5%AD%A6%E4%B9%A0%E4%B9%8B%E4%BD%BF%E7%94%A8%E8%A7%86%E5%9B%BE/</url>
+    
+    <content type="html"><![CDATA[<p>　　视图是虚拟的表，在数据库中并不真实存在，它只包含使用时动态检索数据的查询。MySQL从5.0.1 版本开始提供视图功能。<br>　　视图相对于普通表的优点有：</p><ul><li>重用SQL语句，简化复杂的SQL操作。在编写查询后，可以方便地重用它而不必知道其基本查询细节。</li><li>使用表的一部分而不是整个表。</li><li>保护数据。可以授予用户访问表的特定部分的权限，而不是整个表的访问权限。</li><li>更改数据格式和表示。视图可返回与底层表的表示和格式不同的数据。</li><li>数据独立。一旦视图的结构确定了，可以屏蔽表结构变化对用户的影响，源表增加列对视图没有影响；源表修改列名，则可以通过修改视图来解决，不会造成对访问者的影响。</li></ul><p>视图的基本操作有：创建或修改视图、删除视图，以及查看视图定义。</p><p>一、创建或修改视图操作</p><p>　　创建视图需要有CREATE VIEW 的权限，并且对于查询涉及的列有SELECT 权限。如果使用CREATE OR REPLACE 或者ALTER修改视图，那么还需要该视图的DROP 权限。创建或修改视图的语法为：</p><div class="hljs"><pre><code class="hljs sql">(<span class="hljs-keyword">CREATE</span>|<span class="hljs-keyword">REPLACE</span>)/<span class="hljs-keyword">ALTER</span> [ALGORITHM = &#123;UNDEFINED | <span class="hljs-keyword">MERGE</span> | TEMPTABLE&#125;]<span class="hljs-keyword">VIEW</span> view_name [(column_list)]<span class="hljs-keyword">AS</span> select_statement[<span class="hljs-keyword">WITH</span> [<span class="hljs-keyword">CASCADED</span> | <span class="hljs-keyword">LOCAL</span>] <span class="hljs-keyword">CHECK</span> <span class="hljs-keyword">OPTION</span>]</code></pre></div><p>其中WITH [CASCADED  |  LOCAL] CHECK OPTION 决定了是否允许更新数据使记录不再满足视图的条件：</p><ul><li>LOCAL 是只要满足本视图的条件就可以更新；</li><li>CASCADED （默认）则是必须满足所有针对该视图的所有视图的条件才可以更新。</li></ul>MySQL 创建或使用视图常见的规则与限制有：<ul><li>必须唯一命名；</li><li>视图数目没有限制；</li><li>视图可以嵌套；</li><li>ORDER BY可以在视图中使用，但如果从该视图检索数据SELECT中也含有ORDER BY，那么该视图的ORDER BY将被覆盖；</li><li>视图不能索引，不能有关联的触发器或默认值；</li><li>视图可以和表一起使用，如编写一条联接表和视图的SELECT语句；</li><li>在FROM 关键字后面不能包含子查询。</li></ul>　　最重要的还是例子！我们的数据来源于http://www.forta.com/books/0672336073/　创建的数据表，下载该网页的MySQL (and MariaDB) SQL scripts文档，并在ＭｙSQL中执行创建好表格。关于这5张表的说明，可参看[样例表说明](http://git.oschina.net/Jclian91/MySQLShiTuShiYongShuoMing/upload/master)。　　我们将结合实例讲述视图的实际操作及其作用。　　例1.利用视图简化复杂的联接<div class="hljs"><pre><code class="hljs n1ql"><span class="hljs-keyword">create</span> <span class="hljs-keyword">view</span> ProductCustomers <span class="hljs-keyword">as</span><span class="hljs-keyword">select</span> cust_name, cust_contact, prod_id<span class="hljs-keyword">from</span> customers, orders, orderitems<span class="hljs-keyword">where</span> customers.cust_id = orders.cust_id<span class="hljs-keyword">and</span> orderitems.order_num = orders.order_num;</code></pre></div>这样我们就创建了一个名为ProductCustomers的视图，它联接了三个表，返回已订购了任意产品的所有顾客的列表。如果我们想检索出订购了产品RGAN01的顾客，可进行如下查询：<div class="hljs"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> cust_name, cust_contact <span class="hljs-keyword">from</span> ProductCustomers <span class="hljs-keyword">where</span> prod_id = <span class="hljs-string">'RGAN01'</span>;</code></pre></div>结果如下：![VIEW1](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODI2MjA0ODMyMzM3?x-oss-process=image/format,png)　　　可以看出，视图极大地简化了复杂SQL语句的使用。利用视图，可一次性编写基础的SQL，然后根据需要多次使用。　　　例2.用视图过滤不想要的数据　　可以定义CustomerEmailList视图，过滤掉没有电子邮件的顾客，代码如下：<div class="hljs"><pre><code class="hljs n1ql"><span class="hljs-keyword">create</span> <span class="hljs-keyword">view</span> CustomerEmailList <span class="hljs-keyword">AS</span><span class="hljs-keyword">select</span> cust_id, cust_name, cust_email<span class="hljs-keyword">from</span> customers<span class="hljs-keyword">where</span> cust_email <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">null</span>;</code></pre></div>　　现在可以像使用普通表一样使用视图CustomerEmailList.<div class="hljs"><pre><code class="hljs n1ql"><span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> CustomerEmailList;</code></pre></div>![VIEW2](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODI2MjA1ODMxMDU3?x-oss-process=image/format,png)<p>例3.使用视图与计算字段<br>　　检索某个订单中的物品，计算每种物品的总价格：</p><div class="hljs"><pre><code class="hljs n1ql"><span class="hljs-keyword">create</span> <span class="hljs-keyword">view</span> OrderItemsExpanded <span class="hljs-keyword">AS</span><span class="hljs-keyword">select</span> order_num, prod_id, quantity, item_price, quantity*item_price <span class="hljs-keyword">as</span> expanded_price<span class="hljs-keyword">from</span> orderitems;</code></pre></div><p>　　我们检索订单20008的详细内容，操作如下：</p><div class="hljs"><pre><code class="hljs n1ql"><span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> OrderItemsExpanded  <span class="hljs-keyword">where</span> order_num = <span class="hljs-number">20008</span>;</code></pre></div><p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODI2MjEwNjI1ODg3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="VIEW3"></p><p>例4. WITH [CASCADED | LOCAL] CHECK OPTION的使用</p><div class="hljs"><pre><code class="hljs sql"><span class="hljs-comment">#WITH LOCAL CHECK OPTION orderitems_view</span><span class="hljs-keyword">create</span> <span class="hljs-keyword">view</span> orderitems_view <span class="hljs-keyword">as</span><span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> orderitems<span class="hljs-keyword">where</span> quantity&gt;<span class="hljs-number">50</span> <span class="hljs-keyword">WITH</span> <span class="hljs-keyword">LOCAL</span> <span class="hljs-keyword">CHECK</span> <span class="hljs-keyword">OPTION</span>;<span class="hljs-comment">#WITH CHECK OPTION orderitems_view1</span><span class="hljs-keyword">create</span> <span class="hljs-keyword">view</span> orderitems_view1 <span class="hljs-keyword">as</span><span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> orderitems<span class="hljs-keyword">where</span> quantity&gt;<span class="hljs-number">50</span> <span class="hljs-keyword">WITH</span> <span class="hljs-keyword">CHECK</span> <span class="hljs-keyword">OPTION</span>;<span class="hljs-comment">#orderitems_view2 from orderitems_view1</span><span class="hljs-keyword">create</span> <span class="hljs-keyword">view</span> orderitems_view2 <span class="hljs-keyword">as</span><span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> orderitems_view1<span class="hljs-keyword">where</span> quantity&lt;<span class="hljs-number">250</span> <span class="hljs-keyword">WITH</span> <span class="hljs-keyword">CHECK</span> <span class="hljs-keyword">OPTION</span>;</code></pre></div><p>该段代码创建了三个视图，其中orderitems_view是WITH LOCAL CHECK OPTION的，而orderitems_view1，orderitems_view是WITH CHECK OPTION的。我们执行更新操作：</p><div class="hljs"><pre><code class="hljs sql"><span class="hljs-keyword">update</span> orderitems_view <span class="hljs-keyword">set</span> quantity = <span class="hljs-number">300</span> <span class="hljs-keyword">where</span> prod_id = <span class="hljs-string">'BR03'</span>;<span class="hljs-keyword">update</span> orderitems_view2 <span class="hljs-keyword">set</span> quantity = <span class="hljs-number">300</span> <span class="hljs-keyword">where</span> prod_id = <span class="hljs-string">'BR03'</span>;</code></pre></div><p>执行结果如下：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODI2MjIwMjU0NDQx?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="VIEW4"><br>　　另外，需要指出的是，视图的可更新性和视图中查询的定义有关系，以下类型的视图是不可更新的。</p><ul><li>包含以下关键字的SQL 语句：聚合函数（SUM,MIN,MAX,COUNT 等）,DISTINCT,GROUP BY,HAVING,JOIN,UNION ,UNION ALL;</li><li>常量视图;</li><li>SELECT 中包含子查询</li><li>FROM 一个不能更新的视图;</li><li>WHERE 字句的子查询引用了FROM 字句中的表.</li></ul>　　二、删除视图操作用户可以一次删除一个或者多个视图，前提是必须有该视图的DROP 权限。其语法如下：<div class="hljs"><pre><code class="hljs sas"><span class="hljs-meta">DROP</span> <span class="hljs-meta">VIEW</span> [<span class="hljs-meta">IF</span> EXISTS] view_name [, view_name] ...[<span class="hljs-meta">RESTRICT</span> | <span class="hljs-meta">CASCADE</span>]</code></pre></div>例如：<div class="hljs"><pre><code class="hljs n1ql"><span class="hljs-keyword">drop</span> <span class="hljs-keyword">view</span> OrderItemsExpanded;</code></pre></div><p>三、查看视图操作<br>　　从MySQL 5.1 版本开始，使用SHOW TABLES 命令的时候不仅显示表的名字，同时也会显示视图的名字，而不存在单独显示视图的SHOW VIEWS 命令。<br>例如：</p><div class="hljs"><pre><code class="hljs sql"><span class="hljs-keyword">show</span> <span class="hljs-keyword">tables</span>;</code></pre></div><p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODI2MjIxMjI0MTUw?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="view5"><br>　　在使用SHOW TABLE STATUS 命令的时候，不但可以显示表的信息，同时也可以显示视图的信息。如果需要查询某个视图的定义，可以使用SHOW CREATE VIEW 命令进行查看。最后，通过查看系统表information_schema.views 也可以查看视图的相关信息。<br>例如：</p><div class="hljs"><pre><code class="hljs sql"><span class="hljs-keyword">show</span> <span class="hljs-keyword">create</span> <span class="hljs-keyword">view</span> orderitems_view;</code></pre></div><p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODI2MjIxODI4OTcz?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="VIEW6"></p><hr>　　本次关于MySQL视图使用就写到这儿了~~如有不足之处，还请批评指正，欢迎交流^o^<p>参考书目：</p><p>1.<a href="http://download.csdn.net/download/sinat_30235353/9695158" target="_blank" rel="noopener">SQL 必知必会(第4版)</a>， Ben Forta， 人民邮电出版社<br>2.<a href="http://download.csdn.net/download/y13568077615/9808699" target="_blank" rel="noopener">深入浅出MySQL</a></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>MySQL</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>MySQL</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>MySQL学习之流程函数</title>
     <link href="/2020/06/10/MySQL%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%B5%81%E7%A8%8B%E5%87%BD%E6%95%B0/"/>
     <url>/2020/06/10/MySQL%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%B5%81%E7%A8%8B%E5%87%BD%E6%95%B0/</url>
@@ -20,7 +45,7 @@
     
     <tags>
       
-      <tag>-MySQL</tag>
+      <tag>MySQL</tag>
       
     </tags>
     
@@ -45,7 +70,7 @@
     
     <tags>
       
-      <tag>-爬虫</tag>
+      <tag>爬虫</tag>
       
     </tags>
     
@@ -95,7 +120,7 @@
     
     <tags>
       
-      <tag>-爬虫</tag>
+      <tag>爬虫</tag>
       
     </tags>
     
@@ -297,7 +322,7 @@
     
     <tags>
       
-      <tag>-爬虫</tag>
+      <tag>爬虫</tag>
       
     </tags>
     
