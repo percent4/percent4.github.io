@@ -17,10 +17,19 @@
   <meta name="description" content="">
   <meta name="author" content="Jclian91">
   <meta name="keywords" content="">
-  <title>Archives - Blog</title>
+  <title>用MySQL解决HUE登录忘记账号、密码 - Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/darcula.min.css" />
+  
+
+  
 
 
 <!-- 主题依赖的图标库，不要自行修改 -->
@@ -42,7 +51,7 @@
 
 
 <body>
-  <header style="height: 60vh;">
+  <header style="height: 70vh;">
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
@@ -140,6 +149,48 @@
             </span>
 
             
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2020-06-10 16:11">
+      June 10, 2020 pm
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      274 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      6
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
           </div>
 
           
@@ -150,103 +201,129 @@
 
   <main>
     
-      <div class="container nopadding-md">
-        <div class="py-5" id="board"
-          >
-          
-          <div class="container">
-            <div class="row">
-              <div class="col-12 col-md-10 m-auto">
-                
-
-<div class="list-group">
-  <p class="h4">40 posts in total.</p>
-  <hr>
-  
-    
       
-      <p class="h5">2020</p>
-    
-    <a href="/2020/06/10/R%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%89%EF%BC%89%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">R语言学习笔记（三）数据处理</span>
-      <span style="float: right;">06-10</span>
-    </a>
-  
-    
-    <a href="/2020/06/10/R%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89%E5%AF%BC%E5%85%A5%E6%95%B0%E6%8D%AE/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">R语言学习笔记（二）导入数据</span>
-      <span style="float: right;">06-10</span>
-    </a>
-  
-    
-    <a href="/2020/06/10/R%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">R语言学习笔记（一）数据结构</span>
-      <span style="float: right;">06-10</span>
-    </a>
-  
-    
-    <a href="/2020/06/10/wxPython%E4%B9%8B%E6%A8%A1%E6%8B%9F%E5%B8%A6%E6%9C%89%E9%AA%8C%E8%AF%81%E7%A0%81%E7%9A%84%E7%99%BB%E5%BD%95/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">wxPython之模拟带有验证码的登录</span>
-      <span style="float: right;">06-10</span>
-    </a>
-  
-    
-    <a href="/2020/06/10/wxPython%E4%B9%8B%E6%8C%89%E4%B8%8B%E6%8C%89%E9%92%AE%EF%BC%8C%E6%94%B9%E5%8F%98%E5%9B%BE%E7%89%87/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">wxPython之按下按钮，改变图片</span>
-      <span style="float: right;">06-10</span>
-    </a>
-  
-    
-    <a href="/2020/06/10/wxPython%E4%B9%8B%E5%9C%A8GridBagSizer%E4%B8%AD%E5%8A%A0%E5%85%A5%E5%9B%BE%E7%89%87/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">wxPython之在GridBagSizer中加入图片</span>
-      <span style="float: right;">06-10</span>
-    </a>
-  
-    
-    <a href="/2020/06/10/Python%E4%B9%8BwxPython%E6%A8%A1%E5%9D%97%E7%9A%84%E5%AE%89%E8%A3%85/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">Python之wxPython模块的安装</span>
-      <span style="float: right;">06-10</span>
-    </a>
-  
-    
-    <a href="/2020/06/10/Server%E4%B9%8B%E9%80%89%E5%87%BA%E6%9F%90%E4%B8%AA%E5%AD%97%E6%AE%B5%E4%B8%AD%E5%85%A8%E9%83%A8%E4%B8%BA%E6%95%B0%E5%AD%97%E6%88%96%E5%85%A8%E9%83%A8%E4%B8%BA%E5%AD%97%E6%AF%8D%E7%9A%84%E8%AE%B0%E5%BD%95/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">SQL Server之选出某个字段中全部为数字或全部为字母的记录</span>
-      <span style="float: right;">06-10</span>
-    </a>
-  
-    
-    <a href="/2020/06/10/MySQL%E4%B9%8B%E5%86%85%E8%81%94%E6%8E%A5%E3%80%81%E5%B7%A6%E8%81%94%E6%8E%A5%E3%80%81%E5%8F%B3%E8%81%94%E6%8E%A5%E3%80%81%E4%BA%A4%E5%8F%89%E8%81%94%E6%8E%A5/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">MySQL之内联接、左联接、右联接、交叉联接</span>
-      <span style="float: right;">06-10</span>
-    </a>
-  
-    
-    <a href="/2020/06/10/Spark%E4%B9%8B%E8%8E%B7%E5%8F%96GBT%E4%BA%8C%E5%88%86%E7%B1%BB%E5%87%BD%E6%95%B0%E7%9A%84%E6%A6%82%E7%8E%87%E5%80%BC/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">Spark之获取GBT二分类函数的概率值</span>
-      <span style="float: right;">06-10</span>
-    </a>
-  
-</div>
 
-  <nav aria-label="navigation">
-    <span class="pagination" id="pagination">
-      <a class="extend prev" rel="prev" href="/archives/2020/"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/archives/2020/">1</a><span class="page-number current">2</span><a class="page-number" href="/archives/2020/page/3/">3</a><a class="page-number" href="/archives/2020/page/4/">4</a><a class="extend next" rel="next" href="/archives/2020/page/3/"><i class="iconfont icon-arrowright"></i></a>
-    </span>
-  </nav>
-  
-  <script>
-    for (ele of document.getElementById("pagination").getElementsByTagName("a")) {
-      ele.href += '#board';
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <p>笔者一段时间没接触Hadoop后，想登录HUE页面时，竟然忘了账号和密码，这可如何是好？<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTA4MTQ1OTMxNTY4?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>通过一番查找，笔者发现解决这个问题只需要用到MySQL即可……<br>首先，登录MySQL,切换到hue数据库，找到auth_user表格，如下图：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTA4MTUwMjEwNzM0?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>从中我们可以知道HUE的登录账号是training,但密码……额，这是通过pbkdf2_sha256加密方式实现的，这是一种极为复杂的加密方式，要想破解它不太现实，在Python的Django可以见到它的影子，当然也可以通过Java编程实现其算法。<br>我们并不需要破译它，只需通过update将其修改即可，如下图：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTA4MTUwNzMxMjI5?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>在图上中，我们的加密方式为MD5。这样，我们就又能轻松愉快地登录HUE啦~~</p>
+<hr>
+参考网址：
+1. Cloudera Hue 忘记超级用户密码解决方法：http://blog.csdn.net/doegoo/article/details/49489335
+2. PBKDF2：https://en.wikipedia.org/wiki/PBKDF2
+
+<p><strong><em>注意：</em></strong> 本人现已开通微信公众号： Python爬虫与算法（微信号为：easy_web_scrape）， 欢迎大家关注哦~~</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/MySQL/">MySQL</a>
+                    
+                      <a class="hover-with-bg" href="/tags/HUE/">HUE</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" target="_blank" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/06/10/Hive%E4%B9%8B%E5%AF%BC%E5%85%A5%E5%A4%96%E9%83%A8%E6%95%B0%E6%8D%AE/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Hive之导入外部数据</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/2020/06/10/Python%E4%B9%8B%E8%AE%A1%E7%AE%9724%E7%82%B9/">
+                        <span class="hidden-mobile">Python之计算24点</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <div class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    function loadValine() {
+      addScript('https://cdn.staticfile.org/valine/1.4.14/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz",
+          app_key: "MCARXkAOuxb8aiWTb3WdAsyn",
+          placeholder: "说点什么吧",
+          path: window.location.pathname,
+          avatar: "retro",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: true,
+          recordIP: true,
+          serverURLs: "https://yusfsnlf.lc-cn-n1-shared.com",
+        });
+      });
     }
+    createObserver(loadValine, 'vcomments');
   </script>
-
+  <noscript>Please enable JavaScript to view the <a href="https://valine.js.org" target="_blank" rel="nofollow noopener noopener">comments
+      powered by Valine.</a></noscript>
 
 
               </div>
-            </div>
+            
           </div>
         </div>
       </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
     
   </main>
 
@@ -373,6 +450,31 @@
 
 
 
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
 
 
   <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
@@ -380,7 +482,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "Archive&nbsp;",
+        "用MySQL解决HUE登录忘记账号、密码&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,
@@ -394,6 +496,21 @@
   </script>
 
 
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
 
 
 
@@ -409,9 +526,62 @@
 
 
 
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
 
 
 
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.0.5/es5/tex-svg.js" ></script>
+
+  
 
 
 
