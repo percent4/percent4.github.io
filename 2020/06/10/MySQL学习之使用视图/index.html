@@ -292,11 +292,9 @@ MySQL 创建或使用视图常见的规则与限制有：
 <li>常量视图;</li>
 <li>SELECT 中包含子查询</li>
 <li>FROM 一个不能更新的视图;</li>
-<li>WHERE 字句的子查询引用了FROM 字句中的表.</li>
+<li>WHERE 字句的子查询引用了FROM 字句中的表.
+　<h4 id="删除视图操作"><a href="#删除视图操作" class="headerlink" title="删除视图操作"></a>删除视图操作</h4></li>
 </ul>
-　　
-#### 删除视图操作
-
 <p>用户可以一次删除一个或者多个视图，前提是必须有该视图的DROP 权限。其语法如下：</p>
 <div class="hljs"><pre><code class="hljs sas"><span class="hljs-meta">DROP</span> <span class="hljs-meta">VIEW</span> [<span class="hljs-meta">IF</span> EXISTS] view_name [, view_name] ...[<span class="hljs-meta">RESTRICT</span> | <span class="hljs-meta">CASCADE</span>]</code></pre></div>
 <p>例如：</p>
