@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
-  <title>Python爬虫——解决urlretrieve下载不完整问题且避免用时过长 - Hexo</title>
+  <title>Python爬虫——漫画下载 - Hexo</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 
@@ -152,7 +152,7 @@
               
   <div class="mt-3 post-meta">
     <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-    <time datetime="2020-06-10 10:04">
+    <time datetime="2020-06-10 10:11">
       June 10, 2020 am
     </time>
   </div>
@@ -163,7 +163,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      320 字
+      1.2k 字
     </span>
   
 
@@ -173,7 +173,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      8
+      35
        分钟
     </span>
   
@@ -212,37 +212,170 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>&emsp;&emsp;在这篇博客中：<a href="http://blog.csdn.net/Innovation_Z/article/details/51106601" target="_blank" rel="noopener">http://blog.csdn.net/Innovation_Z/article/details/51106601</a> ，作者利用递归方法解决了urlretrieve下载文件不完整的方法，其代码如下：</p>
-<div class="hljs"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">auto_down</span><span class="hljs-params">(url,filename)</span>:</span>
+              <p>&emsp;&emsp;在<a href="http://blog.csdn.net/jclian91/article/details/77512484" target="_blank" rel="noopener">前面的分享</a>中，我们已经知道了如何利用PhantomJS来下载网页中动态加载的图片。本次分享的目标是，下载动漫网页中的漫画，示例网址如下：<a href="http://comic.kukudm.com/comiclist/43/" target="_blank" rel="noopener">http://comic.kukudm.com/comiclist/43/</a> .<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODI1MjI1NDQ0MjA5?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="动漫网页"><br>&emsp;&emsp;分析上面的网页，如果要将页面中的漫画都下载下来，那么首先必须要分析每卷漫画的网址，具体代码如下,其中url_lst为每卷漫画的网址，file_lst为每卷漫画的名字。</p>
+<div class="hljs"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_url_lst</span><span class="hljs-params">(url)</span>:</span>
+    url_lst = []
+    file_lst = []
+    <span class="hljs-comment"># 讀取網頁</span>
+    html = urllib.request.urlopen(url)  
+    content = html.read()
+    html.close()
+    <span class="hljs-comment">#網頁解析</span>
+    soup = BeautifulSoup(content, <span class="hljs-string">"lxml"</span>)
+    table = soup.find_all(id=<span class="hljs-string">"comiclistn"</span>)
+    <span class="hljs-keyword">for</span> tr <span class="hljs-keyword">in</span> table[<span class="hljs-number">0</span>].children:
+        count = <span class="hljs-number">0</span>
+        <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> tr:
+            <span class="hljs-keyword">if</span> isinstance(x, bs4.element.Tag):
+                <span class="hljs-keyword">if</span> count == <span class="hljs-number">0</span>:
+                    file_lst.append(x.string)
+                <span class="hljs-keyword">if</span> count == <span class="hljs-number">1</span>:
+                    url_lst.append(x[<span class="hljs-string">'href'</span>])
+                count += <span class="hljs-number">1</span>
+    
+    <span class="hljs-keyword">return</span> url_lst, file_lst</code></pre></div>
+
+<p>　　接着需要对每卷漫画进行下载，可以利用for循环遍历url_lst.利用PhantomJS先分析出每卷漫画总的图片数，利用网址的变化规律（就是网址前面的部分不变，数字部分即为图片的编号）去下载每一页的漫画。还有一个比较重要的问题，就是如何解决urlretrieve下载不完全的问题，这个已在<a href="http://blog.csdn.net/jclian91/article/details/77513289" target="_blank" rel="noopener">上一篇的分享</a>中讲过。具体实现的代码如下：</p>
+<div class="hljs"><pre><code class="hljs python"><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(len(url_lst)):
+    <span class="hljs-comment">#獲取這一頁總的圖片數量</span>
+    browser = webdriver.PhantomJS()
+    browser.set_page_load_timeout(<span class="hljs-number">30</span>) <span class="hljs-comment"># 最大等待时间为30s</span>
+    <span class="hljs-comment">#当加载时间超过30秒后，自动停止加载该页面</span>
     <span class="hljs-keyword">try</span>:
-        urllib.urlretrieve(url,filename)
-    <span class="hljs-keyword">except</span> urllib.ContentTooShortError:
-        <span class="hljs-keyword">print</span> <span class="hljs-string">'Network conditions is not good.Reloading.'</span>
-        auto_down(url,filename)</code></pre></div>
+        browser.get(url_lst[i])
+    <span class="hljs-keyword">except</span> (TimeoutException,socket.timeout):
+        browser.execute_script(<span class="hljs-string">'window.stop()'</span>)
+    source = browser.page_source
+    total_page = int(source[source.find(<span class="hljs-string">'共'</span>)+<span class="hljs-number">1</span>:source.find(<span class="hljs-string">'页'</span>)])
+    browser.quit()
+    <span class="hljs-comment">#创建新文件夹</span>
+    os.mkdir(os.path.join(<span class="hljs-string">"J:\\comic"</span>,file_lst[i]))
+    <span class="hljs-comment">#遍历图片的网址</span>
+    <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> range(<span class="hljs-number">1</span>,<span class="hljs-number">1</span>+total_page):
+        browser = webdriver.PhantomJS()
+        browser.set_page_load_timeout(<span class="hljs-number">30</span>) <span class="hljs-comment"># 最大等待时间为30s</span>
+        <span class="hljs-comment">#当加载时间超过30秒后，自动停止加载该页面</span>
+        <span class="hljs-keyword">try</span>:
+            browser.get(url_lst[i].replace(<span class="hljs-string">'/1.htm'</span>,<span class="hljs-string">'/%d.htm'</span>%j))
+        <span class="hljs-keyword">except</span> (TimeoutException,socket.timeout):
+            browser.execute_script(<span class="hljs-string">'window.stop()'</span>)
+        source = browser.page_source
+        soup = BeautifulSoup(source,<span class="hljs-string">'lxml'</span>)
+        <span class="hljs-comment">#获取图片的下载地址，设置图片名称       </span>
+        image = soup.find(<span class="hljs-string">'img'</span>)
+        url =image.get(<span class="hljs-string">'src'</span>)
+        image_name = <span class="hljs-string">"J:\\comic\%s\pic_%d.jpg"</span>%(file_lst[i],j)
+        <span class="hljs-comment">#解决下载不完全问题，重新尝试五次后仍未下载完即为下载失败</span>
+        <span class="hljs-keyword">try</span>:
+            urllib.request.urlretrieve(url,image_name)
+            print(<span class="hljs-string">"%s,第%d张图片下载完毕！"</span>%(file_lst[i],j),time.ctime())
+        <span class="hljs-keyword">except</span> (socket.timeout, AttributeError):
+            count = <span class="hljs-number">1</span>
+            <span class="hljs-keyword">while</span> count &lt;= <span class="hljs-number">5</span>:
+                <span class="hljs-keyword">try</span>:
+                    urllib.request.urlretrieve(url,image_name)
+                    print(<span class="hljs-string">"%s,第%d张图片下载完毕！"</span>%(file_lst[i],j),time.ctime())
+                    <span class="hljs-keyword">break</span>
+                <span class="hljs-keyword">except</span> (socket.timeout, AttributeError):
+                    err_info = <span class="hljs-string">'Reloading for %d time'</span>%count <span class="hljs-keyword">if</span> count == <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-string">'Reloading for %d times'</span>%count
+                    print(err_info)
+                    count += <span class="hljs-number">1</span>
+            <span class="hljs-keyword">if</span> count &gt; <span class="hljs-number">5</span>:
+                <span class="hljs-keyword">with</span> open(<span class="hljs-string">'J:\\comic\%s\error.txt'</span>%file_lst[i],<span class="hljs-string">'a'</span>) <span class="hljs-keyword">as</span> f:
+                    f.write(<span class="hljs-string">"%s,第%d张图片下载失败！\n"</span>%(file_lst[i],j))
+        browser.quit()</code></pre></div>
+<p>　　 这样我们就能愉快地在这个网站上下载自己喜欢的动漫啦~笔者的测试如下：<br>　　 <img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODI1MjMxMDA0NDc3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="浪客剑心下载文件夹"></p>
+<hr>
+　　附上全部代码，欢迎大家测试，也欢迎大家交流~~如有不足之处，还请批评指正^o^~
 
-<p>&emsp;&emsp;但是经笔者测试，下载文件出现urllib.ContentTooShortError且重新下载文件会存在用时过长的问题，而且往往会尝试好几次，甚至十几次，偶尔会陷入死循环，这种情况是非常不理想的。为此，笔者利用socket模块，使得每次重新下载的时间变短，且避免陷入死循环，从而提高运行效率。<br>&emsp;&emsp;以下为代码：</p>
-<div class="hljs"><pre><code class="hljs python"><span class="hljs-keyword">import</span> socket
-<span class="hljs-keyword">import</span> urllib.request
-<span class="hljs-comment">#设置超时时间为30s</span>
-socket.setdefaulttimeout(<span class="hljs-number">30</span>)
-<span class="hljs-comment">#解决下载不完全问题且避免陷入死循环</span>
-<span class="hljs-keyword">try</span>:
-	urllib.request.urlretrieve(url,image_name)
-<span class="hljs-keyword">except</span> socket.timeout:
-	count = <span class="hljs-number">1</span>
-	<span class="hljs-keyword">while</span> count &lt;= <span class="hljs-number">5</span>:
-		<span class="hljs-keyword">try</span>:
-			urllib.request.urlretrieve(url,image_name)                        						  
-			<span class="hljs-keyword">break</span>
-		<span class="hljs-keyword">except</span> socket.timeout:
-			err_info = <span class="hljs-string">'Reloading for %d time'</span>%count <span class="hljs-keyword">if</span> count == <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-string">'Reloading for %d times'</span>%count
-			print(err_info)
-			count += <span class="hljs-number">1</span>
-	<span class="hljs-keyword">if</span> count &gt; <span class="hljs-number">5</span>:
-		print(<span class="hljs-string">"downloading picture failed!"</span>)</code></pre></div>
+<div class="hljs"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span>
+<span class="hljs-keyword">import</span> os
+<span class="hljs-keyword">import</span> bs4
+<span class="hljs-keyword">import</span> time
+<span class="hljs-keyword">import</span> socket
+<span class="hljs-keyword">import</span> urllib
+<span class="hljs-keyword">import</span> urllib.request  
+<span class="hljs-keyword">from</span> bs4 <span class="hljs-keyword">import</span> BeautifulSoup  
+<span class="hljs-keyword">from</span> selenium <span class="hljs-keyword">import</span> webdriver
+<span class="hljs-keyword">from</span> selenium.common.exceptions <span class="hljs-keyword">import</span> TimeoutException
 
-<p>本次分享到此结束，如有不足之处，还请批评指正！欢迎大家交流~~</p>
-<p><strong><em>注意：</em></strong> 本人现已开通微信公众号：Python爬虫与算法（微信号为：easy_web_scrape）， 欢迎大家关注哦~~</p>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_url_lst</span><span class="hljs-params">(url)</span>:</span>
+    url_lst = []
+    file_lst = []
+    <span class="hljs-comment"># 讀取網頁</span>
+    html = urllib.request.urlopen(url)  
+    content = html.read()
+    html.close()
+    <span class="hljs-comment">#網頁解析</span>
+    soup = BeautifulSoup(content, <span class="hljs-string">"lxml"</span>)
+    table = soup.find_all(id=<span class="hljs-string">"comiclistn"</span>)
+    <span class="hljs-keyword">for</span> tr <span class="hljs-keyword">in</span> table[<span class="hljs-number">0</span>].children:
+        count = <span class="hljs-number">0</span>
+        <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> tr:
+            <span class="hljs-keyword">if</span> isinstance(x, bs4.element.Tag):
+                <span class="hljs-keyword">if</span> count == <span class="hljs-number">0</span>:
+                    file_lst.append(x.string)
+                <span class="hljs-keyword">if</span> count == <span class="hljs-number">1</span>:
+                    url_lst.append(x[<span class="hljs-string">'href'</span>])
+                count += <span class="hljs-number">1</span>
+    
+    <span class="hljs-keyword">return</span> url_lst, file_lst
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>:</span>
+    socket.setdefaulttimeout(<span class="hljs-number">45</span>)
+    url = <span class="hljs-string">'http://comic.kukudm.com/comiclist/43/'</span>
+    url_lst, file_lst = get_url_lst(url)
+    print(<span class="hljs-string">'Begin downloading...'</span>,time.ctime())           
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(len(url_lst)):
+        <span class="hljs-comment">#獲取這一頁總的圖片數量</span>
+        browser = webdriver.PhantomJS()
+        browser.set_page_load_timeout(<span class="hljs-number">30</span>) <span class="hljs-comment"># 最大等待时间为30s</span>
+        <span class="hljs-comment">#当加载时间超过30秒后，自动停止加载该页面</span>
+        <span class="hljs-keyword">try</span>:
+            browser.get(url_lst[i])
+        <span class="hljs-keyword">except</span> (TimeoutException,socket.timeout):
+            browser.execute_script(<span class="hljs-string">'window.stop()'</span>)
+        source = browser.page_source
+        total_page = int(source[source.find(<span class="hljs-string">'共'</span>)+<span class="hljs-number">1</span>:source.find(<span class="hljs-string">'页'</span>)])
+        browser.quit()
+        <span class="hljs-comment">#创建新文件夹</span>
+        os.mkdir(os.path.join(<span class="hljs-string">"J:\\comic"</span>,file_lst[i]))
+        <span class="hljs-comment">#遍历图片的网址</span>
+        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> range(<span class="hljs-number">1</span>,<span class="hljs-number">1</span>+total_page):
+            browser = webdriver.PhantomJS()
+            browser.set_page_load_timeout(<span class="hljs-number">30</span>) <span class="hljs-comment"># 最大等待时间为30s</span>
+            <span class="hljs-comment">#当加载时间超过30秒后，自动停止加载该页面</span>
+            <span class="hljs-keyword">try</span>:
+                browser.get(url_lst[i].replace(<span class="hljs-string">'/1.htm'</span>,<span class="hljs-string">'/%d.htm'</span>%j))
+            <span class="hljs-keyword">except</span> (TimeoutException,socket.timeout):
+                browser.execute_script(<span class="hljs-string">'window.stop()'</span>)
+            source = browser.page_source
+            soup = BeautifulSoup(source,<span class="hljs-string">'lxml'</span>)
+            <span class="hljs-comment">#获取图片的下载地址，设置图片名称       </span>
+            image = soup.find(<span class="hljs-string">'img'</span>)
+            url =image.get(<span class="hljs-string">'src'</span>)
+            image_name = <span class="hljs-string">"J:\\comic\%s\pic_%d.jpg"</span>%(file_lst[i],j)
+            <span class="hljs-comment">##解决下载不完全问题，重新尝试五次后仍未下载完即为下载失败</span>
+            <span class="hljs-keyword">try</span>:
+                urllib.request.urlretrieve(url,image_name)
+                print(<span class="hljs-string">"%s,第%d张图片下载完毕！"</span>%(file_lst[i],j),time.ctime())
+            <span class="hljs-keyword">except</span> (socket.timeout, AttributeError):
+                count = <span class="hljs-number">1</span>
+                <span class="hljs-keyword">while</span> count &lt;= <span class="hljs-number">5</span>:
+                    <span class="hljs-keyword">try</span>:
+                        urllib.request.urlretrieve(url,image_name)
+                        print(<span class="hljs-string">"%s,第%d张图片下载完毕！"</span>%(file_lst[i],j),time.ctime())
+                        <span class="hljs-keyword">break</span>
+                    <span class="hljs-keyword">except</span> (socket.timeout, AttributeError):
+                        err_info = <span class="hljs-string">'Reloading for %d time'</span>%count <span class="hljs-keyword">if</span> count == <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-string">'Reloading for %d times'</span>%count
+                        print(err_info)
+                        count += <span class="hljs-number">1</span>
+                <span class="hljs-keyword">if</span> count &gt; <span class="hljs-number">5</span>:
+                    <span class="hljs-keyword">with</span> open(<span class="hljs-string">'J:\\comic\%s\error.txt'</span>%file_lst[i],<span class="hljs-string">'a'</span>) <span class="hljs-keyword">as</span> f:
+                        f.write(<span class="hljs-string">"%s,第%d张图片下载失败！\n"</span>%(file_lst[i],j))
+            browser.quit()         
+main()</code></pre></div>
+
 
             </article>
             <hr>
@@ -260,7 +393,7 @@ socket.setdefaulttimeout(<span class="hljs-number">30</span>)
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/%E7%88%AC%E8%99%AB/">爬虫</a>
+                      <a class="hover-with-bg" href="/tags/%E7%88%AC%E8%99%AB/">-爬虫</a>
                     
                   </div>
                 
@@ -273,9 +406,9 @@ socket.setdefaulttimeout(<span class="hljs-number">30</span>)
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/2020/06/10/Python%E7%88%AC%E8%99%AB%E2%80%94%E2%80%94%E6%BC%AB%E7%94%BB%E4%B8%8B%E8%BD%BD/">
+                      <a href="/2020/06/10/MySQL%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%B5%81%E7%A8%8B%E5%87%BD%E6%95%B0/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Python爬虫——漫画下载</span>
+                        <span class="hidden-mobile">MySQL学习之流程函数</span>
                         <span class="visible-mobile">Previous</span>
                       </a>
                     
@@ -283,8 +416,8 @@ socket.setdefaulttimeout(<span class="hljs-number">30</span>)
                   <div class="post-next col-6">
                     
                     
-                      <a href="/2020/06/10/Python%E7%88%AC%E8%99%AB%E2%80%94%E2%80%94%E5%88%A9%E7%94%A8PhantomJS%E4%B8%8B%E8%BD%BD%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E5%9B%BE%E7%89%87/">
-                        <span class="hidden-mobile">Python爬虫——利用PhantomJS下载动态加载图片</span>
+                      <a href="/2020/06/10/Python%E7%88%AC%E8%99%AB%E2%80%94%E2%80%94%E8%A7%A3%E5%86%B3urlretrieve%E4%B8%8B%E8%BD%BD%E4%B8%8D%E5%AE%8C%E6%95%B4%E9%97%AE%E9%A2%98%E4%B8%94%E9%81%BF%E5%85%8D%E7%94%A8%E6%97%B6%E8%BF%87%E9%95%BF/">
+                        <span class="hidden-mobile">Python爬虫——解决urlretrieve下载不完整问题且避免用时过长</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -504,7 +637,7 @@ socket.setdefaulttimeout(<span class="hljs-number">30</span>)
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "Python爬虫——解决urlretrieve下载不完整问题且避免用时过长&nbsp;",
+        "Python爬虫——漫画下载&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,
