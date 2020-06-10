@@ -4,6 +4,56 @@
   
   
   <entry>
+    <title>MySQL之内联接、左联接、右联接、交叉联接</title>
+    <link href="/2020/06/10/MySQL%E4%B9%8B%E5%86%85%E8%81%94%E6%8E%A5%E3%80%81%E5%B7%A6%E8%81%94%E6%8E%A5%E3%80%81%E5%8F%B3%E8%81%94%E6%8E%A5%E3%80%81%E4%BA%A4%E5%8F%89%E8%81%94%E6%8E%A5/"/>
+    <url>/2020/06/10/MySQL%E4%B9%8B%E5%86%85%E8%81%94%E6%8E%A5%E3%80%81%E5%B7%A6%E8%81%94%E6%8E%A5%E3%80%81%E5%8F%B3%E8%81%94%E6%8E%A5%E3%80%81%E4%BA%A4%E5%8F%89%E8%81%94%E6%8E%A5/</url>
+    
+    <content type="html"><![CDATA[<p>　　数据库中的联接(join)是一个非常重要的概念，能够很好地帮助我们解决数据库的相关问题。本文将讲解MySQL中的联接方式：内联接（inner join），左联接（left join），右联接（right join），交叉连接（cross join）。<br>　　我们将以下面两张表格T1与T2为例来具体讲解上述四种联接方式。<br>　　　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDEwMjAyNzM0ODQy?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="T1"> 　　　　　　　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDEwMjAyNzUzMDU2?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="T2"><br>1.内联接（inner join）<br>　　内联接（inner join），也称为等值连接，只返回两个表中联结字段相等的行。<br>　　我们将T1和T2进行内联接，联接字段为id:</p><div class="hljs"><pre>SELECT * FROM T1 INNER JOIN T2 ON T1.id=T2.id;</pre></div><p>查询结果如下：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDEwMjAzODIzMTU1?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="内联接1"><br>　　当然还可以这样写：</p><div class="hljs"><pre>SELECT * FROM T1,T2 WHERE T1.id=T2.id;</pre></div><p>2.左联接（left join）<br>　　左联接（left join），以左表的全部为基准，返回左表中所有和右表中联结字段相等的记录以及右表中没有匹配的字段部分返回NULL.</p><div class="hljs"><pre>SELECT * FROM T1 LEFT JOIN T2 ON T1.id=T2.id;</pre></div><p>查询结果如下：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDEwMjA0NzEzNjY3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="左联接"><br>3.右联接（right join）<br>　　右联接（right join），以右表的全部为基准，返回右表中所有和左表中联结字段相等的记录以及左表中没有匹配的字段部分返回NULL.</p><div class="hljs"><pre>SELECT * FROM T1 RIGHT JOIN T2 ON T1.id=T2.id;</pre></div><p>查询结果如下：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDEwMjA1MTQ2ODI5?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="右联接"><br>4.交叉联接(cross)<br>　交叉联接(cross)返回两张表的笛卡尔乘积。</p><div class="hljs"><pre>SELECT * FROM T1 CROSS JOIN T2;</pre></div><p>查询结果如下：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDEwMjA1NTIzMjM0?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="交叉联接"><br>　　当然也可以这样写：</p><div class="hljs"><pre>SELECT * FROM T1,T2;</pre></div><p> 　　MySQL并不支持full join，但可以通过left join和right join来实现。<br> <hr><br> 　　本次分享到此结束，欢迎大家交流与批评～</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>MySQL</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>MySQL</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Spark之获取GBT二分类函数的概率值</title>
+    <link href="/2020/06/10/Spark%E4%B9%8B%E8%8E%B7%E5%8F%96GBT%E4%BA%8C%E5%88%86%E7%B1%BB%E5%87%BD%E6%95%B0%E7%9A%84%E6%A6%82%E7%8E%87%E5%80%BC/"/>
+    <url>/2020/06/10/Spark%E4%B9%8B%E8%8E%B7%E5%8F%96GBT%E4%BA%8C%E5%88%86%E7%B1%BB%E5%87%BD%E6%95%B0%E7%9A%84%E6%A6%82%E7%8E%87%E5%80%BC/</url>
+    
+    <content type="html"><![CDATA[<p>　　在Spark中，GBT（Gradient Boost Trees，提升树）函数用于实现机器学习中的提升树算法，目前仅支持二分类算法。笔者在实际工作中需要获得其预测的概率值，无奈该函数没有相应的方法。<br>　　经过笔者几天的奋斗，终于找到了解决之道。下面将分享在Spark中如何获取GBT二分类函数的概率值的思路。<br>　　首先，查看GBT函数的Scala源代码，其中的predict函数如下：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDA5MjEyMzE4NDc2?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="predict函数"><br>　　其中的prediction值是我们计算概率值所需要的，prediction的值为_treePredictions(向量)与_treeWeights(向量)的点积，numTrees为GBTClassifier所使用的树的数量。_treePredictions为每棵决策树的预测值组成的向量，_treeWeights为每颗树的权重组成的向量。<br>　　那么该如何计算_treePredictions与_treeWeights呢？<br>　　_treeWeights的计算可直接调用GBTClassifier中的treeWeights方法，输出的数据类型为list。以下为例子：（该例子的数据集和GBT测试代码见附录）<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDA5MjEyNzEwOTA4?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="_treeWeights"><br>　　接下来讲述_treePredictions的计算。<br>　　首先可以利用toDebugString方法可以知道每棵决策树的具体情形，以下为例子：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDA5MjEyOTMxMTE4?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="toDebugString"><br>　　利用trees方法可知道决策树的情形，trees方法输出为list.<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDA5MjEzMDAyOTU3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="trees"><br>　　取该list的下标，可以获得每颗树的模型，类型为pyspark.ml.regression.DecisionTreeRegressionMdel.<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDA5MjEzMDQxNjkw?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="每颗树的模型"><br>　　这样就可以利用DecisionTreeRegressionMdel的transfrom(data)得到每棵决策树的预测值，其中data为测试数据集。<br>　　最后，我们利用以下公式就能得到GBT函数预测的概率值：<br>　　$$probability=\frac{1}{e^{-prediction}},$$<br>其中，其中prediction为Scala源代码中的prediction值，它的计算方法如上所述.<br>　　当probability &gt; 0.5时,分类为1，否则为0.<br>　　这样，我们就能在Spark中获取GBT二分类函数的概率值了。读者可以结合以上的计算思路和实际工作，自己来编写预测概率值的代码啦~~<br>附录1:Spark的GBTClassifier的scala源代码网址：<a href="https://fossies.org/linux/spark/mllib/src/main/scala/org/apache/spark/ml/classification/GBTClassifier.scala" target="_blank" rel="noopener">https://fossies.org/linux/spark/mllib/src/main/scala/org/apache/spark/ml/classification/GBTClassifier.scala</a><br>附录2：测试数据集：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDA5MjEzNDM5Njcw?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="测试数据集"><br>附录3：测试代码：</p><div class="hljs"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pyspark.ml.linalg <span class="hljs-keyword">import</span> Vectors<span class="hljs-keyword">from</span> pyspark.ml.feature <span class="hljs-keyword">import</span> StringIndexer<span class="hljs-keyword">from</span> pyspark.ml.classification <span class="hljs-keyword">import</span> GBTClassifierdf = spark.createDataFrame([(<span class="hljs-number">1.0</span>,Vectors.dense(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>)), (<span class="hljs-number">0.0</span>,Vectors.dense(<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>)), (<span class="hljs-number">1.0</span>,Vectors.dense(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">4</span>)), (<span class="hljs-number">0.0</span>,Vectors.dense(<span class="hljs-number">3</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>)), (<span class="hljs-number">1.0</span>,Vectors.dense(<span class="hljs-number">1</span>,<span class="hljs-number">3</span>,<span class="hljs-number">2</span>)), (<span class="hljs-number">1.0</span>,Vectors.dense(<span class="hljs-number">1</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>)),], [<span class="hljs-string">"label"</span>, <span class="hljs-string">"features"</span>])stringIndexer = StringIndexer(inputCol=<span class="hljs-string">"label"</span>, outputCol=<span class="hljs-string">"indexed"</span>)si_model = stringIndexer.fit(df)td = si_model.transfrom(df)gbt = GBTClassifier(maxIter=<span class="hljs-number">5</span>, maxDeth=<span class="hljs-number">2</span>, labelCol=<span class="hljs-string">"indexed"</span>, seed=<span class="hljs-number">42</span>)model = gbt.fit(td)</code></pre></div><p>参考网址：</p><ol><li>spark如何获得分类概率：<a href="http://blog.csdn.net/seu_yang/article/details/52118683" target="_blank" rel="noopener">http://blog.csdn.net/seu_yang/article/details/52118683</a></li><li>Predicting probabilities of classes in case of Gradient Boosting Trees in Spark using the tree output： <a href="https://stackoverflow.com/questions/37303855/predicting-probabilities-of-classes-in-case-of-gradient-boosting-trees-in-spark" target="_blank" rel="noopener">https://stackoverflow.com/questions/37303855/predicting-probabilities-of-classes-in-case-of-gradient-boosting-trees-in-spark</a></li></ol>]]></content>
+    
+    
+    <categories>
+      
+      <category>大数据</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Spark</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>MySQL之为表格添加行号</title>
     <link href="/2020/06/10/MySQL%E4%B9%8B%E4%B8%BA%E8%A1%A8%E6%A0%BC%E6%B7%BB%E5%8A%A0%E8%A1%8C%E5%8F%B7/"/>
     <url>/2020/06/10/MySQL%E4%B9%8B%E4%B8%BA%E8%A1%A8%E6%A0%BC%E6%B7%BB%E5%8A%A0%E8%A1%8C%E5%8F%B7/</url>

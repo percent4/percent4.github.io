@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
-  <title>MySQL之为表格添加行号 - Hexo</title>
+  <title>Spark之获取GBT二分类函数的概率值 - Hexo</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 
@@ -152,7 +152,7 @@
               
   <div class="mt-3 post-meta">
     <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-    <time datetime="2020-06-10 11:57">
+    <time datetime="2020-06-10 11:59">
       June 10, 2020 am
     </time>
   </div>
@@ -163,7 +163,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      158 字
+      666 字
     </span>
   
 
@@ -173,7 +173,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      3
+      17
        分钟
     </span>
   
@@ -212,20 +212,23 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>　　在MySQL中，并没有像Oracle那样专门用来处理行号的函数rownumber()，因此我们需要通过其它方式来添加行号。<br>　　我们以如下样表sample_table为例:<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDA5MjA1NzA3NzE5?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="sample_table"><br>　　我们需要为这张表添加行号，其MySQL代码如下：</p>
-<div class="hljs"><pre class="hljs SQL">
-ALTER TABLE sample_table ADD row_number int;
-SET @row=0;
-UPDATE sample_table SET row_number=(@row:=@row+1);
-</pre></div>
-<p>这样就能实现为sample_table表添加行号了，如下图：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDA5MjEwNDIzOTAw?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="add_rownumber2"><br>　　接下来，我们在查询中添加行号，其MySQL代码如下：</p>
-<div class="hljs"><pre class="hljs SQL">
-SET @row=0;
-SELECT name, age, (@row:=@row+1) AS row_number FROM sample_table;
-</pre></div>
-<p>查询结果如下：</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDA5MjEwODMxODA1?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="add_rownumber3"></p>
-<p>　　当然，读者可能会有更多更好的办法，欢迎大家交流~~</p>
+              <p>　　在Spark中，GBT（Gradient Boost Trees，提升树）函数用于实现机器学习中的提升树算法，目前仅支持二分类算法。笔者在实际工作中需要获得其预测的概率值，无奈该函数没有相应的方法。<br>　　经过笔者几天的奋斗，终于找到了解决之道。下面将分享在Spark中如何获取GBT二分类函数的概率值的思路。<br>　　首先，查看GBT函数的Scala源代码，其中的predict函数如下：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDA5MjEyMzE4NDc2?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="predict函数"><br>　　其中的prediction值是我们计算概率值所需要的，prediction的值为_treePredictions(向量)与_treeWeights(向量)的点积，numTrees为GBTClassifier所使用的树的数量。_treePredictions为每棵决策树的预测值组成的向量，_treeWeights为每颗树的权重组成的向量。<br>　　那么该如何计算_treePredictions与_treeWeights呢？<br>　　_treeWeights的计算可直接调用GBTClassifier中的treeWeights方法，输出的数据类型为list。以下为例子：（该例子的数据集和GBT测试代码见附录）<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDA5MjEyNzEwOTA4?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="_treeWeights"><br>　　接下来讲述_treePredictions的计算。<br>　　首先可以利用toDebugString方法可以知道每棵决策树的具体情形，以下为例子：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDA5MjEyOTMxMTE4?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="toDebugString"><br>　　利用trees方法可知道决策树的情形，trees方法输出为list.<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDA5MjEzMDAyOTU3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="trees"><br>　　取该list的下标，可以获得每颗树的模型，类型为pyspark.ml.regression.DecisionTreeRegressionMdel.<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDA5MjEzMDQxNjkw?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="每颗树的模型"><br>　　这样就可以利用DecisionTreeRegressionMdel的transfrom(data)得到每棵决策树的预测值，其中data为测试数据集。<br>　　最后，我们利用以下公式就能得到GBT函数预测的概率值：<br>　　$$probability=\frac{1}{e^{-prediction}},$$<br>其中，其中prediction为Scala源代码中的prediction值，它的计算方法如上所述.<br>　　当probability &gt; 0.5时,分类为1，否则为0.<br>　　这样，我们就能在Spark中获取GBT二分类函数的概率值了。读者可以结合以上的计算思路和实际工作，自己来编写预测概率值的代码啦~~<br>附录1:Spark的GBTClassifier的scala源代码网址：<a href="https://fossies.org/linux/spark/mllib/src/main/scala/org/apache/spark/ml/classification/GBTClassifier.scala" target="_blank" rel="noopener">https://fossies.org/linux/spark/mllib/src/main/scala/org/apache/spark/ml/classification/GBTClassifier.scala</a><br>附录2：测试数据集：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDA5MjEzNDM5Njcw?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="测试数据集"><br>附录3：测试代码：</p>
+<div class="hljs"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pyspark.ml.linalg <span class="hljs-keyword">import</span> Vectors
+<span class="hljs-keyword">from</span> pyspark.ml.feature <span class="hljs-keyword">import</span> StringIndexer
+<span class="hljs-keyword">from</span> pyspark.ml.classification <span class="hljs-keyword">import</span> GBTClassifier
+df = spark.createDataFrame([(<span class="hljs-number">1.0</span>,Vectors.dense(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>)), (<span class="hljs-number">0.0</span>,Vectors.dense(<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>)), (<span class="hljs-number">1.0</span>,Vectors.dense(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">4</span>)), (<span class="hljs-number">0.0</span>,Vectors.dense(<span class="hljs-number">3</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>)), (<span class="hljs-number">1.0</span>,Vectors.dense(<span class="hljs-number">1</span>,<span class="hljs-number">3</span>,<span class="hljs-number">2</span>)), (<span class="hljs-number">1.0</span>,Vectors.dense(<span class="hljs-number">1</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>)),], [<span class="hljs-string">"label"</span>, <span class="hljs-string">"features"</span>])
+stringIndexer = StringIndexer(inputCol=<span class="hljs-string">"label"</span>, outputCol=<span class="hljs-string">"indexed"</span>)
+si_model = stringIndexer.fit(df)
+td = si_model.transfrom(df)
+gbt = GBTClassifier(maxIter=<span class="hljs-number">5</span>, maxDeth=<span class="hljs-number">2</span>, labelCol=<span class="hljs-string">"indexed"</span>, seed=<span class="hljs-number">42</span>)
+model = gbt.fit(td)</code></pre></div>
+
+
+<p>参考网址：</p>
+<ol>
+<li>spark如何获得分类概率：<a href="http://blog.csdn.net/seu_yang/article/details/52118683" target="_blank" rel="noopener">http://blog.csdn.net/seu_yang/article/details/52118683</a></li>
+<li>Predicting probabilities of classes in case of Gradient Boosting Trees in Spark using the tree output： <a href="https://stackoverflow.com/questions/37303855/predicting-probabilities-of-classes-in-case-of-gradient-boosting-trees-in-spark" target="_blank" rel="noopener">https://stackoverflow.com/questions/37303855/predicting-probabilities-of-classes-in-case-of-gradient-boosting-trees-in-spark</a></li>
+</ol>
 
             </article>
             <hr>
@@ -235,7 +238,7 @@ SELECT name, age, (@row:=@row+1) AS row_number FROM sample_table;
                   <div class="post-meta mr-3">
                     <i class="iconfont icon-category"></i>
                     
-                      <a class="hover-with-bg" href="/categories/MySQL/">MySQL</a>
+                      <a class="hover-with-bg" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
                     
                   </div>
                 
@@ -243,7 +246,7 @@ SELECT name, age, (@row:=@row+1) AS row_number FROM sample_table;
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/MySQL/">MySQL</a>
+                      <a class="hover-with-bg" href="/tags/Spark/">Spark</a>
                     
                   </div>
                 
@@ -256,9 +259,9 @@ SELECT name, age, (@row:=@row+1) AS row_number FROM sample_table;
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/2020/06/10/Spark%E4%B9%8B%E8%8E%B7%E5%8F%96GBT%E4%BA%8C%E5%88%86%E7%B1%BB%E5%87%BD%E6%95%B0%E7%9A%84%E6%A6%82%E7%8E%87%E5%80%BC/">
+                      <a href="/2020/06/10/MySQL%E4%B9%8B%E5%86%85%E8%81%94%E6%8E%A5%E3%80%81%E5%B7%A6%E8%81%94%E6%8E%A5%E3%80%81%E5%8F%B3%E8%81%94%E6%8E%A5%E3%80%81%E4%BA%A4%E5%8F%89%E8%81%94%E6%8E%A5/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Spark之获取GBT二分类函数的概率值</span>
+                        <span class="hidden-mobile">MySQL之内联接、左联接、右联接、交叉联接</span>
                         <span class="visible-mobile">Previous</span>
                       </a>
                     
@@ -266,8 +269,8 @@ SELECT name, age, (@row:=@row+1) AS row_number FROM sample_table;
                   <div class="post-next col-6">
                     
                     
-                      <a href="/2020/06/10/Python%E4%B9%8Bdict%E7%9A%84%E5%A6%99%E7%94%A8/">
-                        <span class="hidden-mobile">Python之dict的妙用</span>
+                      <a href="/2020/06/10/MySQL%E4%B9%8B%E4%B8%BA%E8%A1%A8%E6%A0%BC%E6%B7%BB%E5%8A%A0%E8%A1%8C%E5%8F%B7/">
+                        <span class="hidden-mobile">MySQL之为表格添加行号</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -487,7 +490,7 @@ SELECT name, age, (@row:=@row+1) AS row_number FROM sample_table;
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "MySQL之为表格添加行号&nbsp;",
+        "Spark之获取GBT二分类函数的概率值&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,
