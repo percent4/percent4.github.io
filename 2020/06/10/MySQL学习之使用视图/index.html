@@ -173,7 +173,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      35
+      34
        分钟
     </span>
   
@@ -221,8 +221,7 @@
 <li>数据独立。一旦视图的结构确定了，可以屏蔽表结构变化对用户的影响，源表增加列对视图没有影响；源表修改列名，则可以通过修改视图来解决，不会造成对访问者的影响。</li>
 </ul>
 <p>视图的基本操作有：创建或修改视图、删除视图，以及查看视图定义。</p>
-<p>一、创建或修改视图操作</p>
-<p>　　创建视图需要有CREATE VIEW 的权限，并且对于查询涉及的列有SELECT 权限。如果使用CREATE OR REPLACE 或者ALTER修改视图，那么还需要该视图的DROP 权限。创建或修改视图的语法为：</p>
+<h4 id="创建或修改视图操作"><a href="#创建或修改视图操作" class="headerlink" title="创建或修改视图操作"></a>创建或修改视图操作</h4><p>　　创建视图需要有CREATE VIEW 的权限，并且对于查询涉及的列有SELECT 权限。如果使用CREATE OR REPLACE 或者ALTER修改视图，那么还需要该视图的DROP 权限。创建或修改视图的语法为：</p>
 <div class="hljs"><pre><code class="hljs sql">(<span class="hljs-keyword">CREATE</span>|<span class="hljs-keyword">REPLACE</span>)/<span class="hljs-keyword">ALTER</span> [ALGORITHM = &#123;UNDEFINED | <span class="hljs-keyword">MERGE</span> | TEMPTABLE&#125;]
 <span class="hljs-keyword">VIEW</span> view_name [(column_list)]
 <span class="hljs-keyword">AS</span> select_statement
@@ -254,19 +253,16 @@ MySQL 创建或使用视图常见的规则与限制有：
 这样我们就创建了一个名为ProductCustomers的视图，它联接了三个表，返回已订购了任意产品的所有顾客的列表。如果我们想检索出订购了产品RGAN01的顾客，可进行如下查询：
 <div class="hljs"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> cust_name, cust_contact <span class="hljs-keyword">from</span> ProductCustomers <span class="hljs-keyword">where</span> prod_id = <span class="hljs-string">'RGAN01'</span>;</code></pre></div>
 结果如下：
-![VIEW1](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODI2MjA0ODMyMzM3?x-oss-process=image/format,png)
-　　　可以看出，视图极大地简化了复杂SQL语句的使用。利用视图，可一次性编写基础的SQL，然后根据需要多次使用。
-　　　
-例2.用视图过滤不想要的数据
-　　可以定义CustomerEmailList视图，过滤掉没有电子邮件的顾客，代码如下：
+
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODI2MjA0ODMyMzM3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="VIEW1"><br>　　　可以看出，视图极大地简化了复杂SQL语句的使用。利用视图，可一次性编写基础的SQL，然后根据需要多次使用。<br>　　　<br>例2.用视图过滤不想要的数据<br>　　可以定义CustomerEmailList视图，过滤掉没有电子邮件的顾客，代码如下：</p>
 <div class="hljs"><pre><code class="hljs n1ql"><span class="hljs-keyword">create</span> <span class="hljs-keyword">view</span> CustomerEmailList <span class="hljs-keyword">AS</span>
 <span class="hljs-keyword">select</span> cust_id, cust_name, cust_email
 <span class="hljs-keyword">from</span> customers
 <span class="hljs-keyword">where</span> cust_email <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">null</span>;</code></pre></div>
-　　现在可以像使用普通表一样使用视图CustomerEmailList.
+<p>　　现在可以像使用普通表一样使用视图CustomerEmailList.</p>
 <div class="hljs"><pre><code class="hljs n1ql"><span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> CustomerEmailList;</code></pre></div>
-![VIEW2](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODI2MjA1ODMxMDU3?x-oss-process=image/format,png)
 
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODI2MjA1ODMxMDU3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="VIEW2"></p>
 <p>例3.使用视图与计算字段<br>　　检索某个订单中的物品，计算每种物品的总价格：</p>
 <div class="hljs"><pre><code class="hljs n1ql"><span class="hljs-keyword">create</span> <span class="hljs-keyword">view</span> OrderItemsExpanded <span class="hljs-keyword">AS</span>
 <span class="hljs-keyword">select</span> order_num, prod_id, quantity, item_price, quantity*item_price <span class="hljs-keyword">as</span> expanded_price
@@ -299,14 +295,14 @@ MySQL 创建或使用视图常见的规则与限制有：
 <li>WHERE 字句的子查询引用了FROM 字句中的表.</li>
 </ul>
 　　
-二、删除视图操作
-用户可以一次删除一个或者多个视图，前提是必须有该视图的DROP 权限。其语法如下：
-<div class="hljs"><pre><code class="hljs sas"><span class="hljs-meta">DROP</span> <span class="hljs-meta">VIEW</span> [<span class="hljs-meta">IF</span> EXISTS] view_name [, view_name] ...[<span class="hljs-meta">RESTRICT</span> | <span class="hljs-meta">CASCADE</span>]</code></pre></div>
-例如：
+#### 删除视图操作
 
+<p>用户可以一次删除一个或者多个视图，前提是必须有该视图的DROP 权限。其语法如下：</p>
+<div class="hljs"><pre><code class="hljs sas"><span class="hljs-meta">DROP</span> <span class="hljs-meta">VIEW</span> [<span class="hljs-meta">IF</span> EXISTS] view_name [, view_name] ...[<span class="hljs-meta">RESTRICT</span> | <span class="hljs-meta">CASCADE</span>]</code></pre></div>
+<p>例如：</p>
 <div class="hljs"><pre><code class="hljs n1ql"><span class="hljs-keyword">drop</span> <span class="hljs-keyword">view</span> OrderItemsExpanded;</code></pre></div>
 
-<p>三、查看视图操作<br>　　从MySQL 5.1 版本开始，使用SHOW TABLES 命令的时候不仅显示表的名字，同时也会显示视图的名字，而不存在单独显示视图的SHOW VIEWS 命令。<br>例如：</p>
+<h4 id="查看视图操作"><a href="#查看视图操作" class="headerlink" title="查看视图操作"></a>查看视图操作</h4><p>　　从MySQL 5.1 版本开始，使用SHOW TABLES 命令的时候不仅显示表的名字，同时也会显示视图的名字，而不存在单独显示视图的SHOW VIEWS 命令。<br>例如：</p>
 <div class="hljs"><pre><code class="hljs sql"><span class="hljs-keyword">show</span> <span class="hljs-keyword">tables</span>;</code></pre></div>
 <p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcwODI2MjIxMjI0MTUw?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="view5"><br>　　在使用SHOW TABLE STATUS 命令的时候，不但可以显示表的信息，同时也可以显示视图的信息。如果需要查询某个视图的定义，可以使用SHOW CREATE VIEW 命令进行查看。最后，通过查看系统表information_schema.views 也可以查看视图的相关信息。<br>例如：</p>
 <div class="hljs"><pre><code class="hljs sql"><span class="hljs-keyword">show</span> <span class="hljs-keyword">create</span> <span class="hljs-keyword">view</span> orderitems_view;</code></pre></div>
