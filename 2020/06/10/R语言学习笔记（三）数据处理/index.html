@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  <title>R语言学习笔记（三）数据处理 - Hexo</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/darcula.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script>
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Jclian91</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('/img/dunhuang.jpeg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2020-06-10 13:20">
+      June 10, 2020 pm
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      92
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <p>本文的示例数据框集(egData)如下：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjE1NTEzMjE0?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>值标签：</p>
+<div class="hljs"><pre><code class="hljs stata"><span class="hljs-keyword">if</span>(FALSE)&#123;值标签，<span class="hljs-keyword">levels</span>代表变量实际值，labels代表标签值&#125;
+egData<span class="hljs-variable">$sex</span> &lt;- <span class="hljs-keyword">factor</span>(egData<span class="hljs-variable">$sex</span>, <span class="hljs-keyword">levels</span> = c(1,2),labels = c(<span class="hljs-string">"male"</span>, <span class="hljs-string">"female"</span>))</code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjE1NjAyNTY0?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>简单的数据处理函数：</p>
+<div class="hljs"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;显示对象中元素/成分的数量&#125;
+<span class="hljs-function"><span class="hljs-title">length</span><span class="hljs-params">(egData)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;显示对象的维度&#125;
+<span class="hljs-function"><span class="hljs-title">dim</span><span class="hljs-params">(egData)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;显示对象的结构&#125;
+<span class="hljs-function"><span class="hljs-title">str</span><span class="hljs-params">(egData)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;显示对象的类或类型&#125;
+<span class="hljs-function"><span class="hljs-title">class</span><span class="hljs-params">(egData)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;显示对象的模式&#125;
+<span class="hljs-function"><span class="hljs-title">mode</span><span class="hljs-params">(egData)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;显示对象中各成分的名称&#125;
+<span class="hljs-function"><span class="hljs-title">names</span><span class="hljs-params">(egData)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;列出对象的开始部分,一般前<span class="hljs-number">6</span>行&#125;
+<span class="hljs-function"><span class="hljs-title">head</span><span class="hljs-params">(egData)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;列出对象的结束部分,一般最后<span class="hljs-number">6</span>行&#125;
+<span class="hljs-function"><span class="hljs-title">tail</span><span class="hljs-params">(egData)</span></span></code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIwMTMzNzkx?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<div class="hljs"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;编辑对象&#125;
+<span class="hljs-function"><span class="hljs-title">edit</span><span class="hljs-params">(egData)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;编辑对象,并保存&#125;
+egData &lt;- edit(egData)
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;编辑对象&#125;
+<span class="hljs-function"><span class="hljs-title">fix</span><span class="hljs-params">(egData)</span></span></code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIwMjAzMTcz?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<div class="hljs"><pre><code class="hljs lsl">if(<span class="hljs-literal">FALSE</span>)&#123;将对象并入一个向量&#125;
+x &lt;- c(c(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>), c(<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>))</code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIwMjIwMTMx?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<div class="hljs"><pre><code class="hljs lsl">if(<span class="hljs-literal">FALSE</span>)&#123;按列合并对象&#125;
+x &lt;- rbind(c(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>), c(<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>))</code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIwMjM2Mjcy?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<div class="hljs"><pre><code class="hljs lsl">if(<span class="hljs-literal">FALSE</span>)&#123;按行合并对象&#125;
+x &lt;- cbind(c(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>), c(<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>))</code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIwMjU2ODY5?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<div class="hljs"><pre><code class="hljs lsl">if(<span class="hljs-literal">FALSE</span>)&#123;添加新变量&#125;
+egData$score3 &lt;- c(<span class="hljs-number">55</span>,<span class="hljs-number">78</span>,<span class="hljs-number">90</span>,NA,<span class="hljs-number">80</span>,NA,<span class="hljs-number">67</span>)</code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIwMzA4Nzg0?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<div class="hljs"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;算术运算符&#125;
+egData<span class="hljs-variable">$total</span> &lt;- egData<span class="hljs-variable">$score1</span>+egData<span class="hljs-variable">$score2</span>+egData<span class="hljs-variable">$score3</span></code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIwNDAyNTY4?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<div class="hljs"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;逻辑运算符，对变量进行重编码&#125;
+egData<span class="hljs-variable">$age</span>[egData<span class="hljs-variable">$age</span> &gt; <span class="hljs-number">18</span>] &lt;- <span class="hljs-string">"Adult"</span>
+egData<span class="hljs-variable">$age</span>[egData<span class="hljs-variable">$age</span> &gt;= <span class="hljs-number">12</span> &amp; egData<span class="hljs-variable">$age</span> &lt;= <span class="hljs-number">18</span>] &lt;- <span class="hljs-string">"Youth"</span>
+egData<span class="hljs-variable">$age</span>[egData<span class="hljs-variable">$age</span> &lt; <span class="hljs-number">12</span>] &lt;- <span class="hljs-string">"Kid"</span></code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIwNDE2MjYx?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<div class="hljs"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;变量重命名，方法<span class="hljs-number">1</span>，交互式修改&#125;
+<span class="hljs-function"><span class="hljs-title">fix</span><span class="hljs-params">(egData)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;变量重命名，方法<span class="hljs-number">2</span>，调用reshape包的rename方法&#125;
+install.packages(<span class="hljs-string">"reshape"</span>)
+<span class="hljs-function"><span class="hljs-title">library</span><span class="hljs-params">(reshape)</span></span>
+egData &lt;- rename(egData, c(age=<span class="hljs-string">"ageType"</span>))
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;变量重命名，方法<span class="hljs-number">3</span>，利用names方法&#125;
+<span class="hljs-function"><span class="hljs-title">names</span><span class="hljs-params">(egData)</span></span>[<span class="hljs-number">2</span>] &lt;- <span class="hljs-string">"ageType"</span></code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIwNDM4NjYy?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<div class="hljs"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;缺失值&#125;
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;判断缺失值&#125;
+is.na(egData<span class="hljs-variable">$total</span>)
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;排除缺失值&#125;
+<span class="hljs-function"><span class="hljs-title">sum</span><span class="hljs-params">(egData<span class="hljs-variable">$total</span>, na.rm = TRUE)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;删除缺失值&#125;
+x &lt;- na.omit(egData)</code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIwNDUyMTU5?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<div class="hljs"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;日期函数&#125;
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;当天的日期&#125;
+Sys.Date()
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;当前的日期和时间&#125;
+<span class="hljs-function"><span class="hljs-title">date</span><span class="hljs-params">()</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;指定日期格式&#125;
+<span class="hljs-function"><span class="hljs-title">format</span><span class="hljs-params">(Sys.Date()</span></span>, format=<span class="hljs-string">'%B %d %Y'</span>)
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;时间间隔&#125;
+<span class="hljs-function"><span class="hljs-title">difftime</span><span class="hljs-params">(Sys.Date()</span></span>, as.Date(<span class="hljs-string">'2016-12-03'</span>), units = <span class="hljs-string">'days'</span>)
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;转化为日期格式&#125;
+egData<span class="hljs-variable">$DATE</span> &lt;- as.Date(c(<span class="hljs-string">'2016-01-01'</span>, <span class="hljs-string">'2016-02-01'</span>, <span class="hljs-string">'2016-03-01'</span>, <span class="hljs-string">'2016-04-01'</span>, <span class="hljs-string">'2016-05-01'</span>, <span class="hljs-string">'2016-06-01'</span>, <span class="hljs-string">'2016-07-01'</span>))</code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIwNTEyNjY5?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<div class="hljs"><pre><code class="hljs applescript"><span class="hljs-keyword">if</span>(FALSE)&#123;类型判断函数：<span class="hljs-keyword">is</span>.numeric(),<span class="hljs-keyword">is</span>.<span class="hljs-built_in">character</span>(),<span class="hljs-keyword">is</span>.vector(),<span class="hljs-keyword">is</span>.matrix(),<span class="hljs-keyword">is</span>.data.frame(),<span class="hljs-keyword">is</span>.factor(),<span class="hljs-keyword">is</span>.logical()...
+类型转化函数：<span class="hljs-keyword">as</span>.numeric(),<span class="hljs-keyword">as</span>.<span class="hljs-built_in">character</span>(),<span class="hljs-keyword">as</span>.vector(),<span class="hljs-keyword">as</span>.matrix(),<span class="hljs-keyword">as</span>.data.frame(),<span class="hljs-keyword">as</span>.factor(),<span class="hljs-keyword">as</span>.logical()...
+&#125;
+<span class="hljs-keyword">is</span>.numeric(c(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>))
+<span class="hljs-keyword">is</span>.vector(c(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>))
+<span class="hljs-keyword">is</span>.numeric(<span class="hljs-keyword">as</span>.<span class="hljs-built_in">character</span>(<span class="hljs-number">1</span>))</code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIwNTI2MDEx?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<div class="hljs"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;数据排序，默认为升序，变量前面加-即为降序&#125;
+egData &lt;- egData[<span class="hljs-attribute">order</span>(egData<span class="hljs-variable">$total</span>, -egData<span class="hljs-variable">$score1</span>),]</code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIwNTM5MTAx?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<div class="hljs"><pre><code class="hljs lsl">if(<span class="hljs-literal">FALSE</span>)&#123;数据集的合并&#125;
+if(<span class="hljs-literal">FALSE</span>)&#123;横向合并数据框（数据集），merge()需要有共同变量，cbind()则不需要，已在上面代码展示过&#125;
+egData2 &lt;- data.frame(ID=c(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>,<span class="hljs-number">7</span>), class=c(<span class="hljs-number">1</span>,<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1</span>,<span class="hljs-number">3</span>))
+x &lt;- merge(egData, egData2, by='ID')
+if(<span class="hljs-literal">FALSE</span>)&#123;纵向合并数据框（数据集），顺序不必一样，也可用于添加行，已在上面代码展示过&#125;</code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIwNTUzOTIy?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<div class="hljs"><pre><code class="hljs haxe"><span class="hljs-keyword">if</span>(FALSE)&#123;选入变量&#125;
+<span class="hljs-keyword">new</span><span class="hljs-type">data1</span> &lt;- egData[c(<span class="hljs-string">"ID"</span>,<span class="hljs-string">"sex"</span>,<span class="hljs-string">"age"</span>)]
+<span class="hljs-keyword">new</span><span class="hljs-type">data2</span> &lt;- egData[,c(<span class="hljs-number">1</span>:<span class="hljs-type">5</span>)]
+<span class="hljs-keyword">if</span>(FALSE)&#123;删除变量&#125;
+vars &lt;- names(egData) %<span class="hljs-keyword">in</span>% c(<span class="hljs-string">'total'</span>,<span class="hljs-string">'DATE'</span>)
+<span class="hljs-keyword">new</span><span class="hljs-type">data3</span> &lt;- egData[!vars]
+<span class="hljs-keyword">new</span><span class="hljs-type">data4</span> &lt;- egData[c(<span class="hljs-number">-7</span>,<span class="hljs-number">-8</span>)]</code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIwNjE1NjE5?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="24"><br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIwNjQzOTM1?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<div class="hljs"><pre><code class="hljs angelscript"><span class="hljs-keyword">if</span>(FALSE)&#123;选入行或列&#125;
+mydata1 &lt;- egData[which(egData$score1 &gt; <span class="hljs-number">60</span> &amp; egData$score2 &lt; <span class="hljs-number">80</span>),]
+mydata2 &lt;- mydata1[,<span class="hljs-number">1</span>:<span class="hljs-number">3</span>]
+<span class="hljs-keyword">if</span>(FALSE)&#123;选入行或列,利用subset()函数&#125;
+mydata3 &lt;- subset(egData, score1 &gt; <span class="hljs-number">60</span> &amp; score2 &lt; <span class="hljs-number">80</span>, select = c(<span class="hljs-number">1</span>:<span class="hljs-number">3</span>))</code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIwNzAyNzQx?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="26"></p>
+<div class="hljs"><pre><code class="hljs erlang"><span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span>&#123;随机抽样,<span class="hljs-title">sample</span><span class="hljs-params">()</span>函数&#125;</span>
+<span class="hljs-function"><span class="hljs-title">mysample</span> &lt;- <span class="hljs-title">egData</span>[<span class="hljs-title">sample</span><span class="hljs-params">(<span class="hljs-number">1</span>:nrow(egData), <span class="hljs-number">3</span> , replace = FALSE)</span>,]</span></code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIwNzI0MDE3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<div class="hljs"><pre><code class="hljs pgsql"><span class="hljs-keyword">if</span>(<span class="hljs-keyword">FALSE</span>)&#123;利用<span class="hljs-keyword">SQL</span>语句操作数据框,sqldf包&#125;
+library(sqldf)
+mydata &lt;- sqldf("SELECT ID, sex, ageType FROM egData WHERE score1 &gt; 60 
+                AND score2 &lt; 80", <span class="hljs-keyword">row</span>.names = <span class="hljs-keyword">TRUE</span>)
+print(mydata)</code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIwODA2NDMw?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<div class="hljs"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;数学函数&#125;
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;绝对值&#125;
+<span class="hljs-function"><span class="hljs-title">abs</span><span class="hljs-params">(-<span class="hljs-number">4</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;平方根&#125;
+<span class="hljs-function"><span class="hljs-title">sqrt</span><span class="hljs-params">(<span class="hljs-number">25</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;不小于x的最小整数,ceiling(x)&#125;
+<span class="hljs-function"><span class="hljs-title">ceiling</span><span class="hljs-params">(<span class="hljs-number">3.475</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;不大于x的最大整数,floor(x)&#125;
+<span class="hljs-function"><span class="hljs-title">floor</span><span class="hljs-params">(<span class="hljs-number">3.475</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;向<span class="hljs-number">0</span>方向截取x中的整数部分,trunc(x)&#125;
+<span class="hljs-function"><span class="hljs-title">trunc</span><span class="hljs-params">(<span class="hljs-number">5.99</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;将x舍入为指定位数的小数,round(x)&#125;
+<span class="hljs-function"><span class="hljs-title">round</span><span class="hljs-params">(<span class="hljs-number">3.475</span>, digits = <span class="hljs-number">2</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;将x舍入为指定的有效数字位数,signif(x)&#125;
+<span class="hljs-function"><span class="hljs-title">signif</span><span class="hljs-params">(<span class="hljs-number">3.475</span>, digits = <span class="hljs-number">2</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;正弦sin(x)，余弦cos(x)，正切tan(x)&#125;
+<span class="hljs-function"><span class="hljs-title">cos</span><span class="hljs-params">(<span class="hljs-number">2</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;反正弦asin(x)，反余弦acos(x)，反正切atan(x)&#125;
+<span class="hljs-function"><span class="hljs-title">acos</span><span class="hljs-params">(-<span class="hljs-number">0.4161468</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;双曲正弦sinh(x)，双曲余弦cosh(x)，双曲正切tanh(x)&#125;
+<span class="hljs-function"><span class="hljs-title">sinh</span><span class="hljs-params">(<span class="hljs-number">2</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;反双曲正弦asinh(x)，反双曲余弦acosh(x)，反双曲正切atanh(x)&#125;
+<span class="hljs-function"><span class="hljs-title">asinh</span><span class="hljs-params">(<span class="hljs-number">3.62686</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;对x取以n为底的对数，log(x, base = n)&#125;
+<span class="hljs-function"><span class="hljs-title">log</span><span class="hljs-params">(<span class="hljs-number">8</span>, base = <span class="hljs-number">2</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;自然对数，log(x)，常用对数，log10(x)&#125;
+<span class="hljs-function"><span class="hljs-title">log</span><span class="hljs-params">(<span class="hljs-number">10</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">log10</span><span class="hljs-params">(<span class="hljs-number">10</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;指数函数，exp(x)&#125;
+<span class="hljs-function"><span class="hljs-title">exp</span><span class="hljs-params">(<span class="hljs-number">2.302585</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;将上述数学函数作用于数值向量、矩阵、数据框时，它们会独立地作用于每个值&#125;
+<span class="hljs-function"><span class="hljs-title">sqrt</span><span class="hljs-params">(c(<span class="hljs-number">4</span>,<span class="hljs-number">9</span>,<span class="hljs-number">16</span>)</span></span>)</code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIwODMzNTE5?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="29"></p>
+<div class="hljs"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;统计函数&#125;
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;在考虑以下统计函数时，应考虑它们的可选参数，如na.rm等,可使用help()查看具体的函数使用&#125;
+z &lt;- mean(c(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>), trim = <span class="hljs-number">0.5</span>, na<span class="hljs-selector-class">.rm</span> = TRUE)
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;平均数,mean(x)&#125;
+<span class="hljs-function"><span class="hljs-title">mean</span><span class="hljs-params">(c(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>)</span></span>)
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;中位数，median(x)&#125;
+<span class="hljs-function"><span class="hljs-title">median</span><span class="hljs-params">(c(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>)</span></span>)
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;标准差，sd(x)&#125;
+<span class="hljs-function"><span class="hljs-title">sd</span><span class="hljs-params">(c(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>)</span></span>)
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;方差，var(x)&#125;
+<span class="hljs-function"><span class="hljs-title">var</span><span class="hljs-params">(c(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>)</span></span>)
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;绝对中位差，mad(x)&#125;
+<span class="hljs-function"><span class="hljs-title">mad</span><span class="hljs-params">(c(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>)</span></span>)
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;绝对中位差，quantile(x,probs)&#125;
+<span class="hljs-function"><span class="hljs-title">quantile</span><span class="hljs-params">(c(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>)</span></span>,c(<span class="hljs-number">0.25</span>,<span class="hljs-number">0.5</span>,<span class="hljs-number">0.75</span>))
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;值域，range(x)&#125;
+<span class="hljs-function"><span class="hljs-title">range</span><span class="hljs-params">(c(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>)</span></span>)
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;求和，sum(x)&#125;
+<span class="hljs-function"><span class="hljs-title">sum</span><span class="hljs-params">(c(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>)</span></span>)
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;滞后差分，diff(x,lag=n),lag用以指定滞后几项，默认的lag值为<span class="hljs-number">1</span>&#125;
+<span class="hljs-function"><span class="hljs-title">diff</span><span class="hljs-params">(c(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>)</span></span>)
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;最小值&#125;
+<span class="hljs-function"><span class="hljs-title">min</span><span class="hljs-params">(c(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>)</span></span>)
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;最大值&#125;
+<span class="hljs-function"><span class="hljs-title">max</span><span class="hljs-params">(c(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>)</span></span>)
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;为数据对象x按列进行中心化(center = TRUE)或标准化(center = TRUE, scale = TRUE)&#125;
+scaledata &lt;- scale(egData[,<span class="hljs-number">4</span>:<span class="hljs-number">6</span>], center = TRUE, scale = TRUE)</code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIwODQ4NTI1?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<div class="hljs"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;概率函数&#125;
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;使用方法：[dqpr]distribution_abbreviation(),其中d为密度函数，p为分布函数，q为分位数函数，r为生成随机数，distribution_abbreviation()为概率分布缩写，详见下表&#125;
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;绘制标准正态曲线&#125;
+x &lt;- pretty(c(-<span class="hljs-number">3</span>,<span class="hljs-number">3</span>),<span class="hljs-number">100</span>)
+y &lt;- dnorm(x)
+<span class="hljs-function"><span class="hljs-title">plot</span><span class="hljs-params">(x,y,type=<span class="hljs-string">"l"</span>,xlab=<span class="hljs-string">"NormalDevite"</span>,ylab=<span class="hljs-string">"Density"</span>,yaxs=<span class="hljs-string">"i"</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;位于z=<span class="hljs-number">1.96</span>左侧的标准正态曲线下方面积&#125;
+<span class="hljs-function"><span class="hljs-title">pnorm</span><span class="hljs-params">(<span class="hljs-number">1.96</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;均值为<span class="hljs-number">500</span>，标准差为<span class="hljs-number">1000</span>的正态分布的<span class="hljs-number">0.9</span>分位点值&#125;
+<span class="hljs-function"><span class="hljs-title">qnorm</span><span class="hljs-params">(<span class="hljs-number">0.9</span>, mean = <span class="hljs-number">500</span>, sd = <span class="hljs-number">1000</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;生成<span class="hljs-number">50</span>个均值为<span class="hljs-number">50</span>，标准差为<span class="hljs-number">10</span>的正态随机数&#125;
+<span class="hljs-function"><span class="hljs-title">rnorm</span><span class="hljs-params">(<span class="hljs-number">50</span>, mean = <span class="hljs-number">50</span>, sd = <span class="hljs-number">10</span>)</span></span></code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIwOTAzODE4?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<p>概率分布缩写表</p>
+<table>
+<thead>
+<tr>
+<th>分布名称</th>
+<th>缩写</th>
+<th>分布名称</th>
+<th>缩写</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Beta分布</td>
+<td>beta</td>
+<td>Logistic分布</td>
+<td>logis</td>
+</tr>
+<tr>
+<td>二项分布</td>
+<td>binom</td>
+<td>多项分布</td>
+<td>multinom</td>
+</tr>
+<tr>
+<td>柯西分布</td>
+<td>cauchy</td>
+<td>负二项分布</td>
+<td>nbinom</td>
+</tr>
+<tr>
+<td>（非中心）卡方分布</td>
+<td>chisq</td>
+<td>正态分布</td>
+<td>norm</td>
+</tr>
+<tr>
+<td>指数分布</td>
+<td>exp</td>
+<td>泊松分布</td>
+<td>pois</td>
+</tr>
+<tr>
+<td>F分布</td>
+<td>f</td>
+<td>Wilcoxon符号秩分布</td>
+<td>signrank</td>
+</tr>
+<tr>
+<td>Gamma分布</td>
+<td>gamma</td>
+<td>t分布</td>
+<td>t</td>
+</tr>
+<tr>
+<td>几何分布</td>
+<td>geom</td>
+<td>均匀分布</td>
+<td>unif</td>
+</tr>
+<tr>
+<td>超几何分布</td>
+<td>hyper</td>
+<td>Weibull分布</td>
+<td>weibull</td>
+</tr>
+<tr>
+<td>对数正态分布</td>
+<td>lnorm</td>
+<td>Wilcoxon秩和分布</td>
+<td>wilcox</td>
+</tr>
+</tbody></table>
+<div class="hljs"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;为生成随机数指定种子，便于结果重现&#125;
+set.seed(<span class="hljs-number">5</span>)
+<span class="hljs-function"><span class="hljs-title">runif</span><span class="hljs-params">(<span class="hljs-number">5</span>)</span></span>
+set.seed(<span class="hljs-number">1234</span>)
+<span class="hljs-function"><span class="hljs-title">runif</span><span class="hljs-params">(<span class="hljs-number">5</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;利用MASS包的mvrnorm(n, mean, sigma)函数生成多元正态分布数据，其中n为样本大小，mean为均值向量，sigma为方差-协方差矩阵（或相关矩阵）&#125;
+<span class="hljs-function"><span class="hljs-title">library</span><span class="hljs-params">(MASS)</span></span>
+<span class="hljs-function"><span class="hljs-title">options</span><span class="hljs-params">(digits = <span class="hljs-number">3</span>)</span></span>
+set.seed(<span class="hljs-number">1234</span>)
+mean &lt;- c(<span class="hljs-number">230.7</span>, <span class="hljs-number">146.7</span>, <span class="hljs-number">3.6</span>)
+sigma &lt;- matrix(c(<span class="hljs-number">15360.8</span>, <span class="hljs-number">6712.2</span>, -<span class="hljs-number">47.1</span>, <span class="hljs-number">6721.2</span>, <span class="hljs-number">4700.9</span>, -<span class="hljs-number">16.5</span>, -<span class="hljs-number">47.1</span>, -<span class="hljs-number">16.5</span>, <span class="hljs-number">0.3</span>), nrow = <span class="hljs-number">3</span>, ncol = <span class="hljs-number">3</span>)
+mydata &lt;- mvrnorm(<span class="hljs-number">500</span>, mean, sigma)
+mydata&lt;- as<span class="hljs-selector-class">.data</span>.frame(mydata)
+<span class="hljs-function"><span class="hljs-title">names</span><span class="hljs-params">(mydata)</span></span> &lt;- c(<span class="hljs-string">'y'</span>,<span class="hljs-string">'x1'</span>,<span class="hljs-string">'x2'</span>)
+<span class="hljs-function"><span class="hljs-title">dim</span><span class="hljs-params">(mydata)</span></span>
+&gt; head(mydata, n = <span class="hljs-number">8</span>)</code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIwOTIwOTQy?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<div class="hljs"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;字符处理函数&#125;
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;计算x中的字符数量，nchar(x)&#125;
+<span class="hljs-function"><span class="hljs-title">nchar</span><span class="hljs-params">(c(<span class="hljs-string">'where'</span>,<span class="hljs-string">'is'</span>,<span class="hljs-string">'my'</span>,<span class="hljs-string">'code'</span>)</span></span>)
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;提取或替换一个字符向量中的子串，substr(x, start, stop)&#125;
+x &lt;- <span class="hljs-string">"abcdef"</span>
+<span class="hljs-function"><span class="hljs-title">substr</span><span class="hljs-params">(x,<span class="hljs-number">2</span>,<span class="hljs-number">4</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">substr</span><span class="hljs-params">(x,<span class="hljs-number">2</span>,<span class="hljs-number">4</span>)</span></span> &lt;- <span class="hljs-string">'2222'</span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;在x中搜索某种模式。grep(pattern, x, ignore<span class="hljs-selector-class">.case</span> = FALSE, fixed = FALSE)，ignore.case表示是否忽略大小写。若fixed = FALSE,则pattern为一个正则表达式。若fixed = TRUE, 在pattern为一个文本字符串。返回值为匹配的下标&#125;
+<span class="hljs-function"><span class="hljs-title">grep</span><span class="hljs-params">(<span class="hljs-string">"A"</span>, c(<span class="hljs-string">"B"</span>,<span class="hljs-string">"a"</span>,<span class="hljs-string">"A"</span>,<span class="hljs-string">"c"</span>)</span></span>, ignore.case=FALSE, fixed=TRUE)
+<span class="hljs-function"><span class="hljs-title">grep</span><span class="hljs-params">(<span class="hljs-string">"^A"</span>, c(<span class="hljs-string">"Bat"</span>,<span class="hljs-string">"act"</span>,<span class="hljs-string">"cow"</span>,<span class="hljs-string">"AM"</span>)</span></span>, ignore.case=FALSE, fixed=FALSE)
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;在x中搜索pattern,并以文本replacement将其替换。若fixed =FALSE,则pattern为一个正则表达式。若fixed = TRUE, 在pattern为一个文本字符串。&#125;
+<span class="hljs-function"><span class="hljs-title">sub</span><span class="hljs-params">(<span class="hljs-string">"\\s"</span>,<span class="hljs-string">"..."</span>,<span class="hljs-string">"Hello China!"</span>, fixed = FALSE)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;在split处分割字符向量x中的元素。strsplit(x, split, fixed=FALSE)若fixed =FALSE,则pattern为一个正则表达式。若fixed = TRUE, 在pattern为一个文本字符串。&#125;
+<span class="hljs-function"><span class="hljs-title">strsplit</span><span class="hljs-params">(<span class="hljs-string">'I LIVE IN SHANGHAI!'</span>, <span class="hljs-string">' '</span>, fixed=TRUE)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;连接字符串，分隔符为sep。paste(...,sep=...)&#125;
+<span class="hljs-function"><span class="hljs-title">paste</span><span class="hljs-params">(<span class="hljs-string">"x"</span>, <span class="hljs-number">1</span>:<span class="hljs-number">5</span>, sep=<span class="hljs-string">""</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">paste</span><span class="hljs-params">(<span class="hljs-string">"x"</span>, <span class="hljs-number">1</span>:<span class="hljs-number">5</span>, sep=<span class="hljs-string">"L"</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">paste</span><span class="hljs-params">(<span class="hljs-string">"C"</span>,<span class="hljs-string">"Window"</span>,<span class="hljs-string">"Files"</span>,sep=<span class="hljs-string">"/"</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;全部转化为大写&#125;
+<span class="hljs-function"><span class="hljs-title">toupper</span><span class="hljs-params">(<span class="hljs-string">"China"</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;全部转化为小写&#125;
+<span class="hljs-function"><span class="hljs-title">tolower</span><span class="hljs-params">(<span class="hljs-string">"China"</span>)</span></span></code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIxMDA2NTUw?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<div class="hljs"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;其他实用函数&#125;
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;生成序列,seq(from, to, by),by为步长,默认为<span class="hljs-number">1</span>&#125;
+<span class="hljs-function"><span class="hljs-title">seq</span><span class="hljs-params">(<span class="hljs-number">1</span>,<span class="hljs-number">10</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">seq</span><span class="hljs-params">(<span class="hljs-number">1</span>,<span class="hljs-number">10</span>,<span class="hljs-number">2</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;将x重复n次&#125;
+<span class="hljs-function"><span class="hljs-title">rep</span><span class="hljs-params">(<span class="hljs-number">1</span>:<span class="hljs-number">3</span>,<span class="hljs-number">2</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;将连续性变量分割为n个水平因子的变量,cut(x,n)，使用选项ordered_result=TRUE可以创建有序性因子。&#125;
+<span class="hljs-function"><span class="hljs-title">cut</span><span class="hljs-params">(c(<span class="hljs-number">1</span>,<span class="hljs-number">3</span>,<span class="hljs-number">5</span>,<span class="hljs-number">4</span>,<span class="hljs-number">6</span>)</span></span>,<span class="hljs-number">2</span>)
+<span class="hljs-function"><span class="hljs-title">cut</span><span class="hljs-params">(c(<span class="hljs-number">1</span>,<span class="hljs-number">3</span>,<span class="hljs-number">5</span>,<span class="hljs-number">4</span>,<span class="hljs-number">6</span>)</span></span>,<span class="hljs-number">2</span>,ordered_result = TRUE)
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;pretty(x,n),通过选取n+<span class="hljs-number">1</span>个等间距的取整值，将连续性变量分割为n个区间，绘图中常用&#125;
+<span class="hljs-function"><span class="hljs-title">pretty</span><span class="hljs-params">(c(-<span class="hljs-number">3</span>,<span class="hljs-number">3</span>)</span></span>,<span class="hljs-number">30</span>)
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;cat(...,file=<span class="hljs-string">"myfile"</span>,append=FALSE),连接...中的对象，并将其输出到屏幕上或文件中&#125;
+firstname &lt;- c(<span class="hljs-string">"Jane"</span>)
+<span class="hljs-function"><span class="hljs-title">cat</span><span class="hljs-params">(<span class="hljs-string">"Hello"</span>, firstname, <span class="hljs-string">"!"</span>)</span></span></code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIxMDIyMjAy?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<p>数据整合与重构</p>
+<div class="hljs"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;t(x),矩阵或数据框的转置&#125;
+cars &lt;- mtcars[<span class="hljs-number">1</span>:<span class="hljs-number">5</span>,<span class="hljs-number">1</span>:<span class="hljs-number">4</span>]
+<span class="hljs-function"><span class="hljs-title">t</span><span class="hljs-params">(cars)</span></span></code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIxMDM3NzY5?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<div class="hljs"><pre><code class="hljs routeros"><span class="hljs-keyword">if</span>(<span class="hljs-literal">FALSE</span>)&#123;aggregate(x, by, FUN),整合数据，x为待折叠的对象，by是一个变量名组成的列表，FUN为用来计算描述性统计量的标量函数&#125;
+aggregate(mtcars, <span class="hljs-attribute">by</span>=list(mtcars$gear), <span class="hljs-attribute">FUN</span>=mean, na.<span class="hljs-attribute">rm</span>=<span class="hljs-literal">TRUE</span>)</code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIxMDUxMzEw?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<div class="hljs"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;使用reshape包进行数据融合和重铸&#125;
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FLASE)</span></span>&#123;melt(),数据融合:每个测量变量独占一行，行中带有要唯一确定这个测量变量所需的标识符变量。&#125;
+md &lt;- melt(mydata, id &lt;- (c(<span class="hljs-string">"id"</span>,<span class="hljs-string">"time"</span>)))
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FLASE)</span></span>&#123;cast(md,formula,FUN),重铸：读取已融合的数据，并使用公式formula和函数FUN将其重塑。其中，formula的公式为：\n
+    rowvar1+rowvar2+... ~  colvar1+colvar2+...
+    <span class="hljs-string">'~'</span>前定义了划掉的变量，以确定各行的内容,<span class="hljs-string">"~"</span>后定义了划掉的列变量。
+&#125;
+<span class="hljs-function"><span class="hljs-title">cast</span><span class="hljs-params">(md, id~variable, mean)</span></span>
+<span class="hljs-function"><span class="hljs-title">cast</span><span class="hljs-params">(md, time~variable, mean)</span></span></code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI3MjIxMTA2ODgz?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<div class="hljs"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;简化代码：attach(),detach(),<span class="hljs-attribute">transform</span>(),within(),with()函数的使用&#125;
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;attach(),detach()的使用，以原始egData为对象，添加两列total和mean,分别表示score1,score2的总和和平均值&#125;
+<span class="hljs-function"><span class="hljs-title">attach</span><span class="hljs-params">(egData)</span></span>
+egData<span class="hljs-variable">$total</span> &lt;- score1+score2
+egData<span class="hljs-variable">$mean</span> &lt;- (score1+score2)/<span class="hljs-number">2</span>
+<span class="hljs-function"><span class="hljs-title">detach</span><span class="hljs-params">(egData)</span></span>
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;<span class="hljs-attribute">transform</span>(),实现同上的功能&#125;
+egData &lt;- <span class="hljs-attribute">transform</span>(egData, total=score1+score2, mean=(score1+score2)/<span class="hljs-number">2</span>)
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;within()与with(),两者类似，不同的是是否允许修改数据框。实现同上的功能&#125;
+egData &lt;- within(egData,&#123;
+                 total=score1+score2
+                 mean=(score1+score2)/<span class="hljs-number">2</span>&#125;)</code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI5MTYwMjU2OTUy?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<div class="hljs"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;apply()函数，调用格式：
+    apply(x, MARGIN, FUN, ...)
+    其中，x为数据对象，MARGIN为维度的下标，FUN为指定函数，而...则包括了任何想传递给FUN的参数。在矩阵或数据框中，MARGIN=<span class="hljs-number">1</span>表示行，MARGIN=<span class="hljs-number">2</span>表示列。
+&#125;
+<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;lapply(),sapply()函数,应用到列表（list）上。调用格式如下：
+<span class="hljs-function"><span class="hljs-title">lapply</span><span class="hljs-params">(X, FUN, ...)</span></span>
+<span class="hljs-function"><span class="hljs-title">sapply</span><span class="hljs-params">(X, FUN, ..., simplify = TRUE, USE.NAMES = TRUE)</span></span>&#125;
+x &lt;- list(<span class="hljs-selector-tag">a</span> = <span class="hljs-number">1</span>:<span class="hljs-number">10</span>, beta = exp(-<span class="hljs-number">3</span>:<span class="hljs-number">3</span>), logic = c(TRUE,FALSE,FALSE,TRUE))
+<span class="hljs-function"><span class="hljs-title">lapply</span><span class="hljs-params">(x, mean)</span></span>
+<span class="hljs-function"><span class="hljs-title">sapply</span><span class="hljs-params">(x, quantile)</span></span>
+
+names &lt;- c(<span class="hljs-string">"Jim Green"</span>,<span class="hljs-string">"Alice Bell"</span>,<span class="hljs-string">"Kent Brown"</span>)
+split &lt;- strsplit(names, <span class="hljs-string">" "</span>)
+<span class="hljs-function"><span class="hljs-title">sapply</span><span class="hljs-params">(split,<span class="hljs-string">"["</span>,<span class="hljs-number">1</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">sapply</span><span class="hljs-params">(split,<span class="hljs-string">"["</span>,<span class="hljs-number">2</span>)</span></span></code></pre></div>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI5MTYwMzE1ODM5?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI5MTYwMzMwNDI2?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI5MTYwMzU0ODgx?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/R%E8%AF%AD%E8%A8%80/">R语言</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/R%E8%AF%AD%E8%A8%80/">R语言</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" target="_blank" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/06/10/R%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E5%9B%9B%EF%BC%89%E6%B5%81%E7%A8%8B%E5%87%BD%E6%95%B0%E5%8F%8A%E8%87%AA%E5%AE%9A%E4%B9%89%E5%87%BD%E6%95%B0/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">R语言学习笔记（四）流程函数及自定义函数</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/2020/06/10/R%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89%E5%AF%BC%E5%85%A5%E6%95%B0%E6%8D%AE/">
+                        <span class="hidden-mobile">R语言学习笔记（二）导入数据</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <div class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    function loadValine() {
+      addScript('https://cdn.staticfile.org/valine/1.4.14/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz",
+          app_key: "MCARXkAOuxb8aiWTb3WdAsyn",
+          placeholder: "说点什么吧",
+          path: window.location.pathname,
+          avatar: "retro",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: true,
+          recordIP: true,
+          serverURLs: "https://yusfsnlf.lc-cn-n1-shared.com",
+        });
+      });
+    }
+    createObserver(loadValine, 'vcomments');
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://valine.js.org" target="_blank" rel="nofollow noopener noopener">comments
+      powered by Valine.</a></noscript>
+
+
+              </div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+    <!-- APlayer 音乐播放器 -->
+    <div id="aplayer"></div>
+    <script defer src="https://cdn.staticfile.org/aplayer/1.10.1/APlayer.min.js" ></script>
+<link  rel="stylesheet" href="https://cdn.staticfile.org/aplayer/1.10.1/APlayer.min.css" />
+<script type="text/javascript">
+  var oldLoadAp = window.onload;
+  window.onload = function () {
+    oldLoadAp && oldLoadAp();
+
+    new APlayer({
+      container: document.getElementById('aplayer'),
+      fixed: true,
+      autoplay: 'false' === 'true',
+      loop: 'all',
+      order: 'random',
+      theme: '#b7daff',
+      preload: 'none',
+      audio: [{"name":"name","artist":"artist","url":"/songs/reality.mp3","cover":"https://pic.xiami.net/images/album/img12/1119392412/21003936321476257468.jpg"}]
+    });
+  }
+</script>
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "R语言学习笔记（三）数据处理&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.staticfile.org/mathjax/3.0.5/es5/tex-svg.js" ></script>
+
+  
+
+
+
+  
+  
+    <script>
+      !function (e, t, a) {
+        function r() {
+          for (var e = 0; e < s.length; e++) s[e].alpha <= 0 ? (t.body.removeChild(s[e].el), s.splice(e, 1)) : (s[e].y--, s[e].scale += .004, s[e].alpha -= .013, s[e].el.style.cssText = "left:" + s[e].x + "px;top:" + s[e].y + "px;opacity:" + s[e].alpha + ";transform:scale(" + s[e].scale + "," + s[e].scale + ") rotate(45deg);background:" + s[e].color + ";z-index:99999");
+          requestAnimationFrame(r)
+        }
+
+        function n() {
+          var t = "function" == typeof e.onclick && e.onclick;
+          e.onclick = function (e) {
+            t && t(), o(e)
+          }
+        }
+
+        function o(e) {
+          var a = t.createElement("div");
+          a.className = "heart", s.push({
+            el: a,
+            x: e.clientX - 5,
+            y: e.clientY - 5,
+            scale: 1,
+            alpha: 1,
+            color: c()
+          }), t.body.appendChild(a)
+        }
+
+        function i(e) {
+          var a = t.createElement("style");
+          a.type = "text/css";
+          try {
+            a.appendChild(t.createTextNode(e))
+          } catch (t) {
+            a.styleSheet.cssText = e
+          }
+          t.getElementsByTagName("head")[0].appendChild(a)
+        }
+
+        function c() {
+          return "rgb(" + ~~(255 * Math.random()) + "," + ~~(255 * Math.random()) + "," + ~~(255 * Math.random()) + ")"
+        }
+
+        var s = [];
+        e.requestAnimationFrame = e.requestAnimationFrame || e.webkitRequestAnimationFrame || e.mozRequestAnimationFrame || e.oRequestAnimationFrame || e.msRequestAnimationFrame || function (e) {
+          setTimeout(e, 1e3 / 60)
+        }, i(".heart{width: 10px;height: 10px;position: fixed;background: #f00;transform: rotate(45deg);-webkit-transform: rotate(45deg);-moz-transform: rotate(45deg);}.heart:after,.heart:before{content: '';width: inherit;height: inherit;background: inherit;border-radius: 50%;-webkit-border-radius: 50%;-moz-border-radius: 50%;position: fixed;}.heart:after{top: -5px;}.heart:before{left: -5px;}"), n(), r()
+      }(window, document);
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
