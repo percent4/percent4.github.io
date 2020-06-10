@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
-  <title>R语言学习笔记（四）流程函数及自定义函数 - Hexo</title>
+  <title>Python之任意阶幻方的构造 - Hexo</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 
@@ -152,7 +152,7 @@
               
   <div class="mt-3 post-meta">
     <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-    <time datetime="2020-06-10 13:21">
+    <time datetime="2020-06-10 13:45">
       June 10, 2020 pm
     </time>
   </div>
@@ -163,7 +163,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      461 字
+      703 字
     </span>
   
 
@@ -173,7 +173,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      14
+      23
        分钟
     </span>
   
@@ -212,88 +212,117 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <div class="hljs"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;条件执行&#125;
-<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;<span class="hljs-keyword">if</span>-<span class="hljs-keyword">else</span>结构,多重判断&#125;
-<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;对score进行等级判定&#125;
-score = <span class="hljs-number">65</span>
-<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(score &gt;= <span class="hljs-number">90</span>)</span></span>&#123;
-  print(<span class="hljs-string">"Excellent!"</span>)
-&#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(score &gt;= <span class="hljs-number">75</span>)&#123;
-  print(<span class="hljs-string">"Good!"</span>)
-&#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(score &gt;= <span class="hljs-number">60</span>)&#123;
-  print(<span class="hljs-string">"Middle!"</span>)
-&#125;<span class="hljs-keyword">else</span>&#123;
-  print(<span class="hljs-string">"Failed!"</span>)&#125;
-  
-<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;ifelse结构,使用：
-    ifelse(cond, statement1, statement2)
-    若cond为真，则执行statement1,否则，执行statement2.
-&#125;
-score=<span class="hljs-number">55</span>
-<span class="hljs-function"><span class="hljs-title">ifelse</span><span class="hljs-params">(score &gt;= <span class="hljs-number">60</span>, print(<span class="hljs-string">"Passed!"</span>)</span></span>, print(<span class="hljs-string">"Failed!"</span>))
+              <p>　　本文在用Python构造任意阶幻方的时候，参考的资料如下：
+　　　</p>
+<ul>
+<li>维基百科：<a href="https://en.wikipedia.org/wiki/Magic_square" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Magic_square</a></li>
+<li>幻方：<a href="http://blog.csdn.net/dxx_111/article/details/50158355" target="_blank" rel="noopener">http://blog.csdn.net/dxx_111/article/details/50158355</a></li>
+<li>论文：由矩阵构造奇数阶幻方的方法，高建国，河南大学学报</li>
+</ul>
+<p>Python代码如下：（具体的构造方法可参看以上资料）</p>
+<div class="hljs"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span>
+<span class="hljs-comment">#利用numpy模块构造幻方</span>
+<span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
 
-<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;switch()结构&#125;
-city = <span class="hljs-string">'BJ'</span>
-print(switch(city,
-             <span class="hljs-string">'SH'</span> = <span class="hljs-string">'shanghai'</span>,
-             <span class="hljs-string">'BJ'</span> = <span class="hljs-string">'beijing'</span>,
-             <span class="hljs-string">'GZ'</span> = <span class="hljs-string">'guangzhou'</span>,
-             <span class="hljs-string">'SZ'</span> = <span class="hljs-string">'shenzhen'</span>))</code></pre></div>
+<span class="hljs-comment">#列表循环向左移offset位</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">shift_left</span><span class="hljs-params">(lst, offset)</span>:</span>
+    <span class="hljs-keyword">return</span> [lst[(i+offset)%len(lst)] <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(len(lst))]
 
+<span class="hljs-comment">#列表循环向右移offset位</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">shift_right</span><span class="hljs-params">(lst, offset)</span>:</span>
+    <span class="hljs-keyword">return</span> [lst[i-offset] <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(len(lst))]
 
-<div class="hljs"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;重复和循环&#125;
-<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;<span class="hljs-keyword">for</span>结构，语法为：<span class="hljs-keyword">for</span>(<span class="hljs-selector-tag">var</span> <span class="hljs-keyword">in</span> seq) statement&#125;
-<span class="hljs-function"><span class="hljs-title">for</span><span class="hljs-params">(i in <span class="hljs-number">1</span>:<span class="hljs-number">10</span>)</span></span>&#123;print(<span class="hljs-string">"Hello world!"</span>)&#125;
-
-<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;while结构，语法为：while(cond) statement&#125;
-<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;while结构中的break,next命令，与C语言中的break,continue命令相同&#125;
-<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;计算<span class="hljs-number">1</span>+<span class="hljs-number">2</span>+...+<span class="hljs-number">100</span>&#125;
-sum &lt;- <span class="hljs-number">0</span>
-<span class="hljs-selector-tag">i</span> &lt;- <span class="hljs-number">0</span>
-<span class="hljs-function"><span class="hljs-title">while</span><span class="hljs-params">(i&lt;= <span class="hljs-number">100</span>)</span></span>&#123;
-  sum &lt;- sum+i
-  <span class="hljs-selector-tag">i</span> = i+<span class="hljs-number">1</span>
-&#125;
-
-<span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;repeat()结构，在执行第一次循环的时候不管条件是否满足，均会执行一遍&#125;
-test_word &lt;- <span class="hljs-string">'Hello, welcome to the third class!'</span>
-cnt &lt;- <span class="hljs-number">2</span>
-repeat&#123;
-  print(test_word)
-  cnt &lt;- cnt+<span class="hljs-number">1</span>
-  <span class="hljs-keyword">if</span>(cnt &gt; <span class="hljs-number">6</span>)&#123;
-    break
-  &#125;
-&#125;</code></pre></div>
-
-
-<div class="hljs"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(FALSE)</span></span>&#123;用户自定义函数,关键字为function，输入、返回的参数为任意的数据类型&#125;
-myfunc &lt;- function(<span class="hljs-selector-tag">a</span>,<span class="hljs-selector-tag">b</span>,c)&#123;
-  return(a+b+c)
-&#125;
-
-<span class="hljs-function"><span class="hljs-title">print</span><span class="hljs-params">(myfunc(<span class="hljs-number">61</span>,<span class="hljs-number">72</span>,<span class="hljs-number">83</span>)</span></span>)</code></pre></div>
-
-
-<div class="hljs"><pre><code class="hljs maxima"><span class="hljs-keyword">if</span>(FALSE)&#123;使用函数的一个例子&#125;
-<span class="hljs-keyword">if</span>(FALSE)&#123;计算数据框df中的<span class="hljs-built_in">col</span>列的总和，并以<span class="hljs-number">60</span>为分界线判断是否通过，文件名为“<span class="hljs-built_in">delete</span>.R”&#125;
-scoreGrade &lt;- function(df, <span class="hljs-built_in">col</span>)&#123;
-  rows &lt;- <span class="hljs-built_in">dim</span>(df[<span class="hljs-built_in">col</span>])[<span class="hljs-number">1</span>]
-  totalScore &lt;- <span class="hljs-number">0</span>
-  grade &lt;- rep(<span class="hljs-string">"0"</span>,rows)
-  
-  <span class="hljs-keyword">for</span>(i <span class="hljs-keyword">in</span> <span class="hljs-number">1</span>:rows)&#123;
-    totalScore &lt;- totalScore+df[i,<span class="hljs-built_in">col</span>]
-    grade[i] &lt;- ifelse(df[i,<span class="hljs-built_in">col</span>] &gt;= <span class="hljs-number">60</span>, <span class="hljs-string">"passed"</span>, <span class="hljs-string">"failed"</span>)
-  &#125;
-  
-  <span class="hljs-built_in">print</span>(paste(<span class="hljs-string">"Sum of "</span>,<span class="hljs-built_in">col</span>,<span class="hljs-string">" is "</span>,totalScore,<span class="hljs-string">"."</span>))
-  <span class="hljs-built_in">return</span>(cbind(df,grade))
-&#125;</code></pre></div>
-<p>使用的数据框为：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI5MjA0ODI3ODQ2?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>运行情况如下图：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI5MjA1MDMwNzY4?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
-<hr>
-本次分享到此结束，欢迎大家交流及批评~~
-
+<span class="hljs-comment">#构造奇数阶幻方函数</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">magic_of_odd_order</span><span class="hljs-params">(n)</span>:</span>
+    p = (int)((n<span class="hljs-number">-1</span>)/<span class="hljs-number">2</span>)
+    
+    <span class="hljs-comment">#创建矩阵1</span>
+    initial_lst1 = list(range(p+<span class="hljs-number">1</span>,n))+list(range(p+<span class="hljs-number">1</span>))
+    initial_mat1 = []
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(n):
+        initial_mat1.append(shift_left(initial_lst1, i))
+    mat1 = np.array(initial_mat1)
+       
+    <span class="hljs-comment">#创建矩阵2</span>
+    initial_lst2 = list(range(p,<span class="hljs-number">-1</span>,<span class="hljs-number">-1</span>))+list(range(<span class="hljs-number">2</span>*p,p,<span class="hljs-number">-1</span>))
+    initial_mat2 = []
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(n):
+        initial_mat2.append(shift_right(initial_lst2, i))
+    mat2 = np.array(initial_mat2)
+    
+    <span class="hljs-comment">#创建矩阵3,即元素全为1的矩阵</span>
+    mat3= np.ones((n,n),dtype=np.int)
+    
+    <span class="hljs-comment">#构造幻方</span>
+    magic = n*mat2+mat1+mat3
+    <span class="hljs-keyword">return</span> magic
+    
+<span class="hljs-comment">#构造4n阶幻方函数</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">magic_of_4n_order</span><span class="hljs-params">(n)</span>:</span>
+    mat = np.array(range(<span class="hljs-number">1</span>,n*n+<span class="hljs-number">1</span>)).reshape(n,n)
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range((int)(n/<span class="hljs-number">4</span>)):
+        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> range((int)(n/<span class="hljs-number">4</span>)):
+            <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> range(<span class="hljs-number">4</span>): <span class="hljs-comment">#将每个4*4小方块的对角线换成互补元素</span>
+                mat[k+<span class="hljs-number">4</span>*j][k+<span class="hljs-number">4</span>*i] = n*n+<span class="hljs-number">1</span>-mat[k+<span class="hljs-number">4</span>*j][k+<span class="hljs-number">4</span>*i]
+                mat[k+<span class="hljs-number">4</span>*j][<span class="hljs-number">3</span>-k+<span class="hljs-number">4</span>*i] = n*n+<span class="hljs-number">1</span>-mat[k+<span class="hljs-number">4</span>*j][<span class="hljs-number">3</span>-k+<span class="hljs-number">4</span>*i]
+    
+    <span class="hljs-keyword">return</span> mat
+    
+<span class="hljs-comment">#构造4n+2阶幻方函数</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">magic_of_4n2_order</span><span class="hljs-params">(n)</span>:</span>
+    p = (int)(n/<span class="hljs-number">2</span>)
+    matA = magic_of_odd_order(p)
+    matD = matA+p**<span class="hljs-number">2</span>
+    matB = matD+p**<span class="hljs-number">2</span>
+    matC = matB+p**<span class="hljs-number">2</span>
+    
+    <span class="hljs-comment">#交换矩阵块A与矩阵块C中特定元素的位置</span>
+    row = (int)((p<span class="hljs-number">-1</span>)/<span class="hljs-number">2</span>)
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(p):
+        <span class="hljs-keyword">if</span> i != row:
+            <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> range((int)((n<span class="hljs-number">-2</span>)/<span class="hljs-number">4</span>)):
+                matA[i][k],matC[i][k] = matC[i][k],matA[i][k]
+        <span class="hljs-keyword">else</span>:
+            <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> range((int)((n<span class="hljs-number">-2</span>)/<span class="hljs-number">4</span>)):
+                matA[i][row+k],matC[i][row+k] = matC[i][row+k],matA[i][row+k]
+    
+    <span class="hljs-comment">#交换矩阵块B与矩阵块D中特定元素的位置</span>
+    col = (int)((p<span class="hljs-number">-1</span>)/<span class="hljs-number">2</span>)
+    <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> range(col+<span class="hljs-number">2</span>-(int)((n<span class="hljs-number">-2</span>)/<span class="hljs-number">4</span>),col+<span class="hljs-number">1</span>):
+        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(p):
+            matB[i][j],matD[i][j] = matD[i][j],matB[i][j]
+            
+    <span class="hljs-comment">#合并矩阵块A,B,C,D组成幻方</span>
+    magic = np.row_stack((np.column_stack((matA,matB)),np.column_stack((matC,matD))))
+    <span class="hljs-keyword">return</span> magic
+                 
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>:</span>
+    order = eval(input(<span class="hljs-string">'Enter the order of magic square(&gt;=3): '</span>))
+    
+    <span class="hljs-keyword">if</span> order%<span class="hljs-number">2</span> ==<span class="hljs-number">1</span>:
+        magic = magic_of_odd_order(order)
+    <span class="hljs-keyword">elif</span> order%<span class="hljs-number">4</span> == <span class="hljs-number">0</span>:
+        magic = magic_of_4n_order(order)
+    <span class="hljs-keyword">else</span>:
+        magic = magic_of_4n2_order(order)
+    print(<span class="hljs-string">'Generating magic square of %d order......'</span>%order)
+    
+    <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> magic:
+        <span class="hljs-keyword">for</span> col <span class="hljs-keyword">in</span> row:
+            print(col, end=<span class="hljs-string">'\t'</span>)
+        print()
+    
+    <span class="hljs-comment">#验证生成的magic是否为幻方    </span>
+    val = input((<span class="hljs-string">"Do you want to validate?[Y|N]"</span>))
+    <span class="hljs-keyword">if</span> val == <span class="hljs-string">'Y'</span> <span class="hljs-keyword">or</span> val == <span class="hljs-string">'y'</span>:
+        print(<span class="hljs-string">'每行的和:'</span>, np.sum(magic, axis=<span class="hljs-number">0</span>))
+        print(<span class="hljs-string">'每列的和:'</span>, np.sum(magic, axis=<span class="hljs-number">1</span>))
+        print(<span class="hljs-string">'主对角线的和:'</span>, sum([magic[i][i] <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(order)]))
+        print(<span class="hljs-string">'副对角线的和:'</span>, sum([magic[i][order<span class="hljs-number">-1</span>-i] <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(order)]))
+    print(<span class="hljs-string">'It\'s Done!'</span>)
+        
+main()</code></pre></div>
+<p>运行结果如下：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI4MjM1MDU2ODMx?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI4MjM1MTA3NjQw?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI4MjM1MTE5MTM1?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>本次分享到此结束，欢迎大家批评与交流~</p>
 
             </article>
             <hr>
@@ -303,7 +332,7 @@ scoreGrade &lt;- function(df, <span class="hljs-built_in">col</span>)&#123;
                   <div class="post-meta mr-3">
                     <i class="iconfont icon-category"></i>
                     
-                      <a class="hover-with-bg" href="/categories/R%E8%AF%AD%E8%A8%80/">R语言</a>
+                      <a class="hover-with-bg" href="/categories/Python/">Python</a>
                     
                   </div>
                 
@@ -311,7 +340,7 @@ scoreGrade &lt;- function(df, <span class="hljs-built_in">col</span>)&#123;
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/R%E8%AF%AD%E8%A8%80/">R语言</a>
+                      <a class="hover-with-bg" href="/tags/Python/">Python</a>
                     
                   </div>
                 
@@ -324,9 +353,9 @@ scoreGrade &lt;- function(df, <span class="hljs-built_in">col</span>)&#123;
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/2020/06/10/Python%E4%B9%8B%E5%87%BD%E6%95%B0%E5%8F%82%E6%95%B0%E7%9A%84%E4%BD%BF%E7%94%A8/">
+                      <a href="/2020/06/10/Spark%E4%B9%8BCASE-WHEN-THEN-%E7%9A%84%E4%B8%A4%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Python之函数参数的使用</span>
+                        <span class="hidden-mobile">Spark之CASE...WHEN...THEN...的两种实现方式</span>
                         <span class="visible-mobile">Previous</span>
                       </a>
                     
@@ -334,8 +363,8 @@ scoreGrade &lt;- function(df, <span class="hljs-built_in">col</span>)&#123;
                   <div class="post-next col-6">
                     
                     
-                      <a href="/2020/06/10/R%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%89%EF%BC%89%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86/">
-                        <span class="hidden-mobile">R语言学习笔记（三）数据处理</span>
+                      <a href="/2020/06/10/Python%E4%B9%8B0-35-0-3-0-35%E4%B8%8D%E7%AD%89%E4%BA%8E1/">
+                        <span class="hidden-mobile">Python之0.35+0.3+0.35不等于1</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -555,7 +584,7 @@ scoreGrade &lt;- function(df, <span class="hljs-built_in">col</span>)&#123;
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "R语言学习笔记（四）流程函数及自定义函数&nbsp;",
+        "Python之任意阶幻方的构造&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,

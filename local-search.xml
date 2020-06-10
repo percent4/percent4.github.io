@@ -4,6 +4,131 @@
   
   
   <entry>
+    <title>Python之三十行代码实现简易计算器</title>
+    <link href="/2020/06/10/Python%E4%B9%8B%E4%B8%89%E5%8D%81%E8%A1%8C%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E7%AE%80%E6%98%93%E8%AE%A1%E7%AE%97%E5%99%A8/"/>
+    <url>/2020/06/10/Python%E4%B9%8B%E4%B8%89%E5%8D%81%E8%A1%8C%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E7%AE%80%E6%98%93%E8%AE%A1%E7%AE%97%E5%99%A8/</url>
+    
+    <content type="html"><![CDATA[<p>实现的简易计算器如下:<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTAxMTM1MTEyMzk3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt=""><br>完整的代码如下：</p><div class="hljs"><pre><code class="hljs python"><span class="hljs-keyword">from</span> tkinter <span class="hljs-keyword">import</span> *<span class="hljs-keyword">from</span> math <span class="hljs-keyword">import</span> exp,log,sin,cos,tan<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Calculator</span>:</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self)</span>:</span>        window=Tk().title(<span class="hljs-string">"简易计算器"</span>)                frame1=Frame(window).pack()        self.e1, self.e2 = StringVar(), StringVar()        Label(frame1,text=<span class="hljs-string">"请输入表达式："</span>).pack() <span class="hljs-comment">#放置标签“请输入表达式”</span>        Entry(frame1,textvariable = self.e1,justify = RIGHT, width=<span class="hljs-number">28</span>).pack() <span class="hljs-comment">#第一个entry</span>        Label(frame1,text=<span class="hljs-string">"输出结果："</span>).pack() <span class="hljs-comment">#放置标签“输出结果”</span>        Entry(frame1,textvariable = self.e2,justify = RIGHT, width=<span class="hljs-number">28</span>).pack() <span class="hljs-comment">#第二个entry</span>                    frame2=Frame(window)        frame2.pack()          op=[[<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-string">'+'</span>],[<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>,<span class="hljs-string">'-'</span>],[<span class="hljs-number">7</span>,<span class="hljs-number">8</span>,<span class="hljs-number">9</span>,<span class="hljs-string">'*'</span>],[<span class="hljs-number">0</span>,<span class="hljs-string">'.'</span>,<span class="hljs-string">'='</span>,<span class="hljs-string">'/'</span>],[<span class="hljs-string">'('</span>,<span class="hljs-string">')'</span>,<span class="hljs-string">'exp'</span>,<span class="hljs-string">'log'</span>],[<span class="hljs-string">'sin'</span>,<span class="hljs-string">'cos'</span>,<span class="hljs-string">'tan'</span>,<span class="hljs-string">'clear'</span>]]            <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(<span class="hljs-number">6</span>):  <span class="hljs-comment">#放置按钮</span>            <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> range(<span class="hljs-number">4</span>):                <span class="hljs-keyword">if</span> op[i][j] == <span class="hljs-string">'='</span>:                    Button(frame2,text = op[i][j],command = <span class="hljs-keyword">lambda</span>: self.e2.set(str(eval(self.e1.get()))),width=<span class="hljs-number">6</span>).grid(row =i,column=j)                <span class="hljs-keyword">elif</span> op[i][j] == <span class="hljs-string">'clear'</span>:                    Button(frame2,text = op[i][j],command = <span class="hljs-keyword">lambda</span>: (self.e1.set(<span class="hljs-string">''</span>),self.e2.set(<span class="hljs-string">''</span>)),width=<span class="hljs-number">6</span>).grid(row =i,column=j)                <span class="hljs-keyword">else</span>:                    Button(frame2,text = str(op[i][j]),command = <span class="hljs-keyword">lambda</span> w=self.e1, c=str(op[i][j]): w.set(w.get() + c),width=<span class="hljs-number">6</span>).grid(row=i,column=j)                    Calculator()</code></pre></div>]]></content>
+    
+    
+    <categories>
+      
+      <category>Python</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Python</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Spark之CASE...WHEN...THEN...的两种实现方式</title>
+    <link href="/2020/06/10/Spark%E4%B9%8BCASE-WHEN-THEN-%E7%9A%84%E4%B8%A4%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/"/>
+    <url>/2020/06/10/Spark%E4%B9%8BCASE-WHEN-THEN-%E7%9A%84%E4%B8%A4%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/</url>
+    
+    <content type="html"><![CDATA[<p>在Spark中，dataframe是常用的数据格式，类似于数据库中的表。本文将介绍如何在dataframe中实现CASE…WHEN…THEN的两种方法。<br>一种是将dataframe看成数据库中的表，即使用createOrReplaceTempView（）函数，之后利用数据库的CASE…WHTN…THEN进行操作。另一种方法是，利用pyspark.sql.functions的when().otherwise()函数。实例代码如下：</p><div class="hljs"><pre><code class="hljs python"><span class="hljs-comment">#载入包</span><span class="hljs-keyword">from</span> pyspark.sql <span class="hljs-keyword">import</span> SparkSession<span class="hljs-keyword">from</span> pyspark <span class="hljs-keyword">import</span> SparkConf, SparkContext<span class="hljs-keyword">import</span> pyspark.sql.functions <span class="hljs-keyword">as</span> F<span class="hljs-comment">#spark初始化</span>conf = SparkConf()APPNAME = <span class="hljs-string">'spark_temporal_test'</span>conf.set(<span class="hljs-string">"spark.app.name"</span>, APPNAME)spark = SparkSession.builder.config(conf=conf).getOrCreate()<span class="hljs-comment">#创建dataframe</span>df = spark.createDataFrame([[<span class="hljs-number">1</span>,<span class="hljs-string">'A'</span>],[<span class="hljs-number">2</span>,<span class="hljs-string">'B'</span>],[<span class="hljs-number">3</span>,<span class="hljs-string">'C'</span>],[<span class="hljs-number">4</span>,<span class="hljs-string">'C'</span>],[<span class="hljs-number">5</span>,<span class="hljs-string">'B'</span>],[<span class="hljs-number">6</span>,<span class="hljs-string">'A'</span>],[<span class="hljs-number">7</span>,<span class="hljs-string">'D'</span>],\                            [<span class="hljs-number">8</span>,<span class="hljs-string">'A'</span>],[<span class="hljs-number">9</span>,<span class="hljs-string">'B'</span>],[<span class="hljs-number">10</span>,<span class="hljs-string">'C'</span>],[<span class="hljs-number">11</span>,<span class="hljs-string">'C'</span>],[<span class="hljs-number">12</span>,<span class="hljs-string">'B'</span>],[<span class="hljs-number">13</span>,<span class="hljs-string">'A'</span>],[<span class="hljs-number">14</span>,<span class="hljs-string">'D'</span>],\                            [<span class="hljs-number">15</span>,<span class="hljs-string">'A'</span>],[<span class="hljs-number">16</span>,<span class="hljs-string">'B'</span>],[<span class="hljs-number">17</span>,<span class="hljs-string">'C'</span>],[<span class="hljs-number">18</span>,<span class="hljs-string">'C'</span>],[<span class="hljs-number">19</span>,<span class="hljs-string">'B'</span>],[<span class="hljs-number">20</span>,<span class="hljs-string">''</span>]],[<span class="hljs-string">'id'</span>,<span class="hljs-string">'split'</span>])df = df.withColumn(<span class="hljs-string">'rand'</span>, F.rand(<span class="hljs-number">1</span>))<span class="hljs-comment">#CASE WHEN的实现1</span>df = df.withColumn(<span class="hljs-string">'mod_val_test1'</span>,F.when(df[<span class="hljs-string">'rand'</span>] &lt;= <span class="hljs-number">0.35</span>,<span class="hljs-number">1</span>).when(df[<span class="hljs-string">'rand'</span>] &lt;= <span class="hljs-number">0.7</span>, <span class="hljs-number">2</span>).otherwise(<span class="hljs-number">3</span>))<span class="hljs-comment">#CASE WHEN的实现2</span>df.createOrReplaceTempView(<span class="hljs-string">"temp"</span>)df= spark.sql(<span class="hljs-string">"""select *, case when rand &lt;= %s then 1</span><span class="hljs-string">                                when rand &lt;= %s then 2</span><span class="hljs-string">                                else 3 end as mod_val_test2</span><span class="hljs-string">                        from temp"""</span>%(<span class="hljs-number">0.35</span>,<span class="hljs-number">0.7</span>))<span class="hljs-comment">#输出，查看结果</span>print(df.show())</code></pre></div><p>运行结果如下：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTAxMDk0MDA2NTY0?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>本次分享到此结束，欢迎大家交流与批评~</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>大数据</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Spark</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Python之任意阶幻方的构造</title>
+    <link href="/2020/06/10/Python%E4%B9%8B%E4%BB%BB%E6%84%8F%E9%98%B6%E5%B9%BB%E6%96%B9%E7%9A%84%E6%9E%84%E9%80%A0/"/>
+    <url>/2020/06/10/Python%E4%B9%8B%E4%BB%BB%E6%84%8F%E9%98%B6%E5%B9%BB%E6%96%B9%E7%9A%84%E6%9E%84%E9%80%A0/</url>
+    
+    <content type="html"><![CDATA[<p>　　本文在用Python构造任意阶幻方的时候，参考的资料如下：　　　</p><ul><li>维基百科：<a href="https://en.wikipedia.org/wiki/Magic_square" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Magic_square</a></li><li>幻方：<a href="http://blog.csdn.net/dxx_111/article/details/50158355" target="_blank" rel="noopener">http://blog.csdn.net/dxx_111/article/details/50158355</a></li><li>论文：由矩阵构造奇数阶幻方的方法，高建国，河南大学学报</li></ul><p>Python代码如下：（具体的构造方法可参看以上资料）</p><div class="hljs"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><span class="hljs-comment">#利用numpy模块构造幻方</span><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<span class="hljs-comment">#列表循环向左移offset位</span><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">shift_left</span><span class="hljs-params">(lst, offset)</span>:</span>    <span class="hljs-keyword">return</span> [lst[(i+offset)%len(lst)] <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(len(lst))]<span class="hljs-comment">#列表循环向右移offset位</span><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">shift_right</span><span class="hljs-params">(lst, offset)</span>:</span>    <span class="hljs-keyword">return</span> [lst[i-offset] <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(len(lst))]<span class="hljs-comment">#构造奇数阶幻方函数</span><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">magic_of_odd_order</span><span class="hljs-params">(n)</span>:</span>    p = (int)((n<span class="hljs-number">-1</span>)/<span class="hljs-number">2</span>)        <span class="hljs-comment">#创建矩阵1</span>    initial_lst1 = list(range(p+<span class="hljs-number">1</span>,n))+list(range(p+<span class="hljs-number">1</span>))    initial_mat1 = []    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(n):        initial_mat1.append(shift_left(initial_lst1, i))    mat1 = np.array(initial_mat1)           <span class="hljs-comment">#创建矩阵2</span>    initial_lst2 = list(range(p,<span class="hljs-number">-1</span>,<span class="hljs-number">-1</span>))+list(range(<span class="hljs-number">2</span>*p,p,<span class="hljs-number">-1</span>))    initial_mat2 = []    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(n):        initial_mat2.append(shift_right(initial_lst2, i))    mat2 = np.array(initial_mat2)        <span class="hljs-comment">#创建矩阵3,即元素全为1的矩阵</span>    mat3= np.ones((n,n),dtype=np.int)        <span class="hljs-comment">#构造幻方</span>    magic = n*mat2+mat1+mat3    <span class="hljs-keyword">return</span> magic    <span class="hljs-comment">#构造4n阶幻方函数</span><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">magic_of_4n_order</span><span class="hljs-params">(n)</span>:</span>    mat = np.array(range(<span class="hljs-number">1</span>,n*n+<span class="hljs-number">1</span>)).reshape(n,n)    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range((int)(n/<span class="hljs-number">4</span>)):        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> range((int)(n/<span class="hljs-number">4</span>)):            <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> range(<span class="hljs-number">4</span>): <span class="hljs-comment">#将每个4*4小方块的对角线换成互补元素</span>                mat[k+<span class="hljs-number">4</span>*j][k+<span class="hljs-number">4</span>*i] = n*n+<span class="hljs-number">1</span>-mat[k+<span class="hljs-number">4</span>*j][k+<span class="hljs-number">4</span>*i]                mat[k+<span class="hljs-number">4</span>*j][<span class="hljs-number">3</span>-k+<span class="hljs-number">4</span>*i] = n*n+<span class="hljs-number">1</span>-mat[k+<span class="hljs-number">4</span>*j][<span class="hljs-number">3</span>-k+<span class="hljs-number">4</span>*i]        <span class="hljs-keyword">return</span> mat    <span class="hljs-comment">#构造4n+2阶幻方函数</span><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">magic_of_4n2_order</span><span class="hljs-params">(n)</span>:</span>    p = (int)(n/<span class="hljs-number">2</span>)    matA = magic_of_odd_order(p)    matD = matA+p**<span class="hljs-number">2</span>    matB = matD+p**<span class="hljs-number">2</span>    matC = matB+p**<span class="hljs-number">2</span>        <span class="hljs-comment">#交换矩阵块A与矩阵块C中特定元素的位置</span>    row = (int)((p<span class="hljs-number">-1</span>)/<span class="hljs-number">2</span>)    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(p):        <span class="hljs-keyword">if</span> i != row:            <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> range((int)((n<span class="hljs-number">-2</span>)/<span class="hljs-number">4</span>)):                matA[i][k],matC[i][k] = matC[i][k],matA[i][k]        <span class="hljs-keyword">else</span>:            <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> range((int)((n<span class="hljs-number">-2</span>)/<span class="hljs-number">4</span>)):                matA[i][row+k],matC[i][row+k] = matC[i][row+k],matA[i][row+k]        <span class="hljs-comment">#交换矩阵块B与矩阵块D中特定元素的位置</span>    col = (int)((p<span class="hljs-number">-1</span>)/<span class="hljs-number">2</span>)    <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> range(col+<span class="hljs-number">2</span>-(int)((n<span class="hljs-number">-2</span>)/<span class="hljs-number">4</span>),col+<span class="hljs-number">1</span>):        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(p):            matB[i][j],matD[i][j] = matD[i][j],matB[i][j]                <span class="hljs-comment">#合并矩阵块A,B,C,D组成幻方</span>    magic = np.row_stack((np.column_stack((matA,matB)),np.column_stack((matC,matD))))    <span class="hljs-keyword">return</span> magic                 <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>:</span>    order = eval(input(<span class="hljs-string">'Enter the order of magic square(&gt;=3): '</span>))        <span class="hljs-keyword">if</span> order%<span class="hljs-number">2</span> ==<span class="hljs-number">1</span>:        magic = magic_of_odd_order(order)    <span class="hljs-keyword">elif</span> order%<span class="hljs-number">4</span> == <span class="hljs-number">0</span>:        magic = magic_of_4n_order(order)    <span class="hljs-keyword">else</span>:        magic = magic_of_4n2_order(order)    print(<span class="hljs-string">'Generating magic square of %d order......'</span>%order)        <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> magic:        <span class="hljs-keyword">for</span> col <span class="hljs-keyword">in</span> row:            print(col, end=<span class="hljs-string">'\t'</span>)        print()        <span class="hljs-comment">#验证生成的magic是否为幻方    </span>    val = input((<span class="hljs-string">"Do you want to validate?[Y|N]"</span>))    <span class="hljs-keyword">if</span> val == <span class="hljs-string">'Y'</span> <span class="hljs-keyword">or</span> val == <span class="hljs-string">'y'</span>:        print(<span class="hljs-string">'每行的和:'</span>, np.sum(magic, axis=<span class="hljs-number">0</span>))        print(<span class="hljs-string">'每列的和:'</span>, np.sum(magic, axis=<span class="hljs-number">1</span>))        print(<span class="hljs-string">'主对角线的和:'</span>, sum([magic[i][i] <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(order)]))        print(<span class="hljs-string">'副对角线的和:'</span>, sum([magic[i][order<span class="hljs-number">-1</span>-i] <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(order)]))    print(<span class="hljs-string">'It\'s Done!'</span>)        main()</code></pre></div><p>运行结果如下：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI4MjM1MDU2ODMx?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI4MjM1MTA3NjQw?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI4MjM1MTE5MTM1?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>本次分享到此结束，欢迎大家批评与交流~</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>Python</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Python</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Python之0.35+0.3+0.35不等于1</title>
+    <link href="/2020/06/10/Python%E4%B9%8B0-35-0-3-0-35%E4%B8%8D%E7%AD%89%E4%BA%8E1/"/>
+    <url>/2020/06/10/Python%E4%B9%8B0-35-0-3-0-35%E4%B8%8D%E7%AD%89%E4%BA%8E1/</url>
+    
+    <content type="html"><![CDATA[<p>　　在Python3中，数值类型有int、float、bool、complex四种类型。float型即为浮点型，用来表示实数。然而，笔者在实际运用中，却发现事实：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI4MTUyMjE3Nzc2?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>　　这是不是有点不可思议？然而我们还可以举出更多的例子：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI4MTUyNTA2MjQ5?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>　　这究竟是什么原因呢？笔者在<a href="https://docs.python.org/3/tutorial/floatingpoint.html" target="_blank" rel="noopener">python的官网上</a>找到了原因。原来，大多数的float型数值并不能以精确的形式在计算机中表示出来，只能以十分接近原数值的形式储存，因此在计算过程中会出现小的误差。这并不是Python的BUG，而是计算机在表示实际时普遍存在的问题。<br>　　那么，Python是如何解决这个问题的呢？答案是decimal模块的Decimal函数，这个模块表示的数值类型是以我们人类在实际计算过程为参考的，所以能很好地解决这个问题，需要注意的是，Decimal函数接受的参数为整数或字符型。<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI4MTUzNDQxNzgw?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>　　另外，读者也可以了解下fractions模块，它是计算分数的利器，因为在Python中$\frac{1}{3}$是无法精确表示出来的！<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDI4MTUzODEyMjk0?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>　　本次分享到此结束，欢迎大家批评与交流~　　</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>Python</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Python</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Python之函数参数的使用</title>
+    <link href="/2020/06/10/Python%E4%B9%8B%E5%87%BD%E6%95%B0%E5%8F%82%E6%95%B0%E7%9A%84%E4%BD%BF%E7%94%A8/"/>
+    <url>/2020/06/10/Python%E4%B9%8B%E5%87%BD%E6%95%B0%E5%8F%82%E6%95%B0%E7%9A%84%E4%BD%BF%E7%94%A8/</url>
+    
+    <content type="html"><![CDATA[<p>&emsp;&emsp;在Python中定义函数，可以用位置参数、默认参数、可变参数和关键字参数，这4种参数都可以一起使用，或者只用其中某些，但是请注意，参数定义的顺序必须是：位置参数、默认参数、可变参数和关键字参数。<br>&emsp;&emsp;可变参数以*开头，允许传入0个或任意个参数，这些可变参数在函数调用时自动组装为一个tuple。关键字参数以**开头，允许传入0个或任意个参数，这些可变参数在函数调用时自动组装为一个dict。若默认参数与可变参数放在一起，则接受完默认参数后，其后参数为可变参数。<br>&emsp;&emsp;以下代码将展示函数参数的使用：</p><div class="hljs"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">test_args</span><span class="hljs-params">(name, city, age=<span class="hljs-number">10</span>, *args, **kwargs)</span>:</span>    print(<span class="hljs-string">'------------位置参数----------------'</span>)    print(<span class="hljs-string">'name:'</span>, name, <span class="hljs-string">',city:'</span>, city)    print(<span class="hljs-string">'------------默认参数----------------'</span>)    print(<span class="hljs-string">'age:'</span>, age)    print(<span class="hljs-string">'------------可变参数----------------'</span>)    sum = <span class="hljs-number">0</span>    <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> args:        sum += item    print(<span class="hljs-string">'sum of variable args:'</span>, sum)    print(<span class="hljs-string">'------------关键字参数--------------'</span>)    <span class="hljs-keyword">for</span> key <span class="hljs-keyword">in</span> kwargs:        print(<span class="hljs-string">'key:'</span>, key, <span class="hljs-string">',value:'</span>, kwargs[key])    print(<span class="hljs-string">'--------------over-----------------'</span>)    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>:</span>        test_args(<span class="hljs-string">'Bell'</span>,<span class="hljs-string">'SZ'</span>)        test_args(<span class="hljs-string">'Hall'</span>,<span class="hljs-string">'SH'</span>,<span class="hljs-number">15</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,a=<span class="hljs-number">1</span>,b=<span class="hljs-number">2</span>)        test_args(<span class="hljs-string">'Jack'</span>,<span class="hljs-string">'BJ'</span>,<span class="hljs-number">18</span>,<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,a=<span class="hljs-number">1</span>,b=<span class="hljs-number">2</span>,c=<span class="hljs-number">3</span>)    main()</code></pre></div><p>输出结果如下：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDIyMTMyNjM2NTg0?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>&emsp;&emsp;本次分享到此结束，欢迎大家交流与批评~</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>Python</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Python</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>R语言学习笔记（四）流程函数及自定义函数</title>
     <link href="/2020/06/10/R%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E5%9B%9B%EF%BC%89%E6%B5%81%E7%A8%8B%E5%87%BD%E6%95%B0%E5%8F%8A%E8%87%AA%E5%AE%9A%E4%B9%89%E5%87%BD%E6%95%B0/"/>
     <url>/2020/06/10/R%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E5%9B%9B%EF%BC%89%E6%B5%81%E7%A8%8B%E5%87%BD%E6%95%B0%E5%8F%8A%E8%87%AA%E5%AE%9A%E4%B9%89%E5%87%BD%E6%95%B0/</url>
@@ -595,9 +720,9 @@
     
     <tags>
       
-      <tag>爬虫</tag>
-      
       <tag>MySQL</tag>
+      
+      <tag>爬虫</tag>
       
     </tags>
     
