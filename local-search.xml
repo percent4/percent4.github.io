@@ -4,6 +4,81 @@
   
   
   <entry>
+    <title>MySQL之为表格添加行号</title>
+    <link href="/2020/06/10/MySQL%E4%B9%8B%E4%B8%BA%E8%A1%A8%E6%A0%BC%E6%B7%BB%E5%8A%A0%E8%A1%8C%E5%8F%B7/"/>
+    <url>/2020/06/10/MySQL%E4%B9%8B%E4%B8%BA%E8%A1%A8%E6%A0%BC%E6%B7%BB%E5%8A%A0%E8%A1%8C%E5%8F%B7/</url>
+    
+    <content type="html"><![CDATA[<p>　　在MySQL中，并没有像Oracle那样专门用来处理行号的函数rownumber()，因此我们需要通过其它方式来添加行号。<br>　　我们以如下样表sample_table为例:<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDA5MjA1NzA3NzE5?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="sample_table"><br>　　我们需要为这张表添加行号，其MySQL代码如下：</p><div class="hljs"><pre class="hljs SQL">ALTER TABLE sample_table ADD row_number int;SET @row=0;UPDATE sample_table SET row_number=(@row:=@row+1);</pre></div><p>这样就能实现为sample_table表添加行号了，如下图：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDA5MjEwNDIzOTAw?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="add_rownumber2"><br>　　接下来，我们在查询中添加行号，其MySQL代码如下：</p><div class="hljs"><pre class="hljs SQL">SET @row=0;SELECT name, age, (@row:=@row+1) AS row_number FROM sample_table;</pre></div><p>查询结果如下：</p><p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMDA5MjEwODMxODA1?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="add_rownumber3"></p><p>　　当然，读者可能会有更多更好的办法，欢迎大家交流~~</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>MySQL</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>MySQL</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Python之dict的妙用</title>
+    <link href="/2020/06/10/Python%E4%B9%8Bdict%E7%9A%84%E5%A6%99%E7%94%A8/"/>
+    <url>/2020/06/10/Python%E4%B9%8Bdict%E7%9A%84%E5%A6%99%E7%94%A8/</url>
+    
+    <content type="html"><![CDATA[<p>　　众所周知，Python的语法里没有像C语言中的switch…case…语法结构，所以有时候当我们想要用这个语法时不免捉急。不过不用怕，Python的dict数据结构有时能够很好地帮助我们实现switch…case…结构。<br>　　我们以下面一段程序为例来说明：</p><div class="hljs"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">operation</span><span class="hljs-params">(a,b,op)</span>:</span>    <span class="hljs-keyword">if</span> op == <span class="hljs-string">'+'</span>:        <span class="hljs-keyword">return</span> a+b    <span class="hljs-keyword">if</span> op == <span class="hljs-string">'-'</span>:        <span class="hljs-keyword">return</span> a-b    <span class="hljs-keyword">if</span> op == <span class="hljs-string">'*'</span>:        <span class="hljs-keyword">return</span> a*b    <span class="hljs-keyword">if</span> op == <span class="hljs-string">'/'</span>:        <span class="hljs-keyword">return</span> a/b<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:    a=<span class="hljs-number">1</span>    b=<span class="hljs-number">2</span>    print(<span class="hljs-string">'a+b='</span>, operation(a,b,<span class="hljs-string">'+'</span>))    print(<span class="hljs-string">'a-b='</span>, operation(a,b,<span class="hljs-string">'-'</span>))    print(<span class="hljs-string">'a*b='</span>, operation(a,b,<span class="hljs-string">'*'</span>))    print(<span class="hljs-string">'a/b='</span>, operation(a,b,<span class="hljs-string">'/'</span>))</code></pre></div><p>　　在上面的程序中，因为Python本身缺少switch…case…语法，因此只能使用if语句，但这样会造成很大的不便和浪费。我们尝试着用dict（字典）来解决这个问题。代码如下：</p><div class="hljs"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">operation</span><span class="hljs-params">(a,b,op)</span>:</span>    op_dict = &#123;<span class="hljs-string">'+'</span>:a+b, <span class="hljs-string">'-'</span>:a-b, <span class="hljs-string">'*'</span>:a*b, <span class="hljs-string">'/'</span>:a/b,&#125;    <span class="hljs-keyword">return</span> op_dict[op]<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:    a=<span class="hljs-number">1</span>    b=<span class="hljs-number">2</span>    print(<span class="hljs-string">'a+b='</span>, operation(a,b,<span class="hljs-string">'+'</span>))    print(<span class="hljs-string">'a-b='</span>, operation(a,b,<span class="hljs-string">'-'</span>))    print(<span class="hljs-string">'a*b='</span>, operation(a,b,<span class="hljs-string">'*'</span>))    print(<span class="hljs-string">'a/b='</span>, operation(a,b,<span class="hljs-string">'/'</span>))</code></pre></div><p>　　在上面的程序中，我们利用dict数据结构的key-value对即可实现switch…case…语法，由此可以看出这种方法的简洁和便利。<br>　　当然这仅仅只是一个例子，有兴趣的同学可以多多尝试，说不定能找到更多dict的妙用~<br>　　本次分享到此结束，欢迎交流与批评~</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>Python</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Python</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Python之list对应元素求和</title>
+    <link href="/2020/06/10/Python%E4%B9%8Blist%E5%AF%B9%E5%BA%94%E5%85%83%E7%B4%A0%E6%B1%82%E5%92%8C/"/>
+    <url>/2020/06/10/Python%E4%B9%8Blist%E5%AF%B9%E5%BA%94%E5%85%83%E7%B4%A0%E6%B1%82%E5%92%8C/</url>
+    
+    <content type="html"><![CDATA[<p>　　本次分享将讲述如何在Python中对多个list的对应元素求和，前提是每个list的长度一样。比如：a=[1,2,3], b=[2,3,4], c=[3,4,5], 对a,b,c的对应元素求和，输出应为[6,9,12].<br>　　<br>方法一：<br>　　直接求解，按照对应元素相加的原则，可先定义一个函数。</p><div class="hljs"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">list_add</span><span class="hljs-params">(a,b)</span>:</span>    c = []    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(len(a)):        c.append(a[i]+b[i])    <span class="hljs-keyword">return</span> c<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:    a = [<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>]    b = [<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>]    c = [<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>]    print(list_add(list_add(a,b),c))</code></pre></div><p>方法二：<br>　　利用numpy模块求解。</p><div class="hljs"><pre><code class="hljs python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> npa = np.array([<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>])b = np.array([<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>])c = np.array([<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>])print(a+b+c)</code></pre></div><p>需要注意的是，a+b+c后的类型为numpy.ndarray.<br>方法三：<br>　　利用numpy模块的sum()函数进行求解。</p><div class="hljs"><pre><code class="hljs python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> npa = [<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>]b = [<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>]c = [<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>]print(np.sum([a,b,c], axis = <span class="hljs-number">0</span>))</code></pre></div><p>其中的axis参数表示纵向求和。</p><hr>本次分享到此结束，欢迎大家交流~~<p><strong>注意：</strong> 本人现已开通微信公众号： Python爬虫及算法（微信号为：easy_web_scrape）， 欢迎大家关注哦~~</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>Python</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Python</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>MySQL之选取某一列插入到新的表中</title>
     <link href="/2020/06/10/MySQL%E4%B9%8B%E9%80%89%E5%8F%96%E6%9F%90%E4%B8%80%E5%88%97%E6%8F%92%E5%85%A5%E5%88%B0%E6%96%B0%E7%9A%84%E8%A1%A8%E4%B8%AD/"/>
     <url>/2020/06/10/MySQL%E4%B9%8B%E9%80%89%E5%8F%96%E6%9F%90%E4%B8%80%E5%88%97%E6%8F%92%E5%85%A5%E5%88%B0%E6%96%B0%E7%9A%84%E8%A1%A8%E4%B8%AD/</url>
