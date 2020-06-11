@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="Jclian91">
   <meta name="keywords" content="">
-  <title>Java,Python,Scala比较（三）wordcount - Blog</title>
+  <title>Scrapy爬虫（3）爬取中国高校前100名并写入MongoDB - Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 
@@ -152,8 +152,8 @@
               
   <div class="mt-3 post-meta">
     <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-    <time datetime="2020-06-10 18:23">
-      June 10, 2020 pm
+    <time datetime="2020-06-11 13:16">
+      June 11, 2020 pm
     </time>
   </div>
 
@@ -163,7 +163,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      536 字
+      367 字
     </span>
   
 
@@ -173,7 +173,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      19
+      11
        分钟
     </span>
   
@@ -212,85 +212,44 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>　　众所周知，wordcount在大数据中的地位相当于helloworld在各种编程语言中的地位。本文并不分析wordcount的计算方法，而是直接给出代码，目的是为了比较Spark中Java，Python，Scala的区别。<br>　　显然，Java写法较为复杂，Python简单易懂，Scala是Spark的原生代码，故即为简洁。<br>Java完整代码：</p>
-<div class="hljs"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.util.Arrays;
-<span class="hljs-keyword">import</span> java.util.Iterator;
-<span class="hljs-keyword">import</span> org.apache.spark.SparkConf; 
-<span class="hljs-keyword">import</span> org.apache.spark.api.java.JavaPairRDD; 
-<span class="hljs-keyword">import</span> org.apache.spark.api.java.JavaRDD; 
-<span class="hljs-keyword">import</span> org.apache.spark.api.java.JavaSparkContext; 
-<span class="hljs-keyword">import</span> org.apache.spark.api.java.function.FlatMapFunction; 
-<span class="hljs-keyword">import</span> org.apache.spark.api.java.function.Function2; 
-<span class="hljs-keyword">import</span> org.apache.spark.api.java.function.PairFunction;
-<span class="hljs-keyword">import</span> org.apache.spark.api.java.function.VoidFunction;
-<span class="hljs-keyword">import</span> scala.Tuple2;
-<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">wordcount</span> </span>&#123;
-	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;
-        SparkConf conf = <span class="hljs-keyword">new</span> SparkConf().setMaster(<span class="hljs-string">"local"</span>).setAppName(<span class="hljs-string">"wc"</span>);
-        JavaSparkContext sc = <span class="hljs-keyword">new</span> JavaSparkContext(conf);
-        <span class="hljs-comment">//read a txtfile</span>
-        JavaRDD&lt;String&gt; text = sc.textFile(<span class="hljs-string">"/home/vagrant/speech.txt"</span>);
-        <span class="hljs-comment">//split(" ")</span>
-        JavaRDD&lt;String&gt; words = text.flatMap(<span class="hljs-keyword">new</span> FlatMapFunction&lt;String, String&gt;() &#123;
-            <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">long</span> serialVersionUID = <span class="hljs-number">1L</span>;
-            <span class="hljs-meta">@Override</span>
-            <span class="hljs-function"><span class="hljs-keyword">public</span> Iterator&lt;String&gt; <span class="hljs-title">call</span><span class="hljs-params">(String line)</span> <span class="hljs-keyword">throws</span> Exception </span>&#123;
-                <span class="hljs-keyword">return</span> Arrays.asList(line.split(<span class="hljs-string">" "</span>)).iterator();
-            &#125;
-        &#125;);
-        <span class="hljs-comment">//word =&gt; (word,1)</span>
-        JavaPairRDD&lt;String,Integer&gt; counts=words.mapToPair(
-                <span class="hljs-keyword">new</span> PairFunction&lt;String, String, Integer&gt;() &#123;
-                    <span class="hljs-function"><span class="hljs-keyword">public</span> Tuple2&lt;String, Integer&gt; <span class="hljs-title">call</span><span class="hljs-params">(String s)</span> <span class="hljs-keyword">throws</span> Exception </span>&#123;
-                        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Tuple2(s, <span class="hljs-number">1</span>);
-                    &#125;
-                &#125;
-        );
-        <span class="hljs-comment">//reduceByKey</span>
-        JavaPairRDD &lt;String,Integer&gt; results=counts.reduceByKey(
-                <span class="hljs-keyword">new</span> Function2&lt;Integer, Integer, Integer&gt;() &#123;
-                    <span class="hljs-function"><span class="hljs-keyword">public</span> Integer <span class="hljs-title">call</span><span class="hljs-params">(Integer v1, Integer v2)</span> <span class="hljs-keyword">throws</span> Exception </span>&#123;
-                        <span class="hljs-keyword">return</span> v1 + v2;
-                    &#125;
-                &#125;
-        ) ;
-        <span class="hljs-comment">//print</span>
-        results.foreach(<span class="hljs-keyword">new</span> VoidFunction&lt;Tuple2&lt;String, Integer&gt;&gt;()&#123;
-        	  <span class="hljs-meta">@Override</span>
-        	  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">call</span><span class="hljs-params">(Tuple2&lt;String, Integer&gt; t)</span> <span class="hljs-keyword">throws</span> Exception </span>&#123; 
-        	                  System.out.println(<span class="hljs-string">"("</span>+t._1()+<span class="hljs-string">":"</span>+t._2()+<span class="hljs-string">")"</span>);
-        	  &#125;
-        	  &#125;);     		
-	&#125;
-&#125;</code></pre></div>
+              <p> 在之前的分享中，我们利用<a href="http://blog.csdn.net/jclian91/article/details/77387679" target="_blank" rel="noopener">urllib和BeautifulSoup模块爬取中国高校排名前100名并将其写入MySQL</a>。在本次分享中，我们将会用到Scrapy和BeautifulSoup模块，来爬取中国高校排名前100名并将其写入MongoDB数据库。爬取的网页为:<a href="http://gaokao.xdf.cn/201702/10612921.html" target="_blank" rel="noopener">http://gaokao.xdf.cn/201702/10612921.html</a>, 截图如下（部分）：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTI4MTIwMjE0NDYy?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>首先登陆MongoDB数据库，创建好testdb数据库和university_rank集合（collection）。然后开始着手写Scrapy爬虫。<br>完整的Python代码如下：</p>
+<div class="hljs"><pre><code class="hljs python"><span class="hljs-comment">#import modules</span>
+<span class="hljs-keyword">import</span> bs4
+<span class="hljs-keyword">import</span> scrapy
+<span class="hljs-keyword">import</span> pymongo
+<span class="hljs-keyword">from</span> bs4 <span class="hljs-keyword">import</span> BeautifulSoup
+<span class="hljs-keyword">from</span> pymongo <span class="hljs-keyword">import</span> MongoClient
 
-<p>Pyspark完整代码：</p>
-<div class="hljs"><pre><code class="hljs python"><span class="hljs-comment"># Imports the PySpark libraries</span>
-<span class="hljs-keyword">from</span> pyspark <span class="hljs-keyword">import</span> SparkConf, SparkContext  
-<span class="hljs-comment"># Configure the Spark context to give a name to the application</span>
-sparkConf = SparkConf().setAppName(<span class="hljs-string">"MyWordCounts"</span>)
-sc = SparkContext(conf = sparkConf)
-<span class="hljs-comment"># The text file containing the words to count (this is the Spark README file)</span>
-textFile = sc.textFile(<span class="hljs-string">'/home/vagrant/speech.txt'</span>)
-<span class="hljs-comment"># The code for counting the words (note that the execution mode is lazy)</span>
-<span class="hljs-comment"># Uses the same paradigm Map and Reduce of Hadoop, but fully in memory</span>
-wordCounts = textFile.flatMap(<span class="hljs-keyword">lambda</span> line: line.split()).map(<span class="hljs-keyword">lambda</span> word: (word, <span class="hljs-number">1</span>)).reduceByKey(<span class="hljs-keyword">lambda</span> a, b: a+b)
-<span class="hljs-comment"># Executes the DAG (Directed Acyclic Graph) for counting and collecting the result</span>
-<span class="hljs-keyword">for</span> wc <span class="hljs-keyword">in</span> wordCounts.collect():
-    print(wc)</code></pre></div>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UniversityRankSpider</span><span class="hljs-params">(scrapy.Spider)</span>:</span>
+    name = <span class="hljs-string">"university-rank"</span>  <span class="hljs-comment">#name of spider</span>
+    start_urls = [<span class="hljs-string">'http://gaokao.xdf.cn/201702/10612921.html'</span>,]  <span class="hljs-comment">#url of website</span>
 
-<p>Scala完整代码：</p>
-<div class="hljs"><pre><code class="hljs scala"><span class="hljs-keyword">import</span> org.apache.spark.&#123;<span class="hljs-type">SparkContext</span>,<span class="hljs-type">SparkConf</span>&#125;
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">parse</span><span class="hljs-params">(self, response)</span>:</span>  <span class="hljs-comment">#parse function</span>
+        content = response.xpath(<span class="hljs-string">"//tbody"</span>).extract()[<span class="hljs-number">0</span>]
+	    soup = BeautifulSoup(content, <span class="hljs-string">"lxml"</span>)  <span class="hljs-comment">#use BeautifulSoup      </span>
+        table = soup.find(<span class="hljs-string">'tbody'</span>)
+        count = <span class="hljs-number">0</span> 
+        lst = []   <span class="hljs-comment"># list to save data from the table</span>
+        <span class="hljs-keyword">for</span> tr <span class="hljs-keyword">in</span> table.children:  <span class="hljs-comment">#BeautifulSoup grammmer</span>
+            <span class="hljs-keyword">if</span> isinstance(tr, bs4.element.Tag):
+                td = tr(<span class="hljs-string">'td'</span>)
+                <span class="hljs-keyword">if</span> count &gt;= <span class="hljs-number">2</span>:  <span class="hljs-comment">#ingore the first line</span>
+                    lst.append([td[i](<span class="hljs-string">'p'</span>)[<span class="hljs-number">0</span>].string.replace(<span class="hljs-string">'\n'</span>,<span class="hljs-string">''</span>).replace(<span class="hljs-string">'\t'</span>,<span class="hljs-string">''</span>) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(<span class="hljs-number">8</span>)])
+                count += <span class="hljs-number">1</span>
+        
+	    conn = MongoClient(<span class="hljs-string">'mongodb://localhost:27017/'</span>)  <span class="hljs-comment">#connect mongodb</span>
+	    db = conn.testdb
+        
+        <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> lst:  <span class="hljs-comment">#insert data into university_rank table</span>
+            db.university_rank.insert([
+ 	        &#123;<span class="hljs-string">'rank'</span>:<span class="hljs-string">'%s'</span>%item[<span class="hljs-number">0</span>], <span class="hljs-string">'university'</span>:<span class="hljs-string">'%s'</span>%item[<span class="hljs-number">1</span>], <span class="hljs-string">'address'</span>:<span class="hljs-string">'%s'</span>%item[<span class="hljs-number">2</span>], <span class="hljs-string">'local_rank'</span>:<span class="hljs-string">'%s'</span>%item[<span class="hljs-number">3</span>],
+                 <span class="hljs-string">'total grade'</span>:<span class="hljs-string">'%s'</span>%item[<span class="hljs-number">4</span>], <span class="hljs-string">'type'</span>:<span class="hljs-string">'%s'</span>%item[<span class="hljs-number">5</span>], <span class="hljs-string">'star rank'</span>:<span class="hljs-string">'%s'</span>%item[<span class="hljs-number">6</span>], <span class="hljs-string">'class'</span>:<span class="hljs-string">'%s'</span>%item[<span class="hljs-number">7</span>]&#125;,
+		]) 
 
-<span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">test</span></span>&#123;
-  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span></span>(args:<span class="hljs-type">Array</span>[<span class="hljs-type">String</span>])&#123;
-    <span class="hljs-keyword">val</span> sparkConf = <span class="hljs-keyword">new</span> <span class="hljs-type">SparkConf</span>().setMaster(<span class="hljs-string">"local"</span>).setAppName(<span class="hljs-string">"MyWordCounts"</span>)
-    <span class="hljs-keyword">val</span> sc = <span class="hljs-keyword">new</span> <span class="hljs-type">SparkContext</span>(sparkConf)
-    sc.textFile(<span class="hljs-string">"/home/vagrant/speech.txt"</span>).flatMap(_.split(' ')).map((_,<span class="hljs-number">1</span>)).reduceByKey(_+_).foreach(println)
-  &#125;
-&#125;</code></pre></div>
+	    <span class="hljs-keyword">print</span> <span class="hljs-string">'Successfully downloading data from website, and write it to mongodb database!'</span></code></pre></div>
+<p>Scrapy爬虫的运行结果如下：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTI4MTIwMTAwNTc3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>接下来我们去robo3t中查看mongodb数据库，其中的university_rank集合如下：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTI4MTIwMTE3OTUy?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>Bingo，我们成功地把数据写入了mongodb数据库！</p>
 <hr>
-本次分享到此结束，欢迎大家批评与交流~~
+本次分享到此结束， 欢迎大家批评与交流~~
 
             </article>
             <hr>
@@ -300,7 +259,7 @@ wordCounts = textFile.flatMap(<span class="hljs-keyword">lambda</span> line: lin
                   <div class="post-meta mr-3">
                     <i class="iconfont icon-category"></i>
                     
-                      <a class="hover-with-bg" href="/categories/Java/">Java</a>
+                      <a class="hover-with-bg" href="/categories/%E7%88%AC%E8%99%AB/">爬虫</a>
                     
                   </div>
                 
@@ -308,11 +267,7 @@ wordCounts = textFile.flatMap(<span class="hljs-keyword">lambda</span> line: lin
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/Python/">Python</a>
-                    
-                      <a class="hover-with-bg" href="/tags/Java/">Java</a>
-                    
-                      <a class="hover-with-bg" href="/tags/Scala/">Scala</a>
+                      <a class="hover-with-bg" href="/tags/Scrapy/">Scrapy</a>
                     
                   </div>
                 
@@ -325,9 +280,9 @@ wordCounts = textFile.flatMap(<span class="hljs-keyword">lambda</span> line: lin
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/2020/06/11/%EF%BC%881%EF%BC%89%E7%88%AC%E5%8F%96%E8%8F%9C%E9%B8%9FGit%E6%95%99%E7%A8%8B%E7%9B%AE%E5%BD%95/">
+                      <a href="/2020/06/11/MongoDB%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">scrapy爬虫（1）爬取菜鸟Git教程目录</span>
+                        <span class="hidden-mobile">MongoDB入门教程</span>
                         <span class="visible-mobile">Previous</span>
                       </a>
                     
@@ -335,8 +290,8 @@ wordCounts = textFile.flatMap(<span class="hljs-keyword">lambda</span> line: lin
                   <div class="post-next col-6">
                     
                     
-                      <a href="/2020/06/10/%E5%88%A9%E7%94%A8Shell%E5%B0%86MySQL%E6%95%B0%E6%8D%AE%E8%A1%A8%E5%AF%BC%E5%87%BA%E4%B8%BAcsv%E6%96%87%E4%BB%B6/">
-                        <span class="hidden-mobile">利用Shell将MySQL数据表导出为csv文件</span>
+                      <a href="/2020/06/11/Scrapy%E7%88%AC%E8%99%AB%EF%BC%882%EF%BC%89%E7%88%AC%E5%8F%96%E6%96%B0%E6%B5%AA%E6%97%85%E6%B8%B8%E5%9B%BE%E7%89%87/">
+                        <span class="hidden-mobile">Scrapy爬虫（2）爬取新浪旅游图片</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -556,7 +511,7 @@ wordCounts = textFile.flatMap(<span class="hljs-keyword">lambda</span> line: lin
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "Java,Python,Scala比较（三）wordcount&nbsp;",
+        "Scrapy爬虫（3）爬取中国高校前100名并写入MongoDB&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,

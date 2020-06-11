@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="Jclian91">
   <meta name="keywords" content="">
-  <title>Java,Python,Scala比较（三）wordcount - Blog</title>
+  <title>利用Sqoop实现MySQL与HDFS数据互导 - Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 
@@ -152,8 +152,8 @@
               
   <div class="mt-3 post-meta">
     <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-    <time datetime="2020-06-10 18:23">
-      June 10, 2020 pm
+    <time datetime="2020-06-11 13:20">
+      June 11, 2020 pm
     </time>
   </div>
 
@@ -163,7 +163,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      536 字
+      390 字
     </span>
   
 
@@ -173,7 +173,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      19
+      9
        分钟
     </span>
   
@@ -212,85 +212,27 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>　　众所周知，wordcount在大数据中的地位相当于helloworld在各种编程语言中的地位。本文并不分析wordcount的计算方法，而是直接给出代码，目的是为了比较Spark中Java，Python，Scala的区别。<br>　　显然，Java写法较为复杂，Python简单易懂，Scala是Spark的原生代码，故即为简洁。<br>Java完整代码：</p>
-<div class="hljs"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.util.Arrays;
-<span class="hljs-keyword">import</span> java.util.Iterator;
-<span class="hljs-keyword">import</span> org.apache.spark.SparkConf; 
-<span class="hljs-keyword">import</span> org.apache.spark.api.java.JavaPairRDD; 
-<span class="hljs-keyword">import</span> org.apache.spark.api.java.JavaRDD; 
-<span class="hljs-keyword">import</span> org.apache.spark.api.java.JavaSparkContext; 
-<span class="hljs-keyword">import</span> org.apache.spark.api.java.function.FlatMapFunction; 
-<span class="hljs-keyword">import</span> org.apache.spark.api.java.function.Function2; 
-<span class="hljs-keyword">import</span> org.apache.spark.api.java.function.PairFunction;
-<span class="hljs-keyword">import</span> org.apache.spark.api.java.function.VoidFunction;
-<span class="hljs-keyword">import</span> scala.Tuple2;
-<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">wordcount</span> </span>&#123;
-	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;
-        SparkConf conf = <span class="hljs-keyword">new</span> SparkConf().setMaster(<span class="hljs-string">"local"</span>).setAppName(<span class="hljs-string">"wc"</span>);
-        JavaSparkContext sc = <span class="hljs-keyword">new</span> JavaSparkContext(conf);
-        <span class="hljs-comment">//read a txtfile</span>
-        JavaRDD&lt;String&gt; text = sc.textFile(<span class="hljs-string">"/home/vagrant/speech.txt"</span>);
-        <span class="hljs-comment">//split(" ")</span>
-        JavaRDD&lt;String&gt; words = text.flatMap(<span class="hljs-keyword">new</span> FlatMapFunction&lt;String, String&gt;() &#123;
-            <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">long</span> serialVersionUID = <span class="hljs-number">1L</span>;
-            <span class="hljs-meta">@Override</span>
-            <span class="hljs-function"><span class="hljs-keyword">public</span> Iterator&lt;String&gt; <span class="hljs-title">call</span><span class="hljs-params">(String line)</span> <span class="hljs-keyword">throws</span> Exception </span>&#123;
-                <span class="hljs-keyword">return</span> Arrays.asList(line.split(<span class="hljs-string">" "</span>)).iterator();
-            &#125;
-        &#125;);
-        <span class="hljs-comment">//word =&gt; (word,1)</span>
-        JavaPairRDD&lt;String,Integer&gt; counts=words.mapToPair(
-                <span class="hljs-keyword">new</span> PairFunction&lt;String, String, Integer&gt;() &#123;
-                    <span class="hljs-function"><span class="hljs-keyword">public</span> Tuple2&lt;String, Integer&gt; <span class="hljs-title">call</span><span class="hljs-params">(String s)</span> <span class="hljs-keyword">throws</span> Exception </span>&#123;
-                        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Tuple2(s, <span class="hljs-number">1</span>);
-                    &#125;
-                &#125;
-        );
-        <span class="hljs-comment">//reduceByKey</span>
-        JavaPairRDD &lt;String,Integer&gt; results=counts.reduceByKey(
-                <span class="hljs-keyword">new</span> Function2&lt;Integer, Integer, Integer&gt;() &#123;
-                    <span class="hljs-function"><span class="hljs-keyword">public</span> Integer <span class="hljs-title">call</span><span class="hljs-params">(Integer v1, Integer v2)</span> <span class="hljs-keyword">throws</span> Exception </span>&#123;
-                        <span class="hljs-keyword">return</span> v1 + v2;
-                    &#125;
-                &#125;
-        ) ;
-        <span class="hljs-comment">//print</span>
-        results.foreach(<span class="hljs-keyword">new</span> VoidFunction&lt;Tuple2&lt;String, Integer&gt;&gt;()&#123;
-        	  <span class="hljs-meta">@Override</span>
-        	  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">call</span><span class="hljs-params">(Tuple2&lt;String, Integer&gt; t)</span> <span class="hljs-keyword">throws</span> Exception </span>&#123; 
-        	                  System.out.println(<span class="hljs-string">"("</span>+t._1()+<span class="hljs-string">":"</span>+t._2()+<span class="hljs-string">")"</span>);
-        	  &#125;
-        	  &#125;);     		
-	&#125;
-&#125;</code></pre></div>
-
-<p>Pyspark完整代码：</p>
-<div class="hljs"><pre><code class="hljs python"><span class="hljs-comment"># Imports the PySpark libraries</span>
-<span class="hljs-keyword">from</span> pyspark <span class="hljs-keyword">import</span> SparkConf, SparkContext  
-<span class="hljs-comment"># Configure the Spark context to give a name to the application</span>
-sparkConf = SparkConf().setAppName(<span class="hljs-string">"MyWordCounts"</span>)
-sc = SparkContext(conf = sparkConf)
-<span class="hljs-comment"># The text file containing the words to count (this is the Spark README file)</span>
-textFile = sc.textFile(<span class="hljs-string">'/home/vagrant/speech.txt'</span>)
-<span class="hljs-comment"># The code for counting the words (note that the execution mode is lazy)</span>
-<span class="hljs-comment"># Uses the same paradigm Map and Reduce of Hadoop, but fully in memory</span>
-wordCounts = textFile.flatMap(<span class="hljs-keyword">lambda</span> line: line.split()).map(<span class="hljs-keyword">lambda</span> word: (word, <span class="hljs-number">1</span>)).reduceByKey(<span class="hljs-keyword">lambda</span> a, b: a+b)
-<span class="hljs-comment"># Executes the DAG (Directed Acyclic Graph) for counting and collecting the result</span>
-<span class="hljs-keyword">for</span> wc <span class="hljs-keyword">in</span> wordCounts.collect():
-    print(wc)</code></pre></div>
-
-<p>Scala完整代码：</p>
-<div class="hljs"><pre><code class="hljs scala"><span class="hljs-keyword">import</span> org.apache.spark.&#123;<span class="hljs-type">SparkContext</span>,<span class="hljs-type">SparkConf</span>&#125;
-
-<span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">test</span></span>&#123;
-  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span></span>(args:<span class="hljs-type">Array</span>[<span class="hljs-type">String</span>])&#123;
-    <span class="hljs-keyword">val</span> sparkConf = <span class="hljs-keyword">new</span> <span class="hljs-type">SparkConf</span>().setMaster(<span class="hljs-string">"local"</span>).setAppName(<span class="hljs-string">"MyWordCounts"</span>)
-    <span class="hljs-keyword">val</span> sc = <span class="hljs-keyword">new</span> <span class="hljs-type">SparkContext</span>(sparkConf)
-    sc.textFile(<span class="hljs-string">"/home/vagrant/speech.txt"</span>).flatMap(_.split(' ')).map((_,<span class="hljs-number">1</span>)).reduceByKey(_+_).foreach(println)
-  &#125;
-&#125;</code></pre></div>
+              <p>利用Sqoop将MySQL中的数据表导入到hdfs端：（表格的主键要存在）<br>首先在MySQL的test数据库中有如下表格person：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTMwMDkyODM4Mzkx?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>在终端输入以下命令即可实现将person表导入到hdfs端：</p>
+<div class="hljs"><pre><code class="hljs jboss-cli">sqoop import \
+<span class="hljs-params">--connect</span> jdbc<span class="hljs-function">:mysql</span>:<span class="hljs-string">//localhost/test</span> \
+<span class="hljs-params">--username</span> root <span class="hljs-params">--password</span> 147369 \
+<span class="hljs-params">--table</span> person \
+<span class="hljs-params">--target-dir</span> <span class="hljs-string">/vagrant/person_hdfs</span> \
+<span class="hljs-params">--null-non-string</span> '\\N';</code></pre></div>
+<p>其中import表示导入数据，connect行命令表示连接MySQL的test数据库，username和password为MySQL的用户名和密码，table为要导入的表格，target-dir为hdfs的目标位置，null-non-string ‘\N’会将数据库表中的null值转化为Hive和Impala中的\N,便于兼容。<br>运行结果如下：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTMwMDkzNTUyMjk5?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>前往hdfs网页查看：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTMwMDkzNzA3MDQ0?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<p>利用Sqoop将hdfs端的数据表导入到MySQL：<br>1.查看hdfs端数据的内容：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTMwMDkzOTQ3MDUy?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>可知：person目录下的数据以’,’为分界符。我们的目标是将person目录下的全部数据导入到MySQL。<br>2.在MySQL中创建相应格式的表格：</p>
+<div class="hljs"><pre><code class="hljs sql"><span class="hljs-keyword">use</span> <span class="hljs-keyword">test</span>
+<span class="hljs-keyword">create</span> <span class="hljs-keyword">table</span> p(<span class="hljs-keyword">id</span> <span class="hljs-built_in">int</span> primary <span class="hljs-keyword">key</span>, age <span class="hljs-built_in">int</span>, sex <span class="hljs-built_in">int</span>);</code></pre></div>
+<p>3.在终端输入以下命令即可实现将hdfs端person目录下的数据导入到MySQL中：</p>
+<div class="hljs"><pre><code class="hljs jboss-cli">sqoop export \
+&gt; <span class="hljs-params">--connect</span> jdbc<span class="hljs-function">:mysql</span>:<span class="hljs-string">//localhost/test</span> \
+&gt; <span class="hljs-params">--username</span> root <span class="hljs-params">--password</span> 147369 \
+&gt; <span class="hljs-params">--table</span> p \
+&gt; <span class="hljs-params">--export-dir</span> <span class="hljs-string">/user/hive/warehouse/person/</span>* \
+&gt; <span class="hljs-params">--input-fields-terminated-by</span> ',';</code></pre></div>
+<p>其中export命令表示导出数据，table为MySQL中test数据库的表格p，export-dir为hdfs端需要导出的目录，input-fields-terminated-by ‘,’表示hdfs端需要导出的数据的分界符为’,’。<br>4.前往MySQL数据库查看：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTMwMDk1NDU3MDU3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>Bingo，这样我们就利用Sqoop实现MySQL与HDFS数据互导。</p>
 <hr>
-本次分享到此结束，欢迎大家批评与交流~~
+本次分享到此结束，欢迎大家交流与批评~~
 
             </article>
             <hr>
@@ -300,7 +242,7 @@ wordCounts = textFile.flatMap(<span class="hljs-keyword">lambda</span> line: lin
                   <div class="post-meta mr-3">
                     <i class="iconfont icon-category"></i>
                     
-                      <a class="hover-with-bg" href="/categories/Java/">Java</a>
+                      <a class="hover-with-bg" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
                     
                   </div>
                 
@@ -308,11 +250,9 @@ wordCounts = textFile.flatMap(<span class="hljs-keyword">lambda</span> line: lin
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/Python/">Python</a>
+                      <a class="hover-with-bg" href="/tags/MySQL/">MySQL</a>
                     
-                      <a class="hover-with-bg" href="/tags/Java/">Java</a>
-                    
-                      <a class="hover-with-bg" href="/tags/Scala/">Scala</a>
+                      <a class="hover-with-bg" href="/tags/Sqoop/">Sqoop</a>
                     
                   </div>
                 
@@ -325,18 +265,12 @@ wordCounts = textFile.flatMap(<span class="hljs-keyword">lambda</span> line: lin
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/2020/06/11/%EF%BC%881%EF%BC%89%E7%88%AC%E5%8F%96%E8%8F%9C%E9%B8%9FGit%E6%95%99%E7%A8%8B%E7%9B%AE%E5%BD%95/">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">scrapy爬虫（1）爬取菜鸟Git教程目录</span>
-                        <span class="visible-mobile">Previous</span>
-                      </a>
-                    
                   </div>
                   <div class="post-next col-6">
                     
                     
-                      <a href="/2020/06/10/%E5%88%A9%E7%94%A8Shell%E5%B0%86MySQL%E6%95%B0%E6%8D%AE%E8%A1%A8%E5%AF%BC%E5%87%BA%E4%B8%BAcsv%E6%96%87%E4%BB%B6/">
-                        <span class="hidden-mobile">利用Shell将MySQL数据表导出为csv文件</span>
+                      <a href="/2020/06/11/MongoDB%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B/">
+                        <span class="hidden-mobile">MongoDB入门教程</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -556,7 +490,7 @@ wordCounts = textFile.flatMap(<span class="hljs-keyword">lambda</span> line: lin
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "Java,Python,Scala比较（三）wordcount&nbsp;",
+        "利用Sqoop实现MySQL与HDFS数据互导&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,
