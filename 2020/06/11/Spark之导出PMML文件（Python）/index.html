@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="Jclian91">
   <meta name="keywords" content="">
-  <title>利用Sqoop实现MySQL与HDFS数据互导 - Blog</title>
+  <title>Spark之导出PMML文件（Python） - Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 
@@ -152,7 +152,7 @@
               
   <div class="mt-3 post-meta">
     <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-    <time datetime="2020-06-11 13:20">
+    <time datetime="2020-06-11 22:35">
       June 11, 2020 pm
     </time>
   </div>
@@ -163,7 +163,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      390 字
+      629 字
     </span>
   
 
@@ -173,7 +173,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      9
+      17
        分钟
     </span>
   
@@ -212,27 +212,52 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>利用Sqoop将MySQL中的数据表导入到hdfs端：（表格的主键要存在）<br>首先在MySQL的test数据库中有如下表格person：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTMwMDkyODM4Mzkx?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>在终端输入以下命令即可实现将person表导入到hdfs端：</p>
-<div class="hljs"><pre><code class="hljs jboss-cli">sqoop import \
-<span class="hljs-params">--connect</span> jdbc<span class="hljs-function">:mysql</span>:<span class="hljs-string">//localhost/test</span> \
-<span class="hljs-params">--username</span> root <span class="hljs-params">--password</span> 147369 \
-<span class="hljs-params">--table</span> person \
-<span class="hljs-params">--target-dir</span> <span class="hljs-string">/vagrant/person_hdfs</span> \
-<span class="hljs-params">--null-non-string</span> '\\N';</code></pre></div>
-<p>其中import表示导入数据，connect行命令表示连接MySQL的test数据库，username和password为MySQL的用户名和密码，table为要导入的表格，target-dir为hdfs的目标位置，null-non-string ‘\N’会将数据库表中的null值转化为Hive和Impala中的\N,便于兼容。<br>运行结果如下：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTMwMDkzNTUyMjk5?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>前往hdfs网页查看：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTMwMDkzNzA3MDQ0?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
-<p>利用Sqoop将hdfs端的数据表导入到MySQL：<br>1.查看hdfs端数据的内容：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTMwMDkzOTQ3MDUy?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>可知：person目录下的数据以’,’为分界符。我们的目标是将person目录下的全部数据导入到MySQL。<br>2.在MySQL中创建相应格式的表格：</p>
-<div class="hljs"><pre><code class="hljs sql"><span class="hljs-keyword">use</span> <span class="hljs-keyword">test</span>
-<span class="hljs-keyword">create</span> <span class="hljs-keyword">table</span> p(<span class="hljs-keyword">id</span> <span class="hljs-built_in">int</span> primary <span class="hljs-keyword">key</span>, age <span class="hljs-built_in">int</span>, sex <span class="hljs-built_in">int</span>);</code></pre></div>
-<p>3.在终端输入以下命令即可实现将hdfs端person目录下的数据导入到MySQL中：</p>
-<div class="hljs"><pre><code class="hljs jboss-cli">sqoop export \
-&gt; <span class="hljs-params">--connect</span> jdbc<span class="hljs-function">:mysql</span>:<span class="hljs-string">//localhost/test</span> \
-&gt; <span class="hljs-params">--username</span> root <span class="hljs-params">--password</span> 147369 \
-&gt; <span class="hljs-params">--table</span> p \
-&gt; <span class="hljs-params">--export-dir</span> <span class="hljs-string">/user/hive/warehouse/person/</span>* \
-&gt; <span class="hljs-params">--input-fields-terminated-by</span> ',';</code></pre></div>
-<p>其中export命令表示导出数据，table为MySQL中test数据库的表格p，export-dir为hdfs端需要导出的目录，input-fields-terminated-by ‘,’表示hdfs端需要导出的数据的分界符为’,’。<br>4.前往MySQL数据库查看：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTMwMDk1NDU3MDU3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>Bingo，这样我们就利用Sqoop实现MySQL与HDFS数据互导。</p>
-<hr>
-本次分享到此结束，欢迎大家交流与批评~~
+              <p>PMML，全称预言模型标记语言（Predictive Model Markup Language），利用XML描述和存储数据挖掘模型，是一个已经被W3C所接受的标准。PMML是一种基于XML的语言，用来定义预言模型。详细的介绍可以参考：<a href="http://dmg.org/pmml/v4-3/GeneralStructure.html。" target="_blank" rel="noopener">http://dmg.org/pmml/v4-3/GeneralStructure.html。</a><br>本文将介绍如何在Spark中导出PMML文件（Python语言）。<br>首先我们需要安装jpmml-sparkml-package。具体的安装细节可以参考：<a href="https://github.com/jpmml/jpmml-sparkml-package。" target="_blank" rel="noopener">https://github.com/jpmml/jpmml-sparkml-package。</a><br>1.利用Git下载JPMML-SparkML-Package project</p>
+<div class="hljs"><pre><code class="hljs crmsh">git init
+git <span class="hljs-keyword">clone</span> <span class="hljs-title">https</span>://github.com/jpmml/jpmml-sparkml-package.git 
+cd jpmml-sparkml-package</code></pre></div>
+<p>如下图所示：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMjA0MTE0NjI4ODg4?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>2.生成uber-JAR文件<br>将Spark的Python路径添加到环境变量</p>
+<div class="hljs"><pre><code class="hljs routeros">sudo gedit /etc/profile
+<span class="hljs-builtin-name">export</span> <span class="hljs-attribute">PYTHONPATH</span>=<span class="hljs-variable">$PYTHONPATH</span>:$SPARK_HOME/python
+source /etc/profile</code></pre></div>
+<p>再生成uber-JAR文件</p>
+<div class="hljs"><pre><code class="hljs armasm"><span class="hljs-keyword">mvn </span>-Ppyspark -Dpython.exe=/usr/<span class="hljs-keyword">bin/python3.5 </span>clean package</code></pre></div>
+<p>注意这里的python路径要是你自己的系统里的Python路径。耐心等待运行，运行结果如下：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMjA0MTE1MzMzODk4?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>这时jpmml-sparkml-package文件夹下会多出target文件夹，如下：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMjA0MTE1NTU4NjY0?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>3.将上述的jpmml_sparkml-1.3rc0-py3.5.egg文件添加到Eclipse的Pydev的libraries中，如下图：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMjA0MTE1ODU2MTEw?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>并且将上述的两个jar包复制到spark安装目录下的jars文件夹下。<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMjA0MTIwMTA2MTg4?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>这样我们就完成了所有的环境配置。接下来我们进行测试：<br>首先，我们需要数据……数据文件test_data.csv截图如下（部分）：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMjA0MTIwMjU4MTA1?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>完整的数据集可在<a href="http://archive.ics.uci.edu/ml/datasets/Wholesale+customers找到。" target="_blank" rel="noopener">http://archive.ics.uci.edu/ml/datasets/Wholesale+customers找到。</a><br>在Eclipse中新建test_PMML项目，如下图：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMjA0MTIwOTAyMDcy?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>其中test_pmml.py的python代码如下：</p>
+<div class="hljs"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pyspark <span class="hljs-keyword">import</span> SparkContext
+<span class="hljs-keyword">from</span> pyspark.sql <span class="hljs-keyword">import</span> SparkSession
+<span class="hljs-keyword">from</span> pyspark.ml <span class="hljs-keyword">import</span> Pipeline
+<span class="hljs-keyword">from</span> pyspark.ml.classification <span class="hljs-keyword">import</span> LogisticRegression
+<span class="hljs-keyword">from</span> pyspark.ml.feature <span class="hljs-keyword">import</span> RFormula
+<span class="hljs-keyword">from</span> jpmml_sparkml <span class="hljs-keyword">import</span> toPMMLBytes
+
+
+sc = SparkContext.getOrCreate()
+spark = SparkSession.builder.appName(<span class="hljs-string">"PMML Predict"</span>).config(<span class="hljs-string">"spark.some.config.option"</span>, <span class="hljs-string">"some-value"</span>).getOrCreate()
+print(<span class="hljs-string">"Read file from /home/vagrant/......"</span>)
+df = spark.read.csv(<span class="hljs-string">"/home/vagrant/test_data.csv"</span>, header = <span class="hljs-literal">True</span>, inferSchema = <span class="hljs-literal">True</span>)
+print(<span class="hljs-string">"Reading complete.\n"</span>)
+
+print(<span class="hljs-string">"Processing logistic model......"</span>)
+formula = RFormula(formula = <span class="hljs-string">"target ~ ."</span>)
+logit = LogisticRegression()
+pipeline = Pipeline(stages = [formula, logit])
+pipelineModel = pipeline.fit(df)
+print(<span class="hljs-string">"Modeling complete.\n"</span>)
+
+print(<span class="hljs-string">"Exporting pmml file......"</span>)
+pmmlBytes = toPMMLBytes(sc, df, pipelineModel)
+output_rdd = sc.parallelize([pmmlBytes]) 
+output_rdd.saveAsTextFile(<span class="hljs-string">"pmml_Logit"</span>)
+print(<span class="hljs-string">"Export complete.\nThe end."</span>)</code></pre></div>
+<p>运行结果如下：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMjA0MTIxMDM0OTY3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>同时会生成pmml_Logit文件夹，里面包含PMML文件part-00000，内容如下图（部分）：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMjA0MTIxMjE4NzM5?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>这样我们就成功地导出了逻辑回归模型的PMML文件！本次分享就到这儿啦~</p>
+<p>参考文献：</p>
+<ol>
+<li>PMML介绍：<a href="http://dmg.org/pmml/v4-3/GeneralStructure.html" target="_blank" rel="noopener">http://dmg.org/pmml/v4-3/GeneralStructure.html</a></li>
+<li>测试数据集：<a href="http://archive.ics.uci.edu/ml/machine-learning-databases/00292/" target="_blank" rel="noopener">http://archive.ics.uci.edu/ml/machine-learning-databases/00292/</a></li>
+<li><a href="https://stackoverflow.com/questions/39888728/export-models-as-pmml-using-pyspark/39902676#39902676" target="_blank" rel="noopener">https://stackoverflow.com/questions/39888728/export-models-as-pmml-using-pyspark/39902676#39902676</a></li>
+<li><a href="https://github.com/jpmml/jpmml-sparkml-package" target="_blank" rel="noopener">https://github.com/jpmml/jpmml-sparkml-package</a></li>
+</ol>
+<p><strong><em>注意：</em></strong> 本人现已开通微信公众号： Python爬虫与算法（微信号为：easy_web_scrape）， 欢迎大家关注哦~~</p>
 
             </article>
             <hr>
@@ -250,9 +275,7 @@
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/MySQL/">MySQL</a>
-                    
-                      <a class="hover-with-bg" href="/tags/Sqoop/">Sqoop</a>
+                      <a class="hover-with-bg" href="/tags/Spark/">Spark</a>
                     
                   </div>
                 
@@ -265,9 +288,9 @@
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/2020/06/11/Spark%E4%B9%8B%E5%AF%BC%E5%87%BAPMML%E6%96%87%E4%BB%B6%EF%BC%88Python%EF%BC%89/">
+                      <a href="/2020/06/11/%E5%88%9D%E8%AF%86Avro/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Spark之导出PMML文件（Python）</span>
+                        <span class="hidden-mobile">初识Avro</span>
                         <span class="visible-mobile">Previous</span>
                       </a>
                     
@@ -275,8 +298,8 @@
                   <div class="post-next col-6">
                     
                     
-                      <a href="/2020/06/11/MongoDB%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B/">
-                        <span class="hidden-mobile">MongoDB入门教程</span>
+                      <a href="/2020/06/11/%E5%88%A9%E7%94%A8Sqoop%E5%AE%9E%E7%8E%B0MySQL%E4%B8%8EHDFS%E6%95%B0%E6%8D%AE%E4%BA%92%E5%AF%BC/">
+                        <span class="hidden-mobile">利用Sqoop实现MySQL与HDFS数据互导</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -496,7 +519,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "利用Sqoop实现MySQL与HDFS数据互导&nbsp;",
+        "Spark之导出PMML文件（Python）&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,

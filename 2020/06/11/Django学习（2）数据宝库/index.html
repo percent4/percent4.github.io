@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="Jclian91">
   <meta name="keywords" content="">
-  <title>利用Sqoop实现MySQL与HDFS数据互导 - Blog</title>
+  <title>Django学习（2）数据宝库 - Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 
@@ -152,7 +152,7 @@
               
   <div class="mt-3 post-meta">
     <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-    <time datetime="2020-06-11 13:20">
+    <time datetime="2020-06-11 22:41">
       June 11, 2020 pm
     </time>
   </div>
@@ -163,7 +163,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      390 字
+      980 字
     </span>
   
 
@@ -173,7 +173,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      9
+      26
        分钟
     </span>
   
@@ -212,27 +212,71 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>利用Sqoop将MySQL中的数据表导入到hdfs端：（表格的主键要存在）<br>首先在MySQL的test数据库中有如下表格person：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTMwMDkyODM4Mzkx?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>在终端输入以下命令即可实现将person表导入到hdfs端：</p>
-<div class="hljs"><pre><code class="hljs jboss-cli">sqoop import \
-<span class="hljs-params">--connect</span> jdbc<span class="hljs-function">:mysql</span>:<span class="hljs-string">//localhost/test</span> \
-<span class="hljs-params">--username</span> root <span class="hljs-params">--password</span> 147369 \
-<span class="hljs-params">--table</span> person \
-<span class="hljs-params">--target-dir</span> <span class="hljs-string">/vagrant/person_hdfs</span> \
-<span class="hljs-params">--null-non-string</span> '\\N';</code></pre></div>
-<p>其中import表示导入数据，connect行命令表示连接MySQL的test数据库，username和password为MySQL的用户名和密码，table为要导入的表格，target-dir为hdfs的目标位置，null-non-string ‘\N’会将数据库表中的null值转化为Hive和Impala中的\N,便于兼容。<br>运行结果如下：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTMwMDkzNTUyMjk5?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>前往hdfs网页查看：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTMwMDkzNzA3MDQ0?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
-<p>利用Sqoop将hdfs端的数据表导入到MySQL：<br>1.查看hdfs端数据的内容：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTMwMDkzOTQ3MDUy?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>可知：person目录下的数据以’,’为分界符。我们的目标是将person目录下的全部数据导入到MySQL。<br>2.在MySQL中创建相应格式的表格：</p>
-<div class="hljs"><pre><code class="hljs sql"><span class="hljs-keyword">use</span> <span class="hljs-keyword">test</span>
-<span class="hljs-keyword">create</span> <span class="hljs-keyword">table</span> p(<span class="hljs-keyword">id</span> <span class="hljs-built_in">int</span> primary <span class="hljs-keyword">key</span>, age <span class="hljs-built_in">int</span>, sex <span class="hljs-built_in">int</span>);</code></pre></div>
-<p>3.在终端输入以下命令即可实现将hdfs端person目录下的数据导入到MySQL中：</p>
-<div class="hljs"><pre><code class="hljs jboss-cli">sqoop export \
-&gt; <span class="hljs-params">--connect</span> jdbc<span class="hljs-function">:mysql</span>:<span class="hljs-string">//localhost/test</span> \
-&gt; <span class="hljs-params">--username</span> root <span class="hljs-params">--password</span> 147369 \
-&gt; <span class="hljs-params">--table</span> p \
-&gt; <span class="hljs-params">--export-dir</span> <span class="hljs-string">/user/hive/warehouse/person/</span>* \
-&gt; <span class="hljs-params">--input-fields-terminated-by</span> ',';</code></pre></div>
-<p>其中export命令表示导出数据，table为MySQL中test数据库的表格p，export-dir为hdfs端需要导出的目录，input-fields-terminated-by ‘,’表示hdfs端需要导出的数据的分界符为’,’。<br>4.前往MySQL数据库查看：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTMwMDk1NDU3MDU3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>Bingo，这样我们就利用Sqoop实现MySQL与HDFS数据互导。</p>
-<hr>
-本次分享到此结束，欢迎大家交流与批评~~
+              <p>数据库是一所大宝库，藏着各种宝贝。一个没有数据库的网站，功能有限。在Django中，支持的数据库有以下四种：</p>
+<ul>
+<li>SQLite3</li>
+<li>MySQL</li>
+<li>PostgreSQL</li>
+<li>Oracle</li>
+</ul>
+<p>其中SQLite3为Django自带数据库，无需安装。Django要求MySQL4.0或更高的版本。<br> 本文将介绍如何在Django中连接并操作MySQL.请确保你的系统里已安装MySQL以及Python模块pymysql.<br> 首先新建项目Book,并在Book项目中新建应用books：</p>
+<div class="hljs"><pre><code class="hljs vim">django-admin.<span class="hljs-keyword">py</span> startproject Book
+<span class="hljs-keyword">cd</span> ./Book
+django-admin.<span class="hljs-keyword">py</span> startapp books</code></pre></div>
+<p>其中Book文件夹的树形结构如下图：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMjA2MDkzMjE4OTA1?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>在settings.py中添加app：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMjA2MDkzNzMyODAy?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>并修改数据库连接方式为MySQL:<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMjA2MDkzODA0MTk4?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>其中，ENGINE连接方式为MySQL。NAME为数据库名称，我们这里选择Book，前提是你的MySQL中已经创建好Book数据库。USER和PASSWORD为MySQL的用户名和密码。HOST和PORT分别选择本地连接和3306.<br>这样我们已经连接好MySQL的Book数据库，接下来需要创建表格。这可以在books的models.py中定义，代码如下：</p>
+<div class="hljs"><pre><code class="hljs python"><span class="hljs-keyword">from</span> django.db <span class="hljs-keyword">import</span> models
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MYBOOK</span><span class="hljs-params">(models.Model)</span>:</span>
+    name = models.CharField(max_length=<span class="hljs-number">200</span>)
+    price = models.FloatField()
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__str__</span><span class="hljs-params">(self)</span>:</span>
+        <span class="hljs-keyword">return</span> self.name+<span class="hljs-string">':'</span>+str(self.price)</code></pre></div>
+<p>在上述模型中，我们定义了name和price字段，并用str()函数返回name:price的形式。接着我们需要将Django中的模型与MySQL数据库连接：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMjA2MDk1NTQ5MDc4?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMjA2MDk1NjAwMjM5?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>以上表明Django中的模型与MySQL数据库连接完成。我们可以去MySQL中查看：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMjA2MDk1OTA4MDUy?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMjA2MTAwNTU0ODY5?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>其中books_mybook是模型生成的表格，是张空表格。那么该如何操作该表格呢？Django已经帮我们想好办法了，一种是利用shell命令行，一种是在books文件夹的views.py中操作。<br>首先我们先尝试用shell命令行模式，只需输入以下命令行：</p>
+<div class="hljs"><pre><code class="hljs vim"><span class="hljs-keyword">python3</span> manage.<span class="hljs-keyword">py</span> <span class="hljs-keyword">shell</span></code></pre></div>
+<p>进入IPython后进行以下操作：</p>
+<div class="hljs"><pre><code class="hljs angelscript">In [<span class="hljs-number">1</span>]: <span class="hljs-keyword">from</span> books.models <span class="hljs-keyword">import</span> MYBOOK
+
+In [<span class="hljs-number">2</span>]: MYBOOK.objects.create(name=<span class="hljs-string">"Dive into Python"</span>, price=<span class="hljs-number">50.5</span>)
+Out[<span class="hljs-number">2</span>]: &lt;MYBOOK: Dive <span class="hljs-built_in">int</span>o Python:<span class="hljs-number">50.5</span>&gt;
+
+In [<span class="hljs-number">3</span>]: MYBOOK.objects.create(name=<span class="hljs-string">"Dive into Scala"</span>, price=<span class="hljs-number">48.6</span>)
+Out[<span class="hljs-number">3</span>]: &lt;MYBOOK: Dive <span class="hljs-built_in">int</span>o Scala:<span class="hljs-number">48.6</span>&gt;
+
+In [<span class="hljs-number">4</span>]: MYBOOK.objects.create(name=<span class="hljs-string">"Dive into Java"</span>, price=<span class="hljs-number">67.4</span>)
+Out[<span class="hljs-number">4</span>]: &lt;MYBOOK: Dive <span class="hljs-built_in">int</span>o Java:<span class="hljs-number">67.4</span>&gt;
+
+In [<span class="hljs-number">5</span>]: MYBOOK.objects.all()
+Out[<span class="hljs-number">5</span>]: [&lt;MYBOOK: Dive <span class="hljs-built_in">int</span>o Python:<span class="hljs-number">50.5</span>&gt;, &lt;MYBOOK: Dive <span class="hljs-built_in">int</span>o Scala:<span class="hljs-number">48.6</span>&gt;, &lt;MYBOOK: Dive <span class="hljs-built_in">int</span>o Java:<span class="hljs-number">67.4</span>&gt;]</code></pre></div>
+<p>Django用类的实例表示表格的记录，所以需要导入MYBOOK类。MYBOOK.objects.create(name=”Dive into Python”, price=50.5)表示增加一条记录，MYBOOK.objects.all()则返回所有记录。我们可以去看看这时MySQL中的情况：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMjA2MTA1MDA2NTE1?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>books_mybook确实已增加了三条记录！！！关于更多的操作数据库的命令可以参考：<a href="https://docs.djangoproject.com/en/2.0/topics/db/queries/。" target="_blank" rel="noopener">https://docs.djangoproject.com/en/2.0/topics/db/queries/。</a><br>第二种方法是在books文件夹的views.py中操作，代码如下：</p>
+<div class="hljs"><pre><code class="hljs python"><span class="hljs-keyword">from</span> django.shortcuts <span class="hljs-keyword">import</span> render
+<span class="hljs-keyword">from</span> books.models <span class="hljs-keyword">import</span> MYBOOK
+<span class="hljs-keyword">from</span> django.http <span class="hljs-keyword">import</span> HttpResponse
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">insert_and_show</span><span class="hljs-params">(request)</span>:</span>
+    <span class="hljs-comment">#insert records into table using three methods</span>
+    MYBOOK.objects.create(name=<span class="hljs-string">"Learning Scrapy"</span>,price=<span class="hljs-number">30</span>)
+    p = &#123;<span class="hljs-string">'name'</span>:<span class="hljs-string">"Linux Shell"</span>, <span class="hljs-string">'price'</span>:<span class="hljs-number">25</span>&#125;
+    MYBOOK.objects.create(**p)
+    q = MYBOOK(name=<span class="hljs-string">'Learning Pyspark'</span>, price=<span class="hljs-number">20</span>)
+    q.save()
+    <span class="hljs-comment">#show the records in webpage</span>
+    book_list = MYBOOK.objects.all()
+    string = <span class="hljs-string">"TABLE MYBOOK:&lt;br/&gt;"</span>
+    <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> book_list:
+        string += str(_)+<span class="hljs-string">'&lt;br/&gt;&lt;br/&gt;'</span>
+
+    <span class="hljs-keyword">return</span> HttpResponse(string)</code></pre></div>
+<p>该代码前半部分用三种方式插入数据，后半部分则是为了在网页中显示。<br>在urls.py中增加新的url:<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMjA2MTA1MjAyMzQ0?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>启动server服务：</p>
+<div class="hljs"><pre><code class="hljs vim"><span class="hljs-keyword">python3</span> manage.<span class="hljs-keyword">py</span> runserver <span class="hljs-number">8000</span></code></pre></div>
+<p>在网页中输入<a href="http://localhost:8000/book/，输出的内容如下：" target="_blank" rel="noopener">http://localhost:8000/book/，输出的内容如下：</a><br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMjA2MTA1NDU1NzIw?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>这表明我们增加记录成功，并且也正确地在web页面显示了！！！<br>最后，我们再去MySQL中查看：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMjA2MTA1NjAzMDE5?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>    这样我们就完成了用views.py操作MySQL啦~<br>    当然，更多的内容大家可以参考Django的官方文档哦~<br>    本次分享到此结束，欢迎大家交流~~</p>
+<p>参考文献：</p>
+<ol>
+<li>Python 快速教程（Django02）：庄园疑云：<a href="http://python.jobbole.com/82786/" target="_blank" rel="noopener">http://python.jobbole.com/82786/</a></li>
+<li>Django 模型（数据库）：<a href="https://code.ziqiangxuetang.com/django/django-models.html" target="_blank" rel="noopener">https://code.ziqiangxuetang.com/django/django-models.html</a></li>
+<li>Django官方文档：<a href="https://docs.djangoproject.com/en/2.0/" target="_blank" rel="noopener">https://docs.djangoproject.com/en/2.0/</a></li>
+<li>Django详解之models操作：<a href="http://www.mamicode.com/info-detail-1504351.html" target="_blank" rel="noopener">http://www.mamicode.com/info-detail-1504351.html</a></li>
+<li>Django_中文教程.pdf：<a href="http://download.csdn.net/download/huangzhichang13/8177581" target="_blank" rel="noopener">http://download.csdn.net/download/huangzhichang13/8177581</a></li>
+</ol>
 
             </article>
             <hr>
@@ -242,7 +286,7 @@
                   <div class="post-meta mr-3">
                     <i class="iconfont icon-category"></i>
                     
-                      <a class="hover-with-bg" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
+                      <a class="hover-with-bg" href="/categories/Django/">Django</a>
                     
                   </div>
                 
@@ -250,9 +294,7 @@
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/MySQL/">MySQL</a>
-                    
-                      <a class="hover-with-bg" href="/tags/Sqoop/">Sqoop</a>
+                      <a class="hover-with-bg" href="/tags/Django/">Django</a>
                     
                   </div>
                 
@@ -265,9 +307,9 @@
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/2020/06/11/Spark%E4%B9%8B%E5%AF%BC%E5%87%BAPMML%E6%96%87%E4%BB%B6%EF%BC%88Python%EF%BC%89/">
+                      <a href="/2020/06/11/Django%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%89%EF%BC%89%E6%A8%A1%E6%9D%BF%E5%AE%9A%E5%88%B6/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Spark之导出PMML文件（Python）</span>
+                        <span class="hidden-mobile">Django学习（三）模板定制</span>
                         <span class="visible-mobile">Previous</span>
                       </a>
                     
@@ -275,8 +317,8 @@
                   <div class="post-next col-6">
                     
                     
-                      <a href="/2020/06/11/MongoDB%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B/">
-                        <span class="hidden-mobile">MongoDB入门教程</span>
+                      <a href="/2020/06/11/Django%E5%AD%A6%E4%B9%A0%EF%BC%881%EF%BC%89%E4%B8%80%E9%A6%96%E6%83%85%E8%AF%97/">
+                        <span class="hidden-mobile">Django学习（1）一首情诗</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -496,7 +538,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "利用Sqoop实现MySQL与HDFS数据互导&nbsp;",
+        "Django学习（2）数据宝库&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,

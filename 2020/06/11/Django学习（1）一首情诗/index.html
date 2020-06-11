@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="Jclian91">
   <meta name="keywords" content="">
-  <title>利用Sqoop实现MySQL与HDFS数据互导 - Blog</title>
+  <title>Django学习（1）一首情诗 - Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 
@@ -152,7 +152,7 @@
               
   <div class="mt-3 post-meta">
     <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-    <time datetime="2020-06-11 13:20">
+    <time datetime="2020-06-11 22:39">
       June 11, 2020 pm
     </time>
   </div>
@@ -163,7 +163,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      390 字
+      396 字
     </span>
   
 
@@ -173,7 +173,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      9
+      12
        分钟
     </span>
   
@@ -212,27 +212,39 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>利用Sqoop将MySQL中的数据表导入到hdfs端：（表格的主键要存在）<br>首先在MySQL的test数据库中有如下表格person：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTMwMDkyODM4Mzkx?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>在终端输入以下命令即可实现将person表导入到hdfs端：</p>
-<div class="hljs"><pre><code class="hljs jboss-cli">sqoop import \
-<span class="hljs-params">--connect</span> jdbc<span class="hljs-function">:mysql</span>:<span class="hljs-string">//localhost/test</span> \
-<span class="hljs-params">--username</span> root <span class="hljs-params">--password</span> 147369 \
-<span class="hljs-params">--table</span> person \
-<span class="hljs-params">--target-dir</span> <span class="hljs-string">/vagrant/person_hdfs</span> \
-<span class="hljs-params">--null-non-string</span> '\\N';</code></pre></div>
-<p>其中import表示导入数据，connect行命令表示连接MySQL的test数据库，username和password为MySQL的用户名和密码，table为要导入的表格，target-dir为hdfs的目标位置，null-non-string ‘\N’会将数据库表中的null值转化为Hive和Impala中的\N,便于兼容。<br>运行结果如下：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTMwMDkzNTUyMjk5?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>前往hdfs网页查看：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTMwMDkzNzA3MDQ0?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
-<p>利用Sqoop将hdfs端的数据表导入到MySQL：<br>1.查看hdfs端数据的内容：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTMwMDkzOTQ3MDUy?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>可知：person目录下的数据以’,’为分界符。我们的目标是将person目录下的全部数据导入到MySQL。<br>2.在MySQL中创建相应格式的表格：</p>
-<div class="hljs"><pre><code class="hljs sql"><span class="hljs-keyword">use</span> <span class="hljs-keyword">test</span>
-<span class="hljs-keyword">create</span> <span class="hljs-keyword">table</span> p(<span class="hljs-keyword">id</span> <span class="hljs-built_in">int</span> primary <span class="hljs-keyword">key</span>, age <span class="hljs-built_in">int</span>, sex <span class="hljs-built_in">int</span>);</code></pre></div>
-<p>3.在终端输入以下命令即可实现将hdfs端person目录下的数据导入到MySQL中：</p>
-<div class="hljs"><pre><code class="hljs jboss-cli">sqoop export \
-&gt; <span class="hljs-params">--connect</span> jdbc<span class="hljs-function">:mysql</span>:<span class="hljs-string">//localhost/test</span> \
-&gt; <span class="hljs-params">--username</span> root <span class="hljs-params">--password</span> 147369 \
-&gt; <span class="hljs-params">--table</span> p \
-&gt; <span class="hljs-params">--export-dir</span> <span class="hljs-string">/user/hive/warehouse/person/</span>* \
-&gt; <span class="hljs-params">--input-fields-terminated-by</span> ',';</code></pre></div>
-<p>其中export命令表示导出数据，table为MySQL中test数据库的表格p，export-dir为hdfs端需要导出的目录，input-fields-terminated-by ‘,’表示hdfs端需要导出的数据的分界符为’,’。<br>4.前往MySQL数据库查看：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTMwMDk1NDU3MDU3?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>Bingo，这样我们就利用Sqoop实现MySQL与HDFS数据互导。</p>
-<hr>
-本次分享到此结束，欢迎大家交流与批评~~
+              <p>　　Django是Python中Web开发的最有代表性的框架之一。本文将简单介绍如何入门Django开发。<br>　　首先确保你的linux系统已安装django模块。打开Python3,利用以下命令可找到django所在目录：</p>
+<div class="hljs"><pre><code class="hljs ruby"><span class="hljs-meta">&gt;&gt;</span>&gt; import django
+<span class="hljs-meta">&gt;&gt;</span>&gt; print(django.__path_<span class="hljs-number">_</span>)</code></pre></div>
+<p>笔者显示的是：</p>
+<div class="hljs"><pre><code class="hljs scheme">[<span class="hljs-symbol">'/usr/lib/python3/dist-packages/django</span>']</code></pre></div>
+<p>　　接下来开始django开发！首先切换到django目录,新建poem项目：</p>
+<div class="hljs"><pre><code class="hljs css"><span class="hljs-selector-tag">django-admin</span><span class="hljs-selector-class">.py</span> <span class="hljs-selector-tag">startproject</span> <span class="hljs-selector-tag">poem</span></code></pre></div>
+<p>输入tree poem,查看poem项目的树结构：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTMwMjAwNzUzNjc1?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>在urls.py的urlpatterns列表中添加：</p>
+<div class="hljs"><pre><code class="hljs awk">url(<span class="hljs-string">r'^$'</span>, <span class="hljs-string">'poem.views.output'</span>),</code></pre></div>
+<p>在/poem/poem文件夹下，创建views.py文件，输入代码：</p>
+<div class="hljs"><pre><code class="hljs python"><span class="hljs-keyword">from</span> django.http <span class="hljs-keyword">import</span> HttpResponse
+ 
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">output</span><span class="hljs-params">(request)</span>:</span>
+    title = <span class="hljs-string">"&lt;h1&gt;When You Are Old&lt;/h1&gt;"</span>
+    author = <span class="hljs-string">"&lt;h2&gt;William Butler Yeats&lt;/h2&gt;"</span>
+    content = <span class="hljs-string">"""</span>
+<span class="hljs-string">                 When you are old and grey and full of sleep,&lt;br/&gt;</span>
+<span class="hljs-string">	             And nodding by the fire, take down this book,&lt;br/&gt;</span>
+<span class="hljs-string">                 And slowly read, and dream of the soft look&lt;br/&gt;</span>
+<span class="hljs-string">                 Your eyes had once, and of their shadows deep;&lt;br/&gt;</span>
+<span class="hljs-string">                 How many loved your moments of glad grace,&lt;br/&gt;</span>
+<span class="hljs-string">                 And loved your beauty with love false or true,&lt;br/&gt;</span>
+<span class="hljs-string">                 But one man loved the pilgrim soul in you,&lt;br/&gt;</span>
+<span class="hljs-string">                 And loved the sorrows of your changing face;&lt;br/&gt;</span>
+<span class="hljs-string">                 And bending down beside the glowing bars,&lt;br/&gt;</span>
+<span class="hljs-string">                 Murmur, a little sadly, how love fled&lt;br/&gt;</span>
+<span class="hljs-string">                 And paced upon the mountains overhead&lt;br/&gt;</span>
+<span class="hljs-string">                 And hid his face amid a crowd of stars.&lt;br/&gt;</span>
+<span class="hljs-string">               """</span>
+    <span class="hljs-keyword">return</span> HttpResponse([title, author, content])</code></pre></div>
+<p>进入poem文件夹，输入命令：</p>
+<div class="hljs"><pre><code class="hljs vim"><span class="hljs-keyword">python3</span> manage.<span class="hljs-keyword">py</span> runserver <span class="hljs-number">8000</span></code></pre></div>
+<p>　　打开浏览器，输入localhost:8000，页面如下图：<br>　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMTMwMjAyMDExNDQ1?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"><br>　　这样我们就完成了一个简单的django项目的开发。期待下期分享~<br>        本次分享到此结束，欢迎大家批评与交流~~</p>
 
             </article>
             <hr>
@@ -242,7 +254,7 @@
                   <div class="post-meta mr-3">
                     <i class="iconfont icon-category"></i>
                     
-                      <a class="hover-with-bg" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
+                      <a class="hover-with-bg" href="/categories/Django/">Django</a>
                     
                   </div>
                 
@@ -250,9 +262,7 @@
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/MySQL/">MySQL</a>
-                    
-                      <a class="hover-with-bg" href="/tags/Sqoop/">Sqoop</a>
+                      <a class="hover-with-bg" href="/tags/Django/">Django</a>
                     
                   </div>
                 
@@ -265,9 +275,9 @@
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/2020/06/11/Spark%E4%B9%8B%E5%AF%BC%E5%87%BAPMML%E6%96%87%E4%BB%B6%EF%BC%88Python%EF%BC%89/">
+                      <a href="/2020/06/11/Django%E5%AD%A6%E4%B9%A0%EF%BC%882%EF%BC%89%E6%95%B0%E6%8D%AE%E5%AE%9D%E5%BA%93/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Spark之导出PMML文件（Python）</span>
+                        <span class="hidden-mobile">Django学习（2）数据宝库</span>
                         <span class="visible-mobile">Previous</span>
                       </a>
                     
@@ -275,8 +285,8 @@
                   <div class="post-next col-6">
                     
                     
-                      <a href="/2020/06/11/MongoDB%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B/">
-                        <span class="hidden-mobile">MongoDB入门教程</span>
+                      <a href="/2020/06/11/%E5%88%9D%E8%AF%86Avro/">
+                        <span class="hidden-mobile">初识Avro</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -496,7 +506,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "利用Sqoop实现MySQL与HDFS数据互导&nbsp;",
+        "Django学习（1）一首情诗&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,
