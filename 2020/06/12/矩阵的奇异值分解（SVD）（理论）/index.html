@@ -228,29 +228,30 @@
 <p>其中$\delta_{ij}$为Kronecker符号，即当$i=j$时，$\delta=1$,当$i\neq j$时，$\delta=0$.</p>
 <p>　　我们选择额外的向量$v_{i}$使得${v_{1},v_{2},…,v_{m}}$为$\mathbb{R}^{m}$的标准正交基。设P是$m\times m$矩阵，其列是$v_{1},v_{2},…,v_{m}$.设D是$m\times n$对角阵，$\sigma_{1},\sigma_{2},…\sigma_{r}$在其对角线上，其余地方均为0.于是有</p>
 <p>$$A=PDQ.$$</p>
-<p>这是因为$(P^{T}AQ^{T})<em>{ij}=v</em>{i}^{T}Au_{j}$,当$j\ge r+1$时，该式为0，当$j\le r$时，该式为$v_{i}^{T}\sigma v_{j}=\sigma_{j}\delta_{ij}$,从而$P^{T}AQ^{T}=D$.又因$P,Q$为正交矩阵，因此$$A=PDQ.$$<br>　　证毕。<br>　　在上面证明中，我们称实数$\sigma_{1},\sigma_{2},…,\sigma_{n}$(取非负数)为矩阵A的奇异值，它们是$A^{T}A$的特征值的非负平方根。定理中的分解$A=PDQ$就是一个奇异值分解。由上面的证明，我们可以知道：矩阵的奇异值分解并不唯一，因为$\sigma_{1},\sigma_{2},…,\sigma_{n}$的次序及$v_{r+1},v_{r+2},…,v_{n}$的选择并不唯一。</p>
+<p>这是因为$(P^{T}AQ^{T})<em>{ij}=v</em>{i}^{T}Au_{j}$,当$j\ge r+1$时，该式为0，当$j\le r$时，该式为$v_{i}^{T}\sigma v_{j}=\sigma_{j}\delta_{ij}$,从而$P^{T}AQ^{T}=D$.又因$P,Q$为正交矩阵，因此$$A=PDQ.$$</p>
+<p>　　证毕。</p>
+<p>　　在上面证明中，我们称实数$\sigma_{1},\sigma_{2},…,\sigma_{n}$(取非负数)为矩阵A的奇异值，它们是$A^{T}A$的特征值的非负平方根。定理中的分解$A=PDQ$就是一个奇异值分解。由上面的证明，我们可以知道：矩阵的奇异值分解并不唯一，因为$\sigma_{1},\sigma_{2},…,\sigma_{n}$的次序及$v_{r+1},v_{r+2},…,v_{n}$的选择并不唯一。</p>
 <p>　　在Python中的Numpy模块中，已经实现了矩阵的奇异值分解。以下为示例的应用代码：</p>
-<div class="hljs"><pre><code class="hljs stylus">import numpy as np
-<span class="hljs-selector-id">#generate</span> <span class="hljs-selector-tag">a</span> random <span class="hljs-number">3</span>*<span class="hljs-number">4</span> matrix 
-A =  np<span class="hljs-selector-class">.random</span>.randint(<span class="hljs-number">5</span>, size=(<span class="hljs-number">3</span>, <span class="hljs-number">4</span>))
-<span class="hljs-selector-id">#parameter</span> full_matrices: control the size of P and Q
-<span class="hljs-selector-id">#d</span> returns as numpy<span class="hljs-selector-class">.ndarray</span>, not matrix 
-P,d,Q = np<span class="hljs-selector-class">.linalg</span>.svd(A, full_matrices=True)
-<span class="hljs-function"><span class="hljs-title">print</span><span class="hljs-params">(<span class="hljs-string">'A:'</span>,A)</span></span>
-<span class="hljs-function"><span class="hljs-title">print</span><span class="hljs-params">(<span class="hljs-string">'P:'</span>,P)</span></span>
-<span class="hljs-selector-id">#D</span> return as diagonal <span class="hljs-number">3</span>*<span class="hljs-number">4</span> matrix
+<div class="hljs"><pre><code class="hljs python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-comment">#generate a random 3*4 matrix </span>
+A =  np.random.randint(<span class="hljs-number">5</span>, size=(<span class="hljs-number">3</span>, <span class="hljs-number">4</span>))
+<span class="hljs-comment">#parameter full_matrices: control the size of P and Q</span>
+<span class="hljs-comment">#d returns as numpy.ndarray, not matrix </span>
+P,d,Q = np.linalg.svd(A, full_matrices=<span class="hljs-literal">True</span>)
+print(<span class="hljs-string">'A:'</span>,A)
+print(<span class="hljs-string">'P:'</span>,P)
+<span class="hljs-comment">#D return as diagonal 3*4 matrix</span>
 D = np.zeros(<span class="hljs-number">12</span>).reshape(<span class="hljs-number">3</span>,<span class="hljs-number">4</span>)
-<span class="hljs-keyword">for</span> <span class="hljs-selector-tag">i</span> <span class="hljs-keyword">in</span> range(len(d)):
+<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(len(d)):
     D[i][i] = d[i]
-<span class="hljs-function"><span class="hljs-title">print</span><span class="hljs-params">(<span class="hljs-string">'D:'</span>,D)</span></span>
-<span class="hljs-function"><span class="hljs-title">print</span><span class="hljs-params">(<span class="hljs-string">'Q:'</span>,Q)</span></span>
-<span class="hljs-selector-id">#check</span> <span class="hljs-keyword">if</span> P*D*Q == A
-<span class="hljs-function"><span class="hljs-title">print</span><span class="hljs-params">(<span class="hljs-string">'P*D*Q:'</span>,np.dot(P,np.dot(D,Q)</span></span>))</code></pre></div>
-<p>输入结果如下：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMjE4MDk1NTE1NjY1?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+print(<span class="hljs-string">'D:'</span>,D)
+print(<span class="hljs-string">'Q:'</span>,Q)
+<span class="hljs-comment">#check if P*D*Q == A</span>
+print(<span class="hljs-string">'P*D*Q:'</span>,np.dot(P,np.dot(D,Q)))</code></pre></div>
+<p>输入结果如下：</p>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMjE4MDk1NTE1NjY1?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
 <p>　　至于如何用原始算法来实现矩阵的SVD，也是需要考虑的，有机会的话，可以交流哦<del>~<br>　　本次分享到此结束，欢迎大家批评与交流</del></p>
-<hr>
-参考文献：
-
+<p>参考文献：</p>
 <ol>
 <li>SVD 维基百科：<a href="https://en.wikipedia.org/wiki/SVD" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/SVD</a></li>
 <li>数值分析  机械工业出版社 作者：萨奥尔(Timothy Sauer)  译者：裴玉茹<br>numpy的svd实现函数： <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.linalg.svd.html" target="_blank" rel="noopener">https://docs.scipy.org/doc/numpy/reference/generated/numpy.linalg.svd.html</a></li>
