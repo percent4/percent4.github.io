@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="Jclian91">
   <meta name="keywords" content="">
-  <title>Django学习（三）模板定制 - Blog</title>
+  <title>矩阵的奇异值分解（SVD）（理论） - Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 
@@ -152,8 +152,8 @@
               
   <div class="mt-3 post-meta">
     <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-    <time datetime="2020-06-11 22:42">
-      June 11, 2020 pm
+    <time datetime="2020-06-12 16:39">
+      June 12, 2020 pm
     </time>
   </div>
 
@@ -163,7 +163,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      976 字
+      1.1k 字
     </span>
   
 
@@ -173,7 +173,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      28
+      31
        分钟
     </span>
   
@@ -212,94 +212,50 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>&emsp;&emsp;在<a href="http://www.jianshu.com/p/8b6ed9d7507f" target="_blank" rel="noopener">Django学习（一）一首情诗</a>中，views.py中HTML被直接硬编码在代码之中，虽然这样便于解释视图是如何工作的，但直接将HTML硬编码到视图却不算一个好主意。因为：</p>
-<ul>
-<li>对页面设计进行的任何改变都必须对Python代码进行相应的修改，而站点设计的修改往往比底层Python代码的修改要频繁得多。</li>
-<li>Python代码编写和HTML设计是两项不同的工作，大多数专业的网站开发环境都将它们分配给不同的人员来完成。</li>
-<li>程序员编写Python代码和设计人员制作模板两项工作同时进行的效率是最高的，远胜于让一个人等待另一个人完成对某个既包含Python又包含HTML的文件的编辑工作。</li>
-</ul>
-<p>&emsp;&emsp;基于以上原因，Django推荐使用模板。模板（Template）是一个文本，用于分离文档的表现形式和内容。模板通常用于产生HTML.<br>&emsp;&emsp;本次分享的目标是利用Django的模板来产生一封简单的情书。这需要用到Django模板方面的知识。<br>&emsp;&emsp;先新建项目love_letter:</p>
-<div class="hljs"><pre><code class="hljs css"><span class="hljs-selector-tag">django-admin</span><span class="hljs-selector-class">.py</span> <span class="hljs-selector-tag">startproject</span> <span class="hljs-selector-tag">love_letter</span></code></pre></div>
-<p>切换到该文件夹下的love_letter目录，新建letter.html文件，即Django的模板，代码如下：</p>
-<div class="hljs"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
-         <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>Love Letter<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
-<span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Love Letter for &#123;&#123; name &#125;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+              <p>　　矩阵的奇异值分解(Singular Value Decomposition,SVD)是数值计算中的精彩之处，在其它数学领域和机器学习领域得到了广泛的应用，如矩阵的广义逆，主分成分析(PCA),自然语言处理(NLP)中的潜在语义索引（Latent Semantic Indexing）,推荐算法等。<br>　　鉴于实际应用，本次分享中的数域为实数域，即我们只在实数范围内讨论。我们假定读者具有大学线性代数的水平。那么，矩阵的奇异值分解定理如下：</p>
+<p>（定理）（奇异值分解定理）任意一个$m \times n$矩阵A可分解为</p>
+<p>$$A=PDQ$$</p>
+<p>其中P是$m \times m$正交矩阵，D是$m \times n$对角阵，Q是$n \times n$正交矩阵。</p>
+<p>证明：矩阵$A^{T}A$是$n \times n$对称矩阵，因为$(A^{T}A)^{T}=A^{T}(A^{T})^{T}=A^{T}A$.又因为</p>
+<p>$$x^{T}（A^{T}A）x=(Ax)^{T}(Ax)\ge0,$$</p>
+<p>所以$A^{T}A$是半正定矩阵，从而，$A^{T}A$的特征值为非负数。<br>　　假设$A^{T}A$的特征值为$\sigma_{1}^{2},\sigma_{2}^{2},…,\sigma_{n}^{2}$,其中，$\sigma_{1}^{2},\sigma_{2}^{2},…,\sigma_{r}^{2}$都是正的，$\sigma_{r+1}^{2},\sigma_{r+2}^{2},…,\sigma_{n}^{2}$都是0，$r$为$A^{T}A$的秩。设${u_{1},u_{2},…,u_{n}}$为$A^{T}A$的标准正交特征向量集，则</p>
+<p>$$A^{T}Au_{i}=\sigma_{i}^{2}u_{i} (i=1,2,…,n)$$</p>
+<p>于是$(Au_{i})^{T}(Au_{i})=u_{i}^{T}(A^{T}A)u_{i}=u_{i}^{T}\sigma_{i}^{2}u_{i}=\sigma_{i}^{2}.$当$i\ge r+1$时，$\sigma_{i}=0$,从而$Au_{i}=0$.</p>
+<p>　　用${u_{1}^{T},u_{2}^{T},…,u_{n}^{T}}$作为行构成一个$n\times n$矩阵$Q$.接着，定义</p>
+<p>$$v_{i}=\sigma_{i}^{-1}Au_{i} (1\le i \le r).$$</p>
+<p>当$1\le i,j \le r$时，$v_{i}$构成一个标准正交系，这是因为</p>
+<p>$$v_{i}^{T}v_{j}=\sigma_{i}^{-1}(Au_{i})^{T}\sigma_{j}^{-1}(Au_{j})=(\sigma_{i}\sigma_{j})^{-1}(u_{i}^{T}A^{T}Au_{j})=(\sigma_{i}\sigma_{j})^{-1}(u_{i}^{T}\sigma_{j}^{2}u_{j})=\delta_{ij},$$</p>
+<p>其中$\delta_{ij}$为Kronecker符号，即当$i=j$时，$\delta=1$,当$i\neq j$时，$\delta=0$.</p>
+<p>　　我们选择额外的向量$v_{i}$使得${v_{1},v_{2},…,v_{m}}$为$\mathbb{R}^{m}$的标准正交基。设P是$m\times m$矩阵，其列是$v_{1},v_{2},…,v_{m}$.设D是$m\times n$对角阵，$\sigma_{1},\sigma_{2},…\sigma_{r}$在其对角线上，其余地方均为0.于是有</p>
+<p>$$A=PDQ.$$</p>
+<p>这是因为$(P^{T}AQ^{T})<em>{ij}=v</em>{i}^{T}Au_{j}$,当$j\ge r+1$时，该式为0，当$j\le r$时，该式为$v_{i}^{T}\sigma v_{j}=\sigma_{j}\delta_{ij}$,从而$P^{T}AQ^{T}=D$.又因$P,Q$为正交矩阵，因此$$A=PDQ.$$<br>　　证毕。<br>　　在上面证明中，我们称实数$\sigma_{1},\sigma_{2},…,\sigma_{n}$(取非负数)为矩阵A的奇异值，它们是$A^{T}A$的特征值的非负平方根。定理中的分解$A=PDQ$就是一个奇异值分解。由上面的证明，我们可以知道：矩阵的奇异值分解并不唯一，因为$\sigma_{1},\sigma_{2},…,\sigma_{n}$的次序及$v_{r+1},v_{r+2},…,v_{n}$的选择并不唯一。</p>
+<p>　　在Python中的Numpy模块中，已经实现了矩阵的奇异值分解。以下为示例的应用代码：</p>
+<div class="hljs"><pre><code class="hljs stylus">import numpy as np
+<span class="hljs-selector-id">#generate</span> <span class="hljs-selector-tag">a</span> random <span class="hljs-number">3</span>*<span class="hljs-number">4</span> matrix 
+A =  np<span class="hljs-selector-class">.random</span>.randint(<span class="hljs-number">5</span>, size=(<span class="hljs-number">3</span>, <span class="hljs-number">4</span>))
+<span class="hljs-selector-id">#parameter</span> full_matrices: control the size of P and Q
+<span class="hljs-selector-id">#d</span> returns as numpy<span class="hljs-selector-class">.ndarray</span>, not matrix 
+P,d,Q = np<span class="hljs-selector-class">.linalg</span>.svd(A, full_matrices=True)
+<span class="hljs-function"><span class="hljs-title">print</span><span class="hljs-params">(<span class="hljs-string">'A:'</span>,A)</span></span>
+<span class="hljs-function"><span class="hljs-title">print</span><span class="hljs-params">(<span class="hljs-string">'P:'</span>,P)</span></span>
+<span class="hljs-selector-id">#D</span> return as diagonal <span class="hljs-number">3</span>*<span class="hljs-number">4</span> matrix
+D = np.zeros(<span class="hljs-number">12</span>).reshape(<span class="hljs-number">3</span>,<span class="hljs-number">4</span>)
+<span class="hljs-keyword">for</span> <span class="hljs-selector-tag">i</span> <span class="hljs-keyword">in</span> range(len(d)):
+    D[i][i] = d[i]
+<span class="hljs-function"><span class="hljs-title">print</span><span class="hljs-params">(<span class="hljs-string">'D:'</span>,D)</span></span>
+<span class="hljs-function"><span class="hljs-title">print</span><span class="hljs-params">(<span class="hljs-string">'Q:'</span>,Q)</span></span>
+<span class="hljs-selector-id">#check</span> <span class="hljs-keyword">if</span> P*D*Q == A
+<span class="hljs-function"><span class="hljs-title">print</span><span class="hljs-params">(<span class="hljs-string">'P*D*Q:'</span>,np.dot(P,np.dot(D,Q)</span></span>))</code></pre></div>
+<p>输入结果如下：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMjE4MDk1NTE1NjY1?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
+<p>　　至于如何用原始算法来实现矩阵的SVD，也是需要考虑的，有机会的话，可以交流哦<del>~<br>　　本次分享到此结束，欢迎大家批评与交流</del></p>
+<hr>
+参考文献：
 
-    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Dear &#123;&#123; name &#125;&#125;:<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
-
-    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Now you are reading a letter from your BF. Thanks for reading it.<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
-
-    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>We met on &#123;&#123;met_date&#125;&#125;, and today is &#123;&#123;today&#125;&#125;, so we have been together for &#123;&#123;days&#125;&#125; days.<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
-
-    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Now you live in &#123;&#123;your_city&#125;&#125;, and I live in &#123;&#123;my_city&#125;&#125;.
-    	&#123;% ifequal your_city.lower my_city.lower %&#125;
-            So lucky for living in the same city!
-	&#123;% else %&#125;
-            What a pity for not being together!
-        &#123;% endifequal %&#125;
-    <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
-
-    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>So glad to meet you! You must be the heaven-sent angel for you are
-    	<span class="hljs-tag">&lt;<span class="hljs-name">ul</span>&gt;</span>
-            &#123;% for trait in traits %&#125;
-                <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>&#123;&#123;trait&#125;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
-            &#123;% endfor %&#125;
-        <span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span>
-    I'm so fascinated of you!
-    <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
-
-    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>
-        It is now &#123;&#123;weather&#125;&#125; in &#123;&#123;your_city&#125;&#125;,
-        &#123;% ifequal weather 'cold'%&#125;
-            take care of yourself.
-        &#123;% else %&#125;
-            &#123;% ifequal weather 'hot'%&#125;
-                take care of yourself.
-            &#123;% else %&#125;
-                nice weather, isn't it?
-            &#123;% endifequal %&#125;
-        &#123;% endifequal %&#125;
-
-        Hoping for seeing you soon! May you have a pleasent day!
-    <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
-
-    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Yours Sincerely,<span class="hljs-tag">&lt;<span class="hljs-name">br</span>/&gt;</span>&#123;&#123; today &#125;&#125;<span class="hljs-tag">&lt;<span class="hljs-name">br</span>/&gt;</span>&#123;&#123; author &#125;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
-
-<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
-<span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span></code></pre></div>
-
-<p>&emsp;&emsp;我们有必要对这个模板做解释：</p>
-<div class="hljs"><pre><code class="hljs django"><span class="xml">- </span><span class="hljs-template-variable">&#123;&#123; name &#125;&#125;</span><span class="xml">表示name变量，所有</span><span class="hljs-template-variable">&#123;&#123;...&#125;&#125;</span><span class="xml">里面包含的是变量。</span>
-<span class="xml">- </span><span class="hljs-template-tag">&#123;% <span class="hljs-name"><span class="hljs-name">ifequal</span></span> your_city.lower my_city.lower %&#125;</span><span class="xml">为标签(tag)，表示if判断语句，判断两个变量是否相等，需要用</span><span class="hljs-template-tag">&#123;% <span class="hljs-name"><span class="hljs-name">endifequal</span></span> %&#125;</span><span class="xml">来结束。</span>
-<span class="xml">- </span><span class="hljs-template-tag">&#123;% <span class="hljs-name"><span class="hljs-name">for</span></span> trait <span class="hljs-keyword">in</span> traits %&#125;</span><span class="xml">为标签，表示for循环语句，traits可以为list或者set序列，需要用</span><span class="hljs-template-tag">&#123;% <span class="hljs-name"><span class="hljs-name">endfor</span></span> %&#125;</span><span class="xml">。</span>
-<span class="xml">- 其余代码同HTML相同</span></code></pre></div>
-
-<p>&emsp;&emsp;定义好模板之后，我们应该告诉Django怎样使用这个模板，因此，需要在settings.py中的TEMPLATES设置DIRS：</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VwbG9hZC1pbWFnZXMuamlhbnNodS5pby91cGxvYWRfaW1hZ2VzLzk0MTkwMzQtNzlkMTc0NGI4MzU0NWExNi5wbmc?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="设置模板路径"></p>
-<p>&emsp;&emsp;这样我们就能在视图中使用该模板了。在相同的文件夹下，新建views.py，代码如下：</p>
-<div class="hljs"><pre><code class="hljs python"><span class="hljs-keyword">from</span> django.shortcuts <span class="hljs-keyword">import</span> render_to_response
-<span class="hljs-keyword">import</span> datetime
-
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">output</span><span class="hljs-params">(request)</span>:</span>
-    c = &#123;<span class="hljs-string">'name'</span>:<span class="hljs-string">'Rose'</span>,
-         <span class="hljs-string">'met_date'</span>: datetime.datetime(<span class="hljs-number">2016</span>,<span class="hljs-number">5</span>,<span class="hljs-number">24</span>,<span class="hljs-number">18</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>),
-         <span class="hljs-string">'today'</span>: datetime.datetime.now(),
-         <span class="hljs-string">'your_city'</span>: <span class="hljs-string">'shanghai'</span>,
-         <span class="hljs-string">'my_city'</span>: <span class="hljs-string">'Shanghai'</span>,
-         <span class="hljs-string">'traits'</span>: [<span class="hljs-string">'young and pretty'</span>, <span class="hljs-string">'lovely and positive'</span>, <span class="hljs-string">'warm-hearted and careful'</span>, <span class="hljs-string">'independent and clever'</span>],
-         <span class="hljs-string">'weather'</span>: <span class="hljs-string">'cold'</span>,
-         <span class="hljs-string">'author'</span>: <span class="hljs-string">'Jclian'</span>
-          &#125;
-    c[<span class="hljs-string">'days'</span>] = (c[<span class="hljs-string">'today'</span>] - c[<span class="hljs-string">'met_date'</span>]).days
-    <span class="hljs-keyword">return</span> render_to_response(<span class="hljs-string">'letter.html'</span>, c)</code></pre></div>
-<p>其中c为字典，keys为模板中定义的变量，values可以自由定义。<br>&emsp;&emsp;最后配置好urls.py，并开启8000端口，在网页中输入localhost:8000，得到的页面如下：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VwbG9hZC1pbWFnZXMuamlhbnNodS5pby91cGxvYWRfaW1hZ2VzLzk0MTkwMzQtYWQzOWU1NGNmYjU1OGJkNi5wbmc?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="定制情书"></p>
-<p>参考文献：</p>
 <ol>
-<li>Django中文教程.pdf：<a href="http://download.csdn.net/download/huangzhichang13/8177581" target="_blank" rel="noopener">http://download.csdn.net/download/huangzhichang13/8177581</a></li>
-<li>Django官方文档之Templates：<a href="https://docs.djangoproject.com/en/2.0/topics/templates/" target="_blank" rel="noopener">https://docs.djangoproject.com/en/2.0/topics/templates/</a></li>
+<li>SVD 维基百科：<a href="https://en.wikipedia.org/wiki/SVD" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/SVD</a></li>
+<li>数值分析  机械工业出版社 作者：萨奥尔(Timothy Sauer)  译者：裴玉茹<br>numpy的svd实现函数： <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.linalg.svd.html" target="_blank" rel="noopener">https://docs.scipy.org/doc/numpy/reference/generated/numpy.linalg.svd.html</a></li>
+<li>奇异值分解(SVD)原理与在降维中的应用：<a href="https://www.cnblogs.com/pinard/p/6251584.html" target="_blank" rel="noopener">https://www.cnblogs.com/pinard/p/6251584.html</a></li>
+<li>奇异值分解SVD应用——LSI：<a href="http://blog.csdn.net/abcjennifer/article/details/8131087" target="_blank" rel="noopener">http://blog.csdn.net/abcjennifer/article/details/8131087</a><br>论文：CALCULATING THE SINGULAR VALUES AND PSEUDO-INVERSE OF A MATRIX, G. GOLUB AND W. KAHAN,  J. SIAM llrM,B. AfeArd.Ser. B, Vol. 2, No. 2, 1965</li>
 </ol>
 
             </article>
@@ -310,7 +266,7 @@
                   <div class="post-meta mr-3">
                     <i class="iconfont icon-category"></i>
                     
-                      <a class="hover-with-bg" href="/categories/Django/">Django</a>
+                      <a class="hover-with-bg" href="/categories/%E6%95%B0%E5%AD%A6/">数学</a>
                     
                   </div>
                 
@@ -318,7 +274,7 @@
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/Django/">Django</a>
+                      <a class="hover-with-bg" href="/tags/SVD/">SVD</a>
                     
                   </div>
                 
@@ -331,18 +287,12 @@
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/2020/06/12/%E4%B8%89%E7%A7%8D%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0PCA%E7%AE%97%E6%B3%95%EF%BC%88Python%EF%BC%89/">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">三种方法实现PCA算法（Python）</span>
-                        <span class="visible-mobile">Previous</span>
-                      </a>
-                    
                   </div>
                   <div class="post-next col-6">
                     
                     
-                      <a href="/2020/06/11/Django%E5%AD%A6%E4%B9%A0%EF%BC%882%EF%BC%89%E6%95%B0%E6%8D%AE%E5%AE%9D%E5%BA%93/">
-                        <span class="hidden-mobile">Django学习（2）数据宝库</span>
+                      <a href="/2020/06/12/%E4%B8%89%E7%A7%8D%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0PCA%E7%AE%97%E6%B3%95%EF%BC%88Python%EF%BC%89/">
+                        <span class="hidden-mobile">三种方法实现PCA算法（Python）</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -562,7 +512,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "Django学习（三）模板定制&nbsp;",
+        "矩阵的奇异值分解（SVD）（理论）&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,

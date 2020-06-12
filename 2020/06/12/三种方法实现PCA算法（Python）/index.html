@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="Jclian91">
   <meta name="keywords" content="">
-  <title>Django学习（三）模板定制 - Blog</title>
+  <title>三种方法实现PCA算法（Python） - Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 
@@ -152,8 +152,8 @@
               
   <div class="mt-3 post-meta">
     <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-    <time datetime="2020-06-11 22:42">
-      June 11, 2020 pm
+    <time datetime="2020-06-12 16:37">
+      June 12, 2020 pm
     </time>
   </div>
 
@@ -163,7 +163,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      976 字
+      1.2k 字
     </span>
   
 
@@ -173,7 +173,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      28
+      34
        分钟
     </span>
   
@@ -212,94 +212,121 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>&emsp;&emsp;在<a href="http://www.jianshu.com/p/8b6ed9d7507f" target="_blank" rel="noopener">Django学习（一）一首情诗</a>中，views.py中HTML被直接硬编码在代码之中，虽然这样便于解释视图是如何工作的，但直接将HTML硬编码到视图却不算一个好主意。因为：</p>
+              <p>&emsp;&emsp;主成分分析，即Principal Component Analysis（PCA），是多元统计中的重要内容，也广泛应用于机器学习和其它领域。它的主要作用是对高维数据进行降维。PCA把原先的n个特征用数目更少的k个特征取代，新特征是旧特征的线性组合，这些线性组合最大化样本方差，尽量使新的k个特征互不相关。关于PCA的更多介绍，请参考：<a href="https://en.wikipedia.org/wiki/Principal_component_analysis" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Principal_component_analysis</a>.<br>&emsp;&emsp;PCA的主要算法如下：</p>
 <ul>
-<li>对页面设计进行的任何改变都必须对Python代码进行相应的修改，而站点设计的修改往往比底层Python代码的修改要频繁得多。</li>
-<li>Python代码编写和HTML设计是两项不同的工作，大多数专业的网站开发环境都将它们分配给不同的人员来完成。</li>
-<li>程序员编写Python代码和设计人员制作模板两项工作同时进行的效率是最高的，远胜于让一个人等待另一个人完成对某个既包含Python又包含HTML的文件的编辑工作。</li>
+<li><p>组织数据形式，以便于模型使用；</p>
+</li>
+<li><p>计算样本每个特征的平均值；</p>
+</li>
+<li><p>每个样本数据减去该特征的平均值（归一化处理）；</p>
+</li>
+<li><p>求协方差矩阵；</p>
+</li>
+<li><p>找到协方差矩阵的特征值和特征向量；</p>
+</li>
+<li><p>对特征值和特征向量重新排列（特征值从大到小排列）；</p>
+</li>
+<li><p>对特征值求取累计贡献率；</p>
+</li>
+<li><p>对累计贡献率按照某个特定比例，选取特征向量集的字迹合；</p>
+</li>
+<li><p>对原始数据（第三步后）。</p>
+</li>
 </ul>
-<p>&emsp;&emsp;基于以上原因，Django推荐使用模板。模板（Template）是一个文本，用于分离文档的表现形式和内容。模板通常用于产生HTML.<br>&emsp;&emsp;本次分享的目标是利用Django的模板来产生一封简单的情书。这需要用到Django模板方面的知识。<br>&emsp;&emsp;先新建项目love_letter:</p>
-<div class="hljs"><pre><code class="hljs css"><span class="hljs-selector-tag">django-admin</span><span class="hljs-selector-class">.py</span> <span class="hljs-selector-tag">startproject</span> <span class="hljs-selector-tag">love_letter</span></code></pre></div>
-<p>切换到该文件夹下的love_letter目录，新建letter.html文件，即Django的模板，代码如下：</p>
-<div class="hljs"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
-         <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>Love Letter<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
-<span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Love Letter for &#123;&#123; name &#125;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+<p>&emsp;&emsp;其中协方差矩阵的分解可以通过按对称矩阵的特征向量来，也可以通过分解矩阵的SVD来实现，而在Scikit-learn中，也是采用SVD来实现PCA算法的。关于SVD的介绍及其原理，可以参考：<a href="http://www.cnblogs.com/jclian91/p/8022426.html" target="_blank" rel="noopener">矩阵的奇异值分解（SVD）（理论）</a>。<br>&emsp;&emsp;本文将用三种方法来实现PCA算法，一种是原始算法，即上面所描述的算法过程，具体的计算方法和过程，可以参考：<a href="https://wenku.baidu.com/view/37b38bdba58da0116c174998.html" target="_blank" rel="noopener">A tutorial on Principal Components Analysis, Lindsay I Smith.</a> 一种是带SVD的原始算法，在Python的Numpy模块中已经实现了SVD算法，并且将特征值从大从小排列，省去了对特征值和特征向量重新排列这一步。最后一种方法是用Python的Scikit-learn模块实现的PCA类直接进行计算，来验证前面两种方法的正确性。<br>&emsp;&emsp;用以上三种方法来实现PCA的完整的Python如下：</p>
+<div class="hljs"><pre><code class="hljs python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-keyword">from</span> sklearn.decomposition <span class="hljs-keyword">import</span> PCA
+<span class="hljs-keyword">import</span> sys
+<span class="hljs-comment">#returns choosing how many main factors</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">index_lst</span><span class="hljs-params">(lst, component=<span class="hljs-number">0</span>, rate=<span class="hljs-number">0</span>)</span>:</span>
+    <span class="hljs-comment">#component: numbers of main factors</span>
+    <span class="hljs-comment">#rate: rate of sum(main factors)/sum(all factors)</span>
+    <span class="hljs-comment">#rate range suggest: (0.8,1)</span>
+    <span class="hljs-comment">#if you choose rate parameter, return index = 0 or less than len(lst)</span>
+    <span class="hljs-keyword">if</span> component <span class="hljs-keyword">and</span> rate:
+        print(<span class="hljs-string">'Component and rate must choose only one!'</span>)
+        sys.exit(<span class="hljs-number">0</span>)
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> component <span class="hljs-keyword">and</span> <span class="hljs-keyword">not</span> rate:
+        print(<span class="hljs-string">'Invalid parameter for numbers of components!'</span>)
+        sys.exit(<span class="hljs-number">0</span>)
+    <span class="hljs-keyword">elif</span> component:
+        print(<span class="hljs-string">'Choosing by component, components are %s......'</span>%component)
+        <span class="hljs-keyword">return</span> component
+    <span class="hljs-keyword">else</span>:
+        print(<span class="hljs-string">'Choosing by rate, rate is %s ......'</span>%rate)
+        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(<span class="hljs-number">1</span>, len(lst)):
+            <span class="hljs-keyword">if</span> sum(lst[:i])/sum(lst) &gt;= rate:
+                <span class="hljs-keyword">return</span> i
+        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>
 
-    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Dear &#123;&#123; name &#125;&#125;:<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>:</span>
+    <span class="hljs-comment"># test data</span>
+    mat = [[<span class="hljs-number">-1</span>,<span class="hljs-number">-1</span>,<span class="hljs-number">0</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1</span>],[<span class="hljs-number">2</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">-1</span>,<span class="hljs-number">-1</span>],[<span class="hljs-number">2</span>,<span class="hljs-number">0</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1</span>,<span class="hljs-number">0</span>]]
+    
+    <span class="hljs-comment"># simple transform of test data</span>
+    Mat = np.array(mat, dtype=<span class="hljs-string">'float64'</span>)
+    print(<span class="hljs-string">'Before PCA transforMation, data is:\n'</span>, Mat)
+    print(<span class="hljs-string">'\nMethod 1: PCA by original algorithm:'</span>)
+    p,n = np.shape(Mat) <span class="hljs-comment"># shape of Mat </span>
+    t = np.mean(Mat, <span class="hljs-number">0</span>) <span class="hljs-comment"># mean of each column</span>
+    
+    <span class="hljs-comment"># substract the mean of each column</span>
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(p):
+        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> range(n):
+            Mat[i,j] = float(Mat[i,j]-t[j])
+            
+    <span class="hljs-comment"># covariance Matrix</span>
+    cov_Mat = np.dot(Mat.T, Mat)/(p<span class="hljs-number">-1</span>)
+    
+    <span class="hljs-comment"># PCA by original algorithm</span>
+    <span class="hljs-comment"># eigvalues and eigenvectors of covariance Matrix with eigvalues descending</span>
+    U,V = np.linalg.eigh(cov_Mat) 
+    <span class="hljs-comment"># Rearrange the eigenvectors and eigenvalues</span>
+    U = U[::<span class="hljs-number">-1</span>]
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(n):
+        V[i,:] = V[i,:][::<span class="hljs-number">-1</span>]
+    <span class="hljs-comment"># choose eigenvalue by component or rate, not both of them euqal to 0</span>
+    Index = index_lst(U, component=<span class="hljs-number">2</span>)  <span class="hljs-comment"># choose how many main factors</span>
+    <span class="hljs-keyword">if</span> Index:
+        v = V[:,:Index]  <span class="hljs-comment"># subset of Unitary matrix</span>
+    <span class="hljs-keyword">else</span>:  <span class="hljs-comment"># improper rate choice may return Index=0</span>
+        print(<span class="hljs-string">'Invalid rate choice.\nPlease adjust the rate.'</span>)
+        print(<span class="hljs-string">'Rate distribute follows:'</span>)
+        print([sum(U[:i])/sum(U) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(<span class="hljs-number">1</span>, len(U)+<span class="hljs-number">1</span>)])
+        sys.exit(<span class="hljs-number">0</span>)
+    <span class="hljs-comment"># data transformation</span>
+    T1 = np.dot(Mat, v)
+    <span class="hljs-comment"># print the transformed data</span>
+    print(<span class="hljs-string">'We choose %d main factors.'</span>%Index)
+    print(<span class="hljs-string">'After PCA transformation, data becomes:\n'</span>,T1)
+    
+    <span class="hljs-comment"># PCA by original algorithm using SVD</span>
+    print(<span class="hljs-string">'\nMethod 2: PCA by original algorithm using SVD:'</span>)
+    <span class="hljs-comment"># u: Unitary matrix,  eigenvectors in columns </span>
+    <span class="hljs-comment"># d: list of the singular values, sorted in descending order</span>
+    u,d,v = np.linalg.svd(cov_Mat)
+    Index = index_lst(d, rate=<span class="hljs-number">0.95</span>)  <span class="hljs-comment"># choose how many main factors</span>
+    T2 = np.dot(Mat, u[:,:Index])  <span class="hljs-comment"># transformed data</span>
+    print(<span class="hljs-string">'We choose %d main factors.'</span>%Index)
+    print(<span class="hljs-string">'After PCA transformation, data becomes:\n'</span>,T2)
+    
+    <span class="hljs-comment"># PCA by Scikit-learn</span>
+    pca = PCA(n_components=<span class="hljs-number">2</span>) <span class="hljs-comment"># n_components can be integer or float in (0,1)</span>
+    pca.fit(mat)  <span class="hljs-comment"># fit the model</span>
+    print(<span class="hljs-string">'\nMethod 3: PCA by Scikit-learn:'</span>)
+    print(<span class="hljs-string">'After PCA transformation, data becomes:'</span>)
+    print(pca.fit_transform(mat))  <span class="hljs-comment"># transformed data</span>
+            
+main()</code></pre></div>
 
-    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Now you are reading a letter from your BF. Thanks for reading it.<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
-
-    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>We met on &#123;&#123;met_date&#125;&#125;, and today is &#123;&#123;today&#125;&#125;, so we have been together for &#123;&#123;days&#125;&#125; days.<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
-
-    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Now you live in &#123;&#123;your_city&#125;&#125;, and I live in &#123;&#123;my_city&#125;&#125;.
-    	&#123;% ifequal your_city.lower my_city.lower %&#125;
-            So lucky for living in the same city!
-	&#123;% else %&#125;
-            What a pity for not being together!
-        &#123;% endifequal %&#125;
-    <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
-
-    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>So glad to meet you! You must be the heaven-sent angel for you are
-    	<span class="hljs-tag">&lt;<span class="hljs-name">ul</span>&gt;</span>
-            &#123;% for trait in traits %&#125;
-                <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>&#123;&#123;trait&#125;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
-            &#123;% endfor %&#125;
-        <span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span>
-    I'm so fascinated of you!
-    <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
-
-    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>
-        It is now &#123;&#123;weather&#125;&#125; in &#123;&#123;your_city&#125;&#125;,
-        &#123;% ifequal weather 'cold'%&#125;
-            take care of yourself.
-        &#123;% else %&#125;
-            &#123;% ifequal weather 'hot'%&#125;
-                take care of yourself.
-            &#123;% else %&#125;
-                nice weather, isn't it?
-            &#123;% endifequal %&#125;
-        &#123;% endifequal %&#125;
-
-        Hoping for seeing you soon! May you have a pleasent day!
-    <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
-
-    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Yours Sincerely,<span class="hljs-tag">&lt;<span class="hljs-name">br</span>/&gt;</span>&#123;&#123; today &#125;&#125;<span class="hljs-tag">&lt;<span class="hljs-name">br</span>/&gt;</span>&#123;&#123; author &#125;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
-
-<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
-<span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span></code></pre></div>
-
-<p>&emsp;&emsp;我们有必要对这个模板做解释：</p>
-<div class="hljs"><pre><code class="hljs django"><span class="xml">- </span><span class="hljs-template-variable">&#123;&#123; name &#125;&#125;</span><span class="xml">表示name变量，所有</span><span class="hljs-template-variable">&#123;&#123;...&#125;&#125;</span><span class="xml">里面包含的是变量。</span>
-<span class="xml">- </span><span class="hljs-template-tag">&#123;% <span class="hljs-name"><span class="hljs-name">ifequal</span></span> your_city.lower my_city.lower %&#125;</span><span class="xml">为标签(tag)，表示if判断语句，判断两个变量是否相等，需要用</span><span class="hljs-template-tag">&#123;% <span class="hljs-name"><span class="hljs-name">endifequal</span></span> %&#125;</span><span class="xml">来结束。</span>
-<span class="xml">- </span><span class="hljs-template-tag">&#123;% <span class="hljs-name"><span class="hljs-name">for</span></span> trait <span class="hljs-keyword">in</span> traits %&#125;</span><span class="xml">为标签，表示for循环语句，traits可以为list或者set序列，需要用</span><span class="hljs-template-tag">&#123;% <span class="hljs-name"><span class="hljs-name">endfor</span></span> %&#125;</span><span class="xml">。</span>
-<span class="xml">- 其余代码同HTML相同</span></code></pre></div>
-
-<p>&emsp;&emsp;定义好模板之后，我们应该告诉Django怎样使用这个模板，因此，需要在settings.py中的TEMPLATES设置DIRS：</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VwbG9hZC1pbWFnZXMuamlhbnNodS5pby91cGxvYWRfaW1hZ2VzLzk0MTkwMzQtNzlkMTc0NGI4MzU0NWExNi5wbmc?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="设置模板路径"></p>
-<p>&emsp;&emsp;这样我们就能在视图中使用该模板了。在相同的文件夹下，新建views.py，代码如下：</p>
-<div class="hljs"><pre><code class="hljs python"><span class="hljs-keyword">from</span> django.shortcuts <span class="hljs-keyword">import</span> render_to_response
-<span class="hljs-keyword">import</span> datetime
-
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">output</span><span class="hljs-params">(request)</span>:</span>
-    c = &#123;<span class="hljs-string">'name'</span>:<span class="hljs-string">'Rose'</span>,
-         <span class="hljs-string">'met_date'</span>: datetime.datetime(<span class="hljs-number">2016</span>,<span class="hljs-number">5</span>,<span class="hljs-number">24</span>,<span class="hljs-number">18</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>),
-         <span class="hljs-string">'today'</span>: datetime.datetime.now(),
-         <span class="hljs-string">'your_city'</span>: <span class="hljs-string">'shanghai'</span>,
-         <span class="hljs-string">'my_city'</span>: <span class="hljs-string">'Shanghai'</span>,
-         <span class="hljs-string">'traits'</span>: [<span class="hljs-string">'young and pretty'</span>, <span class="hljs-string">'lovely and positive'</span>, <span class="hljs-string">'warm-hearted and careful'</span>, <span class="hljs-string">'independent and clever'</span>],
-         <span class="hljs-string">'weather'</span>: <span class="hljs-string">'cold'</span>,
-         <span class="hljs-string">'author'</span>: <span class="hljs-string">'Jclian'</span>
-          &#125;
-    c[<span class="hljs-string">'days'</span>] = (c[<span class="hljs-string">'today'</span>] - c[<span class="hljs-string">'met_date'</span>]).days
-    <span class="hljs-keyword">return</span> render_to_response(<span class="hljs-string">'letter.html'</span>, c)</code></pre></div>
-<p>其中c为字典，keys为模板中定义的变量，values可以自由定义。<br>&emsp;&emsp;最后配置好urls.py，并开启8000端口，在网页中输入localhost:8000，得到的页面如下：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VwbG9hZC1pbWFnZXMuamlhbnNodS5pby91cGxvYWRfaW1hZ2VzLzk0MTkwMzQtYWQzOWU1NGNmYjU1OGJkNi5wbmc?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="定制情书"></p>
+<p>运行以上代码，输出结果为：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VwbG9hZC1pbWFnZXMuamlhbnNodS5pby91cGxvYWRfaW1hZ2VzLzk0MTkwMzQtZmMzMWNjMzg0NDFmMjJiNy5wbmc?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="Eclipse运行结果"><br>&emsp;&emsp;这说明用以上三种方法来实现PCA都是可行的。这样我们就能理解PCA的具体实现过程啦~~<br>&emsp;&emsp;有兴趣的读者可以用其它语言实现一下哈。</p>
 <p>参考文献：</p>
 <ol>
-<li>Django中文教程.pdf：<a href="http://download.csdn.net/download/huangzhichang13/8177581" target="_blank" rel="noopener">http://download.csdn.net/download/huangzhichang13/8177581</a></li>
-<li>Django官方文档之Templates：<a href="https://docs.djangoproject.com/en/2.0/topics/templates/" target="_blank" rel="noopener">https://docs.djangoproject.com/en/2.0/topics/templates/</a></li>
+<li>PCA 维基百科： <a href="https://en.wikipedia.org/wiki/Principal_component_analysis" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Principal_component_analysis</a>.</li>
+<li>讲解详细又全面的PCA教程： A tutorial on Principal Components Analysis, Lindsay I Smith.</li>
+<li>博客：矩阵的奇异值分解（SVD）（理论）：<a href="http://www.cnblogs.com/jclian91/p/8022426.html" target="_blank" rel="noopener">http://www.cnblogs.com/jclian91/p/8022426.html</a>.</li>
+<li>博客：主成分分析PCA: <a href="https://www.cnblogs.com/zhangchaoyang/articles/2222048.html" target="_blank" rel="noopener">https://www.cnblogs.com/zhangchaoyang/articles/2222048.html</a>.</li>
+<li>Scikit-learn的PCA介绍：<a href="http://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html" target="_blank" rel="noopener">http://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html</a>.</li>
 </ol>
 
             </article>
@@ -310,7 +337,7 @@
                   <div class="post-meta mr-3">
                     <i class="iconfont icon-category"></i>
                     
-                      <a class="hover-with-bg" href="/categories/Django/">Django</a>
+                      <a class="hover-with-bg" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a>
                     
                   </div>
                 
@@ -318,7 +345,7 @@
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/Django/">Django</a>
+                      <a class="hover-with-bg" href="/tags/PCA/">PCA</a>
                     
                   </div>
                 
@@ -331,9 +358,9 @@
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/2020/06/12/%E4%B8%89%E7%A7%8D%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0PCA%E7%AE%97%E6%B3%95%EF%BC%88Python%EF%BC%89/">
+                      <a href="/2020/06/12/%E7%9F%A9%E9%98%B5%E7%9A%84%E5%A5%87%E5%BC%82%E5%80%BC%E5%88%86%E8%A7%A3%EF%BC%88SVD%EF%BC%89%EF%BC%88%E7%90%86%E8%AE%BA%EF%BC%89/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">三种方法实现PCA算法（Python）</span>
+                        <span class="hidden-mobile">矩阵的奇异值分解（SVD）（理论）</span>
                         <span class="visible-mobile">Previous</span>
                       </a>
                     
@@ -341,8 +368,8 @@
                   <div class="post-next col-6">
                     
                     
-                      <a href="/2020/06/11/Django%E5%AD%A6%E4%B9%A0%EF%BC%882%EF%BC%89%E6%95%B0%E6%8D%AE%E5%AE%9D%E5%BA%93/">
-                        <span class="hidden-mobile">Django学习（2）数据宝库</span>
+                      <a href="/2020/06/11/Django%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%89%EF%BC%89%E6%A8%A1%E6%9D%BF%E5%AE%9A%E5%88%B6/">
+                        <span class="hidden-mobile">Django学习（三）模板定制</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -562,7 +589,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "Django学习（三）模板定制&nbsp;",
+        "三种方法实现PCA算法（Python）&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,
