@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="Jclian91">
   <meta name="keywords" content="">
-  <title>矩阵的奇异值分解（SVD）（理论） - Blog</title>
+  <title>Python爬虫之40行代码爬取金庸所有武侠小说 - Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 
@@ -152,8 +152,8 @@
               
   <div class="mt-3 post-meta">
     <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-    <time datetime="2020-06-12 16:39">
-      June 12, 2020 pm
+    <time datetime="2020-06-18 14:06">
+      June 18, 2020 pm
     </time>
   </div>
 
@@ -163,7 +163,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.1k 字
+      433 字
     </span>
   
 
@@ -173,7 +173,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      31
+      12
        分钟
     </span>
   
@@ -212,52 +212,54 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>　　矩阵的奇异值分解(Singular Value Decomposition,SVD)是数值计算中的精彩之处，在其它数学领域和机器学习领域得到了广泛的应用，如矩阵的广义逆，主分成分析(PCA),自然语言处理(NLP)中的潜在语义索引（Latent Semantic Indexing）,推荐算法等。<br>　　鉴于实际应用，本次分享中的数域为实数域，即我们只在实数范围内讨论。我们假定读者具有大学线性代数的水平。那么，矩阵的奇异值分解定理如下：</p>
-<p>（定理）（奇异值分解定理）任意一个$m \times n$矩阵A可分解为</p>
-<p>$$A=PDQ$$</p>
-<p>其中P是$m \times m$正交矩阵，D是$m \times n$对角阵，Q是$n \times n$正交矩阵。</p>
-<p>证明：矩阵$A^{T}A$是$n \times n$对称矩阵，因为$(A^{T}A)^{T}=A^{T}(A^{T})^{T}=A^{T}A$.又因为</p>
-<p>$$x^{T}（A^{T}A）x=(Ax)^{T}(Ax)\ge0,$$</p>
-<p>所以$A^{T}A$是半正定矩阵，从而，$A^{T}A$的特征值为非负数。<br>　　假设$A^{T}A$的特征值为$\sigma_{1}^{2},\sigma_{2}^{2},…,\sigma_{n}^{2}$,其中，$\sigma_{1}^{2},\sigma_{2}^{2},…,\sigma_{r}^{2}$都是正的，$\sigma_{r+1}^{2},\sigma_{r+2}^{2},…,\sigma_{n}^{2}$都是0，$r$为$A^{T}A$的秩。设${u_{1},u_{2},…,u_{n}}$为$A^{T}A$的标准正交特征向量集，则</p>
-<p>$$A^{T}Au_{i}=\sigma_{i}^{2}u_{i} (i=1,2,…,n)$$</p>
-<p>于是$(Au_{i})^{T}(Au_{i})=u_{i}^{T}(A^{T}A)u_{i}=u_{i}^{T}\sigma_{i}^{2}u_{i}=\sigma_{i}^{2}.$当$i\ge r+1$时，$\sigma_{i}=0$,从而$Au_{i}=0$.</p>
-<p>　　用${u_{1}^{T},u_{2}^{T},…,u_{n}^{T}}$作为行构成一个$n\times n$矩阵$Q$.接着，定义</p>
-<p>$$v_{i}=\sigma_{i}^{-1}Au_{i} (1\le i \le r).$$</p>
-<p>当$1\le i,j \le r$时，$v_{i}$构成一个标准正交系，这是因为</p>
-<p>$$v_{i}^{T}v_{j}=\sigma_{i}^{-1}(Au_{i})^{T}\sigma_{j}^{-1}(Au_{j})=(\sigma_{i}\sigma_{j})^{-1}(u_{i}^{T}A^{T}Au_{j})=(\sigma_{i}\sigma_{j})^{-1}(u_{i}^{T}\sigma_{j}^{2}u_{j})=\delta_{ij},$$</p>
-<p>其中$\delta_{ij}$为Kronecker符号，即当$i=j$时，$\delta=1$,当$i\neq j$时，$\delta=0$.</p>
-<p>　　我们选择额外的向量$v_{i}$使得${v_{1},v_{2},…,v_{m}}$为$\mathbb{R}^{m}$的标准正交基。设P是$m\times m$矩阵，其列是$v_{1},v_{2},…,v_{m}$.设D是$m\times n$对角阵，$\sigma_{1},\sigma_{2},…\sigma_{r}$在其对角线上，其余地方均为0.于是有</p>
-<p>$$A=PDQ.$$</p>
-<p>这是因为$(P^{T}AQ^{T})<em>{ij}=v</em>{i}^{T}Au_{j}$,当$j\ge r+1$时，该式为0，当$j\le r$时，该式为$v_{i}^{T}\sigma v_{j}=\sigma_{j}\delta_{ij}$,从而$P^{T}AQ^{T}=D$.又因$P,Q$为正交矩阵，因此$$A=PDQ.$$</p>
-<p>　　证毕。</p>
-<p>　　在上面证明中，我们称实数$\sigma_{1},\sigma_{2},…,\sigma_{n}$(取非负数)为矩阵A的奇异值，它们是$A^{T}A$的特征值的非负平方根。定理中的分解$A=PDQ$就是一个奇异值分解。由上面的证明，我们可以知道：矩阵的奇异值分解并不唯一，因为$\sigma_{1},\sigma_{2},…,\sigma_{n}$的次序及$v_{r+1},v_{r+2},…,v_{n}$的选择并不唯一。</p>
-<p>　　在Python中的Numpy模块中，已经实现了矩阵的奇异值分解。以下为示例的应用代码：</p>
-<div class="hljs"><pre><code class="hljs python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
-<span class="hljs-comment">#generate a random 3*4 matrix </span>
-A =  np.random.randint(<span class="hljs-number">5</span>, size=(<span class="hljs-number">3</span>, <span class="hljs-number">4</span>))
-<span class="hljs-comment">#parameter full_matrices: control the size of P and Q</span>
-<span class="hljs-comment">#d returns as numpy.ndarray, not matrix </span>
-P,d,Q = np.linalg.svd(A, full_matrices=<span class="hljs-literal">True</span>)
-print(<span class="hljs-string">'A:'</span>,A)
-print(<span class="hljs-string">'P:'</span>,P)
-<span class="hljs-comment">#D return as diagonal 3*4 matrix</span>
-D = np.zeros(<span class="hljs-number">12</span>).reshape(<span class="hljs-number">3</span>,<span class="hljs-number">4</span>)
-<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(len(d)):
-    D[i][i] = d[i]
-print(<span class="hljs-string">'D:'</span>,D)
-print(<span class="hljs-string">'Q:'</span>,Q)
-<span class="hljs-comment">#check if P*D*Q == A</span>
-print(<span class="hljs-string">'P*D*Q:'</span>,np.dot(P,np.dot(D,Q)))</code></pre></div>
-<p>输入结果如下：</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMjE4MDk1NTE1NjY1?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
-<p>　　至于如何用原始算法来实现矩阵的SVD，也是需要考虑的，有机会的话，可以交流哦<del>~<br>　　本次分享到此结束，欢迎大家批评与交流</del></p>
-<p>参考文献：</p>
-<ol>
-<li>SVD 维基百科：<a href="https://en.wikipedia.org/wiki/SVD" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/SVD</a></li>
-<li>数值分析  机械工业出版社 作者：萨奥尔(Timothy Sauer)  译者：裴玉茹<br>numpy的svd实现函数： <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.linalg.svd.html" target="_blank" rel="noopener">https://docs.scipy.org/doc/numpy/reference/generated/numpy.linalg.svd.html</a></li>
-<li>奇异值分解(SVD)原理与在降维中的应用：<a href="https://www.cnblogs.com/pinard/p/6251584.html" target="_blank" rel="noopener">https://www.cnblogs.com/pinard/p/6251584.html</a></li>
-<li>奇异值分解SVD应用——LSI：<a href="http://blog.csdn.net/abcjennifer/article/details/8131087" target="_blank" rel="noopener">http://blog.csdn.net/abcjennifer/article/details/8131087</a><br>论文：CALCULATING THE SINGULAR VALUES AND PSEUDO-INVERSE OF A MATRIX, G. GOLUB AND W. KAHAN,  J. SIAM llrM,B. AfeArd.Ser. B, Vol. 2, No. 2, 1965</li>
-</ol>
+              <p>　　我们今天来用Python爬虫爬取金庸所有的武侠小说，网址为：<a href="http://jinyong.zuopinj.com/，网页如下：" target="_blank" rel="noopener">http://jinyong.zuopinj.com/，网页如下：</a></p>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VwbG9hZC1pbWFnZXMuamlhbnNodS5pby91cGxvYWRfaW1hZ2VzLzk0MTkwMzQtMmRhNjk4OTAwMGUxZjQ2Ny5wbmc?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="金庸所有武侠小说"><br>　　Python代码如下：</p>
+<div class="hljs"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span>
+<span class="hljs-keyword">import</span> urllib.request  
+<span class="hljs-keyword">from</span> bs4 <span class="hljs-keyword">import</span> BeautifulSoup
+
+<span class="hljs-comment">#获取每本书的章节内容</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_chapter</span><span class="hljs-params">(url)</span>:</span>
+    <span class="hljs-comment"># 获取网页的源代码</span>
+    html = urllib.request.urlopen(url)  
+    content = html.read().decode(<span class="hljs-string">'utf8'</span>)
+    html.close()
+    <span class="hljs-comment"># 将网页源代码解析成HTML格式</span>
+    soup = BeautifulSoup(content, <span class="hljs-string">"lxml"</span>)
+    title = soup.find(<span class="hljs-string">'h1'</span>).text    <span class="hljs-comment">#获取章节的标题</span>
+    text = soup.find(<span class="hljs-string">'div'</span>, id=<span class="hljs-string">'htmlContent'</span>)    <span class="hljs-comment">#获取章节的内容</span>
+    <span class="hljs-comment">#处理章节的内容，使得格式更加整洁、清晰</span>
+    content = text.get_text(<span class="hljs-string">'\n'</span>,<span class="hljs-string">'br/'</span>).replace(<span class="hljs-string">'\n'</span>, <span class="hljs-string">'\n    '</span>)
+    content = content.replace(<span class="hljs-string">'　　'</span>, <span class="hljs-string">'\n　　'</span>)
+    <span class="hljs-keyword">return</span> title, <span class="hljs-string">'    '</span>+content
+        
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>:</span>
+    <span class="hljs-comment"># 书本列表</span>
+    books = [<span class="hljs-string">'射雕英雄传'</span>,<span class="hljs-string">'天龙八部'</span>,<span class="hljs-string">'鹿鼎记'</span>,<span class="hljs-string">'神雕侠侣'</span>,<span class="hljs-string">'笑傲江湖'</span>,<span class="hljs-string">'碧血剑'</span>,<span class="hljs-string">'倚天屠龙记'</span>,\
+             <span class="hljs-string">'飞狐外传'</span>,<span class="hljs-string">'书剑恩仇录'</span>,<span class="hljs-string">'连城诀'</span>,<span class="hljs-string">'侠客行'</span>,<span class="hljs-string">'越女剑'</span>,<span class="hljs-string">'鸳鸯刀'</span>,<span class="hljs-string">'白马啸西风'</span>,\
+             <span class="hljs-string">'雪山飞狐'</span>]
+    order = [<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>,<span class="hljs-number">7</span>,<span class="hljs-number">8</span>,<span class="hljs-number">10</span>,<span class="hljs-number">11</span>,<span class="hljs-number">12</span>,<span class="hljs-number">14</span>,<span class="hljs-number">15</span>,<span class="hljs-number">13</span>,<span class="hljs-number">9</span>]  <span class="hljs-comment">#order of books to scrapy</span>
+    <span class="hljs-comment">#list to store each book's scrapying range</span>
+    page_range = [<span class="hljs-number">1</span>,<span class="hljs-number">43</span>,<span class="hljs-number">94</span>,<span class="hljs-number">145</span>,<span class="hljs-number">185</span>,<span class="hljs-number">225</span>,<span class="hljs-number">248</span>,<span class="hljs-number">289</span>,<span class="hljs-number">309</span>,<span class="hljs-number">329</span>,<span class="hljs-number">341</span>,<span class="hljs-number">362</span>,<span class="hljs-number">363</span>,<span class="hljs-number">364</span>,<span class="hljs-number">375</span>,<span class="hljs-number">385</span>]
+
+    <span class="hljs-keyword">for</span> i,book <span class="hljs-keyword">in</span> enumerate(books):
+        <span class="hljs-keyword">for</span> num <span class="hljs-keyword">in</span> range(page_range[i],page_range[i+<span class="hljs-number">1</span>]):
+            url = <span class="hljs-string">"http://jinyong.zuopinj.com/%s/%s.html"</span>%(order[i],num)
+            <span class="hljs-comment"># 错误处理机制</span>
+            <span class="hljs-keyword">try</span>:
+                title, chapter = get_chapter(url)
+                <span class="hljs-keyword">with</span> open(<span class="hljs-string">'E://%s.txt'</span>%book, <span class="hljs-string">'a'</span>, encoding=<span class="hljs-string">'gb18030'</span>) <span class="hljs-keyword">as</span> f:
+                    print(book+<span class="hljs-string">':'</span>+title+<span class="hljs-string">'--&gt;写入成功！'</span>)
+                    f.write(title+<span class="hljs-string">'\n\n\n'</span>)
+                    f.write(chapter+<span class="hljs-string">'\n\n\n'</span>)
+            <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:
+                print(e) 
+    print(<span class="hljs-string">'全部写入完毕!'</span>)
+
+main()</code></pre></div>
+
+<p>　　运行结果如下：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VwbG9hZC1pbWFnZXMuamlhbnNodS5pby91cGxvYWRfaW1hZ2VzLzk0MTkwMzQtOWFjZWU3YmUwMDBjYWY2YS5wbmc?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="爬虫结果"></p>
+<p>上面的运行结果“HTTP Error 404: Not Found”是因为这个网页不存在，并不影响书本内容的完整性。我们可以去E盘查看文件是否下载成功：<br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VwbG9hZC1pbWFnZXMuamlhbnNodS5pby91cGxvYWRfaW1hZ2VzLzk0MTkwMzQtOGE4NWQxOTJjNGY5NzI1My5wbmc?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="E盘文件"><br>　　15本书都下载完毕了！整个过程才用了不到10分钟！爬虫的力量真是伟大啊~~</p>
 
             </article>
             <hr>
@@ -267,7 +269,7 @@ print(<span class="hljs-string">'P*D*Q:'</span>,np.dot(P,np.dot(D,Q)))</code></p
                   <div class="post-meta mr-3">
                     <i class="iconfont icon-category"></i>
                     
-                      <a class="hover-with-bg" href="/categories/%E6%95%B0%E5%AD%A6/">数学</a>
+                      <a class="hover-with-bg" href="/categories/%E7%88%AC%E8%99%AB/">爬虫</a>
                     
                   </div>
                 
@@ -275,7 +277,7 @@ print(<span class="hljs-string">'P*D*Q:'</span>,np.dot(P,np.dot(D,Q)))</code></p
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/SVD/">SVD</a>
+                      <a class="hover-with-bg" href="/tags/%E7%88%AC%E8%99%AB/">爬虫</a>
                     
                   </div>
                 
@@ -288,9 +290,9 @@ print(<span class="hljs-string">'P*D*Q:'</span>,np.dot(P,np.dot(D,Q)))</code></p
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/2020/06/18/Python%E7%88%AC%E8%99%AB%E4%B9%8B40%E8%A1%8C%E4%BB%A3%E7%A0%81%E7%88%AC%E5%8F%96%E9%87%91%E5%BA%B8%E6%89%80%E6%9C%89%E6%AD%A6%E4%BE%A0%E5%B0%8F%E8%AF%B4/">
+                      <a href="/2020/06/18/Django%E5%AD%A6%E4%B9%A0%EF%BC%88%E5%9B%9B%EF%BC%89%E8%A1%A8%E5%8D%95%EF%BC%8C%E8%AE%A9%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9B%B4%E5%BC%BA%E5%A4%A7/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Python爬虫之40行代码爬取金庸所有武侠小说</span>
+                        <span class="hidden-mobile">Django学习（四）表单，让数据库更强大</span>
                         <span class="visible-mobile">Previous</span>
                       </a>
                     
@@ -298,8 +300,8 @@ print(<span class="hljs-string">'P*D*Q:'</span>,np.dot(P,np.dot(D,Q)))</code></p
                   <div class="post-next col-6">
                     
                     
-                      <a href="/2020/06/12/%E4%B8%89%E7%A7%8D%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0PCA%E7%AE%97%E6%B3%95%EF%BC%88Python%EF%BC%89/">
-                        <span class="hidden-mobile">三种方法实现PCA算法（Python）</span>
+                      <a href="/2020/06/12/%E7%9F%A9%E9%98%B5%E7%9A%84%E5%A5%87%E5%BC%82%E5%80%BC%E5%88%86%E8%A7%A3%EF%BC%88SVD%EF%BC%89%EF%BC%88%E7%90%86%E8%AE%BA%EF%BC%89/">
+                        <span class="hidden-mobile">矩阵的奇异值分解（SVD）（理论）</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -519,7 +521,7 @@ print(<span class="hljs-string">'P*D*Q:'</span>,np.dot(P,np.dot(D,Q)))</code></p
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "矩阵的奇异值分解（SVD）（理论）&nbsp;",
+        "Python爬虫之40行代码爬取金庸所有武侠小说&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,

@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="Jclian91">
   <meta name="keywords" content="">
-  <title>矩阵的奇异值分解（SVD）（理论） - Blog</title>
+  <title>Javascript之模拟文字高亮显示 - Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 
@@ -152,8 +152,8 @@
               
   <div class="mt-3 post-meta">
     <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-    <time datetime="2020-06-12 16:39">
-      June 12, 2020 pm
+    <time datetime="2020-06-18 14:16">
+      June 18, 2020 pm
     </time>
   </div>
 
@@ -163,7 +163,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.1k 字
+      804 字
     </span>
   
 
@@ -173,7 +173,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      31
+      21
        分钟
     </span>
   
@@ -212,52 +212,59 @@
           <div class="post-content mx-auto" id="post">
             
             <article class="markdown-body">
-              <p>　　矩阵的奇异值分解(Singular Value Decomposition,SVD)是数值计算中的精彩之处，在其它数学领域和机器学习领域得到了广泛的应用，如矩阵的广义逆，主分成分析(PCA),自然语言处理(NLP)中的潜在语义索引（Latent Semantic Indexing）,推荐算法等。<br>　　鉴于实际应用，本次分享中的数域为实数域，即我们只在实数范围内讨论。我们假定读者具有大学线性代数的水平。那么，矩阵的奇异值分解定理如下：</p>
-<p>（定理）（奇异值分解定理）任意一个$m \times n$矩阵A可分解为</p>
-<p>$$A=PDQ$$</p>
-<p>其中P是$m \times m$正交矩阵，D是$m \times n$对角阵，Q是$n \times n$正交矩阵。</p>
-<p>证明：矩阵$A^{T}A$是$n \times n$对称矩阵，因为$(A^{T}A)^{T}=A^{T}(A^{T})^{T}=A^{T}A$.又因为</p>
-<p>$$x^{T}（A^{T}A）x=(Ax)^{T}(Ax)\ge0,$$</p>
-<p>所以$A^{T}A$是半正定矩阵，从而，$A^{T}A$的特征值为非负数。<br>　　假设$A^{T}A$的特征值为$\sigma_{1}^{2},\sigma_{2}^{2},…,\sigma_{n}^{2}$,其中，$\sigma_{1}^{2},\sigma_{2}^{2},…,\sigma_{r}^{2}$都是正的，$\sigma_{r+1}^{2},\sigma_{r+2}^{2},…,\sigma_{n}^{2}$都是0，$r$为$A^{T}A$的秩。设${u_{1},u_{2},…,u_{n}}$为$A^{T}A$的标准正交特征向量集，则</p>
-<p>$$A^{T}Au_{i}=\sigma_{i}^{2}u_{i} (i=1,2,…,n)$$</p>
-<p>于是$(Au_{i})^{T}(Au_{i})=u_{i}^{T}(A^{T}A)u_{i}=u_{i}^{T}\sigma_{i}^{2}u_{i}=\sigma_{i}^{2}.$当$i\ge r+1$时，$\sigma_{i}=0$,从而$Au_{i}=0$.</p>
-<p>　　用${u_{1}^{T},u_{2}^{T},…,u_{n}^{T}}$作为行构成一个$n\times n$矩阵$Q$.接着，定义</p>
-<p>$$v_{i}=\sigma_{i}^{-1}Au_{i} (1\le i \le r).$$</p>
-<p>当$1\le i,j \le r$时，$v_{i}$构成一个标准正交系，这是因为</p>
-<p>$$v_{i}^{T}v_{j}=\sigma_{i}^{-1}(Au_{i})^{T}\sigma_{j}^{-1}(Au_{j})=(\sigma_{i}\sigma_{j})^{-1}(u_{i}^{T}A^{T}Au_{j})=(\sigma_{i}\sigma_{j})^{-1}(u_{i}^{T}\sigma_{j}^{2}u_{j})=\delta_{ij},$$</p>
-<p>其中$\delta_{ij}$为Kronecker符号，即当$i=j$时，$\delta=1$,当$i\neq j$时，$\delta=0$.</p>
-<p>　　我们选择额外的向量$v_{i}$使得${v_{1},v_{2},…,v_{m}}$为$\mathbb{R}^{m}$的标准正交基。设P是$m\times m$矩阵，其列是$v_{1},v_{2},…,v_{m}$.设D是$m\times n$对角阵，$\sigma_{1},\sigma_{2},…\sigma_{r}$在其对角线上，其余地方均为0.于是有</p>
-<p>$$A=PDQ.$$</p>
-<p>这是因为$(P^{T}AQ^{T})<em>{ij}=v</em>{i}^{T}Au_{j}$,当$j\ge r+1$时，该式为0，当$j\le r$时，该式为$v_{i}^{T}\sigma v_{j}=\sigma_{j}\delta_{ij}$,从而$P^{T}AQ^{T}=D$.又因$P,Q$为正交矩阵，因此$$A=PDQ.$$</p>
-<p>　　证毕。</p>
-<p>　　在上面证明中，我们称实数$\sigma_{1},\sigma_{2},…,\sigma_{n}$(取非负数)为矩阵A的奇异值，它们是$A^{T}A$的特征值的非负平方根。定理中的分解$A=PDQ$就是一个奇异值分解。由上面的证明，我们可以知道：矩阵的奇异值分解并不唯一，因为$\sigma_{1},\sigma_{2},…,\sigma_{n}$的次序及$v_{r+1},v_{r+2},…,v_{n}$的选择并不唯一。</p>
-<p>　　在Python中的Numpy模块中，已经实现了矩阵的奇异值分解。以下为示例的应用代码：</p>
-<div class="hljs"><pre><code class="hljs python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
-<span class="hljs-comment">#generate a random 3*4 matrix </span>
-A =  np.random.randint(<span class="hljs-number">5</span>, size=(<span class="hljs-number">3</span>, <span class="hljs-number">4</span>))
-<span class="hljs-comment">#parameter full_matrices: control the size of P and Q</span>
-<span class="hljs-comment">#d returns as numpy.ndarray, not matrix </span>
-P,d,Q = np.linalg.svd(A, full_matrices=<span class="hljs-literal">True</span>)
-print(<span class="hljs-string">'A:'</span>,A)
-print(<span class="hljs-string">'P:'</span>,P)
-<span class="hljs-comment">#D return as diagonal 3*4 matrix</span>
-D = np.zeros(<span class="hljs-number">12</span>).reshape(<span class="hljs-number">3</span>,<span class="hljs-number">4</span>)
-<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(len(d)):
-    D[i][i] = d[i]
-print(<span class="hljs-string">'D:'</span>,D)
-print(<span class="hljs-string">'Q:'</span>,Q)
-<span class="hljs-comment">#check if P*D*Q == A</span>
-print(<span class="hljs-string">'P*D*Q:'</span>,np.dot(P,np.dot(D,Q)))</code></pre></div>
-<p>输入结果如下：</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMjE4MDk1NTE1NjY1?x-oss-process=image/format,png" srcset="/img/loading.gif" alt="这里写图片描述"></p>
-<p>　　至于如何用原始算法来实现矩阵的SVD，也是需要考虑的，有机会的话，可以交流哦<del>~<br>　　本次分享到此结束，欢迎大家批评与交流</del></p>
-<p>参考文献：</p>
-<ol>
-<li>SVD 维基百科：<a href="https://en.wikipedia.org/wiki/SVD" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/SVD</a></li>
-<li>数值分析  机械工业出版社 作者：萨奥尔(Timothy Sauer)  译者：裴玉茹<br>numpy的svd实现函数： <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.linalg.svd.html" target="_blank" rel="noopener">https://docs.scipy.org/doc/numpy/reference/generated/numpy.linalg.svd.html</a></li>
-<li>奇异值分解(SVD)原理与在降维中的应用：<a href="https://www.cnblogs.com/pinard/p/6251584.html" target="_blank" rel="noopener">https://www.cnblogs.com/pinard/p/6251584.html</a></li>
-<li>奇异值分解SVD应用——LSI：<a href="http://blog.csdn.net/abcjennifer/article/details/8131087" target="_blank" rel="noopener">http://blog.csdn.net/abcjennifer/article/details/8131087</a><br>论文：CALCULATING THE SINGULAR VALUES AND PSEUDO-INVERSE OF A MATRIX, G. GOLUB AND W. KAHAN,  J. SIAM llrM,B. AfeArd.Ser. B, Vol. 2, No. 2, 1965</li>
-</ol>
+              <p>&emsp;&emsp;在我们平时浏览网页的时候，我们常常会用到Ctrl+F（搜索）功能，被搜索到的文字就是高亮显示。那么，如何在Javascript中模拟文字高亮显示这一功能呢？<br>&emsp;&emsp;以下为笔者写的样例代码：</p>
+<div class="hljs"><pre><code class="hljs html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">html</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
+	<span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">"UTF-8"</span>&gt;</span>
+	<span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>Highlight<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span>
+	<span class="hljs-comment">&lt;!--style of mark:Green,bold.--&gt;</span>
+	<span class="hljs-tag">&lt;<span class="hljs-name">style</span>&gt;</span>
+        mark &#123;
+<span class="css">            <span class="hljs-selector-tag">background-color</span>:<span class="hljs-selector-id">#00ff90</span>; <span class="hljs-selector-tag">font-weight</span><span class="hljs-selector-pseudo">:bold</span>;</span>
+        &#125;
+<span class="css">		<span class="hljs-selector-tag">p</span>&#123;<span class="hljs-attribute">text-indent</span>:<span class="hljs-number">2em</span>;&#125; </span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span>
+	
+	<span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span>
+<span class="actionscript">	<span class="hljs-comment">//highlight 'query' in page</span></span>
+<span class="actionscript">	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Func</span><span class="hljs-params">()</span></span>&#123;</span>
+<span class="javascript">		<span class="hljs-keyword">var</span> query = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'query'</span>).value;</span>
+<span class="actionscript">		<span class="hljs-keyword">if</span>(query == <span class="hljs-string">''</span>)&#123;alert(<span class="hljs-string">'Query word is empty!'</span>)&#125;</span>
+<span class="actionscript">		<span class="hljs-keyword">else</span>&#123;</span>
+<span class="actionscript">			<span class="hljs-keyword">var</span> arr = [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>];</span>
+<span class="actionscript">			<span class="hljs-keyword">var</span> i;</span>
+			for(i=0; i&lt;arr.length; i++)&#123;
+<span class="javascript">				<span class="hljs-keyword">var</span> x = <span class="hljs-built_in">String</span>(arr[i]);	</span>
+<span class="javascript">				<span class="hljs-built_in">document</span>.getElementById(x).innerHTML = <span class="hljs-built_in">document</span>.getElementById(x).innerHTML.replace(<span class="hljs-keyword">new</span> <span class="hljs-built_in">RegExp</span>(query,<span class="hljs-string">'g'</span>),<span class="hljs-string">'&lt;mark&gt;'</span>+query+<span class="hljs-string">'&lt;/mark&gt;'</span>);</span>
+			&#125;
+		&#125;
+	&#125;
+<span class="actionscript">	<span class="hljs-comment">//refresh the page to cancel highlighting</span></span>
+<span class="actionscript">	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">func</span><span class="hljs-params">()</span></span>&#123;</span>
+<span class="javascript">		<span class="hljs-built_in">window</span>.location.reload();</span>
+	&#125;
+	<span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+	
+<span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+    <span class="hljs-comment">&lt;!--example text--&gt;</span>
+	<span class="hljs-tag">&lt;<span class="hljs-name">p</span> <span class="hljs-attr">id</span>=<span class="hljs-string">'1'</span>&gt;</span>北京，简称“京”，是中华人民共和国的首都、直辖市、国家中心城市、超大城市、国际大都市，全国政治中心、文化中心、国际交往中心、科技创新中心是中国共产党中央委员会、中华人民共和国中央人民政府、全国人民代表大会、中国人民政治协商会议全国委员会、中华人民共和国中央军事委员会所在地，也是中部战区司令部驻地<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+	
+	<span class="hljs-tag">&lt;<span class="hljs-name">p</span> <span class="hljs-attr">id</span>=<span class="hljs-string">'2'</span>&gt;</span>上海，简称“沪”或“申”，是中国共产党的诞生地，中华人民共和国直辖市，国家中心城市，超大城市，国际经济、金融、贸易、航运、科技创新中心，首批沿海开放城市。上海地处长江入海口，是长江经济带的龙头城市，隔东中国海与日本九州岛相望，南濒杭州湾，北、西与江苏、浙江两省相接。<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+	
+	<span class="hljs-tag">&lt;<span class="hljs-name">p</span> <span class="hljs-attr">id</span>=<span class="hljs-string">'3'</span>&gt;</span>广州，简称穗，别称羊城、花城，广东省省会，位于广东省中南部，东江、西江、北江交汇处，珠江三角洲北缘，濒临中国南海。<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+	
+	<span class="hljs-tag">&lt;<span class="hljs-name">p</span> <span class="hljs-attr">id</span>=<span class="hljs-string">'4'</span>&gt;</span>深圳，简称“深”，别称鹏城，中国四大一线城市之一，广东省省辖市、计划单列市、副省级市、国家区域中心城市、超大城市。地处广东南部，珠江三角洲东岸，与香港一水之隔，东临大亚湾和大鹏湾，西濒珠江口和伶仃洋，南隔深圳河与香港相连，北部与东莞、惠州接壤。<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+	
+	<span class="hljs-comment">&lt;!--input and button--&gt;</span>
+	Query word: <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text"</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"highlight"</span> <span class="hljs-attr">id</span>=<span class="hljs-string">'query'</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">br</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">br</span>&gt;</span>
+	<span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"button"</span> <span class="hljs-attr">onclick</span>=<span class="hljs-string">"Func()"</span>&gt;</span>Highlight<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+	<span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"button"</span> <span class="hljs-attr">onclick</span>=<span class="hljs-string">"func()"</span>&gt;</span>Cancel Highlighting<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span></code></pre></div>
+<p>&emsp;&emsp;在“Query word“”中输入“中国”，显示如下：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/9419034-74ce0af02d2d40f8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" srcset="/img/loading.gif" alt="文字高亮"><br>&emsp;&emsp;如果要取消高亮，则点击“Cancel Highlighting”按钮，就是刷新页面，也就取消高亮。如果”Query word”中没有输入，则会弹出窗口，显示“Query word is empty!”.<br>&emsp;&emsp; 这样，我们就能轻松模拟平时浏览网页时发生的文字高亮的情形啦~<br>&emsp;&emsp;本次分享到此结束，欢迎大家交流~</p>
 
             </article>
             <hr>
@@ -267,7 +274,7 @@ print(<span class="hljs-string">'P*D*Q:'</span>,np.dot(P,np.dot(D,Q)))</code></p
                   <div class="post-meta mr-3">
                     <i class="iconfont icon-category"></i>
                     
-                      <a class="hover-with-bg" href="/categories/%E6%95%B0%E5%AD%A6/">数学</a>
+                      <a class="hover-with-bg" href="/categories/%E5%89%8D%E7%AB%AF/">前端</a>
                     
                   </div>
                 
@@ -275,7 +282,7 @@ print(<span class="hljs-string">'P*D*Q:'</span>,np.dot(P,np.dot(D,Q)))</code></p
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/SVD/">SVD</a>
+                      <a class="hover-with-bg" href="/tags/JavaScript/">JavaScript</a>
                     
                   </div>
                 
@@ -288,18 +295,12 @@ print(<span class="hljs-string">'P*D*Q:'</span>,np.dot(P,np.dot(D,Q)))</code></p
                   <div class="post-prev col-6">
                     
                     
-                      <a href="/2020/06/18/Python%E7%88%AC%E8%99%AB%E4%B9%8B40%E8%A1%8C%E4%BB%A3%E7%A0%81%E7%88%AC%E5%8F%96%E9%87%91%E5%BA%B8%E6%89%80%E6%9C%89%E6%AD%A6%E4%BE%A0%E5%B0%8F%E8%AF%B4/">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Python爬虫之40行代码爬取金庸所有武侠小说</span>
-                        <span class="visible-mobile">Previous</span>
-                      </a>
-                    
                   </div>
                   <div class="post-next col-6">
                     
                     
-                      <a href="/2020/06/12/%E4%B8%89%E7%A7%8D%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0PCA%E7%AE%97%E6%B3%95%EF%BC%88Python%EF%BC%89/">
-                        <span class="hidden-mobile">三种方法实现PCA算法（Python）</span>
+                      <a href="/2020/06/18/%E5%9C%A8Eclipse%E4%B8%AD%E5%88%9B%E5%BB%BADjango%E9%A1%B9%E7%9B%AE/">
+                        <span class="hidden-mobile">在Eclipse中创建Django项目</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -519,7 +520,7 @@ print(<span class="hljs-string">'P*D*Q:'</span>,np.dot(P,np.dot(D,Q)))</code></p
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "矩阵的奇异值分解（SVD）（理论）&nbsp;",
+        "Javascript之模拟文字高亮显示&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,
