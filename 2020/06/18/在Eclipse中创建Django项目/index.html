@@ -213,8 +213,9 @@
             
             <article class="markdown-body">
               <p>&emsp;&emsp;在以前的分享中，我们是在命令行模式下创建Django项目的，那么，如何在IDE中使用Django呢？<br>&emsp;&emsp;本文将介绍如何在Eclipse中创建Django项目。<br>&emsp;&emsp;首先，新建Django项目mysite，如下图：</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/9419034-3083b877d1f450c8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" srcset="/img/loading.gif" alt="新建Django项目"><br><img src="http://upload-images.jianshu.io/upload_images/9419034-ef544036b316c0fd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" srcset="/img/loading.gif" alt="新建Django项目mysite"></p>
-<p>注意上图中的划红线部分，应该选择“Add project directory to the PYTHONPATH”,之后一直点next和finish即可，建好的mysite项目如下图：<br><img src="http://upload-images.jianshu.io/upload_images/9419034-e8df1d2b299b7b50.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" srcset="/img/loading.gif" alt="mysite项目"></p>
+<p><img src="https://img-blog.csdn.net/20171222090658666" srcset="/img/loading.gif" alt="新建Django项目"><br><img src="https://img-blog.csdn.net/20171222090951665" srcset="/img/loading.gif" alt="新建Django项目mysite"></p>
+<p>注意上图中的划红线部分，应该选择“Add project directory to the PYTHONPATH”,之后一直点next和finish即可，建好的mysite项目如下图：</p>
+<p><img src="https://img-blog.csdn.net/20171222091220764" srcset="/img/loading.gif" alt="mysite项目"></p>
 <p>&emsp;&emsp;在mysite模块下，新建views.py，代码如下：</p>
 <div class="hljs"><pre><code class="hljs python"><span class="hljs-keyword">from</span> django.http <span class="hljs-keyword">import</span> HttpResponse
 
@@ -255,8 +256,10 @@ urlpatterns = [
     <span class="hljs-keyword">from</span> django.core.management <span class="hljs-keyword">import</span> execute_from_command_line
     execute_from_command_line([<span class="hljs-string">'manage.py'</span>,<span class="hljs-string">'runserver'</span>,<span class="hljs-string">'0.0.0.0:8000'</span>])</code></pre></div>
 
-<p>保存，并运行，在Eclipse中运行结果如下：<br><img src="http://upload-images.jianshu.io/upload_images/9419034-8aadcdb697bd7d99.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" srcset="/img/loading.gif" alt="Eclipse中运行结果"></p>
-<p>最后，我们在本地浏览器中输入localhost:8000即可，显示如下图：<br><img src="http://upload-images.jianshu.io/upload_images/9419034-df84df9c1791377c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" srcset="/img/loading.gif" alt="浏览器中显示结果"></p>
+<p>保存，并运行，在Eclipse中运行结果如下：</p>
+<p><img src="https://img-blog.csdn.net/20171222092052660" srcset="/img/loading.gif" alt="Eclipse中运行结果"></p>
+<p>最后，我们在本地浏览器中输入localhost:8000即可，显示如下图：</p>
+<p><img src="https://img-blog.csdn.net/20171222092232706" srcset="/img/loading.gif" alt="浏览器中显示结果"></p>
 <p>&emsp;&emsp;这样，我们就成功地在Eclipse中创建Django项目并顺利运行了，简单又方便，不需要再在命令行模式下去操作。</p>
 <p>&emsp;&emsp;那么，如何新建Django app呢？我们只需在原项目下，新建PyDev Package,这就是一个Django app.</p>
 <p>&emsp;&emsp;那么，又该如何实现python manage.py makemigrations和python mange.py migrate呢？和上面的操作一样，我们只需要在manage.py新增代码：</p>
