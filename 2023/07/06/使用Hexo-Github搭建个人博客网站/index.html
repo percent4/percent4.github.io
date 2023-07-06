@@ -23,16 +23,16 @@
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="曾几何时，笔者也幻想过写个项目来搭建属于自己的个人博客。  但是，写程序以及维护的成本，不禁让我犹豫再三，最后还是选择了CSDN等博客网站。将近六年的博客生涯，我尝试了不同的博客网站，各有各的利和弊，不变的是广告，这让人很不爽。  直到今天，我看到了别人写的利用Hexo+Github来搭建个人博客网站，如获至宝。折腾了一阵以后，轻松完成了个人博客的搭建，这种清爽的界面风格，让人耳目一新，同时它">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20200609212936859.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20200609214152321.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2pjbGlhbjkx,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="http://tva1.sinaimg.cn/large/006cpotXgy1hfnfsvv9mrj30s10hmdko.jpg">
+<meta property="og:image" content="http://tva1.sinaimg.cn/large/006cpotXgy1hfnfvkjupnj31hc0qjanm.jpg">
 <meta property="article:published_time" content="2023-07-06T05:21:32.000Z">
-<meta property="article:modified_time" content="2023-07-06T11:44:34.445Z">
+<meta property="article:modified_time" content="2023-07-06T12:07:26.090Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="Hexo">
 <meta property="article:tag" content="Github">
 <meta property="article:tag" content="个人博客">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200609212936859.png">
+<meta name="twitter:image" content="http://tva1.sinaimg.cn/large/006cpotXgy1hfnfsvv9mrj30s10hmdko.jpg">
   
   
   
@@ -287,7 +287,7 @@
 </ul>
 <h3 id="搭建博客"><a href="#搭建博客" class="headerlink" title="搭建博客"></a>搭建博客</h3><p>  下面将分步来介绍如何使用Hexo和Github来搭建个人博客网站。</p>
 <h4 id="创建Github仓库"><a href="#创建Github仓库" class="headerlink" title="创建Github仓库"></a>创建Github仓库</h4><p>  在Github中新建一个名为username.github.io的空仓库，其中username是你在GitHub上的用户名，比如笔者的仓库名为percent.github.io。</p>
-<h4 id="配置SSH"><a href="#配置SSH" class="headerlink" title="配置SSH"></a>配置SSH</h4><p>  如果想要使用远程从你的电脑上传文件至你的github仓库，那么，你就需要配置SSH。点击你个人Github上的Settings选项，在<code>SSH and GPG keys</code>中配置SSH的公钥，一般公钥位于<code>.ssh/id_rsa.pub</code>中，如下图：<br><img src="https://img-blog.csdnimg.cn/20200609212936859.png" srcset="/img/loading.gif" lazyload alt="配置SSH"></p>
+<h4 id="配置SSH"><a href="#配置SSH" class="headerlink" title="配置SSH"></a>配置SSH</h4><p>  如果想要使用远程从你的电脑上传文件至你的github仓库，那么，你就需要配置SSH。点击你个人Github上的Settings选项，在<code>SSH and GPG keys</code>中配置SSH的公钥，一般公钥位于<code>.ssh/id_rsa.pub</code>中，如下图：<br><img src="http://tva1.sinaimg.cn/large/006cpotXgy1hfnfsvv9mrj30s10hmdko.jpg" srcset="/img/loading.gif" lazyload alt="配置SSH"></p>
 <h4 id="博客初始化"><a href="#博客初始化" class="headerlink" title="博客初始化"></a>博客初始化</h4><p>  新建一个空的文件夹，比如笔者新建了文件夹<code>github_blog</code>，使用<code>hexo init</code>命令初始化博客。初始化后的文件夹结构如下：</p>
 <figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs 1c">.<br>├── _config.yml<br>├── package.json<br>├── scaffolds<br>├── source<br><span class="hljs-string">|   ├── _drafts</span><br><span class="hljs-string">|   └── _posts</span><br>└── themes<br></code></pre></td></tr></table></figure>
 <p>上述文件说明如下：</p>
@@ -302,7 +302,7 @@
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># Deployment</span><br><span class="hljs-comment">## Docs: https://hexo.io/docs/deployment.html</span><br><span class="hljs-attr">deploy:</span><br>  <span class="hljs-attr">type:</span> <span class="hljs-string">git</span><br>  <span class="hljs-attr">repo:</span> <span class="hljs-string">https://github.com/percent4/percent4.github.io.git(第一步创建的Github仓库)</span><br>  <span class="hljs-attr">branch:</span> <span class="hljs-string">master</span><br></code></pre></td></tr></table></figure>
 <p>安装插件<code>npm install hexo-deployer-git --save</code>后，运行如下命令：</p>
 <figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-attribute">hexo</span> clean	<span class="hljs-comment"># 清除数据</span><br>hexo d -g	<span class="hljs-comment"># 生成博客</span><br></code></pre></td></tr></table></figure>
-<p>这时候，你会看到博客数据会提交至Github的信息，而第一步创建的空仓库也有了提交内容，当然，你的个人博客也搭建搭建完毕，访问网址为：<a target="_blank" rel="noopener" href="https://username.github.io/">https://username.github.io/</a> ，其中username是你在GitHub上的用户名。界面如下：<br><img src="https://img-blog.csdnimg.cn/20200609214152321.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2pjbGlhbjkx,size_16,color_FFFFFF,t_70#pic_center" srcset="/img/loading.gif" lazyload alt="Hexo界面"></p>
+<p>这时候，你会看到博客数据会提交至Github的信息，而第一步创建的空仓库也有了提交内容，当然，你的个人博客也搭建搭建完毕，访问网址为：<a target="_blank" rel="noopener" href="https://username.github.io/">https://username.github.io/</a> ，其中username是你在GitHub上的用户名。界面如下：<br><img src="http://tva1.sinaimg.cn/large/006cpotXgy1hfnfvkjupnj31hc0qjanm.jpg" srcset="/img/loading.gif" lazyload alt="Hexo界面"></p>
 <h3 id="博客维护"><a href="#博客维护" class="headerlink" title="博客维护"></a>博客维护</h3><p>  Hexo提供了一套维护博客的优雅的办法。笔者在此仅介绍如何新建一篇博客。新建博客格式为markdown格式，比如我想创建一篇名为<code>利用Tornado搭建文档预览系统</code>的博客，可以使用以下命令：</p>
 <figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs haxe">hexo <span class="hljs-keyword">new</span> <span class="hljs-type"></span>利用Tornado搭建文档预览系统<br></code></pre></td></tr></table></figure>
 <p>这时候会在你当前目录下的source&#x2F;_posts文件夹下生成<code>利用Tornado搭建文档预览系统.md</code>,其中内容如下：</p>
