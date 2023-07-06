@@ -24,7 +24,7 @@
 <meta property="og:description" content="TF-IDF介绍 TF-IDF是NLP中一种常用的统计方法，用以评估一个字词对于一个文件集或一个语料库中的其中一份文件的重要程度，通常用于提取文本的特征，即关键词。字词的重要性随着它在文件中出现的次数成正比增加，但同时会随着它在语料库中出现的频率成反比下降。 在NLP中，TF-IDF的计算公式如下： \[tfidf &#x3D; tf*idf.\] 其中，tf是词频(Term Frequency)，idf为">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-07-06T14:08:37.000Z">
-<meta property="article:modified_time" content="2023-07-06T15:21:58.706Z">
+<meta property="article:modified_time" content="2023-07-06T15:23:30.229Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="TF-IDF">
@@ -287,7 +287,7 @@ idf为逆向文件频率，假设整个文档有n篇文章，而一个词语在k
 假设整个文档有D篇文章，则单词i在第j篇文章中的tfidf值为</p>
 <figure>
 <img
-src="https://raw.githubusercontent.com/percent4/percent4.github.io/main/img/nlp2_1.webp" srcset="/post_images/loading.gif" lazyload
+src="https://raw.githubusercontent.com/percent4/percent4.github.io/main/post_images/nlp2_1.webp" srcset="/post_images/loading.gif" lazyload
 alt="gensim中tfidf的计算公式" />
 <figcaption aria-hidden="true">gensim中tfidf的计算公式</figcaption>
 </figure>
@@ -331,13 +331,13 @@ cm关键词，关于排球的文章中提取了net, teammate关键词。</p>
 查阅gensim中计算tf-idf值的源代码（https://github.com/RaRe-Technologies/gensim/blob/develop/gensim/models/tfidfmodel.py）：</p>
 <figure>
 <img
-src="https://raw.githubusercontent.com/percent4/percent4.github.io/main/img/nlp2_2.webp" srcset="/post_images/loading.gif" lazyload
+src="https://raw.githubusercontent.com/percent4/percent4.github.io/main/post_images/nlp2_2.webp" srcset="/post_images/loading.gif" lazyload
 alt="TfidfModel类的参数" />
 <figcaption aria-hidden="true">TfidfModel类的参数</figcaption>
 </figure>
 <figure>
 <img
-src="https://raw.githubusercontent.com/percent4/percent4.github.io/main/img/nlp2_3.webp" srcset="/post_images/loading.gif" lazyload
+src="https://raw.githubusercontent.com/percent4/percent4.github.io/main/post_images/nlp2_3.webp" srcset="/post_images/loading.gif" lazyload
 alt="normalize参数的说明" />
 <figcaption aria-hidden="true">normalize参数的说明</figcaption>
 </figure>
