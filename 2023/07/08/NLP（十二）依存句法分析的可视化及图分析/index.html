@@ -330,18 +330,17 @@
 <p>我们使用Graphviz工具来得到上述依存句法分析的可视化结果，代码（接上述代码）如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> graphviz <span class="hljs-keyword">import</span> Digraph<br><br>g = Digraph(<span class="hljs-string">&#x27;测试图片&#x27;</span>)<br><br>g.node(name=<span class="hljs-string">&#x27;Root&#x27;</span>)<br><span class="hljs-keyword">for</span> word <span class="hljs-keyword">in</span> words:<br>    g.node(name=word)<br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(words)):<br>    <span class="hljs-keyword">if</span> relation[i] <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> [<span class="hljs-string">&#x27;HED&#x27;</span>]:<br>        g.edge(words[i], heads[i], label=relation[i])<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-keyword">if</span> heads[i] == <span class="hljs-string">&#x27;Root&#x27;</span>:<br>            g.edge(words[i], <span class="hljs-string">&#x27;Root&#x27;</span>, label=relation[i])<br>        <span class="hljs-keyword">else</span>:<br>            g.edge(heads[i], <span class="hljs-string">&#x27;Root&#x27;</span>, label=relation[i])<br><br>g.view()<br></code></pre></td></tr></table></figure>
 <p>得到的依存句法分析的可视化图片如下：</p>
-<p><img src="/img/nlp12_1.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="/img/nlp12_1.png" srcset="/img/loading.gif" lazyload alt=""></p>
 <p>在这张图片中，我们有了对依存句法分析结果的直观感觉，效果也非常好，但是遗憾的是，我们并不能对上述可视化结果形成的图（Graph）进行图分析，因为Graphviz仅仅只是一个可视化工具。那么，我们该用什么样的工具来进行图分析呢？</p>
 <p>答案就是NetworkX。以下是笔者对于NetworkX应用于依存句法分析的可视化和图分析的展示，其中图分析展示了两个节点之间的最短路径。示例的Python代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 利用networkx绘制句法分析结果</span><br><span class="hljs-keyword">import</span> networkx <span class="hljs-keyword">as</span> nx<br><span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt<br><span class="hljs-keyword">from</span> pylab <span class="hljs-keyword">import</span> mpl<br><br>mpl.rcParams[<span class="hljs-string">&#x27;font.sans-serif&#x27;</span>] = [<span class="hljs-string">&#x27;Arial Unicode MS&#x27;</span>]  <span class="hljs-comment"># 指定默认字体</span><br><br><br>G = nx.Graph()  <span class="hljs-comment"># 建立无向图G</span><br><br><span class="hljs-comment"># 添加节点</span><br><span class="hljs-keyword">for</span> word <span class="hljs-keyword">in</span> words:<br>    G.add_node(word)<br><br>G.add_node(<span class="hljs-string">&#x27;Root&#x27;</span>)<br><br><span class="hljs-comment"># 添加边</span><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(words)):<br>    G.add_edge(words[i], heads[i])<br><br>source = <span class="hljs-string">&#x27;5G极化码&#x27;</span><br>target1 = <span class="hljs-string">&#x27;任正非&#x27;</span><br>distance1 = nx.shortest_path_length(G, source=source, target=target1)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;&#x27;%s&#x27;与&#x27;%s&#x27;在依存句法分析图中的最短距离为:  %s&quot;</span> % (source, target1, distance1))<br><br>target2 = <span class="hljs-string">&#x27;埃尔达尔&#x27;</span><br>distance2 = nx.shortest_path_length(G, source=source, target=target2)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;&#x27;%s&#x27;与&#x27;%s&#x27;在依存句法分析图中的最短距离为:  %s&quot;</span> % (source, target2, distance2))<br><br>nx.draw(G, with_labels=<span class="hljs-literal">True</span>)<br>plt.savefig(<span class="hljs-string">&quot;undirected_graph.png&quot;</span>)<br></code></pre></td></tr></table></figure>
 <p>得到的可视化图片如下：</p>
-<p><img src="/img/nlp12_2.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="/img/nlp12_2.png" srcset="/img/loading.gif" lazyload alt=""></p>
 <p>输出的结果如下：</p>
 <figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs scheme"><span class="hljs-symbol">&#x27;5G极化码</span><span class="hljs-symbol">&#x27;与</span><span class="hljs-symbol">&#x27;任正非</span><span class="hljs-symbol">&#x27;在依存句法分析图中的最短距离为:</span>  <span class="hljs-number">6</span><br><span class="hljs-symbol">&#x27;5G极化码</span><span class="hljs-symbol">&#x27;与</span><span class="hljs-symbol">&#x27;埃尔达尔</span><span class="hljs-symbol">&#x27;在依存句法分析图中的最短距离为:</span>  <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
 <p>本次到此结束，希望这篇简短的文章能够给读者带来一些启发～</p>
 <blockquote>
-<p>注意：不妨了解下笔者的微信公众号：
-NLP奇幻之旅（微信号为：easy_web_scrape）， 欢迎大家关注~</p>
+<p>注意：不妨了解下笔者的微信公众号： NLP奇幻之旅（微信号为：easy_web_scrape）， 欢迎大家关注~</p>
 </blockquote>
 
                 
@@ -461,6 +460,28 @@ NLP奇幻之旅（微信号为：easy_web_scrape）， 欢迎大家关注~</p>
   
     <article id="comments" lazyload>
       
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"你的评论将对作者弥足珍贵！","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
 
     </article>
   

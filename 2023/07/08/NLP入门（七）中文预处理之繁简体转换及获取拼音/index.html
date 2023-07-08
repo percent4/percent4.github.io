@@ -317,26 +317,26 @@
                 <p>在日常的中文NLP中，经常会涉及到中文的繁简体转换以及拼音的标注等问题，本文将介绍这两个方面的实现。</p>
 <p>首先是中文的繁简体转换，不需要使用额外的Python模块，至需要以下两个Python代码文件即可：</p>
 <ul>
-<li><p>langconv.py 地址： <a
-target="_blank" rel="noopener" href="https://raw.githubusercontent.com/skydark/nstools/master/zhtools/langconv.py">https://raw.githubusercontent.com/skydark/nstools/master/zhtools/langconv.py</a></p></li>
-<li><p>zh_wiki.py 地址：<a
-target="_blank" rel="noopener" href="https://raw.githubusercontent.com/skydark/nstools/master/zhtools/zh_wiki.py">https://raw.githubusercontent.com/skydark/nstools/master/zhtools/zh_wiki.py</a></p>
-<p>示例代码如下（将代码文件与langconv.py与zh_wiki.py放在同一目录下）：</p></li>
+<li>
+<p><a target="_blank" rel="noopener" href="http://langconv.py">langconv.py</a> 地址： <a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/skydark/nstools/master/zhtools/langconv.py">https://raw.githubusercontent.com/skydark/nstools/master/zhtools/langconv.py</a></p>
+</li>
+<li>
+<p>zh_wiki.py 地址：<a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/skydark/nstools/master/zhtools/zh_wiki.py">https://raw.githubusercontent.com/skydark/nstools/master/zhtools/zh_wiki.py</a></p>
+<p>示例代码如下（将代码文件与langconv.py与zh_wiki.py放在同一目录下）：</p>
+</li>
 </ul>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> langconv <span class="hljs-keyword">import</span> *<br><br><span class="hljs-comment"># 转换繁体到简体</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">cht_2_chs</span>(<span class="hljs-params">line</span>):<br>    line = Converter(<span class="hljs-string">&#x27;zh-hans&#x27;</span>).convert(line)<br>    line.encode(<span class="hljs-string">&#x27;utf-8&#x27;</span>)<br>    <span class="hljs-keyword">return</span> line<br><br>line_cht= <span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">台北市長柯文哲今在臉書開直播，先向網友報告自己3月16日至24日要出訪美國東部4城市，接著他無預警宣布，</span><br><span class="hljs-string">2月23日要先出訪以色列，預計停留4至5天。雖他強調台北市、以色列已在資安方面有所交流，也可到當地城市交流、</span><br><span class="hljs-string">參觀產業創新等內容，但柯也說「也是去看看一個小國在這麼惡劣環境，howtosurvive，他的祕訣是什麼？」這番話，</span><br><span class="hljs-string">也被解讀，頗有更上層樓、直指總統大位的思維。</span><br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br><br>line_cht = line_cht.replace(<span class="hljs-string">&#x27;\n&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>)<br>ret_chs = cht_2_chs(line_cht)<br><span class="hljs-built_in">print</span>(ret_chs)<br><br><span class="hljs-comment"># 转换简体到繁体</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">chs_2_cht</span>(<span class="hljs-params">sentence</span>):<br>    sentence = Converter(<span class="hljs-string">&#x27;zh-hant&#x27;</span>).convert(sentence)<br>    <span class="hljs-keyword">return</span> sentence<br><br>line_chs = <span class="hljs-string">&#x27;忧郁的台湾乌龟&#x27;</span><br>line_cht = chs_2_cht(line_chs)<br><span class="hljs-built_in">print</span>(line_cht)<br></code></pre></td></tr></table></figure>
 <p>输出的结果如下：</p>
 <blockquote>
-<p>台北市长柯文哲今在脸书开直播，先向网友报告自己3月16日至24日要出访美国东部4城市，接着他无预警宣布，2月23日要先出访以色列，预计停留4至5天。虽他强调台北市、以色列已在资安方面有所交流，也可到当地城市交流、参观产业创新等内容，但柯也说「也是去看看一个小国在这么恶劣环境，howtosurvive，他的祕诀是什么？」这番话，也被解读，颇有更上层楼、直指总统大位的思维。
+<p>台北市长柯文哲今在脸书开直播，先向网友报告自己3月16日至24日要出访美国东部4城市，接着他无预警宣布，2月23日要先出访以色列，预计停留4至5天。虽他强调台北市、以色列已在资安方面有所交流，也可到当地城市交流、参观产业创新等内容，但柯也说「也是去看看一个小国在这么恶劣环境，howtosurvive，他的祕诀是什么？」这番话，也被解读，颇有更上层楼、直指总统大位的思维。<br>
 憂郁的臺灣烏龜</p>
 </blockquote>
-<p>接着是获取中文汉字的拼音，这方面的Python模块有xpinyin,
-pypinyin等。本文以xpinyin为例，展示如何获取汉字的拼音。示例代码如下：</p>
+<p>接着是获取中文汉字的拼音，这方面的Python模块有xpinyin, pypinyin等。本文以xpinyin为例，展示如何获取汉字的拼音。示例代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> xpinyin <span class="hljs-keyword">import</span> Pinyin<br><br>p = Pinyin()<br><br><span class="hljs-comment"># 默认分隔符为-</span><br><span class="hljs-built_in">print</span>(p.get_pinyin(<span class="hljs-string">&quot;上海&quot;</span>))<br><br><span class="hljs-comment"># 显示声调</span><br><span class="hljs-built_in">print</span>(p.get_pinyin(<span class="hljs-string">&quot;上海&quot;</span>, tone_marks=<span class="hljs-string">&#x27;marks&#x27;</span>))<br><span class="hljs-built_in">print</span>(p.get_pinyin(<span class="hljs-string">&quot;上海&quot;</span>, tone_marks=<span class="hljs-string">&#x27;numbers&#x27;</span>))<br><br><span class="hljs-comment"># 去掉分隔符</span><br><span class="hljs-built_in">print</span>(p.get_pinyin(<span class="hljs-string">&quot;上海&quot;</span>, <span class="hljs-string">&#x27;&#x27;</span>))<br><span class="hljs-comment"># 设为分隔符为空格</span><br><span class="hljs-built_in">print</span>(p.get_pinyin(<span class="hljs-string">&quot;上海&quot;</span>, <span class="hljs-string">&#x27; &#x27;</span>))<br><br><span class="hljs-comment"># 获取拼音首字母</span><br><span class="hljs-built_in">print</span>(p.get_initial(<span class="hljs-string">&quot;上&quot;</span>))<br><span class="hljs-built_in">print</span>(p.get_initials(<span class="hljs-string">&quot;上海&quot;</span>))<br><span class="hljs-built_in">print</span>(p.get_initials(<span class="hljs-string">&quot;上海&quot;</span>, <span class="hljs-string">&#x27;&#x27;</span>))<br><span class="hljs-built_in">print</span>(p.get_initials(<span class="hljs-string">&quot;上海&quot;</span>, <span class="hljs-string">&#x27; &#x27;</span>))<br></code></pre></td></tr></table></figure>
 <p>输出结果如下：</p>
 <figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm"><span class="hljs-keyword">shang-hai</span><br><span class="hljs-keyword"></span><span class="hljs-keyword">shàng-hǎi</span><br><span class="hljs-keyword"></span><span class="hljs-keyword">shang4-hai3</span><br><span class="hljs-keyword"></span><span class="hljs-keyword">shanghai</span><br><span class="hljs-keyword"></span><span class="hljs-keyword">shang </span>hai<br>S<br>S-H<br><span class="hljs-keyword">SH</span><br><span class="hljs-keyword"></span>S H<br></code></pre></td></tr></table></figure>
 <p>本次分享到此结束，感谢大家阅读~</p>
-<p>注意：本人现已开通微信公众号：
-NLP奇幻之旅（微信号为：easy_web_scrape）， 欢迎大家关注哦~~</p>
+<p>注意：本人现已开通微信公众号： NLP奇幻之旅（微信号为：easy_web_scrape）， 欢迎大家关注哦~~</p>
 
                 
               </div>
@@ -457,6 +457,28 @@ NLP奇幻之旅（微信号为：easy_web_scrape）， 欢迎大家关注哦~~</
   
     <article id="comments" lazyload>
       
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"你的评论将对作者弥足珍贵！","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
 
     </article>
   

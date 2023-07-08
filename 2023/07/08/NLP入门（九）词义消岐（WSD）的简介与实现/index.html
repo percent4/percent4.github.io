@@ -316,10 +316,9 @@
               <div class="markdown-body">
                 
                 <h3 id="词义消岐简介">词义消岐简介</h3>
-<p>词义消岐，英文名称为Word Sense
-Disambiguation，英语缩写为WSD，是自然语言处理（NLP）中一个非常有趣的基本任务。</p>
+<p>词义消岐，英文名称为Word Sense Disambiguation，英语缩写为WSD，是自然语言处理（NLP）中一个非常有趣的基本任务。</p>
 <p>那么，什么是词义消岐呢？通常，在我们的自然语言中，不管是英语，还是中文，都有多义词存在。这些多义词的存在，会让人对句子的意思产生混淆，但人通过学习又是可以正确地区分出来的。</p>
-<p>以<strong>“小米”</strong>这个词为例，如果仅仅只是说“小米”这个词语，你并不知道它实际指的到底是小米科技公司还是谷物。但当我们把词语置于某个特定的语境中，我们能很好地区分出这个词语的意思。比如，</p>
+<p>以**“小米”**这个词为例，如果仅仅只是说“小米”这个词语，你并不知道它实际指的到底是小米科技公司还是谷物。但当我们把词语置于某个特定的语境中，我们能很好地区分出这个词语的意思。比如，</p>
 <blockquote>
 <p>雷军是小米的创始人。</p>
 </blockquote>
@@ -331,30 +330,24 @@ Disambiguation，英语缩写为WSD，是自然语言处理（NLP）中一个非
 <p>所谓词义消岐，指的是在特定的语境中，识别出某个歧义词的正确含义。</p>
 <p>那么，词义消岐有什么作用呢？词义消岐可以很好地服务于语言翻译和智能问答领域，当然，还有许多应用有待开发～</p>
 <h3 id="词义消岐实现">词义消岐实现</h3>
-<p>在目前的词义消岐算法中，有不少原创算法，有些实现起来比较简单，有些想法较为复杂，但实现的效果普遍都不是很好。比较经典的词义消岐的算法为Lesk算法，该算法的想法很简单，通过对某个歧义词构建不同含义的语料及待判别句子中该词语与语料的重合程度来实现，具体的算法原理可参考网址：<a
-target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Lesk_algorithm">https://en.wikipedia.org/wiki/Lesk_algorithm</a>
-.</p>
+<p>在目前的词义消岐算法中，有不少原创算法，有些实现起来比较简单，有些想法较为复杂，但实现的效果普遍都不是很好。比较经典的词义消岐的算法为Lesk算法，该算法的想法很简单，通过对某个歧义词构建不同含义的语料及待判别句子中该词语与语料的重合程度来实现，具体的算法原理可参考网址：<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Lesk_algorithm">https://en.wikipedia.org/wiki/Lesk_algorithm</a> .</p>
 <p>在下面的部分中，笔者将会介绍自己想的一种实现词义消岐的算法，仅仅是一个想法，仅供参考。</p>
-<p>我们以词语“火箭”为例，选取其中的两个<strong>义项</strong>（同一个词语的不同含义）：<a
-target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E7%81%AB%E7%AE%AD/8794081#viewPageContent"
-title="NBA球队名">NBA球队名</a> 和 <a
-target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E7%81%AB%E7%AE%AD/6308#viewPageContent"
-title="燃气推进装置">燃气推进装置</a> ，如下：</p>
-<p><img src="/img/nlp9_1.png" srcset="/img/loading.gif" lazyload /></p>
+<p>我们以词语“火箭”为例，选取其中的两个<strong>义项</strong>（同一个词语的不同含义）：<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E7%81%AB%E7%AE%AD/8794081#viewPageContent" title="NBA球队名">NBA球队名</a> 和 <a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E7%81%AB%E7%AE%AD/6308#viewPageContent" title="燃气推进装置">燃气推进装置</a> ，如下：</p>
+<p><img src="/img/nlp9_1.png" srcset="/img/loading.gif" lazyload alt=""></p>
 <h4 id="获取语料">获取语料</h4>
 <p>首先，我们利用爬虫爬取这两个义项的百度百科网页，以句子为单位，只要句子中出现该词语，则把这句话加入到这个义项的预料中。爬虫的完整Python代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">from</span> bs4 <span class="hljs-keyword">import</span> BeautifulSoup<br><span class="hljs-keyword">from</span> pyltp <span class="hljs-keyword">import</span> SentenceSplitter<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">WebScrape</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, word, url</span>):<br>        self.url = url<br>        self.word = word<br><br>    <span class="hljs-comment"># 爬取百度百科页面</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">web_parse</span>(<span class="hljs-params">self</span>):<br>        headers = &#123;<span class="hljs-string">&#x27;User-Agent&#x27;</span>: <span class="hljs-string">&#x27;Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 \</span><br><span class="hljs-string">                                             (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36&#x27;</span>&#125;<br>        req = requests.get(url=self.url, headers=headers)<br><br>        <span class="hljs-comment"># 解析网页，定位到main-content部分</span><br>        <span class="hljs-keyword">if</span> req.status_code == <span class="hljs-number">200</span>:<br>            soup = BeautifulSoup(req.text.encode(req.encoding), <span class="hljs-string">&#x27;lxml&#x27;</span>)<br>            <span class="hljs-keyword">return</span> soup<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">None</span><br><br>    <span class="hljs-comment"># 获取该词语的义项</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">get_gloss</span>(<span class="hljs-params">self</span>):<br>        soup = self.web_parse()<br>        <span class="hljs-keyword">if</span> soup:<br>            lis = soup.find(<span class="hljs-string">&#x27;ul&#x27;</span>, class_=<span class="hljs-string">&quot;polysemantList-wrapper cmn-clearfix&quot;</span>)<br>            <span class="hljs-keyword">if</span> lis:<br>                <span class="hljs-keyword">for</span> li <span class="hljs-keyword">in</span> lis(<span class="hljs-string">&#x27;li&#x27;</span>):<br>                    <span class="hljs-keyword">if</span> <span class="hljs-string">&#x27;&lt;a&#x27;</span> <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> <span class="hljs-built_in">str</span>(li):<br>                        gloss = li.text.replace(<span class="hljs-string">&#x27;▪&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>)<br>                        <span class="hljs-keyword">return</span> gloss<br><br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">None</span><br><br>    <span class="hljs-comment"># 获取该义项的语料，以句子为单位</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">get_content</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-comment"># 发送HTTP请求</span><br>        result = []<br>        soup = self.web_parse()<br>        <span class="hljs-keyword">if</span> soup:<br>            paras = soup.find(<span class="hljs-string">&#x27;div&#x27;</span>, class_=<span class="hljs-string">&#x27;main-content&#x27;</span>).text.split(<span class="hljs-string">&#x27;\n&#x27;</span>)<br>            <span class="hljs-keyword">for</span> para <span class="hljs-keyword">in</span> paras:<br>                <span class="hljs-keyword">if</span> self.word <span class="hljs-keyword">in</span> para:<br>                    sents = <span class="hljs-built_in">list</span>(SentenceSplitter.split(para))<br>                    <span class="hljs-keyword">for</span> sent <span class="hljs-keyword">in</span> sents:<br>                        <span class="hljs-keyword">if</span> self.word <span class="hljs-keyword">in</span> sent:<br>                            sent = sent.replace(<span class="hljs-string">&#x27;\xa0&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>).replace(<span class="hljs-string">&#x27;\u3000&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>)<br>                            result.append(sent)<br><br>        result = <span class="hljs-built_in">list</span>(<span class="hljs-built_in">set</span>(result))<br><br>        <span class="hljs-keyword">return</span> result<br><br>    <span class="hljs-comment"># 将该义项的语料写入到txt</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">write_2_file</span>(<span class="hljs-params">self</span>):<br>        gloss = self.get_gloss()<br>        result = self.get_content()<br>        <span class="hljs-built_in">print</span>(gloss)<br>        <span class="hljs-built_in">print</span>(result)<br>        <span class="hljs-keyword">if</span> result <span class="hljs-keyword">and</span> gloss:<br>            <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;./%s_%s.txt&#x27;</span>% (self.word, gloss), <span class="hljs-string">&#x27;w&#x27;</span>, encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>                f.writelines([_+<span class="hljs-string">&#x27;\n&#x27;</span> <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> result])<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">run</span>(<span class="hljs-params">self</span>):<br>        self.write_2_file()<br><br><span class="hljs-comment"># NBA球队名</span><br><span class="hljs-comment">#url = &#x27;https://baike.baidu.com/item/%E4%BC%91%E6%96%AF%E6%95%A6%E7%81%AB%E7%AE%AD%E9%98%9F/370758?fromtitle=%E7%81%AB%E7%AE%AD&amp;fromid=8794081#viewPageContent&#x27;</span><br><span class="hljs-comment"># 燃气推进装置</span><br>url = <span class="hljs-string">&#x27;https://baike.baidu.com/item/%E7%81%AB%E7%AE%AD/6308#viewPageContent&#x27;</span><br>WebScrape(<span class="hljs-string">&#x27;火箭&#x27;</span>, url).run()<br></code></pre></td></tr></table></figure>
 <p>利用这个爬虫，我们爬取了“火箭”这个词语的两个义项的语料，生成了火箭_燃气推进装置.txt文件和火箭_NBA球队名.txt文件，这两个文件分别含有361和171个句子。以火箭_燃气推进装置.txt文件为例，前10个句子如下：</p>
 <blockquote>
-<p>火箭技术的飞速发展，不仅可提供更加完善的各类导弹和推动相关科学的发展，还将使开发空间资源、建立空间产业、空间基地及星际航行等成为可能。
-火箭技术是一项十分复杂的综合性技术，主要包括火箭推进技术、总体设计技术、火箭结构技术、控制和制导技术、计划管理技术、可靠性和质量控制技术、试验技术，对导弹来说还有弹头制导和控制、
-1903年，俄国的К.E.齐奥尔科夫斯基提出了制造大型液体火箭的设想和设计原理。
-火箭有很多种，原始的火箭是用引火物附在弓箭头上，然后射到敌人身上引起焚烧的一种箭矢。
-“长征三号丙”火箭是在 “长征三号乙”火箭的基础上，
-减少了两个助推器并取消了助推器上的尾翼。 火箭与导弹有什么区别
-为了能够在未来大规模的将人类送入太空，不可能依赖传统的火箭和飞船。
-火箭V2火箭
-探测高层大气的物理特征（如气压、温度、湿度等）和现象的探空火箭。
+<p>火箭技术的飞速发展，不仅可提供更加完善的各类导弹和推动相关科学的发展，还将使开发空间资源、建立空间产业、空间基地及星际航行等成为可能。<br>
+火箭技术是一项十分复杂的综合性技术，主要包括火箭推进技术、总体设计技术、火箭结构技术、控制和制导技术、计划管理技术、可靠性和质量控制技术、试验技术，对导弹来说还有弹头制导和控制、<br>
+1903年，俄国的К.E.齐奥尔科夫斯基提出了制造大型液体火箭的设想和设计原理。<br>
+火箭有很多种，原始的火箭是用引火物附在弓箭头上，然后射到敌人身上引起焚烧的一种箭矢。<br>
+“长征三号丙”火箭是在 “长征三号乙”火箭的基础上， 减少了两个助推器并取消了助推器上的尾翼。<br>
+火箭与导弹有什么区别<br>
+为了能够在未来大规模的将人类送入太空，不可能依赖传统的火箭和飞船。<br>
+火箭V2火箭<br>
+探测高层大气的物理特征（如气压、温度、湿度等）和现象的探空火箭。<br>
 可一次发射一发至数十发火箭弹。</p>
 </blockquote>
 <h4 id="实现算法">实现算法</h4>
@@ -403,13 +396,18 @@ title="燃气推进装置">燃气推进装置</a> ，如下：</p>
 <p>对于笔者的这个算法，虽然有一定的效果，但是也不总是识别正确。比如，对于最后一个测试的句子，识别的结果就是错误的，其实“休斯顿”才是识别该词语义项的关键词，但很遗憾，在笔者的算法中，“休斯顿”的权重并不高。</p>
 <p>对于词义消岐算法，如果还是笔者的这个思路，那么有以下几方面需要改进：</p>
 <ul>
-<li><p>语料大小及丰富程度；</p></li>
-<li><p>停用词的扩充；</p></li>
-<li><p>更好的算法。</p>
-<p>笔者的这篇文章仅作为词义消岐的简介以及简单实现，希望能对读者有所启发～</p></li>
+<li>
+<p>语料大小及丰富程度；</p>
+</li>
+<li>
+<p>停用词的扩充；</p>
+</li>
+<li>
+<p>更好的算法。</p>
+<p>笔者的这篇文章仅作为词义消岐的简介以及简单实现，希望能对读者有所启发～</p>
+</li>
 </ul>
-<p><strong>注意：本人现已开通微信公众号：
-NLP奇幻之旅（微信号为：easy_web_scrape）， 欢迎大家关注哦~~</strong></p>
+<p><strong>注意：本人现已开通微信公众号： NLP奇幻之旅（微信号为：easy_web_scrape）， 欢迎大家关注哦~~</strong></p>
 
                 
               </div>
@@ -528,6 +526,28 @@ NLP奇幻之旅（微信号为：easy_web_scrape）， 欢迎大家关注哦~~</
   
     <article id="comments" lazyload>
       
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"你的评论将对作者弥足珍贵！","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
 
     </article>
   

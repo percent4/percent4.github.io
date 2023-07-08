@@ -315,9 +315,7 @@
               <div class="markdown-body">
                 
                 <p>本文作为笔者NLP入门系列文章第一篇，以后我们就要步入NLP时代。</p>
-<p>本文将会介绍NLP中常见的词袋模型（Bag of
-Words）以及如何利用词袋模型来计算句子间的相似度（余弦相似度，cosine
-similarity）。</p>
+<p>本文将会介绍NLP中常见的词袋模型（Bag of Words）以及如何利用词袋模型来计算句子间的相似度（余弦相似度，cosine similarity）。</p>
 <p>首先，让我们来看一下，什么是词袋模型。我们以下面两个简单句子为例：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python">sent1 = <span class="hljs-string">&quot;I love sky, I love sea.&quot;</span><br>sent2 = <span class="hljs-string">&quot;I like running, I love reading.&quot;</span><br></code></pre></td></tr></table></figure>
 <p>通常，NLP无法一下子处理完整的段落或句子，因此，第一步往往是分句和分词。这里只有句子，因此我们只需要分词即可。对于英语句子，可以使用NLTK中的word_tokenize函数，对于中文句子，则可使用jieba模块。故第一步为分词，代码如下：</p>
@@ -354,8 +352,7 @@ similarity）。</p>
 <p>如果想要去掉这些warning，则在导入gensim模块的代码前添加以下代码即可：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> warnings<br>warnings.filterwarnings(action=<span class="hljs-string">&#x27;ignore&#x27;</span>,category=UserWarning,module=<span class="hljs-string">&#x27;gensim&#x27;</span>)<br>warnings.filterwarnings(action=<span class="hljs-string">&#x27;ignore&#x27;</span>,category=FutureWarning,module=<span class="hljs-string">&#x27;gensim&#x27;</span>)<br></code></pre></td></tr></table></figure>
 <p>本文到此结束，感谢阅读！如果不当之处，请速联系笔者，欢迎大家交流！祝您好运~</p>
-<p>注意：本人现已开通微信公众号：NLP奇幻之旅（微信号为：easy_web_scrape），
-欢迎大家关注哦~~</p>
+<p>注意：本人现已开通微信公众号：NLP奇幻之旅（微信号为：easy_web_scrape）， 欢迎大家关注哦~~</p>
 
                 
               </div>
@@ -476,6 +473,28 @@ similarity）。</p>
   
     <article id="comments" lazyload>
       
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"你的评论将对作者弥足珍贵！","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
 
     </article>
   
