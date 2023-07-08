@@ -1,0 +1,753 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将介绍如何使用tornado框架来开发自制的序列标注平台。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（十四）自制序列标注平台">
+<meta property="og:url" content="http://example.com/2023/07/08/NLP%EF%BC%88%E5%8D%81%E5%9B%9B%EF%BC%89%E8%87%AA%E5%88%B6%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E5%B9%B3%E5%8F%B0/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="本文将介绍如何使用tornado框架来开发自制的序列标注平台。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/nlp14_1.png">
+<meta property="og:image" content="http://example.com/img/nlp14_2.png">
+<meta property="og:image" content="http://example.com/img/nlp14_3.png">
+<meta property="og:image" content="http://example.com/img/nlp14_4.png">
+<meta property="og:image" content="http://example.com/img/nlp14_5.png">
+<meta property="og:image" content="http://example.com/img/nlp14_6.png">
+<meta property="article:published_time" content="2023-07-08T04:44:49.000Z">
+<meta property="article:modified_time" content="2023-07-08T05:04:10.308Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="标注平台">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/nlp14_1.png">
+  
+  
+  
+  <title>NLP（十四）自制序列标注平台 - Hexo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（十四）自制序列标注平台"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-08 12:44" pubdate>
+          星期六, 七月 8日 2023, 12:44 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          7.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          64 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（十四）自制序列标注平台</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h3 id="背景介绍">背景介绍</h3>
+<p>在平时的NLP任务中，我们经常用到命名实体识别（NER），常用的识别实体类型为人名、地名、组织机构名，但是我们往往也会有识别其它实体的需求，比如时间、品牌名等。在利用算法做实体识别的时候，我们一般采用序列标注算法，这就对标注的文本格式有一定的要求，因此，一个好的序列标注的平台必不可少，将会大大减少我们标注的工作量，有效提升算法的更新迭代速度。</p>
+<p>本文将介绍笔者的一个工作：自制的序列标注平台。我们以时间识别为例。比如，在下面的文章中：</p>
+<blockquote>
+<p>按计划，2019年8月10日，荣耀智慧屏将在华为开发者大会上正式亮相，在8月6日，荣耀官微表示该产品的预约量已破十万台，8月7日下午，荣耀总裁赵明又在微博上造势率先打出差异化牌，智慧屏没有开关机广告，并表态以后也不会有，消费者体验至上，营销一波接一波，可谓来势汹汹。</p>
+</blockquote>
+<p>我们需要从该文章中标注出三个时间：<code>2019年8月10日</code>，<code>8月6日</code>，<code>8月7日下午</code>，并形成标注序列。</p>
+<p>下面将详细介绍笔者的工作。</p>
+<h3 id="序列标注平台">序列标注平台</h3>
+<p>由于开发时间仓促以及笔者能力有限，因此，序列标注平台的功能还没有很完善，希望笔者的工作能抛砖引玉。</p>
+<p>项目的结构图如下：</p>
+<p><img src="/img/nlp14_1.png" srcset="/img/loading.gif" lazyload /></p>
+<p>templates中存放静态资源，time_index.html为平台的操作界面，time_output为平台标注完实体后的文件保存路径，time_server.py是用tornado写的服务端路径控制代码，utils.py中是获取某个路径下的txt文件的最大数值的函数。</p>
+<p>其中，utils.py的完整代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># time: 2019-03-14</span><br><span class="hljs-comment"># place: Xinbeiqiao, Beijing</span><br><br><span class="hljs-keyword">import</span> os<br><br><span class="hljs-comment"># 获取当前所在目录的txt文本的最大数值</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_max_num</span>(<span class="hljs-params">path</span>):<br>    files = os.listdir(path)<br>    <span class="hljs-keyword">if</span> files:<br>        numbers = <span class="hljs-built_in">list</span>(<span class="hljs-built_in">map</span>(<span class="hljs-keyword">lambda</span> x: <span class="hljs-built_in">int</span>(x.replace(<span class="hljs-string">&#x27;.txt&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>)), files))<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">max</span>(numbers)<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span><br></code></pre></td></tr></table></figure>
+<p>time_server.py的完整代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># time: 2019-08-08</span><br><span class="hljs-comment"># place: Xinbeiqiao, Beijing</span><br><br><span class="hljs-keyword">import</span> os.path<br><span class="hljs-keyword">import</span> tornado.httpserver<br><span class="hljs-keyword">import</span> tornado.ioloop<br><span class="hljs-keyword">import</span> tornado.options<br><span class="hljs-keyword">import</span> tornado.web<br><span class="hljs-keyword">from</span> tornado.options <span class="hljs-keyword">import</span> define, options<br><span class="hljs-keyword">from</span> utils <span class="hljs-keyword">import</span> get_max_num<br><br><span class="hljs-comment">#定义端口为9005</span><br>define(<span class="hljs-string">&quot;port&quot;</span>, default=<span class="hljs-number">9005</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;run on the given port&quot;</span>, <span class="hljs-built_in">type</span>=<span class="hljs-built_in">int</span>)<br><br><span class="hljs-comment"># GET请求</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">QueryHandler</span>(tornado.web.RequestHandler):<br>    <span class="hljs-comment"># get函数</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">get</span>(<span class="hljs-params">self</span>):<br>        self.render(<span class="hljs-string">&#x27;time_index.html&#x27;</span>, data = [<span class="hljs-string">&#x27;&#x27;</span>, []])<br><br><span class="hljs-comment"># POST请求</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">PostHandler</span>(tornado.web.RequestHandler):<br>    <span class="hljs-comment"># post函数</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">post</span>(<span class="hljs-params">self</span>):<br><br>        <span class="hljs-comment"># 获取前端参数, event, time, index</span><br>        event = self.get_argument(<span class="hljs-string">&#x27;event&#x27;</span>)<br>        times = self.get_arguments(<span class="hljs-string">&#x27;time&#x27;</span>)<br>        indices = self.get_arguments(<span class="hljs-string">&#x27;index&#x27;</span>)<br>        <span class="hljs-built_in">print</span>(event)<br>        <span class="hljs-built_in">print</span>(times)<br>        <span class="hljs-built_in">print</span>(indices)<br><br>        <span class="hljs-comment"># 前端显示序列标注信息</span><br>        tags = [<span class="hljs-string">&#x27;O&#x27;</span>] * <span class="hljs-built_in">len</span>(event)<br><br>        <span class="hljs-keyword">for</span> time, index <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(times, indices):<br>            index = <span class="hljs-built_in">int</span>(index)<br>            tags[index] = <span class="hljs-string">&#x27;B-TIME&#x27;</span><br>            <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, <span class="hljs-built_in">len</span>(time)):<br>                tags[index+i] = <span class="hljs-string">&#x27;I-TIME&#x27;</span><br><br>        data = [event, tags]<br><br>        self.render(<span class="hljs-string">&#x27;time_index.html&#x27;</span>, data=data)<br><br>        <span class="hljs-comment"># 保存为txt文件</span><br>        dir_path = <span class="hljs-string">&#x27;./time_output&#x27;</span><br>        <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;./%s/%s.txt&#x27;</span> % (dir_path, get_max_num(dir_path)+<span class="hljs-number">1</span>), <span class="hljs-string">&#x27;w&#x27;</span>, encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>            <span class="hljs-keyword">for</span> char, tag <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(event, tags):<br>                f.write(char+<span class="hljs-string">&#x27;\t&#x27;</span>+tag+<span class="hljs-string">&#x27;\n&#x27;</span>)<br><br><br><span class="hljs-comment"># 主函数</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    <span class="hljs-comment"># 开启tornado服务</span><br>    tornado.options.parse_command_line()<br>    <span class="hljs-comment"># 定义app</span><br>    app = tornado.web.Application(<br>            handlers=[(<span class="hljs-string">r&#x27;/query&#x27;</span>, QueryHandler),<br>                      (<span class="hljs-string">r&#x27;/result&#x27;</span>, PostHandler)<br>                      ], <span class="hljs-comment">#网页路径控制</span><br>            template_path=os.path.join(os.path.dirname(__file__), <span class="hljs-string">&quot;templates&quot;</span>) <span class="hljs-comment"># 模板路径</span><br>          )<br>    http_server = tornado.httpserver.HTTPServer(app)<br>    http_server.listen(options.port)<br>    tornado.ioloop.IOLoop.instance().start()<br><br>main()<br></code></pre></td></tr></table></figure>
+<p>time_index.html文件如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">&quot;utf-8&quot;</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>时间抽取标注平台<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">link</span> <span class="hljs-attr">rel</span>=<span class="hljs-string">&quot;stylesheet&quot;</span> <span class="hljs-attr">href</span>=<span class="hljs-string">&quot;https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">style</span>&gt;</span><span class="language-css"></span><br><span class="language-css">        <span class="hljs-selector-tag">mark</span> &#123;</span><br><span class="language-css">            <span class="hljs-attribute">background-color</span>:<span class="hljs-number">#00ff90</span>; <span class="hljs-attribute">font-weight</span>:bold;</span><br><span class="language-css">        &#125;</span><br><span class="language-css">		<span class="hljs-selector-tag">p</span>&#123;<span class="hljs-attribute">text-indent</span>:<span class="hljs-number">2em</span>;&#125;</span><br><span class="language-css">    </span><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript">        <span class="hljs-keyword">var</span> click_cnt = <span class="hljs-number">0</span>;</span><br><span class="language-javascript"></span><br><span class="language-javascript">        <span class="hljs-comment">// 双击第i个select, 添加文字的index</span></span><br><span class="language-javascript">        <span class="hljs-keyword">function</span> <span class="hljs-title function_">select_click</span>(<span class="hljs-params">i</span>)&#123;</span><br><span class="language-javascript">        	<span class="hljs-keyword">var</span> content = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&#x27;event&#x27;</span>).<span class="hljs-property">value</span>;</span><br><span class="language-javascript">        	<span class="hljs-keyword">var</span> time = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&#x27;time_&#x27;</span>+i.<span class="hljs-title function_">toString</span>()).<span class="hljs-property">value</span>;</span><br><span class="language-javascript"></span><br><span class="language-javascript">        	<span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> j=<span class="hljs-number">0</span>; j&lt;=content.<span class="hljs-property">length</span>-time.<span class="hljs-property">length</span>; j++)&#123;</span><br><span class="language-javascript">        		<span class="hljs-keyword">if</span>(content.<span class="hljs-title function_">substr</span>(j, time.<span class="hljs-property">length</span>) == time)&#123;</span><br><span class="language-javascript">        			<span class="hljs-keyword">var</span> select = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&#x27;index_&#x27;</span>+i.<span class="hljs-title function_">toString</span>());</span><br><span class="language-javascript">        			<span class="hljs-keyword">var</span> option = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">createElement</span>(<span class="hljs-string">&quot;option&quot;</span>);</span><br><span class="language-javascript">        			option.<span class="hljs-property">value</span> = j;</span><br><span class="language-javascript">        			option.<span class="hljs-property">innerHTML</span> = j;</span><br><span class="language-javascript">        			select.<span class="hljs-title function_">appendChild</span>(option);</span><br><span class="language-javascript">        		&#125;</span><br><span class="language-javascript">        	&#125;</span><br><span class="language-javascript">        &#125;</span><br><span class="language-javascript"></span><br><span class="language-javascript">		<span class="hljs-comment">// 添加输入框和select框</span></span><br><span class="language-javascript">        $(<span class="hljs-variable language_">document</span>).<span class="hljs-title function_">ready</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;</span><br><span class="language-javascript"></span><br><span class="language-javascript">            $(<span class="hljs-string">&quot;#add_time&quot;</span>).<span class="hljs-title function_">click</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;</span><br><span class="language-javascript">                 click_cnt = click_cnt + <span class="hljs-number">1</span>;</span><br><span class="language-javascript">                 <span class="hljs-keyword">var</span> input_id = <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>(<span class="hljs-string">&#x27;time_&#x27;</span>+click_cnt.<span class="hljs-title function_">toString</span>());</span><br><span class="language-javascript">                 <span class="hljs-keyword">var</span> index_id = <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>(<span class="hljs-string">&#x27;index_&#x27;</span>+click_cnt.<span class="hljs-title function_">toString</span>());</span><br><span class="language-javascript">                 <span class="hljs-keyword">var</span> content = <span class="hljs-string">&quot;&lt;input type=&#x27;text&#x27; id=&quot;</span> + input_id + <span class="hljs-string">&quot; class=&#x27;form-control&#x27; style=&#x27;width:306px;&#x27; name=&#x27;time&#x27; /&gt; \</span></span><br><span class="hljs-string"><span class="language-javascript">                 				    &lt;select class=&#x27;form-control&#x27; name=&#x27;index&#x27; id=&quot;</span>+ index_id + <span class="hljs-string">&quot; style=&#x27;width:120px;&#x27; \</span></span><br><span class="hljs-string"><span class="language-javascript">                 				ondblclick=&#x27;select_click(&quot;</span>+click_cnt.<span class="hljs-title function_">toString</span>()+<span class="hljs-string">&quot;)&#x27;&gt;&lt;/select&gt;&quot;</span>;</span><br><span class="language-javascript">                 $(content).<span class="hljs-title function_">appendTo</span>($(<span class="hljs-string">&quot;#time_column&quot;</span>));</span><br><span class="language-javascript">            &#125;);</span><br><span class="language-javascript"></span><br><span class="language-javascript">        &#125;);</span><br><span class="language-javascript"></span><br><span class="language-javascript">	</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">center</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">br</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">br</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">br</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-horizontal&quot;</span> <span class="hljs-attr">role</span>=<span class="hljs-string">&quot;form&quot;</span> <span class="hljs-attr">method</span>=<span class="hljs-string">&quot;post&quot;</span> <span class="hljs-attr">action</span>=<span class="hljs-string">&quot;/result&quot;</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&quot;width:600px&quot;</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-group&quot;</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">label</span> <span class="hljs-attr">for</span>=<span class="hljs-string">&quot;event&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;col-sm-2 control-label&quot;</span>&gt;</span>输入语料<span class="hljs-tag">&lt;/<span class="hljs-name">label</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;col-sm-10&quot;</span>&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">textarea</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-control&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;event&quot;</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&quot;width:490px; height:200px&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;event&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">textarea</span>&gt;</span><br>		<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-inline&quot;</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&quot;text-align:left;&quot;</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">label</span> <span class="hljs-attr">for</span>=<span class="hljs-string">&quot;time_0&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;col-sm-2 control-label&quot;</span>&gt;</span>时间<span class="hljs-tag">&lt;/<span class="hljs-name">label</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;col-sm-10&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;time_column&quot;</span>&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-control&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;time_0&quot;</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&quot;width:306px;&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;time&quot;</span> /&gt;</span><br>               <br>            <span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-control&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;index_0&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;index&quot;</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&quot;width:120px;&quot;</span> <span class="hljs-attr">ondblclick</span>=<span class="hljs-string">&quot;select_click(0)&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br>		<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-group&quot;</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;col-sm-offset-2 col-sm-10&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">br</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;button&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;btn btn-default&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;add_time&quot;</span>&gt;</span>添加时间<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;submit&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;btn btn-success&quot;</span>&gt;</span>显示标签<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href</span>=<span class="hljs-string">&quot;/query&quot;</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;button&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;btn btn-danger&quot;</span>&gt;</span>返回<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;reset&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;btn btn-warning&quot;</span>&gt;</span>重置<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span><br>		<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><br><span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">br</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&quot;width:600px&quot;</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span> 原文：&#123;&#123;data[0]&#125;&#125; <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">table</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;table table-striped&quot;</span>&gt;</span><br>		&#123;% for char, tag in zip(data[0], data[1]) %&#125;<br>			<span class="hljs-tag">&lt;<span class="hljs-name">tr</span>&gt;</span><br>				<span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span>&#123;&#123;char&#125;&#125; <span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>				<span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span>&#123;&#123;tag&#125;&#125; <span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>			<span class="hljs-tag">&lt;/<span class="hljs-name">tr</span>&gt;</span><br>		&#123;%end%&#125;<br>		<span class="hljs-tag">&lt;/<span class="hljs-name">table</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">center</span>&gt;</span><br><br><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<h3 id="平台使用">平台使用</h3>
+<p>运行上述time_server.py后，在浏览器端输入网址: <a
+target="_blank" rel="noopener" href="http://localhost:9005/query">http://localhost:9005/query</a> ,
+则会显示如下界面：</p>
+<p><img src="/img/nlp14_2.png" srcset="/img/loading.gif" lazyload /></p>
+<p>在<code>输入语料框</code>中，我们输入语料：</p>
+<blockquote>
+<p>8月8日是“全民健身日”，推出重磅微视频《我们要赢的，是自己》。</p>
+</blockquote>
+<p>在时间这个输入框中，可以标注语料中的时间，同时双击同一行中的下拉列表，就能显示该标注时间在语料中的起始位置，有时候同样的标注时间会在语料中出现多次，那么我们在下拉列表中选择我们需要的标注的起始位置即可。</p>
+<p>点击<code>添加时间</code>按钮，它会增加一行标注，允许我们在同一份预料中标注多个时间。我们的一个简单的标注例子如下：</p>
+<p><img src="/img/nlp14_3.png" srcset="/img/loading.gif" lazyload /></p>
+<p>点击<code>显示标注</code>，则会显示我们标注完后形成的序列标注信息，同时将该序列信息保存为txt文件，该txt文件位于time_output目录下。在网页上的序列标注信息如下：</p>
+<p><img src="/img/nlp14_4.png" srcset="/img/loading.gif" lazyload /></p>
+<p>同时，我们也可以查看保存的txt文档信息，如下：</p>
+<p><img src="/img/nlp14_5.png" srcset="/img/loading.gif" lazyload /></p>
+<p>点击<code>返回</code>按钮，它会允许我们进行下一次的标注。刚才展示的只是一个简单例子，稍微复杂的标注如下图：</p>
+<p><img src="/img/nlp14_6.png" srcset="/img/loading.gif" lazyload /></p>
+<p>它形成的标注序列(部分)如下：</p>
+<figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><code class="hljs mathematica">按	<span class="hljs-built_in">O</span><br>计	<span class="hljs-built_in">O</span><br>划	<span class="hljs-built_in">O</span><br>，	<span class="hljs-built_in">O</span><br><span class="hljs-number">2</span>	<span class="hljs-variable">B</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br><span class="hljs-number">0</span>	<span class="hljs-built_in">I</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br><span class="hljs-number">1</span>	<span class="hljs-built_in">I</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br><span class="hljs-number">9</span>	<span class="hljs-built_in">I</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br>年	<span class="hljs-built_in">I</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br><span class="hljs-number">8</span>	<span class="hljs-built_in">I</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br>月	<span class="hljs-built_in">I</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br><span class="hljs-number">1</span>	<span class="hljs-built_in">I</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br><span class="hljs-number">0</span>	<span class="hljs-built_in">I</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br>日	<span class="hljs-built_in">I</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br>，	<span class="hljs-built_in">O</span><br>荣	<span class="hljs-built_in">O</span><br>耀	<span class="hljs-built_in">O</span><br>智	<span class="hljs-built_in">O</span><br>慧	<span class="hljs-built_in">O</span><br>屏	<span class="hljs-built_in">O</span><br>将	<span class="hljs-built_in">O</span><br>在	<span class="hljs-built_in">O</span><br>华	<span class="hljs-built_in">O</span><br>为	<span class="hljs-built_in">O</span><br>开	<span class="hljs-built_in">O</span><br>发	<span class="hljs-built_in">O</span><br>者	<span class="hljs-built_in">O</span><br>大	<span class="hljs-built_in">O</span><br>会	<span class="hljs-built_in">O</span><br>上	<span class="hljs-built_in">O</span><br>正	<span class="hljs-built_in">O</span><br>式	<span class="hljs-built_in">O</span><br>亮	<span class="hljs-built_in">O</span><br>相	<span class="hljs-built_in">O</span><br>，	<span class="hljs-built_in">O</span><br>在	<span class="hljs-built_in">O</span><br><span class="hljs-number">8</span>	<span class="hljs-variable">B</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br>月	<span class="hljs-built_in">I</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br><span class="hljs-number">6</span>	<span class="hljs-built_in">I</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br>日	<span class="hljs-built_in">I</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br>，	<span class="hljs-built_in">O</span><br>荣	<span class="hljs-built_in">O</span><br>耀	<span class="hljs-built_in">O</span><br>官	<span class="hljs-built_in">O</span><br>微	<span class="hljs-built_in">O</span><br>表	<span class="hljs-built_in">O</span><br>示	<span class="hljs-built_in">O</span><br>该	<span class="hljs-built_in">O</span><br>产	<span class="hljs-built_in">O</span><br>品	<span class="hljs-built_in">O</span><br><span class="hljs-operator">......</span><br></code></pre></td></tr></table></figure>
+<h3 id="总结">总结</h3>
+<p>本平台仅作为序列标注算法的前期标注工具使用，并不涉及具体的算法。另外，后续该平台也会陆续开放出来，如果大家有好的建议，也可以留言～</p>
+<p>本项目已上传只Github, 网址为： <a
+target="_blank" rel="noopener" href="https://github.com/percent4/entity_tagging_platform">https://github.com/percent4/entity_tagging_platform</a></p>
+<blockquote>
+<p>注意：不妨了解下笔者的微信公众号：
+NLP奇幻之旅（微信号为：easy_web_scrape）， 欢迎大家关注~</p>
+</blockquote>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/NLP/" class="print-no-link">#NLP</a>
+      
+        <a href="/tags/%E6%A0%87%E6%B3%A8%E5%B9%B3%E5%8F%B0/" class="print-no-link">#标注平台</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（十四）自制序列标注平台</div>
+      <div>http://example.com/2023/07/08/NLP（十四）自制序列标注平台/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月8日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/07/08/NLP%EF%BC%88%E5%8D%81%E4%BA%94%EF%BC%89%E8%AE%A9%E6%A8%A1%E5%9E%8B%E6%9D%A5%E5%91%8A%E8%AF%89%E4%BD%A0%E6%96%87%E6%9C%AC%E4%B8%AD%E7%9A%84%E6%97%B6%E9%97%B4/" title="NLP（十五）让模型来告诉你文本中的时间">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NLP（十五）让模型来告诉你文本中的时间</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/07/08/NLP%EF%BC%88%E5%8D%81%E4%B8%89%EF%BC%89%E4%B8%AD%E6%96%87%E5%88%86%E8%AF%8D%E5%B7%A5%E5%85%B7%E7%9A%84%E4%BD%BF%E7%94%A8%E5%B0%9D%E8%AF%95/" title="NLP（十三）中文分词工具的使用尝试">
+                        <span class="hidden-mobile">NLP（十三）中文分词工具的使用尝试</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
