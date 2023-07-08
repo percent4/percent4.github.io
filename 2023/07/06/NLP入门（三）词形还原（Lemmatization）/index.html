@@ -23,12 +23,15 @@
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="本文将介绍NLP中的词形还原。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/nlp3_1.webp">
+<meta property="og:image" content="http://example.com/img/nlp3_2.webp">
 <meta property="article:published_time" content="2023-07-06T14:10:08.000Z">
-<meta property="article:modified_time" content="2023-07-07T04:59:23.033Z">
+<meta property="article:modified_time" content="2023-07-08T01:51:45.218Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="词形还原">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/nlp3_1.webp">
   
   
   
@@ -301,15 +304,11 @@ speech（POS）技术实现。在nltk中，可以使用nltk.pos_tag()获取单�
 </blockquote>
 <p>关于上述词性的说明，可以参考下表：</p>
 <figure>
-<img
-src="https://raw.githubusercontent.com/percent4/percent4.github.io/main/post_images/nlp3_1.webp" srcset="/img/loading.gif" lazyload
-alt="词性说明表1" />
+<img src="/img/nlp3_1.webp" srcset="/img/loading.gif" lazyload alt="词性说明表1" />
 <figcaption aria-hidden="true">词性说明表1</figcaption>
 </figure>
 <figure>
-<img
-src="https://raw.githubusercontent.com/percent4/percent4.github.io/main/post_images/nlp3_2.webp" srcset="/img/loading.gif" lazyload
-alt="词性说明表2" />
+<img src="/img/nlp3_2.webp" srcset="/img/loading.gif" lazyload alt="词性说明表2" />
 <figcaption aria-hidden="true">词性说明表2</figcaption>
 </figure>
 <p>OK，知道了获取单词在句子中的词性，再结合词形还原，就能很好地完成词形还原功能。示例的Python代码如下：</p>
