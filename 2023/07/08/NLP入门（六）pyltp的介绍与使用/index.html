@@ -1,0 +1,752 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍中文领域中的NLP国产工具LTP及其Python模块：pyltp。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP入门（六）pyltp的介绍与使用">
+<meta property="og:url" content="http://example.com/2023/07/08/NLP%E5%85%A5%E9%97%A8%EF%BC%88%E5%85%AD%EF%BC%89pyltp%E7%9A%84%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="本文将会介绍中文领域中的NLP国产工具LTP及其Python模块：pyltp。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/nlp6_1.png">
+<meta property="og:image" content="http://example.com/img/nlp6_2.png">
+<meta property="og:image" content="http://example.com/img/nlp6_3.png">
+<meta property="article:published_time" content="2023-07-08T02:04:42.000Z">
+<meta property="article:modified_time" content="2023-07-08T02:11:38.631Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="pyltp">
+<meta property="article:tag" content="NLP工具">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/nlp6_1.png">
+  
+  
+  
+  <title>NLP入门（六）pyltp的介绍与使用 - Hexo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP入门（六）pyltp的介绍与使用"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-08 10:04" pubdate>
+          2023年7月8日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          9.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          80 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP入门（六）pyltp的介绍与使用</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h3 id="pyltp的简介">pyltp的简介</h3>
+<p>语言技术平台(LTP)经过哈工大社会计算与信息检索研究中心 11 年的持续研发和推广， 是国内外最具影响力的中文处理基础平台。它提供的功能包括中文分词、词性标注、命名实体识别、依存句法分析、语义角色标注等。</p>
+<p><img src="/img/nlp6_1.png" srcset="/img/loading.gif" lazyload alt="语言技术平台架构"></p>
+<p>pyltp 是 LTP 的 Python 封装，同时支持Python2和Python3版本。Python3的安装方法为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">pip3 install pyltp<br></code></pre></td></tr></table></figure>
+<ul>
+<li>
+<p>官网下载网址：<a target="_blank" rel="noopener" href="https://pypi.org/project/pyltp/0.1.7/">https://pypi.org/project/pyltp/0.1.7/</a></p>
+</li>
+<li>
+<p>官方使用说明文档：<a target="_blank" rel="noopener" href="https://pyltp.readthedocs.io/zh_CN/develop/api.html">https://pyltp.readthedocs.io/zh_CN/develop/api.html</a></p>
+<p>在使用该模块前，需要下载完整的模型文件，文件下载地址为：<a target="_blank" rel="noopener" href="https://pan.baidu.com/share/link?shareid=1988562907&amp;uk=2738088569#list/path=%2F">https://pan.baidu.com/share/link?shareid=1988562907&amp;uk=2738088569#list/path=%2F</a> 。pyltp 的所有输入的分析文本和输出的结果的编码均为 UTF-8。模型的数据文件如下：</p>
+</li>
+</ul>
+<p><img src="/img/nlp6_2.png" srcset="/img/loading.gif" lazyload alt="模型数据"></p>
+<p>其中，cws.model用于分词模型，lexicon.txt为分词时添加的用户字典，ner.model为命名实体识别模型，parser.model为依存句法分析模型，pisrl.model为语义角色标注模型，pos为词性标注模型。</p>
+<h3 id="pyltp的使用">pyltp的使用</h3>
+<p>pyltp的使用示例项目结构如下：</p>
+<p><img src="/img/nlp6_3.png" srcset="/img/loading.gif" lazyload alt="示例项目"></p>
+<h5 id="分句">分句</h5>
+<p>分句指的是将一段话或一片文章中的文字按句子分开，按句子形成独立的单元。示例的Python代码sentenct_split.py如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><br><span class="hljs-keyword">from</span> pyltp <span class="hljs-keyword">import</span> SentenceSplitter<br><br><span class="hljs-comment"># 分句</span><br>doc = <span class="hljs-string">&#x27;据韩联社12月28日反映，美国防部发言人杰夫·莫莱尔27日表示，美国防部长盖茨将于2011年1月14日访问韩国。&#x27;</span> \<br>      <span class="hljs-string">&#x27;盖茨原计划从明年1月9日至14日陆续访问中国和日本，目前，他决定在行程中增加对韩国的访问。莫莱尔表示，&#x27;</span> \<br>      <span class="hljs-string">&#x27;盖茨在访韩期间将会晤韩国国防部长官金宽镇，就朝鲜近日的行动交换意见，同时商讨加强韩美两军同盟关系等问题，&#x27;</span> \<br>      <span class="hljs-string">&#x27;拟定共同应对朝鲜挑衅和核计划的方案。&#x27;</span><br>sents = SentenceSplitter.split(doc)  <span class="hljs-comment"># 分句</span><br><br><br><span class="hljs-keyword">for</span> sent <span class="hljs-keyword">in</span> sents:<br>    <span class="hljs-built_in">print</span>(sent)<br>````<br><br>输出结果如下：<br><br></code></pre></td></tr></table></figure>
+<p>据韩联社12月28日反映，美国防部发言人杰夫·莫莱尔27日表示，美国防部长盖茨将于2011年1月14日访问韩国。<br>
+盖茨原计划从明年1月9日至14日陆续访问中国和日本，目前，他决定在行程中增加对韩国的访问。<br>
+莫莱尔表示，盖茨在访韩期间将会晤韩国国防部长官金宽镇，就朝鲜近日的行动交换意见，同时商讨加强韩美两军同盟关系等问题，拟定共同应对朝鲜挑衅和核计划的方案。</p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs clean"><br>##### 分词<br><br>  分词指的是将一句话按词语分开，按词语形成独立的单元。示例的Python代码words_split.py如下：<br><br>```python<br># -*- coding: utf<span class="hljs-number">-8</span> -*-<br><br><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> pyltp <span class="hljs-keyword">import</span> Segmentor<br><br>cws_model_path = os.path.join(os.path.dirname(__file__), <span class="hljs-string">&#x27;data/cws.model&#x27;</span>)  # 分词模型路径，模型名称为`cws.model`<br>lexicon_path = os.path.join(os.path.dirname(__file__), <span class="hljs-string">&#x27;data/lexicon.txt&#x27;</span>)  # 参数lexicon是自定义词典的文件路径<br><br>segmentor = Segmentor()<br>segmentor.load_with_lexicon(cws_model_path, lexicon_path)<br><br>sent = <span class="hljs-string">&#x27;据韩联社12月28日反映，美国防部发言人杰夫·莫莱尔27日表示，美国防部长盖茨将于2011年1月14日访问韩国。&#x27;</span><br>words = segmentor.segment(sent)  # 分词<br><br>print(<span class="hljs-string">&#x27;/&#x27;</span>.join(words))<br><br>segmentor.release()<br></code></pre></td></tr></table></figure>
+<p>输出的结果如下：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">据<span class="hljs-regexp">/韩联社/</span><span class="hljs-number">12</span>月<span class="hljs-regexp">/28日/</span>反映<span class="hljs-regexp">/，/</span>美<span class="hljs-regexp">/国防部/</span>发言人<span class="hljs-regexp">/杰夫·莫莱尔/</span><span class="hljs-number">27</span>日<span class="hljs-regexp">/表示/</span>，<span class="hljs-regexp">/美/</span>国防部长<span class="hljs-regexp">/盖茨/</span>将<span class="hljs-regexp">/于/</span><span class="hljs-number">2011</span>年<span class="hljs-regexp">/1月/</span><span class="hljs-number">14</span>日<span class="hljs-regexp">/访问/</span>韩国/。<br></code></pre></td></tr></table></figure>
+<h5 id="词性标注">词性标注</h5>
+<p>词性标注指的是一句话分完词后，制定每个词语的词性。示例的Python代码postagger.py如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> pyltp <span class="hljs-keyword">import</span> Segmentor, Postagger<br><br><span class="hljs-comment"># 分词</span><br>cws_model_path = os.path.join(os.path.dirname(__file__), <span class="hljs-string">&#x27;data/cws.model&#x27;</span>)  <span class="hljs-comment"># 分词模型路径，模型名称为`cws.model`</span><br>lexicon_path = os.path.join(os.path.dirname(__file__), <span class="hljs-string">&#x27;data/lexicon.txt&#x27;</span>)  <span class="hljs-comment"># 参数lexicon是自定义词典的文件路径</span><br><br>segmentor = Segmentor()<br>segmentor.load_with_lexicon(cws_model_path, lexicon_path)<br><br>sent = <span class="hljs-string">&#x27;据韩联社12月28日反映，美国防部发言人杰夫·莫莱尔27日表示，美国防部长盖茨将于2011年1月14日访问韩国。&#x27;</span><br>words = segmentor.segment(sent)  <span class="hljs-comment"># 分词</span><br><br><span class="hljs-comment"># 词性标注</span><br>pos_model_path = os.path.join(os.path.dirname(__file__), <span class="hljs-string">&#x27;data/pos.model&#x27;</span>)  <span class="hljs-comment"># 词性标注模型路径，模型名称为`pos.model`</span><br><br>postagger = Postagger()  <span class="hljs-comment"># 初始化实例</span><br>postagger.load(pos_model_path)  <span class="hljs-comment"># 加载模型</span><br>postags = postagger.postag(words)  <span class="hljs-comment"># 词性标注</span><br><br><span class="hljs-keyword">for</span> word, postag <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(words, postags):<br>    <span class="hljs-built_in">print</span>(word, postag)<br><br><span class="hljs-comment"># 释放模型</span><br>segmentor.release()<br>postagger.release()<br><br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">词性标注结果说明</span><br><span class="hljs-string">https://ltp.readthedocs.io/zh_CN/latest/appendix.html#id3</span><br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br></code></pre></td></tr></table></figure>
+<p>输出结果如下：</p>
+<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs excel">据 p<br>韩联社 ni<br><span class="hljs-number">12</span>月 nt<br><span class="hljs-number">28</span>日 nt<br>反映 v<br>， wp<br>美 j<br>国防部 <span class="hljs-built_in">n</span><br>发言人 <span class="hljs-built_in">n</span><br>杰夫·莫莱尔 nh<br><span class="hljs-number">27</span>日 nt<br>表示 v<br>， wp<br>美 j<br>国防部长 <span class="hljs-built_in">n</span><br>盖茨 nh<br>将 d<br>于 p<br><span class="hljs-number">2011</span>年 nt<br><span class="hljs-number">1</span>月 nt<br><span class="hljs-number">14</span>日 nt<br>访问 v<br>韩国 ns<br>。 wp<br></code></pre></td></tr></table></figure>
+<p>词性标注结果可参考网址：<a target="_blank" rel="noopener" href="https://ltp.readthedocs.io/zh_CN/latest/appendix.html">https://ltp.readthedocs.io/zh_CN/latest/appendix.html</a> 。</p>
+<h5 id="命名实体识别">命名实体识别</h5>
+<p>命名实体识别（NER）指的是识别出一句话或一段话或一片文章中的命名实体，比如人名，地名，组织机构名。示例的Python代码ner.py如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> pyltp <span class="hljs-keyword">import</span> Segmentor, Postagger<br><br><span class="hljs-comment"># 分词</span><br>cws_model_path = os.path.join(os.path.dirname(__file__), <span class="hljs-string">&#x27;data/cws.model&#x27;</span>)  <span class="hljs-comment"># 分词模型路径，模型名称为`cws.model`</span><br>lexicon_path = os.path.join(os.path.dirname(__file__), <span class="hljs-string">&#x27;data/lexicon.txt&#x27;</span>)  <span class="hljs-comment"># 参数lexicon是自定义词典的文件路径</span><br><br>segmentor = Segmentor()<br>segmentor.load_with_lexicon(cws_model_path, lexicon_path)<br><br>sent = <span class="hljs-string">&#x27;据韩联社12月28日反映，美国防部发言人杰夫·莫莱尔27日表示，美国防部长盖茨将于2011年1月14日访问韩国。&#x27;</span><br>words = segmentor.segment(sent)  <span class="hljs-comment"># 分词</span><br><br><span class="hljs-comment"># 词性标注</span><br>pos_model_path = os.path.join(os.path.dirname(__file__), <span class="hljs-string">&#x27;data/pos.model&#x27;</span>)  <span class="hljs-comment"># 词性标注模型路径，模型名称为`pos.model`</span><br><br>postagger = Postagger()  <span class="hljs-comment"># 初始化实例</span><br>postagger.load(pos_model_path)  <span class="hljs-comment"># 加载模型</span><br>postags = postagger.postag(words)  <span class="hljs-comment"># 词性标注</span><br><br><br>ner_model_path = os.path.join(os.path.dirname(__file__), <span class="hljs-string">&#x27;data/ner.model&#x27;</span>)   <span class="hljs-comment"># 命名实体识别模型路径，模型名称为`pos.model`</span><br><br><span class="hljs-keyword">from</span> pyltp <span class="hljs-keyword">import</span> NamedEntityRecognizer<br>recognizer = NamedEntityRecognizer() <span class="hljs-comment"># 初始化实例</span><br>recognizer.load(ner_model_path)  <span class="hljs-comment"># 加载模型</span><br><span class="hljs-comment"># netags = recognizer.recognize(words, postags)  # 命名实体识别</span><br><br><br><span class="hljs-comment"># 提取识别结果中的人名，地名，组织机构名</span><br><br>persons, places, orgs = <span class="hljs-built_in">set</span>(), <span class="hljs-built_in">set</span>(), <span class="hljs-built_in">set</span>()<br><br><br>netags = <span class="hljs-built_in">list</span>(recognizer.recognize(words, postags))  <span class="hljs-comment"># 命名实体识别</span><br><span class="hljs-built_in">print</span>(netags)<br><span class="hljs-comment"># print(netags)</span><br>i = <span class="hljs-number">0</span><br><span class="hljs-keyword">for</span> tag, word <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(netags, words):<br>    j = i<br>    <span class="hljs-comment"># 人名</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-string">&#x27;Nh&#x27;</span> <span class="hljs-keyword">in</span> tag:<br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">str</span>(tag).startswith(<span class="hljs-string">&#x27;S&#x27;</span>):<br>            persons.add(word)<br>        <span class="hljs-keyword">elif</span> <span class="hljs-built_in">str</span>(tag).startswith(<span class="hljs-string">&#x27;B&#x27;</span>):<br>            union_person = word<br>            <span class="hljs-keyword">while</span> netags[j] != <span class="hljs-string">&#x27;E-Nh&#x27;</span>:<br>                j += <span class="hljs-number">1</span><br>                <span class="hljs-keyword">if</span> j &lt; <span class="hljs-built_in">len</span>(words):<br>                    union_person += words[j]<br>            persons.add(union_person)<br>    <span class="hljs-comment"># 地名</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-string">&#x27;Ns&#x27;</span> <span class="hljs-keyword">in</span> tag:<br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">str</span>(tag).startswith(<span class="hljs-string">&#x27;S&#x27;</span>):<br>            places.add(word)<br>        <span class="hljs-keyword">elif</span> <span class="hljs-built_in">str</span>(tag).startswith(<span class="hljs-string">&#x27;B&#x27;</span>):<br>            union_place = word<br>            <span class="hljs-keyword">while</span> netags[j] != <span class="hljs-string">&#x27;E-Ns&#x27;</span>:<br>                j += <span class="hljs-number">1</span><br>                <span class="hljs-keyword">if</span> j &lt; <span class="hljs-built_in">len</span>(words):<br>                    union_place += words[j]<br>            places.add(union_place)<br>    <span class="hljs-comment"># 机构名</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-string">&#x27;Ni&#x27;</span> <span class="hljs-keyword">in</span> tag:<br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">str</span>(tag).startswith(<span class="hljs-string">&#x27;S&#x27;</span>):<br>            orgs.add(word)<br>        <span class="hljs-keyword">elif</span> <span class="hljs-built_in">str</span>(tag).startswith(<span class="hljs-string">&#x27;B&#x27;</span>):<br>            union_org = word<br>            <span class="hljs-keyword">while</span> netags[j] != <span class="hljs-string">&#x27;E-Ni&#x27;</span>:<br>                j += <span class="hljs-number">1</span><br>                <span class="hljs-keyword">if</span> j &lt; <span class="hljs-built_in">len</span>(words):<br>                    union_org += words[j]<br>            orgs.add(union_org)<br><br>    i += <span class="hljs-number">1</span><br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;人名：&#x27;</span>, <span class="hljs-string">&#x27;，&#x27;</span>.join(persons))<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;地名：&#x27;</span>, <span class="hljs-string">&#x27;，&#x27;</span>.join(places))<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;组织机构：&#x27;</span>, <span class="hljs-string">&#x27;，&#x27;</span>.join(orgs))<br><br><br><span class="hljs-comment"># 释放模型</span><br>segmentor.release()<br>postagger.release()<br>recognizer.release()<br></code></pre></td></tr></table></figure>
+<p>输出的结果如下：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-attr">[<span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;S-Ni&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;B-Ni&#x27;</span>, <span class="hljs-string">&#x27;E-Ni&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;S-Nh&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;S-Ns&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;S-Nh&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;S-Ns&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>]</span><br>人名： 杰夫·莫莱尔，盖茨<br>地名： 美，韩国<br>组织机构： 韩联社，美国防部<br></code></pre></td></tr></table></figure>
+<p>命名实体识别结果可参考网址：<a target="_blank" rel="noopener" href="https://ltp.readthedocs.io/zh_CN/latest/appendix.html">https://ltp.readthedocs.io/zh_CN/latest/appendix.html</a> 。</p>
+<h4 id="依存句法分析">依存句法分析</h4>
+<p>依存语法 (Dependency Parsing, DP) 通过分析语言单位内成分之间的依存关系揭示其句法结构。 直观来讲，依存句法分析识别句子中的“主谓宾”、“定状补”这些语法成分，并分析各成分之间的关系。示例的Python代码parser.py代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> pyltp <span class="hljs-keyword">import</span> Segmentor, Postagger, Parser<br><br><span class="hljs-comment"># 分词</span><br>cws_model_path = os.path.join(os.path.dirname(__file__), <span class="hljs-string">&#x27;data/cws.model&#x27;</span>)  <span class="hljs-comment"># 分词模型路径，模型名称为`cws.model`</span><br>lexicon_path = os.path.join(os.path.dirname(__file__), <span class="hljs-string">&#x27;data/lexicon.txt&#x27;</span>)  <span class="hljs-comment"># 参数lexicon是自定义词典的文件路径</span><br><br>segmentor = Segmentor()<br>segmentor.load_with_lexicon(cws_model_path, lexicon_path)<br><br>sent = <span class="hljs-string">&#x27;据韩联社12月28日反映，美国防部发言人杰夫·莫莱尔27日表示，美国防部长盖茨将于2011年1月14日访问韩国。&#x27;</span><br>words = segmentor.segment(sent)  <span class="hljs-comment"># 分词</span><br><br><span class="hljs-comment"># 词性标注</span><br>pos_model_path = os.path.join(os.path.dirname(__file__), <span class="hljs-string">&#x27;data/pos.model&#x27;</span>)  <span class="hljs-comment"># 词性标注模型路径，模型名称为`pos.model`</span><br><br>postagger = Postagger()  <span class="hljs-comment"># 初始化实例</span><br>postagger.load(pos_model_path)  <span class="hljs-comment"># 加载模型</span><br>postags = postagger.postag(words)  <span class="hljs-comment"># 词性标注</span><br><br><br><span class="hljs-comment"># 依存句法分析</span><br>par_model_path = os.path.join(os.path.dirname(__file__), <span class="hljs-string">&#x27;data/parser.model&#x27;</span>)  <span class="hljs-comment"># 模型路径，模型名称为`parser.model`</span><br><br>parser = Parser() <span class="hljs-comment"># 初始化实例</span><br>parser.load(par_model_path)  <span class="hljs-comment"># 加载模型</span><br>arcs = parser.parse(words, postags)  <span class="hljs-comment"># 句法分析</span><br><br>rely_id = [arc.head <span class="hljs-keyword">for</span> arc <span class="hljs-keyword">in</span> arcs]  <span class="hljs-comment"># 提取依存父节点id</span><br>relation = [arc.relation <span class="hljs-keyword">for</span> arc <span class="hljs-keyword">in</span> arcs]  <span class="hljs-comment"># 提取依存关系</span><br>heads = [<span class="hljs-string">&#x27;Root&#x27;</span> <span class="hljs-keyword">if</span> <span class="hljs-built_in">id</span> == <span class="hljs-number">0</span> <span class="hljs-keyword">else</span> words[<span class="hljs-built_in">id</span>-<span class="hljs-number">1</span>] <span class="hljs-keyword">for</span> <span class="hljs-built_in">id</span> <span class="hljs-keyword">in</span> rely_id]  <span class="hljs-comment"># 匹配依存父节点词语</span><br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(words)):<br>    <span class="hljs-built_in">print</span>(relation[i] + <span class="hljs-string">&#x27;(&#x27;</span> + words[i] + <span class="hljs-string">&#x27;, &#x27;</span> + heads[i] + <span class="hljs-string">&#x27;)&#x27;</span>)<br><br><span class="hljs-comment"># 释放模型</span><br>segmentor.release()<br>postagger.release()<br>parser.release()<br></code></pre></td></tr></table></figure>
+<p>输出结果如下：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">ADV</span><span class="hljs-params">(据, 表示)</span></span><br><span class="hljs-function"><span class="hljs-title">SBV</span><span class="hljs-params">(韩联社, 反映)</span></span><br><span class="hljs-function"><span class="hljs-title">ATT</span><span class="hljs-params">(<span class="hljs-number">12</span>月, <span class="hljs-number">28</span>日)</span></span><br><span class="hljs-function"><span class="hljs-title">ADV</span><span class="hljs-params">(<span class="hljs-number">28</span>日, 反映)</span></span><br><span class="hljs-function"><span class="hljs-title">POB</span><span class="hljs-params">(反映, 据)</span></span><br><span class="hljs-function"><span class="hljs-title">WP</span><span class="hljs-params">(，, 据)</span></span><br><span class="hljs-function"><span class="hljs-title">ATT</span><span class="hljs-params">(美, 国防部)</span></span><br><span class="hljs-function"><span class="hljs-title">ATT</span><span class="hljs-params">(国防部, 发言人)</span></span><br><span class="hljs-function"><span class="hljs-title">ATT</span><span class="hljs-params">(发言人, 杰夫·莫莱尔)</span></span><br><span class="hljs-function"><span class="hljs-title">SBV</span><span class="hljs-params">(杰夫·莫莱尔, 表示)</span></span><br><span class="hljs-function"><span class="hljs-title">ADV</span><span class="hljs-params">(<span class="hljs-number">27</span>日, 表示)</span></span><br><span class="hljs-function"><span class="hljs-title">HED</span><span class="hljs-params">(表示, Root)</span></span><br><span class="hljs-function"><span class="hljs-title">WP</span><span class="hljs-params">(，, 表示)</span></span><br><span class="hljs-function"><span class="hljs-title">ATT</span><span class="hljs-params">(美, 国防部长)</span></span><br><span class="hljs-function"><span class="hljs-title">ATT</span><span class="hljs-params">(国防部长, 盖茨)</span></span><br><span class="hljs-function"><span class="hljs-title">SBV</span><span class="hljs-params">(盖茨, 访问)</span></span><br><span class="hljs-function"><span class="hljs-title">ADV</span><span class="hljs-params">(将, 访问)</span></span><br><span class="hljs-function"><span class="hljs-title">ADV</span><span class="hljs-params">(于, 访问)</span></span><br><span class="hljs-function"><span class="hljs-title">ATT</span><span class="hljs-params">(<span class="hljs-number">2011</span>年, <span class="hljs-number">14</span>日)</span></span><br><span class="hljs-function"><span class="hljs-title">ATT</span><span class="hljs-params">(<span class="hljs-number">1</span>月, <span class="hljs-number">14</span>日)</span></span><br><span class="hljs-function"><span class="hljs-title">POB</span><span class="hljs-params">(<span class="hljs-number">14</span>日, 于)</span></span><br><span class="hljs-function"><span class="hljs-title">VOB</span><span class="hljs-params">(访问, 表示)</span></span><br><span class="hljs-function"><span class="hljs-title">VOB</span><span class="hljs-params">(韩国, 访问)</span></span><br><span class="hljs-function"><span class="hljs-title">WP</span><span class="hljs-params">(。, 表示)</span></span><br></code></pre></td></tr></table></figure>
+<p>依存句法分析结果可参考网址：<a target="_blank" rel="noopener" href="https://ltp.readthedocs.io/zh_CN/latest/appendix.html">https://ltp.readthedocs.io/zh_CN/latest/appendix.html</a> 。</p>
+<h5 id="语义角色标注">语义角色标注</h5>
+<p>语义角色标注是实现浅层语义分析的一种方式。在一个句子中，谓词是对主语的陈述或说明，指出“做什么”、“是什么”或“怎么样，代表了一个事件的核心，跟谓词搭配的名词称为论元。语义角色是指论元在动词所指事件中担任的角色。主要有：施事者（Agent）、受事者（Patient）、客体（Theme）、经验者（Experiencer）、受益者（Beneficiary）、工具（Instrument）、处所（Location）、目标（Goal）和来源（Source）等。示例的Python代码rolelabel.py如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> pyltp <span class="hljs-keyword">import</span> Segmentor, Postagger, Parser, SementicRoleLabeller<br><br><span class="hljs-comment"># 分词</span><br>cws_model_path = os.path.join(os.path.dirname(__file__), <span class="hljs-string">&#x27;data/cws.model&#x27;</span>)  <span class="hljs-comment"># 分词模型路径，模型名称为`cws.model`</span><br>lexicon_path = os.path.join(os.path.dirname(__file__), <span class="hljs-string">&#x27;data/lexicon.txt&#x27;</span>)  <span class="hljs-comment"># 参数lexicon是自定义词典的文件路径</span><br><br>segmentor = Segmentor()<br>segmentor.load_with_lexicon(cws_model_path, lexicon_path)<br><br>sent = <span class="hljs-string">&#x27;据韩联社12月28日反映，美国防部发言人杰夫·莫莱尔27日表示，美国防部长盖茨将于2011年1月14日访问韩国。&#x27;</span><br>words = segmentor.segment(sent)  <span class="hljs-comment"># 分词</span><br><br><span class="hljs-comment"># 词性标注</span><br>pos_model_path = os.path.join(os.path.dirname(__file__), <span class="hljs-string">&#x27;data/pos.model&#x27;</span>)  <span class="hljs-comment"># 词性标注模型路径，模型名称为`pos.model`</span><br><br>postagger = Postagger()  <span class="hljs-comment"># 初始化实例</span><br>postagger.load(pos_model_path)  <span class="hljs-comment"># 加载模型</span><br>postags = postagger.postag(words)  <span class="hljs-comment"># 词性标注</span><br><br><span class="hljs-comment"># 依存句法分析</span><br>par_model_path = os.path.join(os.path.dirname(__file__), <span class="hljs-string">&#x27;data/parser.model&#x27;</span>)  <span class="hljs-comment"># 模型路径，模型名称为`parser.model`</span><br><br>parser = Parser() <span class="hljs-comment"># 初始化实例</span><br>parser.load(par_model_path)  <span class="hljs-comment"># 加载模型</span><br>arcs = parser.parse(words, postags)  <span class="hljs-comment"># 句法分析</span><br><br><span class="hljs-comment"># 语义角色标注</span><br>srl_model_path = os.path.join(os.path.dirname(__file__), <span class="hljs-string">&#x27;data/pisrl.model&#x27;</span>)  <span class="hljs-comment"># 语义角色标注模型目录路径</span><br>labeller = SementicRoleLabeller() <span class="hljs-comment"># 初始化实例</span><br>labeller.load(srl_model_path)  <span class="hljs-comment"># 加载模型</span><br>roles = labeller.label(words, postags, arcs)  <span class="hljs-comment"># 语义角色标注</span><br><br><span class="hljs-comment"># 打印结果</span><br><span class="hljs-keyword">for</span> role <span class="hljs-keyword">in</span> roles:<br>    <span class="hljs-built_in">print</span>(words[role.index], end=<span class="hljs-string">&#x27; &#x27;</span>)<br>    <span class="hljs-built_in">print</span>(role.index, <span class="hljs-string">&quot;&quot;</span>.join([<span class="hljs-string">&quot;%s:(%d,%d)&quot;</span> % (arg.name, arg.<span class="hljs-built_in">range</span>.start, arg.<span class="hljs-built_in">range</span>.end) <span class="hljs-keyword">for</span> arg <span class="hljs-keyword">in</span> role.arguments]))<br><br><span class="hljs-comment"># 释放模型</span><br>segmentor.release()<br>postagger.release()<br>parser.release()<br>labeller.release()<br></code></pre></td></tr></table></figure>
+<p>输出结果如下：</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">反映 <span class="hljs-number">4</span> <span class="hljs-built_in">A0</span>:(<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)<span class="hljs-built_in">A0</span>:(<span class="hljs-number">2</span>,<span class="hljs-number">3</span>)<br>表示 <span class="hljs-number">11</span> MNR:(<span class="hljs-number">0</span>,<span class="hljs-number">5</span>)<span class="hljs-built_in">A0</span>:(<span class="hljs-number">6</span>,<span class="hljs-number">9</span>)TMP:(<span class="hljs-number">10</span>,<span class="hljs-number">10</span>)<span class="hljs-built_in">A1</span>:(<span class="hljs-number">13</span>,<span class="hljs-number">22</span>)<br>访问 <span class="hljs-number">21</span> <span class="hljs-built_in">A0</span>:(<span class="hljs-number">13</span>,<span class="hljs-number">15</span>)ADV:(<span class="hljs-number">16</span>,<span class="hljs-number">16</span>)TMP:(<span class="hljs-number">17</span>,<span class="hljs-number">20</span>)<span class="hljs-built_in">A1</span>:(<span class="hljs-number">22</span>,<span class="hljs-number">22</span>)<br></code></pre></td></tr></table></figure>
+<h3 id="总结">总结</h3>
+<p>本文介绍了中文NLP的一个杰出工具pyltp，并给出了该模块的各个功能的一个示例，希望能给读者一些思考与启示。本文到此结束，感谢大家阅读~</p>
+<p>注意：本人现已开通微信公众号： Python爬虫与算法（微信号为：easy_web_scrape）， 欢迎大家关注哦~~</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/NLP/" class="print-no-link">#NLP</a>
+      
+        <a href="/tags/pyltp/" class="print-no-link">#pyltp</a>
+      
+        <a href="/tags/NLP%E5%B7%A5%E5%85%B7/" class="print-no-link">#NLP工具</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP入门（六）pyltp的介绍与使用</div>
+      <div>http://example.com/2023/07/08/NLP入门（六）pyltp的介绍与使用/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月8日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/07/08/NLP%E5%85%A5%E9%97%A8%EF%BC%88%E4%BA%94%EF%BC%89%E7%94%A8%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%AE%9E%E7%8E%B0%E5%91%BD%E5%90%8D%E5%AE%9E%E4%BD%93%E8%AF%86%E5%88%AB%EF%BC%88NER%EF%BC%89/" title="NLP入门（五）用深度学习实现命名实体识别（NER）">
+                        <span class="hidden-mobile">NLP入门（五）用深度学习实现命名实体识别（NER）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
