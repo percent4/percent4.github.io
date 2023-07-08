@@ -1,0 +1,729 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将介绍如何利用tensorflow-serving部署kashgari模型。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（十七）利用tensorflow-serving部署kashgari模型">
+<meta property="og:url" content="http://example.com/2023/07/08/NLP%EF%BC%88%E5%8D%81%E4%B8%83%EF%BC%89%E5%88%A9%E7%94%A8tensorflow-serving%E9%83%A8%E7%BD%B2kashgari%E6%A8%A1%E5%9E%8B/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="本文将介绍如何利用tensorflow-serving部署kashgari模型。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/nlp17_1.png">
+<meta property="article:published_time" content="2023-07-08T04:55:25.000Z">
+<meta property="article:modified_time" content="2023-07-08T04:57:36.527Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="NLP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/nlp17_1.png">
+  
+  
+  
+  <title>NLP（十七）利用tensorflow-serving部署kashgari模型 - Hexo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（十七）利用tensorflow-serving部署kashgari模型"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-08 12:55" pubdate>
+          星期六, 七月 8日 2023, 12:55 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          6.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          55 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（十七）利用tensorflow-serving部署kashgari模型</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>在文章<a
+target="_blank" rel="noopener" href="https://www.jianshu.com/p/26b73a72f69d">NLP（十五）让模型来告诉你文本中的时间</a>中，我们已经学会了如何利用kashgari模块来完成序列标注模型的训练与预测，在本文中，我们将会了解如何tensorflow-serving来部署模型。</p>
+<p>在kashgari的官方文档中，已经有如何利用tensorflow-serving来部署模型的说明了，网址为：<a
+target="_blank" rel="noopener" href="https://kashgari.bmio.net/advance-use/tensorflow-serving/">https://kashgari.bmio.net/advance-use/tensorflow-serving/</a>
+。</p>
+<p>下面，本文将介绍tensorflow-serving以及如何利用tensorflow-serving来部署kashgari的模型。</p>
+<h3 id="tensorflow-serving">tensorflow-serving</h3>
+<p>TensorFlow Serving 是一个用于机器学习模型 serving
+的高性能开源库。它可以将训练好的机器学习模型部署到线上，使用 gRPC
+作为接口接受外部调用。更加让人眼前一亮的是，它支持模型热更新与自动模型版本管理。这意味着一旦部署
+TensorFlow Serving
+后，你再也不需要为线上服务操心，只需要关心你的线下模型训练。</p>
+<p>TensorFlow
+Serving可以方便我们部署TensorFlow模型，本文将使用TensorFlow
+Serving的Docker镜像来使用TensorFlow Serving，安装的命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker pull tensorflow/serving<br></code></pre></td></tr></table></figure>
+<h3 id="工程实践">工程实践</h3>
+<p>本项目将演示如何利用tensorflow/serving来部署kashgari中的模型，项目结构如下：</p>
+<p><img src="/img/nlp17_1.png" srcset="/img/loading.gif" lazyload /></p>
+<p>本项目的data来自之前笔者标注的时间数据集，即标注出文本中的时间，采用BIO标注系统。chinese_wwm_ext文件夹为哈工大的预训练模型文件。</p>
+<p>model_train.py为模型训练的代码，主要功能是完成时间序列标注模型的训练，完整的代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># time: 2019-09-12</span><br><span class="hljs-comment"># place: Huangcun Beijing</span><br><br><span class="hljs-keyword">import</span> kashgari<br><span class="hljs-keyword">from</span> kashgari <span class="hljs-keyword">import</span> utils<br><span class="hljs-keyword">from</span> kashgari.corpus <span class="hljs-keyword">import</span> DataReader<br><span class="hljs-keyword">from</span> kashgari.embeddings <span class="hljs-keyword">import</span> BERTEmbedding<br><span class="hljs-keyword">from</span> kashgari.tasks.labeling <span class="hljs-keyword">import</span> BiLSTM_CRF_Model<br><br><span class="hljs-comment"># 模型训练</span><br><br>train_x, train_y = DataReader().read_conll_format_file(<span class="hljs-string">&#x27;./data/time.train&#x27;</span>)<br>valid_x, valid_y = DataReader().read_conll_format_file(<span class="hljs-string">&#x27;./data/time.dev&#x27;</span>)<br>test_x, test_y = DataReader().read_conll_format_file(<span class="hljs-string">&#x27;./data/time.test&#x27;</span>)<br><br>bert_embedding = BERTEmbedding(<span class="hljs-string">&#x27;chinese_wwm_ext_L-12_H-768_A-12&#x27;</span>,<br>                               task=kashgari.LABELING,<br>                               sequence_length=<span class="hljs-number">128</span>)<br><br>model = BiLSTM_CRF_Model(bert_embedding)<br><br>model.fit(train_x, train_y, valid_x, valid_y, batch_size=<span class="hljs-number">16</span>, epochs=<span class="hljs-number">1</span>)<br><br><span class="hljs-comment"># Save model</span><br>utils.convert_to_saved_model(model,<br>                             model_path=<span class="hljs-string">&#x27;saved_model/time_entity&#x27;</span>,<br>                             version=<span class="hljs-number">1</span>)<br></code></pre></td></tr></table></figure>
+<p>运行该代码，模型训练完后会生成saved_model文件夹，里面含有模型训练好后的文件，方便我们利用tensorflow/serving进行部署。接着我们利用tensorflow/serving来完成模型的部署，命令如下：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros">docker <span class="hljs-built_in">run</span> -t --rm -p 8501:8501 -v <span class="hljs-string">&quot;/Users/jclian/PycharmProjects/kashgari_tf_serving/saved_model:/models/&quot;</span> -e <span class="hljs-attribute">MODEL_NAME</span>=time_entity tensorflow/serving<br></code></pre></td></tr></table></figure>
+<p>其中需要注意该模型所在的路径，路径需要写完整路径，以及模型的名称（MODEL_NAME），这在训练代码（train.py）中已经给出（saved_model/time_entity）。</p>
+<p>接着我们使用tornado来搭建HTTP服务，帮助我们方便地进行模型预测，runServer.py的完整代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">from</span> kashgari <span class="hljs-keyword">import</span> utils<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">from</span> model_predict <span class="hljs-keyword">import</span> get_predict<br><br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> tornado.httpserver<br><span class="hljs-keyword">import</span> tornado.ioloop<br><span class="hljs-keyword">import</span> tornado.options<br><span class="hljs-keyword">import</span> tornado.web<br><span class="hljs-keyword">from</span> tornado.options <span class="hljs-keyword">import</span> define, options<br><span class="hljs-keyword">import</span> traceback<br><br><span class="hljs-comment"># tornado高并发</span><br><span class="hljs-keyword">import</span> tornado.web<br><span class="hljs-keyword">import</span> tornado.gen<br><span class="hljs-keyword">import</span> tornado.concurrent<br><span class="hljs-keyword">from</span> concurrent.futures <span class="hljs-keyword">import</span> ThreadPoolExecutor<br><br><span class="hljs-comment"># 定义端口为12333</span><br>define(<span class="hljs-string">&quot;port&quot;</span>, default=<span class="hljs-number">16016</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;run on the given port&quot;</span>, <span class="hljs-built_in">type</span>=<span class="hljs-built_in">int</span>)<br><br><span class="hljs-comment"># 模型预测</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">ModelPredictHandler</span>(tornado.web.RequestHandler):<br>    executor = ThreadPoolExecutor(max_workers=<span class="hljs-number">5</span>)<br><br>    <span class="hljs-comment"># get 函数</span><br><span class="hljs-meta">    @tornado.gen.coroutine</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">get</span>(<span class="hljs-params">self</span>):<br>        origin_text = self.get_argument(<span class="hljs-string">&#x27;text&#x27;</span>)<br>        result = <span class="hljs-keyword">yield</span> self.function(origin_text)<br>        self.write(json.dumps(result, ensure_ascii=<span class="hljs-literal">False</span>))<br><br><span class="hljs-meta">    @tornado.concurrent.run_on_executor</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">function</span>(<span class="hljs-params">self, text</span>):<br>        <span class="hljs-keyword">try</span>:<br>            text = text.replace(<span class="hljs-string">&#x27; &#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>)<br>            x = [_ <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> text]<br><br>            <span class="hljs-comment"># Pre-processor data</span><br>            processor = utils.load_processor(model_path=<span class="hljs-string">&#x27;saved_model/time_entity/1&#x27;</span>)<br>            tensor = processor.process_x_dataset([x])<br><br>            <span class="hljs-comment"># only for bert Embedding</span><br>            tensor = [&#123;<br>                <span class="hljs-string">&quot;Input-Token:0&quot;</span>: i.tolist(),<br>                <span class="hljs-string">&quot;Input-Segment:0&quot;</span>: np.zeros(i.shape).tolist()<br>            &#125; <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> tensor]<br><br>            <span class="hljs-comment"># predict</span><br>            r = requests.post(<span class="hljs-string">&quot;http://localhost:8501/v1/models/time_entity:predict&quot;</span>, json=&#123;<span class="hljs-string">&quot;instances&quot;</span>: tensor&#125;)<br>            preds = r.json()[<span class="hljs-string">&#x27;predictions&#x27;</span>]<br><br>            <span class="hljs-comment"># Convert result back to labels</span><br>            labels = processor.reverse_numerize_label_sequences(np.array(preds).argmax(-<span class="hljs-number">1</span>))<br><br>            entities = get_predict(<span class="hljs-string">&#x27;TIME&#x27;</span>, text, labels[<span class="hljs-number">0</span>])<br><br>            <span class="hljs-keyword">return</span> entities<br><br>        <span class="hljs-keyword">except</span> Exception:<br>            self.write(traceback.format_exc().replace(<span class="hljs-string">&#x27;\n&#x27;</span>, <span class="hljs-string">&#x27;&lt;br&gt;&#x27;</span>))<br><br><br><span class="hljs-comment"># get请求</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">HelloHandler</span>(tornado.web.RequestHandler):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">get</span>(<span class="hljs-params">self</span>):<br>        self.write(<span class="hljs-string">&#x27;Hello from lmj from Daxing Beijing!&#x27;</span>)<br><br><br><span class="hljs-comment"># 主函数</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    <span class="hljs-comment"># 开启tornado服务</span><br>    tornado.options.parse_command_line()<br>    <span class="hljs-comment"># 定义app</span><br>    app = tornado.web.Application(<br>            handlers=[(<span class="hljs-string">r&#x27;/model_predict&#x27;</span>, ModelPredictHandler),<br>                      (<span class="hljs-string">r&#x27;/hello&#x27;</span>, HelloHandler),<br>                      ], <span class="hljs-comment">#网页路径控制</span><br>          )<br>    http_server = tornado.httpserver.HTTPServer(app)<br>    http_server.listen(options.port)<br>    tornado.ioloop.IOLoop.instance().start()<br><br>main()<br></code></pre></td></tr></table></figure>
+<p>我们定义了tornado封装HTTP服务来进行模型预测，运行该脚本，启动模型预测的HTTP服务。接着我们再使用Python脚本才测试下模型的预测效果以及预测时间，预测的代码脚本的完整代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> requests<br><br>t1 = time.time()<br>texts = [<span class="hljs-string">&#x27;记者从国家发展改革委、商务部相关方面获悉，日前美方已决定对拟于10月1日实施的中国输美商品加征关税措施做出调整，中方支持相关企业从即日起按照市场化原则和WTO规则，自美采购一定数量大豆、猪肉等农产品，国务院关税税则委员会将对上述采购予以加征关税排除。&#x27;</span>,<br>         <span class="hljs-string">&#x27;据印度Zee新闻网站12日报道，亚洲新闻国际通讯社援引印度军方消息人士的话说，9月11日的对峙事件发生在靠近班公错北岸的实际控制线一带。&#x27;</span>,<br>         <span class="hljs-string">&#x27;儋州市决定，从9月开始，对城市低保、农村低保、特困供养人员、优抚对象、领取失业保险金人员、建档立卡未脱贫人口等低收入群体共3万多人，发放猪肉价格补贴，每人每月发放不低于100元补贴，以后发放标准，将根据猪肉价波动情况进行动态调整。&#x27;</span>,<br>         <span class="hljs-string">&#x27;9月11日，华为心声社区发布美国经济学家托马斯.弗里德曼在《纽约时报》上的专栏内容，弗里德曼透露，在与华为创始人任正非最近一次采访中，任正非表示华为愿意与美国司法部展开话题不设限的讨论。&#x27;</span>,<br>         <span class="hljs-string">&#x27;造血干细胞移植治疗白血病技术已日益成熟，然而，通过该方法同时治愈艾滋病目前还是一道全球尚在攻克的难题。&#x27;</span>,<br>         <span class="hljs-string">&#x27;英国航空事故调查局（AAIB）近日披露，今年2月6日一趟由德国法兰克福飞往墨西哥坎昆的航班上，因飞行员打翻咖啡使操作面板冒烟，导致飞机折返迫降爱尔兰。&#x27;</span>,<br>         <span class="hljs-string">&#x27;当地时间周四（9月12日），印度尼西亚财政部长英卓华（Sri Mulyani Indrawati）明确表示：特朗普的推特是风险之一。&#x27;</span>,<br>         <span class="hljs-string">&#x27;华中科技大学9月12日通过其官方网站发布通报称，9月2日，我校一硕士研究生不幸坠楼身亡。&#x27;</span>,<br>         <span class="hljs-string">&#x27;微博用户@ooooviki 9月12日下午公布发生在自己身上的惊悚遭遇：一个自称网警、名叫郑洋的人利用职务之便，查到她的完备的个人信息，包括但不限于身份证号、家庭地址、电话号码、户籍变动情况等，要求她做他女朋友。&#x27;</span>,<br>         <span class="hljs-string">&#x27;今天，贵阳取消了汽车限购，成为目前全国实行限购政策的9个省市中，首个取消限购的城市。&#x27;</span>,<br>         <span class="hljs-string">&#x27;据悉，与全球同步，中国区此次将于9月13日于iPhone官方渠道和京东正式开启预售，京东成Apple中国区唯一官方授权预售渠道。&#x27;</span>,<br>         <span class="hljs-string">&#x27;根据央行公布的数据，截至2019年6月末，存款类金融机构住户部门短期消费贷款规模为9.11万亿元，2019年上半年该项净增3293.19亿元，上半年增量看起来并不乐观。&#x27;</span>,<br>         <span class="hljs-string">&#x27;9月11日，一段拍摄浙江万里学院学生食堂的视频走红网络，视频显示该学校食堂不仅在用餐区域设置了可以看电影、比赛的大屏幕，还推出了“一人食”餐位。&#x27;</span>,<br>         <span class="hljs-string">&#x27;当日，在北京举行的2019年国际篮联篮球世界杯半决赛中，西班牙队对阵澳大利亚队。&#x27;</span>,<br>         ]<br><br><span class="hljs-built_in">print</span>(<span class="hljs-built_in">len</span>(texts))<br><br><span class="hljs-keyword">for</span> text <span class="hljs-keyword">in</span> texts:<br>    url = <span class="hljs-string">&#x27;http://localhost:16016/model_predict?text=%s&#x27;</span> % text<br>    req = requests.get(url)<br>    <span class="hljs-built_in">print</span>(json.loads(req.content))<br><br>t2 = time.time()<br><br><span class="hljs-built_in">print</span>(<span class="hljs-built_in">round</span>(t2-t1, <span class="hljs-number">4</span>))<br></code></pre></td></tr></table></figure>
+<p>运行该代码，输出的结果如下：（预测文本中的时间）</p>
+<figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs prolog">一共预测<span class="hljs-number">14</span>个句子。<br>[<span class="hljs-string">&#x27;日前&#x27;</span>, <span class="hljs-string">&#x27;10月1日&#x27;</span>, <span class="hljs-string">&#x27;即日&#x27;</span>]<br>[<span class="hljs-string">&#x27;12日&#x27;</span>, <span class="hljs-string">&#x27;9月11日&#x27;</span>]<br>[<span class="hljs-string">&#x27;9月&#x27;</span>]<br>[<span class="hljs-string">&#x27;9月11日&#x27;</span>]<br>[]<br>[<span class="hljs-string">&#x27;近日&#x27;</span>, <span class="hljs-string">&#x27;今年2月6日&#x27;</span>]<br>[<span class="hljs-string">&#x27;当地时间周四（9月12日）&#x27;</span>]<br>[<span class="hljs-string">&#x27;9月12日&#x27;</span>, <span class="hljs-string">&#x27;9月2日&#x27;</span>]<br>[<span class="hljs-string">&#x27;9月12日下午&#x27;</span>]<br>[<span class="hljs-string">&#x27;今天&#x27;</span>, <span class="hljs-string">&#x27;目前&#x27;</span>]<br>[<span class="hljs-string">&#x27;9月13日&#x27;</span>]<br>[<span class="hljs-string">&#x27;2019年6月末&#x27;</span>, <span class="hljs-string">&#x27;2019年上半年&#x27;</span>, <span class="hljs-string">&#x27;上半年&#x27;</span>]<br>[<span class="hljs-string">&#x27;9月11日&#x27;</span>]<br>[<span class="hljs-string">&#x27;当日&#x27;</span>, <span class="hljs-string">&#x27;2019年&#x27;</span>]<br>预测耗时: <span class="hljs-number">15.1085</span>s.<br></code></pre></td></tr></table></figure>
+<p>模型预测的效果还是不错的，但平均每句话的预测时间为1秒多，模型预测时间还是稍微偏长，后续笔者将会研究如何缩短模型预测的时间。</p>
+<h3 id="总结">总结</h3>
+<p>本项目主要是介绍了如何利用tensorflow-serving部署kashgari模型，该项目已经上传至github，地址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/tensorflow-serving_4_kashgari">https://github.com/percent4/tensorflow-serving_4_kashgari</a>
+。</p>
+<p>至于如何缩短模型预测的时间，笔者还需要再继续研究，欢迎大家关注～</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/NLP/" class="print-no-link">#NLP</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（十七）利用tensorflow-serving部署kashgari模型</div>
+      <div>http://example.com/2023/07/08/NLP（十七）利用tensorflow-serving部署kashgari模型/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月8日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/07/08/NLP%EF%BC%88%E5%8D%81%E5%85%AD%EF%BC%89%E8%BD%BB%E6%9D%BE%E4%B8%8A%E6%89%8B%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/" title="NLP（十六）轻松上手文本分类">
+                        <span class="hidden-mobile">NLP（十六）轻松上手文本分类</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
