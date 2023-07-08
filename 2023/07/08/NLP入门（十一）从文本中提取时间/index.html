@@ -1,0 +1,731 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将介绍如何使用pyltp工具从文本中提取时间。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP入门（十一）从文本中提取时间">
+<meta property="og:url" content="http://example.com/2023/07/08/NLP%E5%85%A5%E9%97%A8%EF%BC%88%E5%8D%81%E4%B8%80%EF%BC%89%E4%BB%8E%E6%96%87%E6%9C%AC%E4%B8%AD%E6%8F%90%E5%8F%96%E6%97%B6%E9%97%B4/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="本文将介绍如何使用pyltp工具从文本中提取时间。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-07-08T04:06:12.000Z">
+<meta property="article:modified_time" content="2023-07-08T04:07:42.449Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="NLP">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>NLP入门（十一）从文本中提取时间 - Hexo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP入门（十一）从文本中提取时间"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-08 12:06" pubdate>
+          星期六, 七月 8日 2023, 12:06 中午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          2.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          24 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP入门（十一）从文本中提取时间</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>在我们的日常生活和工作中，从文本中提取时间是一项非常基础却重要的工作，因此，本文将介绍如何从文本中有效地提取时间。</p>
+<p>举个简单的例子，我们需要从下面的文本中提取时间：</p>
+<blockquote>
+<p>6月28日，杭州市统计局权威公布《2019年5月月报》，杭州市医保参保人数达到1006万，相比于2月份的989万，三个月暴涨16万人参保，傲视新一线城市。</p>
+</blockquote>
+<p>我们可以从文本有提取<code>6月28日</code>，<code>2019年5月</code>，
+<code>2月份</code>这三个有效时间。</p>
+<p>通常情况下，较好的解决思路是利用深度学习模型来识别文本中的时间，通过一定数量的标记文本和合适的模型。本文尝试利用现有的NLP工具来解决如何从文本中提取时间。</p>
+<p>本文使用的工具为哈工大的pyltp，可以在Python的第三方模块中找到，实现下载好分词模型<code>cws.model</code>和词性标注<code>pos.model</code>这两个模型文件。</p>
+<p>话不多说，我们直接上Python代码，如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> pyltp <span class="hljs-keyword">import</span> Segmentor<br><span class="hljs-keyword">from</span> pyltp <span class="hljs-keyword">import</span> Postagger<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">LTP</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self</span>):<br>        cws_model_path = os.path.join(os.path.dirname(__file__), <span class="hljs-string">&#x27;cws.model&#x27;</span>)  <span class="hljs-comment"># 分词模型路径，模型名称为`cws.model`</span><br>        pos_model_path = os.path.join(os.path.dirname(__file__), <span class="hljs-string">&#x27;pos.model&#x27;</span>)  <span class="hljs-comment"># 词性标注模型路径，模型名称为`pos.model`</span><br>        self.segmentor = Segmentor()  <span class="hljs-comment"># 初始化实例</span><br>        self.segmentor.load(cws_model_path) <span class="hljs-comment"># 加载模型</span><br>        self.postagger = Postagger()  <span class="hljs-comment"># 初始化实例</span><br>        self.postagger.load(pos_model_path)  <span class="hljs-comment"># 加载模型</span><br><br>    <span class="hljs-comment"># 分词</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">segment</span>(<span class="hljs-params">self, text</span>):<br>        words = <span class="hljs-built_in">list</span>(self.segmentor.segment(text))<br>        <span class="hljs-keyword">return</span> words<br><br>    <span class="hljs-comment"># 词性标注</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">postag</span>(<span class="hljs-params">self, words</span>):<br>        postags = <span class="hljs-built_in">list</span>(self.postagger.postag(words))<br>        <span class="hljs-keyword">return</span> postags<br><br>    <span class="hljs-comment"># 获取文本中的时间</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">get_time</span>(<span class="hljs-params">self, text</span>):<br><br>        <span class="hljs-comment"># 开始分词及词性标注</span><br>        words = self.segment(text)<br>        postags = self.postag(words)<br><br>        time_lst = []<br><br>        i = <span class="hljs-number">0</span><br>        <span class="hljs-keyword">for</span> tag, word <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(postags, words):<br>            <span class="hljs-keyword">if</span> tag == <span class="hljs-string">&#x27;nt&#x27;</span>:<br>                j = i<br>                <span class="hljs-keyword">while</span> postags[j] == <span class="hljs-string">&#x27;nt&#x27;</span> <span class="hljs-keyword">or</span> words[j] <span class="hljs-keyword">in</span> [<span class="hljs-string">&#x27;至&#x27;</span>, <span class="hljs-string">&#x27;到&#x27;</span>]:<br>                    j += <span class="hljs-number">1</span><br>                time_lst.append(<span class="hljs-string">&#x27;&#x27;</span>.join(words[i:j]))<br>            i += <span class="hljs-number">1</span><br><br>        <span class="hljs-comment"># 去重子字符串的情形</span><br>        remove_lst = []<br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> time_lst:<br>            <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> time_lst:<br>                <span class="hljs-keyword">if</span> i != j <span class="hljs-keyword">and</span> i <span class="hljs-keyword">in</span> j:<br>                    remove_lst.append(i)<br><br>        text_time_lst = []<br>        <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> time_lst:<br>            <span class="hljs-keyword">if</span> item <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> remove_lst:<br>                text_time_lst.append(item)<br><br>        <span class="hljs-comment"># print(text_time_lst)</span><br>        <span class="hljs-keyword">return</span> text_time_lst<br><br>    <span class="hljs-comment"># 释放模型</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">free_ltp</span>(<span class="hljs-params">self</span>):<br>        self.segmentor.release()<br>        self.postagger.release()<br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    ltp = LTP()<br><br>    <span class="hljs-comment"># 输入文本</span><br>    sent = <span class="hljs-string">&#x27;6月28日，杭州市统计局权威公布《2019年5月月报》，杭州市医保参保人数达到1006万，相比于2月份的989万，三个月暴涨16万人参保，傲视新一线城市。&#x27;</span><br>    time_lst = ltp.get_time(sent)<br>    ltp.free_ltp()<br><br>    <span class="hljs-comment"># 输出文本中提取的时间</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;提取时间： %s&#x27;</span> % <span class="hljs-built_in">str</span>(time_lst))<br></code></pre></td></tr></table></figure>
+<p>接着，我们测试几个例子。</p>
+<p>输入文本为：</p>
+<blockquote>
+<p>今天，央行举行了2019年6月份金融统计数据解读吹风会，发布了2019年6月份金融统计数据并就当前的一些热点问题进行了解读和回应。</p>
+</blockquote>
+<p>文本中提取的时间为：</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs 1c">提取时间： [&#x27;今天&#x27;, &#x27;<span class="hljs-number">2019</span>年6月份&#x27;, &#x27;<span class="hljs-number">2019</span>年6月份&#x27;, &#x27;当前&#x27;]<br></code></pre></td></tr></table></figure>
+<p>输入文本为：</p>
+<blockquote>
+<p>2006年，上海的国内生产总值达到10296.97亿元，是中国内地第一个GDP突破万亿元的城市。2008年，北京GDP破万亿。两年后，广州GDP超过万亿。2011年，深圳、天津、苏州、重庆4城的GDP也进入了万亿行列。武汉、成都在2014年跻身“万亿俱乐部”，杭州、南京和青岛、无锡和长沙的GDP依次在2015年、2016年和2017年过万亿。宁波和郑州则成为2018年万亿俱乐部的新成员。</p>
+</blockquote>
+<p>文本中提取的时间为：</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs 1c">提取时间： [&#x27;<span class="hljs-number">2006</span>年&#x27;, &#x27;<span class="hljs-number">2008</span>年&#x27;, &#x27;<span class="hljs-number">2011</span>年&#x27;, &#x27;<span class="hljs-number">2014</span>年&#x27;, &#x27;<span class="hljs-number">2015</span>年&#x27;, &#x27;<span class="hljs-number">2016</span>年&#x27;, &#x27;<span class="hljs-number">2018</span>年&#x27;]<br></code></pre></td></tr></table></figure>
+<p>输入文本为：</p>
+<blockquote>
+<p>此后，6月28日、7月9日和7月11日下午，武威市政协、市人大、市政府分别召开坚决全面彻底肃清火荣贵流毒和影响专题民主生活会。</p>
+</blockquote>
+<p>文本中提取的时间为：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css">提取时间： <span class="hljs-selector-attr">[<span class="hljs-string">&#x27;此后&#x27;</span>, <span class="hljs-string">&#x27;6月28日&#x27;</span>, <span class="hljs-string">&#x27;7月9日&#x27;</span>, <span class="hljs-string">&#x27;7月11日下午&#x27;</span>]</span><br></code></pre></td></tr></table></figure>
+<p>输入文本为：</p>
+<blockquote>
+<p>姜保红出生于1974年4月，她于2016年11月至2018年9月任武威市副市长，履新时，武威市的一把手正是火荣贵。</p>
+</blockquote>
+<p>文本中提取的时间为：</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs 1c">提取时间： [&#x27;<span class="hljs-number">1974</span>年4月&#x27;, &#x27;<span class="hljs-number">2016</span>年11月至<span class="hljs-number">2018</span>年9月&#x27;]<br></code></pre></td></tr></table></figure>
+<p>本次分享到此结束，欢迎大家批评指正。</p>
+<blockquote>
+<p>注意：不妨了解下笔者的微信公众号：
+NLP奇幻之旅（微信号为：easy_web_scrape）， 欢迎大家关注~</p>
+</blockquote>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/NLP/" class="print-no-link">#NLP</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP入门（十一）从文本中提取时间</div>
+      <div>http://example.com/2023/07/08/NLP入门（十一）从文本中提取时间/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月8日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/07/08/BERT%E7%9A%84%E5%87%A0%E4%B8%AA%E5%8F%AF%E8%83%BD%E7%9A%84%E5%BA%94%E7%94%A8/" title="BERT的几个可能的应用">
+                        <span class="hidden-mobile">BERT的几个可能的应用</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
