@@ -27,7 +27,7 @@
 <meta property="og:image" content="http://example.com/img/nlp10_2.png">
 <meta property="og:image" content="http://example.com/img/nlp10_3.png">
 <meta property="article:published_time" content="2023-07-08T02:55:03.000Z">
-<meta property="article:modified_time" content="2023-07-08T02:59:01.391Z">
+<meta property="article:modified_time" content="2023-07-08T03:01:37.925Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="情感分析">
@@ -282,24 +282,14 @@
                 
                 <h4 id="情感分析简介">情感分析简介</h4>
 <p>文本情感分析（Sentiment
-Analysis）是自然语言处理（NLP）方法中常见的应用，也是一个有趣的基本任务，尤其是以提炼文本情绪内容为目的的分类。它是对带有情感色彩的主观性文本进行分析、处理、归纳和推理的过程。
-本文将介绍情感分析中的情感极性（倾向）分析。所谓情感极性分析，指的是对文本进行褒义、贬义、中性的判断。在大多应用场景下，只分为两类。例如对于“喜爱”和“厌恶”这两个词，就属于不同的情感倾向。
-本文将详细介绍如何使用深度学习模型中的LSTM模型来实现文本的情感分析。</p>
+Analysis）是自然语言处理（NLP）方法中常见的应用，也是一个有趣的基本任务，尤其是以提炼文本情绪内容为目的的分类。它是对带有情感色彩的主观性文本进行分析、处理、归纳和推理的过程。</p>
+<p>本文将介绍情感分析中的情感极性（倾向）分析。所谓情感极性分析，指的是对文本进行褒义、贬义、中性的判断。在大多应用场景下，只分为两类。例如对于“喜爱”和“厌恶”这两个词，就属于不同的情感倾向。</p>
+<p>本文将详细介绍如何使用深度学习模型中的LSTM模型来实现文本的情感分析。</p>
 <h3 id="文本介绍及语料分析">文本介绍及语料分析</h3>
 <p>我们以某电商网站中某个商品的评论作为语料（corpus.csv），该数据集的下载网址为：<a
 target="_blank" rel="noopener" href="https://github.com/renjunxiang/Text-Classification/blob/master/TextClassification/data/data_single.csv">https://github.com/renjunxiang/Text-Classification/blob/master/TextClassification/data/data_single.csv</a>
 ，该数据集一共有4310条评论数据，文本的情感分为两类：“正面”和“反面”，该数据集的前几行如下：</p>
-<blockquote>
-<p>evaluation,label 用了一段时间，感觉还不错，可以,正面
-电视非常好，已经是家里的第二台了。第一天下单，第二天就到本地了，可是物流的人说车坏了，一直催，客服也帮着催，到第三天下午5点才送过来。父母年纪大了，买个大电视画面清晰，趁着耳朵还好使，享受几年。,正面
-电视比想象中的大好多，画面也很清晰，系统很智能，更多功能还在摸索中,正面
-不错,正面
-用了这么多天了，感觉还不错。夏普的牌子还是比较可靠。希望以后比较耐用，现在是考量质量的时候。,正面
-物流速度很快，非常棒，今天就看了电视，非常清晰，非常流畅，一次非常完美的购物体验,正面
-非常好，客服还特意打电话做回访,正面
-物流小哥不错，辛苦了，东西还没用,正面
-送货速度快，质量有保障，活动价格挺好的。希望用的久，不出问题。,正面</p>
-</blockquote>
+<figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs autohotkey"><span class="hljs-built_in">evaluation,</span>label<br>用了一段时间，感觉还不错，可以,正面<br>电视非常好，已经是家里的第二台了。第一天下单，第二天就到本地了，可是物流的人说车坏了，一直催，客服也帮着催，到第三天下午<span class="hljs-number">5</span>点才送过来。父母年纪大了，买个大电视画面清晰，趁着耳朵还好使，享受几年。,正面<br>电视比想象中的大好多，画面也很清晰，系统很智能，更多功能还在摸索中,正面<br>不错,正面<br>用了这么多天了，感觉还不错。夏普的牌子还是比较可靠。希望以后比较耐用，现在是考量质量的时候。,正面<br>物流速度很快，非常棒，今天就看了电视，非常清晰，非常流畅，一次非常完美的购物体验,正面<br>非常好，客服还特意打电话做回访,正面<br>物流小哥不错，辛苦了，东西还没用,正面<br>送货速度快，质量有保障，活动价格挺好的。希望用的久，不出问题。,正面<br></code></pre></td></tr></table></figure>
 <p>接着我们需要对语料做一个简单的分析：</p>
 <ul>
 <li><p>数据集中的情感分布；</p></li>
@@ -333,8 +323,8 @@ target="_blank" rel="noopener" href="https://github.com/renjunxiang/Text-Classif
 <p>让我们再尝试着测试一些其他的评论：</p>
 <figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs makefile"><span class="hljs-section">输入语句: 物超所值，真心不错</span><br><span class="hljs-section">情感预测结果: 正面</span><br><span class="hljs-section">输入语句: 很大很好，方便安装！</span><br><span class="hljs-section">情感预测结果: 正面</span><br><span class="hljs-section">输入语句: 卡，慢，死机，闪退。</span><br><span class="hljs-section">情感预测结果: 负面</span><br><span class="hljs-section">输入语句: 这种货色就这样吧，别期待怎样。</span><br><span class="hljs-section">情感预测结果: 负面</span><br><span class="hljs-section">输入语句: 啥服务态度码，出了事情一个推一个，送货安装还收我50</span><br><span class="hljs-section">情感预测结果: 负面</span><br><span class="hljs-section">输入语句: 京东服务很好！但我买的这款电视两天后就出现这样的问题，很后悔买了这样的电视</span><br><span class="hljs-section">情感预测结果: 负面</span><br><span class="hljs-section">输入语句: 产品质量不错，就是这位客服的态度十分恶劣，对相关服务不予解释说明，缺乏耐心，</span><br><span class="hljs-section">情感预测结果: 负面</span><br><span class="hljs-section">输入语句: 很满意，电视非常好。护眼模式，很好，也很清晰。</span><br><span class="hljs-section">情感预测结果: 负面</span><br></code></pre></td></tr></table></figure>
 <h3 id="总结">总结</h3>
-<p>当然，该模型并不是对一切该商品的评论都会有好的效果，还是应该针对特定的语料去训练，去预测。
-本文主要介绍了LSTM模型在文本情感分析方面的应用，该项目已上传Github，地址为：
+<p>当然，该模型并不是对一切该商品的评论都会有好的效果，还是应该针对特定的语料去训练，去预测。</p>
+<p>本文主要介绍了LSTM模型在文本情感分析方面的应用，该项目已上传Github，地址为：
 <a
 target="_blank" rel="noopener" href="https://github.com/percent4/Sentiment_Analysis">https://github.com/percent4/Sentiment_Analysis</a>
 。</p>
