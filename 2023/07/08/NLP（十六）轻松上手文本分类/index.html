@@ -317,14 +317,17 @@
                 
                 <h3 id="背景介绍">背景介绍</h3>
 <p>文本分类是NLP中的常见的重要任务之一，它的主要功能就是将输入的文本以及文本的类别训练出一个模型，使之具有一定的泛化能力，能够对新文本进行较好地预测。它的应用很广泛，在很多领域发挥着重要作用，例如垃圾邮件过滤、舆情分析以及新闻分类等。</p>
-<p>现阶段的文本分类模型频出，种类繁多，花样百变，既有机器学习中的朴素贝叶斯模型、SVM等，也有深度学习中的各种模型，比如经典的CNN, RNN，以及它们的变形，如CNN-LSTM，还有各种高大上的Attention模型。</p>
+<p>现阶段的文本分类模型频出，种类繁多，花样百变，既有机器学习中的朴素贝叶斯模型、SVM等，也有深度学习中的各种模型，比如经典的CNN,
+RNN，以及它们的变形，如CNN-LSTM，还有各种高大上的Attention模型。</p>
 <p>无疑，文本分类是一个相对比较成熟的任务，我们尽可以选择自己喜欢的模型来完成该任务。本文以kashgari-tf为例，它能够支持各种文本分类模型，比如BiLSTM，CNN_LSTM，AVCNN等，且对预训练模型，比如BERT的支持较好，它能让我们轻松地完成文本分类任务。</p>
-<p>下面，让我们一起走进文本分类的世界，分分钟搞定text classification！</p>
+<p>下面，让我们一起走进文本分类的世界，分分钟搞定text
+classification！</p>
 <h3 id="项目">项目</h3>
-<p>首先，我们需要找一份数据作为例子。我们选择THUCNews，THUCNews是根据新浪新闻RSS订阅频道2005~2011年间的历史数据筛选过滤生成，包含74万篇新闻文档（2.19 GB），均为UTF-8纯文本格式。我们在原始新浪新闻分类体系的基础上，从中选择10个候选分类类别：体育、娱乐、家居、房产、教育、时尚、时政、游戏、科技、财经。</p>
+<p>首先，我们需要找一份数据作为例子。我们选择THUCNews，THUCNews是根据新浪新闻RSS订阅频道2005~2011年间的历史数据筛选过滤生成，包含74万篇新闻文档（2.19
+GB），均为UTF-8纯文本格式。我们在原始新浪新闻分类体系的基础上，从中选择10个候选分类类别：体育、娱乐、家居、房产、教育、时尚、时政、游戏、科技、财经。</p>
 <p>数据总量一共为6.5万条，其中训练集数据5万条，每个类别5000条，验证集数据0.5万条，每个类别500条，测试集数据1万条，每个类别1000条。笔者已将数据放在Github上，读者可以在最后的总结中找到。</p>
 <p>项目结构，如下图：</p>
-<p><img src="/img/nlp16_1.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="/img/nlp16_1.png" srcset="/img/loading.gif" lazyload /></p>
 <p>接着，我们尝试着利用kashgari-tf来训练一个文本分类模型，其中模型我们采用CNN-LSTM，完整的Python代码（text_classification_model_train.py）如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># time: 2019-08-13 11:16</span><br><span class="hljs-comment"># place: Pudong Shanghai</span><br><br><span class="hljs-keyword">from</span> kashgari.tasks.classification <span class="hljs-keyword">import</span> CNN_LSTM_Model<br><br><span class="hljs-comment"># 获取数据集</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">load_data</span>(<span class="hljs-params">data_type</span>):<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;./data/cnews.%s.txt&#x27;</span> % data_type, <span class="hljs-string">&#x27;r&#x27;</span>, encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>        content = [_.strip() <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> f.readlines() <span class="hljs-keyword">if</span> _.strip()]<br><br>    x, y = [], []<br>    <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> content:<br>        label, text = line.split(maxsplit=<span class="hljs-number">1</span>)<br>        y.append(label)<br>        x.append([_ <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> text])<br><br>    <span class="hljs-keyword">return</span> x, y<br><br><span class="hljs-comment"># 获取数据</span><br>train_x, train_y = load_data(<span class="hljs-string">&#x27;train&#x27;</span>)<br>valid_x, valid_y = load_data(<span class="hljs-string">&#x27;val&#x27;</span>)<br>test_x, test_y = load_data(<span class="hljs-string">&#x27;test&#x27;</span>)<br><br><span class="hljs-comment"># 训练模型</span><br>model = CNN_LSTM_Model()<br>model.fit(train_x, train_y, valid_x, valid_y, batch_size=<span class="hljs-number">16</span>, epochs=<span class="hljs-number">5</span>)<br><br><span class="hljs-comment"># 评估模型</span><br>model.evaluate(test_x, test_y)<br><br><span class="hljs-comment"># 保存模型</span><br>model.save(<span class="hljs-string">&#x27;text_classification_model&#x27;</span>)<br></code></pre></td></tr></table></figure>
 <p>输出的模型结果如下：</p>
@@ -332,19 +335,19 @@
 <p>设定模型训练次数为5个epoch，batch_size为16。模型训练完后，在训练集、验证集上的结果如下：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>数据集</th>
 <th>accuracy</th>
 <th>loss</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>训练集</td>
 <td>0.9661</td>
 <td>0.1184</td>
 </tr>
-<tr>
+<tr class="even">
 <td>验证集</td>
 <td>0.9204</td>
 <td>0.2567</td>
@@ -359,34 +362,42 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># time: 2019-08-14 00:21</span><br><span class="hljs-comment"># place: Pudong Shanghai</span><br><br><span class="hljs-keyword">import</span> kashgari<br><br><span class="hljs-comment"># 加载模型</span><br>loaded_model = kashgari.utils.load_model(<span class="hljs-string">&#x27;text_classification_model&#x27;</span>)<br><br>text = <span class="hljs-string">&#x27;华夏幸福成立于 1998 年，前身为廊坊市华夏房地产开发有限公司，初始注册资本 200 万元，其中王文学出资 160 万元，廊坊市融通物资贸易有限公司出资 40 万元，后经多次股权转让和增资，公司于 2007 年整体改制为股份制公司，2011 年完成借壳上市。&#x27;</span><br><br>x = [[_ <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> text]]<br><br>label = loaded_model.predict(x)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;预测分类:%s&#x27;</span> % label)<br></code></pre></td></tr></table></figure>
 <p>以下是测试结果：</p>
 <blockquote>
-<p>原文1: 华夏幸福成立于 1998 年，前身为廊坊市华夏房地产开发有限公司，初始注册资本 200 万元，其中王文学出资 160 万元，廊坊市融通物资贸易有限公司出资 40 万元，后经多次股权转让和增资，公司于 2007 年整体改制为股份制公司，2011 年完成借壳上市。<br>
-分类结果：预测分类:[‘财经’]</p>
+<p>原文1: 华夏幸福成立于 1998
+年，前身为廊坊市华夏房地产开发有限公司，初始注册资本 200
+万元，其中王文学出资 160 万元，廊坊市融通物资贸易有限公司出资 40
+万元，后经多次股权转让和增资，公司于 2007 年整体改制为股份制公司，2011
+年完成借壳上市。 分类结果：预测分类:['财经']</p>
 </blockquote>
 <blockquote>
-<p>原文2: 现今常见的短袖衬衫大致上可以分为：夏威夷衬衫、古巴衬衫、保龄球衫，三者之间虽有些微分别，但其实有些时候，一件衬衫也可能包含了多种款式的特色。而‘古巴（领）衬衫’最显而易见的特点在于‘领口’，通常会设计为V领，且呈现微微的外翻，也因此缺少衬衫领口常见的‘第一颗钮扣’，衣服到领子的剪裁为一体成形，整体较宽松舒适。<br>
-分类结果：预测分类:[‘时尚’]</p>
+<p>原文2:
+现今常见的短袖衬衫大致上可以分为：夏威夷衬衫、古巴衬衫、保龄球衫，三者之间虽有些微分别，但其实有些时候，一件衬衫也可能包含了多种款式的特色。而‘古巴（领）衬衫’最显而易见的特点在于‘领口’，通常会设计为V领，且呈现微微的外翻，也因此缺少衬衫领口常见的‘第一颗钮扣’，衣服到领子的剪裁为一体成形，整体较宽松舒适。
+分类结果：预测分类:['时尚']</p>
 </blockquote>
 <blockquote>
-<p>原文3:周琦2014年加盟新疆广汇篮球俱乐部，当年就代表俱乐部青年队接连拿下全国篮球青年联赛冠军和全国俱乐部青年联赛冠军。升入一队后，周琦2016年随队出战第25届亚冠杯，获得冠军。2016-2017赛季，周琦为新疆广汇队夺得队史首座总冠军奖杯立下汗马功劳，他在总决赛中带伤出战，更是传为佳话。<br>
-分类结果：预测分类:[‘体育’]</p>
+<p>原文3:周琦2014年加盟新疆广汇篮球俱乐部，当年就代表俱乐部青年队接连拿下全国篮球青年联赛冠军和全国俱乐部青年联赛冠军。升入一队后，周琦2016年随队出战第25届亚冠杯，获得冠军。2016-2017赛季，周琦为新疆广汇队夺得队史首座总冠军奖杯立下汗马功劳，他在总决赛中带伤出战，更是传为佳话。
+分类结果：预测分类:['体育']</p>
 </blockquote>
 <blockquote>
-<p>原文4: 周杰伦[微博]监制赛车电影《叱咤风云》13日释出花絮导演篇，不仅真实赛车竞速画面大量曝光，几十辆百万赛车在国际专业赛道、山路飙速，场面浩大震撼，更揭开不少<br>
-现场拍摄的幕后画面。监制周杰伦在现场与导演讨论剧本、范逸臣[微博]与高英轩大打出手、甚至有眼尖网友发现在花絮中闪过“男神”李玉玺[微博]的画面。<br>
-分类结果：预测分类:[‘娱乐’]</p>
+<p>原文4:
+周杰伦[微博]监制赛车电影《叱咤风云》13日释出花絮导演篇，不仅真实赛车竞速画面大量曝光，几十辆百万赛车在国际专业赛道、山路飙速，场面浩大震撼，更揭开不少
+现场拍摄的幕后画面。监制周杰伦在现场与导演讨论剧本、范逸臣[微博]与高英轩大打出手、甚至有眼尖网友发现在花絮中闪过“男神”李玉玺[微博]的画面。
+分类结果：预测分类:['娱乐']</p>
 </blockquote>
 <blockquote>
-<p>原文5: 北京时间8月13日上午消息，据《韩国先驱报》网站报道，近日美国知识产权所有者协会（ Intellectual Property Owners Association）发布的一份报告显示，在获得的<br>
-美国专利数量方面，IBM、微软和通用电气等美国企业名列前茅，排在后面的韩国科技巨头三星、LG与之竞争激烈。<br>
-分类结果：预测分类:[‘科技’]</p>
+<p>原文5:
+北京时间8月13日上午消息，据《韩国先驱报》网站报道，近日美国知识产权所有者协会（
+Intellectual Property Owners Association）发布的一份报告显示，在获得的
+美国专利数量方面，IBM、微软和通用电气等美国企业名列前茅，排在后面的韩国科技巨头三星、LG与之竞争激烈。
+分类结果：预测分类:['科技']</p>
 </blockquote>
 <h3 id="总结">总结</h3>
 <p>虽然我们上述测试的文本分类效果还不错，但也存在着一些分类错误的情况。</p>
 <p>本文讲述了如何利用kashgari-tf模块来快速地搭建文本分类任务，其实，也没那么难！</p>
-<p>本文代码和数据及已上传至Github, 网址为：<br>
-<a target="_blank" rel="noopener" href="https://github.com/percent4/cnews_text_classification">https://github.com/percent4/cnews_text_classification</a></p>
+<p>本文代码和数据及已上传至Github, 网址为： <a
+target="_blank" rel="noopener" href="https://github.com/percent4/cnews_text_classification">https://github.com/percent4/cnews_text_classification</a></p>
 <blockquote>
-<p>注意：不妨了解下笔者的微信公众号：NLP奇幻之旅（微信号为：easy_web_scrape）， 欢迎大家关注~</p>
+<p>注意：不妨了解下笔者的微信公众号：NLP奇幻之旅（微信号为：easy_web_scrape），
+欢迎大家关注~</p>
 </blockquote>
 
                 

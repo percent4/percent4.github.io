@@ -1,0 +1,856 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将介绍如何使用序列标注算法评估模块seqeval。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（二十三）序列标注算法评估模块seqeval的使用">
+<meta property="og:url" content="http://example.com/2023/07/09/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E7%AE%97%E6%B3%95%E8%AF%84%E4%BC%B0%E6%A8%A1%E5%9D%97seqeval%E7%9A%84%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="本文将介绍如何使用序列标注算法评估模块seqeval。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-07-09T03:05:02.000Z">
+<meta property="article:modified_time" content="2023-07-09T03:08:23.853Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="NLP工具">
+<meta property="article:tag" content="序列标注">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>NLP（二十三）序列标注算法评估模块seqeval的使用 - Hexo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（二十三）序列标注算法评估模块seqeval的使用"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-09 11:05" pubdate>
+          星期日, 七月 9日 2023, 11:05 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          7.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          62 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（二十三）序列标注算法评估模块seqeval的使用</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>在NLP中，序列标注算法是常见的深度学习模型，但是，对于序列标注算法的评估，我们真的熟悉吗？</p>
+<p>在本文中，笔者将会序列标注算法的模型效果评估方法和<code>seqeval</code>的使用。</p>
+<h3 id="序列标注算法的模型效果评估">序列标注算法的模型效果评估</h3>
+<p>在序列标注算法中，一般我们会形成如下的序列列表，如下：</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scheme">[<span class="hljs-symbol">&#x27;O</span>&#x27;, <span class="hljs-symbol">&#x27;O</span>&#x27;, <span class="hljs-symbol">&#x27;B-MISC</span>&#x27;, <span class="hljs-symbol">&#x27;I-MISC</span>&#x27;, <span class="hljs-symbol">&#x27;B-MISC</span>&#x27;, <span class="hljs-symbol">&#x27;I-MISC</span>&#x27;, <span class="hljs-symbol">&#x27;O</span>&#x27;, <span class="hljs-symbol">&#x27;B-PER</span>&#x27;, <span class="hljs-symbol">&#x27;I-PER</span>&#x27;]<br></code></pre></td></tr></table></figure>
+<p>一般序列标注算法的格式有<code>BIO</code>，<code>IOBES</code>，<code>BMES</code>等。其中，<code>实体</code>指的是从B开头标签开始的，同一类型（比如：PER/LOC/ORG）的，非O的连续标签序列。</p>
+<p>常见的序列标注算法的模型效果评估指标有准确率（accuracy）、查准率(percision)、召回率(recall)、F1值等，计算的公式如下：</p>
+<ul>
+<li><p>准确率: accuracy = 预测对的元素个数/总的元素个数</p></li>
+<li><p>查准率：precision = 预测正确的实体个数 /
+预测的实体总个数</p></li>
+<li><p>召回率：recall = 预测正确的实体个数 / 标注的实体总个数</p></li>
+<li><p>F1值：F1 = 2 <em>准确率 </em> 召回率 / (准确率 + 召回率)</p>
+<p>举个例子，我们有如下的真实序列<code>y_true</code>和预测序列<code>y_pred</code>，如下：</p></li>
+</ul>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">y_true</span> = [<span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;B-MISC&#x27;</span>, <span class="hljs-string">&#x27;I-MISC&#x27;</span>, <span class="hljs-string">&#x27;I-MISC&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;B-PER&#x27;</span>, <span class="hljs-string">&#x27;I-PER&#x27;</span>]<br><span class="hljs-attr">y_pred</span> = [<span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;B-MISC&#x27;</span>, <span class="hljs-string">&#x27;I-MISC&#x27;</span>, <span class="hljs-string">&#x27;B-MISC&#x27;</span>, <span class="hljs-string">&#x27;I-MISC&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;B-PER&#x27;</span>, <span class="hljs-string">&#x27;I-PER&#x27;</span>]<br></code></pre></td></tr></table></figure>
+<p>列表中一个有9个元素，其中预测对的元素个数为6个，那么准确率为2/3。标注的实体总个数为2个，预测的实体总个数为3个，预测正确的实体个数为1个，那么precision=1/3,
+recall=1/2, F1=0.4。</p>
+<h3 id="seqeval的使用">seqeval的使用</h3>
+<p>一般我们的序列标注算法，是用<code>conlleval.pl</code>脚本实现，但这是用perl语言实现的。在Python中，也有相应的序列标注算法的模型效果评估的第三方模块，那就是<code>seqeval</code>，其官网网址为：<a
+target="_blank" rel="noopener" href="https://pypi.org/project/seqeval/0.0.3/">https://pypi.org/project/seqeval/0.0.3/</a>
+。</p>
+<p><code>seqeval</code>支持<code>BIO</code>，<code>IOBES</code>标注模式，可用于命名实体识别，词性标注，语义角色标注等任务的评估。</p>
+<p>官网文档中给出了两个例子，笔者修改如下：</p>
+<p>例子1：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> seqeval.metrics <span class="hljs-keyword">import</span> f1_score<br><span class="hljs-keyword">from</span> seqeval.metrics <span class="hljs-keyword">import</span> precision_score<br><span class="hljs-keyword">from</span> seqeval.metrics <span class="hljs-keyword">import</span> accuracy_score<br><span class="hljs-keyword">from</span> seqeval.metrics <span class="hljs-keyword">import</span> recall_score<br><span class="hljs-keyword">from</span> seqeval.metrics <span class="hljs-keyword">import</span> classification_report<br><br>y_true = [<span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;B-MISC&#x27;</span>, <span class="hljs-string">&#x27;I-MISC&#x27;</span>, <span class="hljs-string">&#x27;I-MISC&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;B-PER&#x27;</span>, <span class="hljs-string">&#x27;I-PER&#x27;</span>]<br>y_pred = [<span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;B-MISC&#x27;</span>, <span class="hljs-string">&#x27;I-MISC&#x27;</span>, <span class="hljs-string">&#x27;B-MISC&#x27;</span>, <span class="hljs-string">&#x27;I-MISC&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;B-PER&#x27;</span>, <span class="hljs-string">&#x27;I-PER&#x27;</span>]<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;accuary: &quot;</span>, accuracy_score(y_true, y_pred))<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;p: &quot;</span>, precision_score(y_true, y_pred))<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;r: &quot;</span>, recall_score(y_true, y_pred))<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;f1: &quot;</span>, f1_score(y_true, y_pred))<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;classification report: &quot;</span>)<br><span class="hljs-built_in">print</span>(classification_report(y_true, y_pred))<br></code></pre></td></tr></table></figure>
+<p>输出结果如下：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">accuary</span>:  <span class="hljs-number">0</span>.<span class="hljs-number">6666666666666666</span><br><span class="hljs-attribute">p</span>:  <span class="hljs-number">0</span>.<span class="hljs-number">3333333333333333</span><br><span class="hljs-attribute">r</span>:  <span class="hljs-number">0</span>.<span class="hljs-number">5</span><br><span class="hljs-attribute">f1</span>:  <span class="hljs-number">0</span>.<span class="hljs-number">4</span><br><span class="hljs-attribute">classification</span> report: <br>           <span class="hljs-attribute">precision</span>    recall  f1-score   support<br><br>     <span class="hljs-attribute">MISC</span>       <span class="hljs-number">0</span>.<span class="hljs-number">00</span>      <span class="hljs-number">0</span>.<span class="hljs-number">00</span>      <span class="hljs-number">0</span>.<span class="hljs-number">00</span>         <span class="hljs-number">1</span><br>      <span class="hljs-attribute">PER</span>       <span class="hljs-number">1</span>.<span class="hljs-number">00</span>      <span class="hljs-number">1</span>.<span class="hljs-number">00</span>      <span class="hljs-number">1</span>.<span class="hljs-number">00</span>         <span class="hljs-number">1</span><br><br><span class="hljs-attribute">micro</span> avg       <span class="hljs-number">0</span>.<span class="hljs-number">33</span>      <span class="hljs-number">0</span>.<span class="hljs-number">50</span>      <span class="hljs-number">0</span>.<span class="hljs-number">40</span>         <span class="hljs-number">2</span><br><span class="hljs-attribute">macro</span> avg       <span class="hljs-number">0</span>.<span class="hljs-number">50</span>      <span class="hljs-number">0</span>.<span class="hljs-number">50</span>      <span class="hljs-number">0</span>.<span class="hljs-number">50</span>         <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+<p>例子2：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> seqeval.metrics <span class="hljs-keyword">import</span> f1_score<br><span class="hljs-keyword">from</span> seqeval.metrics <span class="hljs-keyword">import</span> precision_score<br><span class="hljs-keyword">from</span> seqeval.metrics <span class="hljs-keyword">import</span> accuracy_score<br><span class="hljs-keyword">from</span> seqeval.metrics <span class="hljs-keyword">import</span> recall_score<br><span class="hljs-keyword">from</span> seqeval.metrics <span class="hljs-keyword">import</span> classification_report<br><br>y_true = [[<span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;B-MISC&#x27;</span>, <span class="hljs-string">&#x27;I-MISC&#x27;</span>, <span class="hljs-string">&#x27;I-MISC&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>], [<span class="hljs-string">&#x27;B-PER&#x27;</span>, <span class="hljs-string">&#x27;I-PER&#x27;</span>]]<br>y_pred =  [[<span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;B-MISC&#x27;</span>, <span class="hljs-string">&#x27;I-MISC&#x27;</span>, <span class="hljs-string">&#x27;B-MISC&#x27;</span>, <span class="hljs-string">&#x27;I-MISC&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>], [<span class="hljs-string">&#x27;B-PER&#x27;</span>, <span class="hljs-string">&#x27;I-PER&#x27;</span>]]<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;accuary: &quot;</span>, accuracy_score(y_true, y_pred))<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;p: &quot;</span>, precision_score(y_true, y_pred))<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;r: &quot;</span>, recall_score(y_true, y_pred))<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;f1: &quot;</span>, f1_score(y_true, y_pred))<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;classification report: &quot;</span>)<br><span class="hljs-built_in">print</span>(classification_report(y_true, y_pred))<br></code></pre></td></tr></table></figure>
+<p>输出结果同上。</p>
+<h3 id="在keras中使用seqeval">在Keras中使用seqeval</h3>
+<p>笔者一年多年写过文章：<a
+target="_blank" rel="noopener" href="https://percent4.github.io/2023/07/08/NLP%E5%85%A5%E9%97%A8%EF%BC%88%E4%BA%94%EF%BC%89%E7%94%A8%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%AE%9E%E7%8E%B0%E5%91%BD%E5%90%8D%E5%AE%9E%E4%BD%93%E8%AF%86%E5%88%AB%EF%BC%88NER%EF%BC%89/">用深度学习实现命名实体识别（NER）</a>，
+我们对模型训练部分的代码加以改造，使之在训练过程中能输出F1值。</p>
+<p>在Github上下载项目<code>DL_4_NER</code>，网址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/DL_4_NER">https://github.com/percent4/DL_4_NER</a>
+。修改utils.py中的文件夹路径，以及模型训练部分的代码（DL_4_NER/Bi_LSTM_Model_training.py）如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> pickle<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br><span class="hljs-keyword">from</span> utils <span class="hljs-keyword">import</span> BASE_DIR, CONSTANTS, load_data<br><span class="hljs-keyword">from</span> data_processing <span class="hljs-keyword">import</span> data_processing<br><span class="hljs-keyword">from</span> keras.utils <span class="hljs-keyword">import</span> np_utils, plot_model<br><span class="hljs-keyword">from</span> keras.models <span class="hljs-keyword">import</span> Sequential<br><span class="hljs-keyword">from</span> keras.preprocessing.sequence <span class="hljs-keyword">import</span> pad_sequences<br><span class="hljs-keyword">from</span> keras.layers <span class="hljs-keyword">import</span> Bidirectional, LSTM, Dense, Embedding, TimeDistributed<br><br><br><span class="hljs-comment"># 模型输入数据</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">input_data_for_model</span>(<span class="hljs-params">input_shape</span>):<br><br>    <span class="hljs-comment"># 数据导入</span><br>    input_data = load_data()<br>    <span class="hljs-comment"># 数据处理</span><br>    data_processing()<br>    <span class="hljs-comment"># 导入字典</span><br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(CONSTANTS[<span class="hljs-number">1</span>], <span class="hljs-string">&#x27;rb&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>        word_dictionary = pickle.load(f)<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(CONSTANTS[<span class="hljs-number">2</span>], <span class="hljs-string">&#x27;rb&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>        inverse_word_dictionary = pickle.load(f)<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(CONSTANTS[<span class="hljs-number">3</span>], <span class="hljs-string">&#x27;rb&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>        label_dictionary = pickle.load(f)<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(CONSTANTS[<span class="hljs-number">4</span>], <span class="hljs-string">&#x27;rb&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>        output_dictionary = pickle.load(f)<br>    vocab_size = <span class="hljs-built_in">len</span>(word_dictionary.keys())<br>    label_size = <span class="hljs-built_in">len</span>(label_dictionary.keys())<br><br>    <span class="hljs-comment"># 处理输入数据</span><br>    aggregate_function = <span class="hljs-keyword">lambda</span> <span class="hljs-built_in">input</span>: [(word, pos, label) <span class="hljs-keyword">for</span> word, pos, label <span class="hljs-keyword">in</span><br>                                            <span class="hljs-built_in">zip</span>(<span class="hljs-built_in">input</span>[<span class="hljs-string">&#x27;word&#x27;</span>].values.tolist(),<br>                                                <span class="hljs-built_in">input</span>[<span class="hljs-string">&#x27;pos&#x27;</span>].values.tolist(),<br>                                                <span class="hljs-built_in">input</span>[<span class="hljs-string">&#x27;tag&#x27;</span>].values.tolist())]<br><br>    grouped_input_data = input_data.groupby(<span class="hljs-string">&#x27;sent_no&#x27;</span>).apply(aggregate_function)<br>    sentences = [sentence <span class="hljs-keyword">for</span> sentence <span class="hljs-keyword">in</span> grouped_input_data]<br><br>    x = [[word_dictionary[word[<span class="hljs-number">0</span>]] <span class="hljs-keyword">for</span> word <span class="hljs-keyword">in</span> sent] <span class="hljs-keyword">for</span> sent <span class="hljs-keyword">in</span> sentences]<br>    x = pad_sequences(maxlen=input_shape, sequences=x, padding=<span class="hljs-string">&#x27;post&#x27;</span>, value=<span class="hljs-number">0</span>)<br>    y = [[label_dictionary[word[<span class="hljs-number">2</span>]] <span class="hljs-keyword">for</span> word <span class="hljs-keyword">in</span> sent] <span class="hljs-keyword">for</span> sent <span class="hljs-keyword">in</span> sentences]<br>    y = pad_sequences(maxlen=input_shape, sequences=y, padding=<span class="hljs-string">&#x27;post&#x27;</span>, value=<span class="hljs-number">0</span>)<br>    y = [np_utils.to_categorical(label, num_classes=label_size + <span class="hljs-number">1</span>) <span class="hljs-keyword">for</span> label <span class="hljs-keyword">in</span> y]<br><br>    <span class="hljs-keyword">return</span> x, y, output_dictionary, vocab_size, label_size, inverse_word_dictionary<br><br><br><span class="hljs-comment"># 定义深度学习模型：Bi-LSTM</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">create_Bi_LSTM</span>(<span class="hljs-params">vocab_size, label_size, input_shape, output_dim, n_units, out_act, activation</span>):<br>    model = Sequential()<br>    model.add(Embedding(input_dim=vocab_size + <span class="hljs-number">1</span>, output_dim=output_dim,<br>                        input_length=input_shape, mask_zero=<span class="hljs-literal">True</span>))<br>    model.add(Bidirectional(LSTM(units=n_units, activation=activation,<br>                                 return_sequences=<span class="hljs-literal">True</span>)))<br>    model.add(TimeDistributed(Dense(label_size + <span class="hljs-number">1</span>, activation=out_act)))<br>    model.<span class="hljs-built_in">compile</span>(optimizer=<span class="hljs-string">&#x27;adam&#x27;</span>, loss=<span class="hljs-string">&#x27;categorical_crossentropy&#x27;</span>, metrics=[<span class="hljs-string">&#x27;accuracy&#x27;</span>])<br>    <span class="hljs-keyword">return</span> model<br><br><br><span class="hljs-comment"># 模型训练</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">model_train</span>():<br><br>    <span class="hljs-comment"># 将数据集分为训练集和测试集，占比为9:1</span><br>    input_shape = <span class="hljs-number">60</span><br>    x, y, output_dictionary, vocab_size, label_size, inverse_word_dictionary = input_data_for_model(input_shape)<br>    train_end = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">len</span>(x)*<span class="hljs-number">0.9</span>)<br>    train_x, train_y = x[<span class="hljs-number">0</span>:train_end], np.array(y[<span class="hljs-number">0</span>:train_end])<br>    test_x, test_y = x[train_end:], np.array(y[train_end:])<br><br>    <span class="hljs-comment"># 模型输入参数</span><br>    activation = <span class="hljs-string">&#x27;selu&#x27;</span><br>    out_act = <span class="hljs-string">&#x27;softmax&#x27;</span><br>    n_units = <span class="hljs-number">100</span><br>    batch_size = <span class="hljs-number">32</span><br>    epochs = <span class="hljs-number">10</span><br>    output_dim = <span class="hljs-number">20</span><br><br>    <span class="hljs-comment"># 模型训练</span><br>    lstm_model = create_Bi_LSTM(vocab_size, label_size, input_shape, output_dim, n_units, out_act, activation)<br>    lstm_model.fit(train_x, train_y, validation_data=(test_x, test_y), epochs=epochs, batch_size=batch_size, verbose=<span class="hljs-number">1</span>)<br><br><br>model_train()<br></code></pre></td></tr></table></figure>
+<p>模型训练的结果如下（中间过程省略）：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs gradle">......<br><span class="hljs-number">12598</span><span class="hljs-regexp">/12598 [==============================] - 26s 2ms/</span><span class="hljs-keyword">step</span> - loss: <span class="hljs-number">0.0075</span> - acc: <span class="hljs-number">0.9981</span> - val_loss: <span class="hljs-number">0.2131</span> - val_acc: <span class="hljs-number">0.9592</span><br></code></pre></td></tr></table></figure>
+<p>我们修改代码，在lstm_model.fit那一行修改代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python">lables = [<span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;B-MISC&#x27;</span>, <span class="hljs-string">&#x27;I-MISC&#x27;</span>, <span class="hljs-string">&#x27;B-ORG&#x27;</span>, <span class="hljs-string">&#x27;I-ORG&#x27;</span>, <span class="hljs-string">&#x27;B-PER&#x27;</span>, <span class="hljs-string">&#x27;B-LOC&#x27;</span>, <span class="hljs-string">&#x27;I-PER&#x27;</span>, <span class="hljs-string">&#x27;I-LOC&#x27;</span>, <span class="hljs-string">&#x27;sO&#x27;</span>]<br>   id2label = <span class="hljs-built_in">dict</span>(<span class="hljs-built_in">zip</span>(<span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(lables)), lables))<br>   callbacks = [F1Metrics(id2label)]<br>   lstm_model.fit(train_x, train_y, validation_data=(test_x, test_y), epochs=epochs,<br>                  batch_size=batch_size, verbose=<span class="hljs-number">1</span>, callbacks=callbacks)<br></code></pre></td></tr></table></figure>
+<p>此时输出结果为：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs stata">12598/12598 [==============================] - 26s 2ms/step - loss: 0.0089 - acc: 0.9978 - val_loss: 0.2145 - val_acc: 0.9560<br> - f1: 95.40<br>           precision    recall  f1-<span class="hljs-keyword">score</span>   support<br><br>     MISC     0.9707    0.9833    0.9769     15844<br>      PER     0.9080    0.8194    0.8614      1157<br>      <span class="hljs-keyword">LOC</span>     0.7517    0.8095    0.7795       677<br>      ORG     0.8290    0.7289    0.7757       745<br>       <span class="hljs-keyword">sO</span>     0.7757    0.8300    0.8019       100<br><br>micro avg     0.9524    0.9556    0.9540     18523<br><span class="hljs-keyword">macro</span> avg     0.9520    0.9556    0.9535     18523<br></code></pre></td></tr></table></figure>
+<p>这就是seqeval的强大之处。</p>
+<p>关于seqeval在Keras的使用，有不清楚的地方可以参考该项目的Github网址：<a
+target="_blank" rel="noopener" href="https://github.com/chakki-works/seqeval">https://github.com/chakki-works/seqeval</a>
+。</p>
+<h3 id="总结">总结</h3>
+<p>感谢大家的阅读，本次分享到此结束。</p>
+<p>欢迎大家关注我的微信公众号：<code>NLP奇幻之旅</code>。</p>
+<h3 id="参考网址">参考网址</h3>
+<ol type="1">
+<li>序列标注的准确率和召回率计算: <a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/56582082">https://zhuanlan.zhihu.com/p/56582082</a></li>
+<li>seqeval官方文档： <a
+target="_blank" rel="noopener" href="https://pypi.org/project/seqeval/0.0.3/">https://pypi.org/project/seqeval/0.0.3/</a></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/NLP/" class="print-no-link">#NLP</a>
+      
+        <a href="/tags/NLP%E5%B7%A5%E5%85%B7/" class="print-no-link">#NLP工具</a>
+      
+        <a href="/tags/%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8/" class="print-no-link">#序列标注</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（二十三）序列标注算法评估模块seqeval的使用</div>
+      <div>http://example.com/2023/07/09/NLP（二十三）序列标注算法评估模块seqeval的使用/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月9日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/07/09/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E5%9B%9B%EF%BC%89%E5%88%A9%E7%94%A8ALBERT%E5%AE%9E%E7%8E%B0%E5%91%BD%E5%90%8D%E5%AE%9E%E4%BD%93%E8%AF%86%E5%88%AB/" title="NLP（二十四）利用ALBERT实现命名实体识别">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NLP（二十四）利用ALBERT实现命名实体识别</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/07/09/%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1%E6%9E%84%E5%BB%BA%E4%B8%BE%E4%BE%8B/" title="知识图谱构建举例">
+                        <span class="hidden-mobile">知识图谱构建举例</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"你的评论将对作者弥足珍贵！","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
