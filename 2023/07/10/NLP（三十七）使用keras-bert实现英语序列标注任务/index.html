@@ -1,0 +1,902 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍如何使用keras-bert实现英语序列标注任务。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（三十七）使用keras-bert实现英语序列标注任务">
+<meta property="og:url" content="http://example.com/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E4%B8%83%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E8%8B%B1%E8%AF%AD%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="本文将会介绍如何使用keras-bert实现英语序列标注任务。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/nlp37_1.png">
+<meta property="article:published_time" content="2023-07-10T02:10:46.000Z">
+<meta property="article:modified_time" content="2023-07-10T02:13:49.355Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="keras-bert">
+<meta property="article:tag" content="序列标注">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/nlp37_1.png">
+  
+  
+  
+  <title>NLP（三十七）使用keras-bert实现英语序列标注任务 - Hexo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（三十七）使用keras-bert实现英语序列标注任务"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-10 10:10" pubdate>
+          星期一, 七月 10日 2023, 10:10 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          4.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          34 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（三十七）使用keras-bert实现英语序列标注任务</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>在文章<a
+target="_blank" rel="noopener" href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a>中，我们已经用keras-bert模块实现了中文序列标注任务，其中对BERT进行微调。当前，我们也可以顺便实现下英语序列标注任务。</p>
+<p>本文将介绍如何使用keras-bert实现英语序列标注任务。</p>
+<h3 id="一个小测试">一个小测试</h3>
+<p>使用keras-bert实现英语序列标注任务的代码，大体上与文章<a
+target="_blank" rel="noopener" href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a>中的相似，但英语序列标注有其特殊之处。其特殊之处在于，BERT会将复杂的英语单词拆分成多个简单英语单词，进行tokenize.</p>
+<p>下面给出一个例子。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> keras_bert <span class="hljs-keyword">import</span> Tokenizer<br><br><span class="hljs-comment"># 读取词典</span><br>dict_path = <span class="hljs-string">&#x27;./uncased_L-12_H-768_A-12/vocab.txt&#x27;</span><br>token_dict = &#123;&#125;<br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(dict_path, <span class="hljs-string">&#x27;r&#x27;</span>, encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>) <span class="hljs-keyword">as</span> reader:<br>    <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> reader:<br>        token = line.strip()<br>        token_dict[token] = <span class="hljs-built_in">len</span>(token_dict)<br><br>id_token_dict = &#123;v: k <span class="hljs-keyword">for</span> k, v <span class="hljs-keyword">in</span> token_dict.items()&#125;<br>tokenizer = Tokenizer(token_dict=token_dict)<br><br><span class="hljs-comment"># tokenize</span><br>code = tokenizer.encode(<span class="hljs-string">&quot;A man waits in the arrivals hall at Heathrow Airport in London.&quot;</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;ids: &quot;</span>, code[<span class="hljs-number">0</span>])<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;type_ids: &quot;</span>, code[<span class="hljs-number">1</span>])<br>encode_text = [id_token_dict[_] <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> code[<span class="hljs-number">0</span>]]<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;encode_text: &quot;</span>, encode_text)<br></code></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs prolog">ids:  [<span class="hljs-number">101</span>, <span class="hljs-number">1037</span>, <span class="hljs-number">2158</span>, <span class="hljs-number">18074</span>, <span class="hljs-number">1999</span>, <span class="hljs-number">1996</span>, <span class="hljs-number">25470</span>, <span class="hljs-number">2534</span>, <span class="hljs-number">2012</span>, <span class="hljs-number">9895</span>, <span class="hljs-number">10524</span>, <span class="hljs-number">3199</span>, <span class="hljs-number">1999</span>, <span class="hljs-number">2414</span>, <span class="hljs-number">1012</span>, <span class="hljs-number">102</span>]<br>type_ids:  [<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>]<br>encode_text:  [<span class="hljs-string">&#x27;[CLS]&#x27;</span>, <span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-string">&#x27;man&#x27;</span>, <span class="hljs-string">&#x27;waits&#x27;</span>, <span class="hljs-string">&#x27;in&#x27;</span>, <span class="hljs-string">&#x27;the&#x27;</span>, <span class="hljs-string">&#x27;arrivals&#x27;</span>, <span class="hljs-string">&#x27;hall&#x27;</span>, <span class="hljs-string">&#x27;at&#x27;</span>, <span class="hljs-string">&#x27;heath&#x27;</span>, <span class="hljs-string">&#x27;##row&#x27;</span>, <span class="hljs-string">&#x27;airport&#x27;</span>, <span class="hljs-string">&#x27;in&#x27;</span>, <span class="hljs-string">&#x27;london&#x27;</span>, <span class="hljs-string">&#x27;.&#x27;</span>, <span class="hljs-string">&#x27;[SEP]&#x27;</span>]<br></code></pre></td></tr></table></figure>
+<p>可以看到，在句子中单词<code>Heathrow</code>被拆分成了两个token<code>heath</code>和<code>##row</code>，这是BERT英语预训练模型在tokenize时的特殊之处。</p>
+<p>基于上述原因，我们原来的标注序列：</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs scheme">[<span class="hljs-symbol">&#x27;a</span>&#x27;, <span class="hljs-symbol">&#x27;man</span>&#x27;, <span class="hljs-symbol">&#x27;waits</span>&#x27;, <span class="hljs-symbol">&#x27;in</span>&#x27;, <span class="hljs-symbol">&#x27;the</span>&#x27;, <span class="hljs-symbol">&#x27;arrivals</span>&#x27;, <span class="hljs-symbol">&#x27;hall</span>&#x27;, <span class="hljs-symbol">&#x27;at</span>&#x27;, <span class="hljs-symbol">&#x27;heathrow</span>&#x27;, <span class="hljs-symbol">&#x27;airport</span>&#x27;, <span class="hljs-symbol">&#x27;in</span>&#x27;, <span class="hljs-symbol">&#x27;london</span>&#x27;, <span class="hljs-symbol">&#x27;.</span>&#x27;]<br>[<span class="hljs-symbol">&#x27;O</span>&#x27;, <span class="hljs-symbol">&#x27;O</span>&#x27;, <span class="hljs-symbol">&#x27;O</span>&#x27;, <span class="hljs-symbol">&#x27;O</span>&#x27;, <span class="hljs-symbol">&#x27;O</span>&#x27;, <span class="hljs-symbol">&#x27;O</span>&#x27;, <span class="hljs-symbol">&#x27;O</span>&#x27;, <span class="hljs-symbol">&#x27;O</span>&#x27;, <span class="hljs-symbol">&#x27;B-LOC</span>&#x27;, <span class="hljs-symbol">&#x27;I-LOC</span>&#x27;, <span class="hljs-symbol">&#x27;O</span>&#x27;, <span class="hljs-symbol">&#x27;B-LOC</span>&#x27;, <span class="hljs-symbol">&#x27;O</span>&#x27;]<br></code></pre></td></tr></table></figure>
+<p>在进入英语序列标注时，应当变成如下序列：</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs scheme">[&#x27;[<span class="hljs-name">CLS</span>]&#x27;, <span class="hljs-symbol">&#x27;a</span>&#x27;, <span class="hljs-symbol">&#x27;man</span>&#x27;, <span class="hljs-symbol">&#x27;waits</span>&#x27;, <span class="hljs-symbol">&#x27;in</span>&#x27;, <span class="hljs-symbol">&#x27;the</span>&#x27;, <span class="hljs-symbol">&#x27;arrivals</span>&#x27;, <span class="hljs-symbol">&#x27;hall</span>&#x27;, <span class="hljs-symbol">&#x27;at</span>&#x27;, <span class="hljs-symbol">&#x27;heath</span>&#x27;, &#x27;##row&#x27;, <span class="hljs-symbol">&#x27;airport</span>&#x27;, <span class="hljs-symbol">&#x27;in</span>&#x27;, <span class="hljs-symbol">&#x27;london</span>&#x27;, <span class="hljs-symbol">&#x27;.</span>&#x27;, &#x27;[<span class="hljs-name">SEP</span>]&#x27;]<br>[<span class="hljs-symbol">&#x27;O</span>&#x27;, <span class="hljs-symbol">&#x27;O</span>&#x27;, <span class="hljs-symbol">&#x27;O</span>&#x27;, <span class="hljs-symbol">&#x27;O</span>&#x27;, <span class="hljs-symbol">&#x27;O</span>&#x27;, <span class="hljs-symbol">&#x27;O</span>&#x27;, <span class="hljs-symbol">&#x27;O</span>&#x27;, <span class="hljs-symbol">&#x27;O</span>&#x27;, <span class="hljs-symbol">&#x27;O</span>&#x27;, <span class="hljs-symbol">&#x27;B-LOC</span>&#x27;, <span class="hljs-symbol">&#x27;B-LOC</span>&#x27;, <span class="hljs-symbol">&#x27;I-LOC</span>&#x27;, <span class="hljs-symbol">&#x27;O</span>&#x27;, <span class="hljs-symbol">&#x27;B-LOC</span>&#x27;, <span class="hljs-symbol">&#x27;O</span>&#x27;, <span class="hljs-symbol">&#x27;O</span>&#x27;]<br></code></pre></td></tr></table></figure>
+<p>也就是说，拆分后的多个简单英语单词的序列标注标签将会跟随原先复杂单词的标签。</p>
+<h3 id="数据集">数据集</h3>
+<p>本文将会在两个英语命名实体识别的数据集上进行测试。</p>
+<ol type="1">
+<li><p><a
+target="_blank" rel="noopener" href="https://www.clips.uantwerpen.be/conll2003/ner/">Conll2003</a></p>
+<p>conll2003.train 14987条数据和conll2003.test
+3466条数据，共4种标签：</p>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" />LOC</label></li>
+<li><label><input type="checkbox" checked="" />PER</label></li>
+<li><label><input type="checkbox" checked="" />ORG</label></li>
+<li><label><input type="checkbox" checked="" />MISC</label></li>
+</ul></li>
+<li><p><a
+target="_blank" rel="noopener" href="https://noisy-text.github.io/2017/emerging-rare-entities.html">wnut17</a></p>
+<p>wnut17.train 3394条数据和wnut17.test 1009条数据，共6种标签：</p>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" />Person</label></li>
+<li><label><input type="checkbox" checked="" />Location (including GPE,
+facility)</label></li>
+<li><label><input type="checkbox" checked="" />Corporation</label></li>
+<li><label><input type="checkbox" checked="" />Consumer good (tangible
+goods, or well-defined services)</label></li>
+<li><label><input type="checkbox" checked="" />Creative work (song,
+movie, book, and so on)</label></li>
+<li><label><input type="checkbox" checked="" />Group (subsuming music
+band, sports team, and non-corporate organisations)</label></li>
+</ul></li>
+</ol>
+<h3 id="模型评估">模型评估</h3>
+<p>英语序列标注使用keras-bert进行模型训练、评估和预测的代码与文章<a
+target="_blank" rel="noopener" href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a>中的相似，本文不再详细给出，感兴趣的读者可以参考Github的实现代码：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/keras_bert_english_sequence_labeling">https://github.com/percent4/keras_bert_english_sequence_labeling</a>
+。 我们利用上述模型，在两个数据集上的评估结果如下：</p>
+<ul>
+<li>Conll2003</li>
+</ul>
+<p>模型参数：uncased_L-12_H-768_A-12, MAX_SEQ_LEN=128, BATCH_SIZE=32,
+EPOCH=10</p>
+<p>运行model_evaluate.py,模型评估结果如下：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs apache">           <span class="hljs-attribute">precision</span>    recall  f1-score   support<br><br>      <span class="hljs-attribute">PER</span>     <span class="hljs-number">0</span>.<span class="hljs-number">9650</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9577</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9613</span>      <span class="hljs-number">1842</span><br>      <span class="hljs-attribute">ORG</span>     <span class="hljs-number">0</span>.<span class="hljs-number">8889</span>    <span class="hljs-number">0</span>.<span class="hljs-number">8770</span>    <span class="hljs-number">0</span>.<span class="hljs-number">8829</span>      <span class="hljs-number">1341</span><br>     <span class="hljs-attribute">MISC</span>     <span class="hljs-number">0</span>.<span class="hljs-number">8156</span>    <span class="hljs-number">0</span>.<span class="hljs-number">8395</span>    <span class="hljs-number">0</span>.<span class="hljs-number">8274</span>       <span class="hljs-number">922</span><br>      <span class="hljs-attribute">LOC</span>     <span class="hljs-number">0</span>.<span class="hljs-number">9286</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9271</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9278</span>      <span class="hljs-number">1837</span><br><br><span class="hljs-attribute">micro</span> avg     <span class="hljs-number">0</span>.<span class="hljs-number">9129</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9116</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9123</span>      <span class="hljs-number">5942</span><br><span class="hljs-attribute">macro</span> avg     <span class="hljs-number">0</span>.<span class="hljs-number">9134</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9116</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9125</span>      <span class="hljs-number">5942</span><br></code></pre></td></tr></table></figure>
+<p><a
+target="_blank" rel="noopener" href="https://github.com/sebastianruder/NLP-progress/blob/master/english/named_entity_recognition.md">最新SOTA结果的F1值为94.3%.</a></p>
+<ul>
+<li>wnut17</li>
+</ul>
+<p>模型参数：uncased_L-12_H-768_A-12, MAX_SEQ_LEN=128, BATCH_SIZE=20,
+EPOCH=10</p>
+<p>运行model_evaluate.py,模型评估结果如下：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs apache">             <span class="hljs-attribute">precision</span>    recall  f1-score   support<br><br>       <span class="hljs-attribute">work</span>     <span class="hljs-number">0</span>.<span class="hljs-number">2069</span>    <span class="hljs-number">0</span>.<span class="hljs-number">0571</span>    <span class="hljs-number">0</span>.<span class="hljs-number">0896</span>       <span class="hljs-number">105</span><br>     <span class="hljs-attribute">person</span>     <span class="hljs-number">0</span>.<span class="hljs-number">6599</span>    <span class="hljs-number">0</span>.<span class="hljs-number">4830</span>    <span class="hljs-number">0</span>.<span class="hljs-number">5577</span>       <span class="hljs-number">470</span><br>    <span class="hljs-attribute">product</span>     <span class="hljs-number">0</span>.<span class="hljs-number">3333</span>    <span class="hljs-number">0</span>.<span class="hljs-number">0965</span>    <span class="hljs-number">0</span>.<span class="hljs-number">1497</span>       <span class="hljs-number">114</span><br>   <span class="hljs-attribute">location</span>     <span class="hljs-number">0</span>.<span class="hljs-number">5070</span>    <span class="hljs-number">0</span>.<span class="hljs-number">4865</span>    <span class="hljs-number">0</span>.<span class="hljs-number">4966</span>        <span class="hljs-number">74</span><br>      <span class="hljs-attribute">group</span>     <span class="hljs-number">0</span>.<span class="hljs-number">1500</span>    <span class="hljs-number">0</span>.<span class="hljs-number">1538</span>    <span class="hljs-number">0</span>.<span class="hljs-number">1519</span>        <span class="hljs-number">39</span><br><span class="hljs-attribute">corporation</span>     <span class="hljs-number">0</span>.<span class="hljs-number">1935</span>    <span class="hljs-number">0</span>.<span class="hljs-number">1765</span>    <span class="hljs-number">0</span>.<span class="hljs-number">1846</span>        <span class="hljs-number">34</span><br><br>  <span class="hljs-attribute">micro</span> avg     <span class="hljs-number">0</span>.<span class="hljs-number">5328</span>    <span class="hljs-number">0</span>.<span class="hljs-number">3489</span>    <span class="hljs-number">0</span>.<span class="hljs-number">4217</span>       <span class="hljs-number">837</span><br>  <span class="hljs-attribute">macro</span> avg     <span class="hljs-number">0</span>.<span class="hljs-number">5016</span>    <span class="hljs-number">0</span>.<span class="hljs-number">3489</span>    <span class="hljs-number">0</span>.<span class="hljs-number">4033</span>       <span class="hljs-number">837</span><br></code></pre></td></tr></table></figure>
+<h3 id="bert模型效果对比">BERT模型效果对比</h3>
+<p>Google对BERT进行优化，又开放了几个小版本的BERT英语预训练模型，如下：</p>
+<figure>
+<img src="/img/nlp37_1.png" srcset="/img/loading.gif" lazyload alt="BERT英语各版本模型" />
+<figcaption aria-hidden="true">BERT英语各版本模型</figcaption>
+</figure>
+<p>我们在Conll2003数据集上，模型参数为MAX_SEQ_LEN=128, BATCH_SIZE=32,
+EPOCH=10，对比结果如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>模型名称</th>
+<th>P</th>
+<th>R</th>
+<th>F1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>BERT-Small</td>
+<td>0.8744</td>
+<td>0.8859</td>
+<td>0.8801</td>
+</tr>
+<tr class="even">
+<td>BERT-Medium</td>
+<td>0.9052</td>
+<td>0.9031</td>
+<td>0.9041</td>
+</tr>
+<tr class="odd">
+<td>BERT-Base</td>
+<td>0.9129</td>
+<td>0.9116</td>
+<td>0.9123</td>
+</tr>
+</tbody>
+</table>
+<h3 id="总结">总结</h3>
+<p>本文采用keras-bert实现了英语序列标注任务，其中对BERT进行微调。本项目已经上传至Github，网址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/keras_bert_english_sequence_labeling">https://github.com/percent4/keras_bert_english_sequence_labeling</a>
+。</p>
+<p>后续将介绍如何使用keras-bert加载ALBERT模型，并实现文本多分类、文本多标签任务和序列标注任务，欢迎关注~</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/NLP/" class="print-no-link">#NLP</a>
+      
+        <a href="/tags/keras-bert/" class="print-no-link">#keras-bert</a>
+      
+        <a href="/tags/%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8/" class="print-no-link">#序列标注</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（三十七）使用keras-bert实现英语序列标注任务</div>
+      <div>http://example.com/2023/07/10/NLP（三十七）使用keras-bert实现英语序列标注任务/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月10日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E5%A4%9A%E6%A0%87%E7%AD%BE%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1/" title="NLP（三十六）使用keras-bert实现文本多标签分类任务">
+                        <span class="hidden-mobile">NLP（三十六）使用keras-bert实现文本多标签分类任务</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"你的评论将对作者弥足珍贵！","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
