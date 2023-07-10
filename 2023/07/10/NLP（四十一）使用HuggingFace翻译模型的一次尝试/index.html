@@ -16,23 +16,28 @@
   <meta name="author" content="Jclian91">
   <meta name="keywords" content="">
   
-    <meta name="description" content="本文将会介绍Flask中的JWT认证。">
+    <meta name="description" content="本文将会介绍如何使用HuggingFace翻译模型的一次尝试。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Flask中的JWT认证">
-<meta property="og:url" content="http://example.com/2023/07/10/Flask%E4%B8%AD%E7%9A%84JWT%E8%AE%A4%E8%AF%81/index.html">
+<meta property="og:title" content="NLP（四十一）使用HuggingFace翻译模型的一次尝试">
+<meta property="og:url" content="http://example.com/2023/07/10/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%B8%80%EF%BC%89%E4%BD%BF%E7%94%A8HuggingFace%E7%BF%BB%E8%AF%91%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="本文将会介绍Flask中的JWT认证。">
+<meta property="og:description" content="本文将会介绍如何使用HuggingFace翻译模型的一次尝试。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-07-10T02:51:44.000Z">
-<meta property="article:modified_time" content="2023-07-10T02:52:37.096Z">
+<meta property="og:image" content="http://example.com/img/nlp41_1.png">
+<meta property="og:image" content="http://example.com/img/nlp41_2.png">
+<meta property="og:image" content="http://example.com/img/nlp41_3.png">
+<meta property="og:image" content="http://example.com/img/nlp41_4.png">
+<meta property="article:published_time" content="2023-07-10T05:24:38.000Z">
+<meta property="article:modified_time" content="2023-07-10T05:28:25.977Z">
 <meta property="article:author" content="Jclian91">
-<meta property="article:tag" content="Flask">
-<meta property="article:tag" content="HTTP认证">
+<meta property="article:tag" content="NL">
+<meta property="article:tag" content="机器翻译">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/nlp41_1.png">
   
   
   
-  <title>Flask中的JWT认证 - Hexo</title>
+  <title>NLP（四十一）使用HuggingFace翻译模型的一次尝试 - Hexo</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -227,7 +232,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Flask中的JWT认证"></span>
+            <span id="subtitle" data-typed-text="NLP（四十一）使用HuggingFace翻译模型的一次尝试"></span>
           
         </div>
 
@@ -238,8 +243,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-07-10 10:51" pubdate>
-          星期一, 七月 10日 2023, 10:51 上午
+        <time datetime="2023-07-10 13:24" pubdate>
+          星期一, 七月 10日 2023, 1:24 下午
         </time>
       </span>
     
@@ -251,7 +256,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          2.3k 字
+          3k 字
         
       </span>
     
@@ -263,7 +268,7 @@
         
         
           <!-- compatible with older versions-->
-          20 分钟
+          26 分钟
         
       </span>
     
@@ -308,53 +313,67 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">Flask中的JWT认证</h1>
+            <h1 id="seo-header">NLP（四十一）使用HuggingFace翻译模型的一次尝试</h1>
             
             
               <div class="markdown-body">
                 
-                <p>HTTP认证方式：</p>
-<ul>
-<li>Basic</li>
-<li>Bearer</li>
-<li>JWT（JSON Web Token）</li>
-</ul>
-<p>JWT的结构：</p>
-<p><img
-src="https://raw.githubusercontent.com/breatheco-de/content/master/src/assets/images/jwt-token-structure.png" srcset="/img/loading.gif" lazyload /></p>
-<table>
-
-<thead>
-<tr class="header">
-<th style="text-align: left;">Section name</th>
-<th style="text-align: left;">meaning</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">HEADER</td>
-<td style="text-align: left;">The first part stores the type of token
-and the encryption algorithm</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">PAYLOAD</td>
-<td style="text-align: left;">The second part has the data that
-identifies the user: it can be its ID, user name, etc.</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">SIGNATURE</td>
-<td style="text-align: left;">Digital signature, which is generated with
-the previous two sections, and it allows you to verify if the content
-has been modified.</td>
-</tr>
-</tbody>
-</table>
-<p>示例Python代码：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @place: Pudong, Shanghai </span><br><span class="hljs-comment"># @contact: lianmingjie@shanda.com</span><br><span class="hljs-comment"># @file: jwt_test.py</span><br><span class="hljs-comment"># @time: 2023/7/4 17:29</span><br><span class="hljs-keyword">from</span> flask <span class="hljs-keyword">import</span> Flask, jsonify, request<br><br><span class="hljs-keyword">from</span> flask_jwt_extended <span class="hljs-keyword">import</span> create_access_token<br><span class="hljs-keyword">from</span> flask_jwt_extended <span class="hljs-keyword">import</span> get_jwt_identity<br><span class="hljs-keyword">from</span> flask_jwt_extended <span class="hljs-keyword">import</span> jwt_required<br><span class="hljs-keyword">from</span> flask_jwt_extended <span class="hljs-keyword">import</span> JWTManager<br><br>app = Flask(__name__)<br><br><span class="hljs-comment"># 设置 Flask-JWT-Extended 插件的秘钥</span><br>app.config[<span class="hljs-string">&quot;JWT_SECRET_KEY&quot;</span>] = <span class="hljs-string">&quot;super-secret&quot;</span>  <span class="hljs-comment"># 设置 jwt 的秘钥</span><br>jwt = JWTManager(app)<br><br><br><span class="hljs-comment"># 创建一个路由来验证登录的用户并返回JWT</span><br><span class="hljs-comment"># create_access_token() 函数用来生成实际的JWT token.</span><br><span class="hljs-meta">@app.route(<span class="hljs-params"><span class="hljs-string">&quot;/login&quot;</span>, methods=[<span class="hljs-string">&quot;POST&quot;</span>]</span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">login</span>():<br>    username = request.json.get(<span class="hljs-string">&quot;username&quot;</span>, <span class="hljs-literal">None</span>)<br>    password = request.json.get(<span class="hljs-string">&quot;password&quot;</span>, <span class="hljs-literal">None</span>)<br>    <span class="hljs-keyword">if</span> username <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> [<span class="hljs-string">&quot;admin1&quot;</span>, <span class="hljs-string">&quot;admin2&quot;</span>, <span class="hljs-string">&quot;admin3&quot;</span>] <span class="hljs-keyword">or</span> password != <span class="hljs-string">&quot;123456&quot;</span>:<br>        <span class="hljs-keyword">return</span> jsonify(&#123;<span class="hljs-string">&quot;msg&quot;</span>: <span class="hljs-string">&quot;Bad username or password&quot;</span>&#125;), <span class="hljs-number">401</span><br><br>    <span class="hljs-comment"># 传入身份信息创建 access_token</span><br>    access_token = create_access_token(identity=username)<br>    <span class="hljs-keyword">return</span> jsonify(access_token=<span class="hljs-string">&#x27;Bearer &#x27;</span> + access_token)<br><br><br><span class="hljs-comment"># 使用 jwt_required 保护请求视图，如果在请求中不存在jwt token将无法访问。</span><br><span class="hljs-meta">@app.route(<span class="hljs-params"><span class="hljs-string">&quot;/protected&quot;</span>, methods=[<span class="hljs-string">&quot;GET&quot;</span>]</span>)</span><br><span class="hljs-meta">@jwt_required()</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">protected</span>():<br>    <span class="hljs-comment"># 使用 get_jwt_identity 访问当前用户的身份</span><br>    current_user = get_jwt_identity()<br>    <span class="hljs-keyword">return</span> jsonify(logged_in_as=current_user), <span class="hljs-number">200</span><br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    app.run(debug=<span class="hljs-literal">True</span>)<br><br></code></pre></td></tr></table></figure>
-<p>创建JWT：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl --location <span class="hljs-string">&#x27;http://127.0.0.1:5000/login&#x27;</span> \<br>--header <span class="hljs-string">&#x27;Content-Type: application/json&#x27;</span> \<br>--data <span class="hljs-string">&#x27;&#123;</span><br><span class="hljs-string">    &quot;username&quot;: &quot;admin3&quot;,</span><br><span class="hljs-string">    &quot;password&quot;: &quot;123456&quot;</span><br><span class="hljs-string">&#125;&#x27;</span><br></code></pre></td></tr></table></figure>
-<p>验证JWT：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl --location <span class="hljs-string">&#x27;http://127.0.0.1:5000/protected&#x27;</span> \<br>--header <span class="hljs-string">&#x27;Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY4ODQ2Mzg5OCwianRpIjoiZDU1NDdjMGQtZjc2Zi00MTA3LThhNTAtYWZmN2I4NTIxMzEzIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImFkbWluMyIsIm5iZiI6MTY4ODQ2Mzg5OCwiZXhwIjoxNjg4NDY0Nzk4fQ.hFUJNHF9ULv_tWK31ttOhHMp_-azevG6VyJRsiUcMcM&#x27;</span><br></code></pre></td></tr></table></figure>
+                <p>本文将如何如何使用HuggingFace中的翻译模型。</p>
+<p>HuggingFace是NLP领域中响当当的团体，它在预训练模型方面作出了很多接触的工作，并开源了许多预训练模型和已经针对具体某个NLP人物训练好的直接可以使用的模型。本文将使用HuggingFace提供的可直接使用的翻译模型。</p>
+<p>HuggingFace的翻译模型可参考网址：<a
+target="_blank" rel="noopener" href="https://huggingface.co/models?pipeline_tag=translation">https://huggingface.co/models?pipeline_tag=translation</a>
+，该部分模型中的绝大部分是由Helsinki-NLP（Language Technology Research
+Group at the University of Helsinki）机构开源，模型数量为1333个。</p>
+<h3 id="模型使用">模型使用</h3>
+<p>笔者将在PyTorch框架下使用HuggingFace的<code>中译英模型</code>和<code>英译中模型</code>。其中<code>中译英模型</code>的模型名称为：opus-mt-zh-en，下载网址为：<a
+target="_blank" rel="noopener" href="https://huggingface.co/Helsinki-NLP/opus-mt-zh-en/tree/main">https://huggingface.co/Helsinki-NLP/opus-mt-zh-en/tree/main</a>；<code>英译中模型</code>的模型名称为opus-mt-en-zh，下载网址为：<a
+target="_blank" rel="noopener" href="https://huggingface.co/Helsinki-NLP/opus-mt-en-zh/tree/main">https://huggingface.co/Helsinki-NLP/opus-mt-en-zh/tree/main</a>
+。</p>
+<p>首先我们先尝试<code>中译英模型</code>，即把中文翻译成英语，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoTokenizer, AutoModelForSeq2SeqLM<br><br>tokenizer = AutoTokenizer.from_pretrained(<span class="hljs-string">&quot;./opus-mt-zh-en&quot;</span>)<br><br>model = AutoModelForSeq2SeqLM.from_pretrained(<span class="hljs-string">&quot;./opus-mt-zh-en&quot;</span>)<br><br>text = <span class="hljs-string">&quot;从时间上看，中国空间站的建造比国际空间站晚20多年。&quot;</span><br><span class="hljs-comment"># Tokenize the text</span><br>batch = tokenizer.prepare_seq2seq_batch(src_texts=[text])<br><br><span class="hljs-comment"># Make sure that the tokenized text does not exceed the maximum</span><br><span class="hljs-comment"># allowed size of 512</span><br>batch[<span class="hljs-string">&quot;input_ids&quot;</span>] = batch[<span class="hljs-string">&quot;input_ids&quot;</span>][:, :<span class="hljs-number">512</span>]<br>batch[<span class="hljs-string">&quot;attention_mask&quot;</span>] = batch[<span class="hljs-string">&quot;attention_mask&quot;</span>][:, :<span class="hljs-number">512</span>]<br><br><span class="hljs-comment"># Perform the translation and decode the output</span><br>translation = model.generate(**batch)<br>result = tokenizer.batch_decode(translation, skip_special_tokens=<span class="hljs-literal">True</span>)<br><span class="hljs-built_in">print</span>(result)<br></code></pre></td></tr></table></figure>
+<p>翻译结果如下：</p>
+<figure class="highlight smalltalk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs smalltalk">[<span class="hljs-comment">&quot;In terms of time, the Chinese space station was built more than 20 years later than the International Space Station.&quot;</span>]<br></code></pre></td></tr></table></figure>
+<p>接着我们先尝试<code>英译中模型</code>，即把英文翻译成汉语，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoTokenizer, AutoModelForSeq2SeqLM<br><br>tokenizer = AutoTokenizer.from_pretrained(<span class="hljs-string">&quot;./opus-mt-en-zh&quot;</span>)<br><br>model = AutoModelForSeq2SeqLM.from_pretrained(<span class="hljs-string">&quot;./opus-mt-en-zh&quot;</span>)<br><br>text = <span class="hljs-string">&quot;In terms of time, the Chinese space station was built more than 20 years later than the International Space Station.&quot;</span><br><span class="hljs-comment"># Tokenize the text</span><br>batch = tokenizer.prepare_seq2seq_batch(src_texts=[text])<br><br><span class="hljs-comment"># Make sure that the tokenized text does not exceed the maximum</span><br><span class="hljs-comment"># allowed size of 512</span><br>batch[<span class="hljs-string">&quot;input_ids&quot;</span>] = batch[<span class="hljs-string">&quot;input_ids&quot;</span>][:, :<span class="hljs-number">512</span>]<br>batch[<span class="hljs-string">&quot;attention_mask&quot;</span>] = batch[<span class="hljs-string">&quot;attention_mask&quot;</span>][:, :<span class="hljs-number">512</span>]<br><br><span class="hljs-comment"># Perform the translation and decode the output</span><br>translation = model.generate(**batch)<br>result = tokenizer.batch_decode(translation, skip_special_tokens=<span class="hljs-literal">True</span>)<br><span class="hljs-built_in">print</span>(result)<br></code></pre></td></tr></table></figure>
+<p>翻译结果如下：</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scheme">[<span class="hljs-symbol">&#x27;就时间而言</span>,中国空间站的建造比国际空间站晚了20多年。&#x27;]<br></code></pre></td></tr></table></figure>
+<p>有了HuggingFace的transformers模块，我们使用起这些模型相当方便，同时也有很不错的翻译效果。</p>
+<h3 id="模型解释">模型解释</h3>
+<p>接着我们再接触一款工具，名称为<code>shap</code>。<code>shap</code>是Python开发的一个模型解释包，可以任何机器学习模型的输出。其名称来源于SHapley
+Additive
+exPlanation，在合作博弈论的启发下SHAP构建一个加性的解释模型，所有的特征都视为“贡献者”。对于每个预测样本，模型都产生一个预测值，SHAP
+value就是该样本中每个特征所分配到的数值。</p>
+<p>我们尝试着使用<code>shap</code>模块来对翻译模型进行解释，可以看到<code>shap</code>可视化效果非常棒的解释界面，如下：</p>
+<figure>
+<img src="/img/nlp41_1.png" srcset="/img/loading.gif" lazyload alt="中译英模型代码" />
+<figcaption aria-hidden="true">中译英模型代码</figcaption>
+</figure>
+<p>默认输出结果为翻译结果，如下：</p>
+<figure>
+<img src="/img/nlp41_2.png" srcset="/img/loading.gif" lazyload alt="默认输出结果" />
+<figcaption aria-hidden="true">默认输出结果</figcaption>
+</figure>
+<p>模型解释的热力图效果如下：</p>
+<figure>
+<img src="/img/nlp41_3.png" srcset="/img/loading.gif" lazyload alt="模型解释的热力图效果" />
+<figcaption aria-hidden="true">模型解释的热力图效果</figcaption>
+</figure>
+<p>从热力图中我们可以发现，空间站这个词语被翻译成space station。</p>
+<p>同样，我们可以看到<code>英译中模型</code>的热力图解释效果，如下：</p>
+<figure>
+<img src="/img/nlp41_4.png" srcset="/img/loading.gif" lazyload alt="英译中模型的热力图解释效果" />
+<figcaption
+aria-hidden="true"><code>英译中模型</code>的热力图解释效果</figcaption>
+</figure>
+<p>本次分享到此结束，感谢大家阅读~</p>
+<p>2021年3月10日于上海浦东~</p>
+<h3 id="参考网址">参考网址</h3>
+<ol type="1">
+<li>HuggingFace translation model: <a
+target="_blank" rel="noopener" href="https://huggingface.co/models?filter=zh&amp;pipeline_tag=translation">https://huggingface.co/models?filter=zh&amp;pipeline_tag=translation</a></li>
+<li>Text to Text Explanation: Machine Translation Example: <a
+target="_blank" rel="noopener" href="https://shap.readthedocs.io/en/latest/example_notebooks/text_examples/translation/Machine%20Translation%20Explanation%20Demo.html">https://shap.readthedocs.io/en/latest/example_notebooks/text_examples/translation/Machine%20Translation%20Explanation%20Demo.html</a></li>
+</ol>
 
                 
               </div>
@@ -373,7 +392,7 @@ has been modified.</td>
     
       <span class="category-chain">
         
-  <a href="/categories/%E8%8D%89%E7%A8%BF/" class="category-chain-item">草稿</a>
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
   
   
 
@@ -388,9 +407,9 @@ has been modified.</td>
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/Flask/" class="print-no-link">#Flask</a>
+        <a href="/tags/NL/" class="print-no-link">#NL</a>
       
-        <a href="/tags/HTTP%E8%AE%A4%E8%AF%81/" class="print-no-link">#HTTP认证</a>
+        <a href="/tags/%E6%9C%BA%E5%99%A8%E7%BF%BB%E8%AF%91/" class="print-no-link">#机器翻译</a>
       
     </div>
   
@@ -402,8 +421,8 @@ has been modified.</td>
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Flask中的JWT认证</div>
-      <div>http://example.com/2023/07/10/Flask中的JWT认证/</div>
+      <div>NLP（四十一）使用HuggingFace翻译模型的一次尝试</div>
+      <div>http://example.com/2023/07/10/NLP（四十一）使用HuggingFace翻译模型的一次尝试/</div>
     </div>
     <div class="license-meta">
       
@@ -447,18 +466,12 @@ has been modified.</td>
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%85%AB%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E8%B0%83%E7%94%A8ALBERT%E6%A8%A1%E5%9E%8B%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E3%80%81%E6%96%87%E6%9C%AC%E5%A4%9A%E6%A0%87%E7%AD%BE%E5%88%86%E7%B1%BB%E3%80%81%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/" title="NLP（三十八）使用keras-bert调用ALBERT模型实现文本分类、文本多标签分类、序列标注任务">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">NLP（三十八）使用keras-bert调用ALBERT模型实现文本分类、文本多标签分类、序列标注任务</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/07/10/Flask%E8%AE%A1%E6%95%B0%E5%99%A8/" title="Flask计数器">
-                        <span class="hidden-mobile">Flask计数器</span>
+                      <a href="/2023/07/10/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%EF%BC%89%E5%88%A9%E7%94%A8seqeval%E6%A8%A1%E5%9D%97%E8%8E%B7%E5%8F%96%E5%BA%8F%E5%88%97%E5%AE%9E%E4%BD%93%E8%AF%86%E5%88%AB%E7%BB%93%E6%9E%9C/" title="NLP（四十）利用seqeval模块获取序列实体识别结果">
+                        <span class="hidden-mobile">NLP（四十）利用seqeval模块获取序列实体识别结果</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
