@@ -1,0 +1,965 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍NLP中常见的损失函数。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（四十七）常见的损失函数">
+<meta property="og:url" content="http://example.com/2023/07/10/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%B8%83%EF%BC%89%E5%B8%B8%E8%A7%81%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="本文将会介绍NLP中常见的损失函数。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/nlp47_1.png">
+<meta property="og:image" content="http://example.com/img/nlp47_2.png">
+<meta property="og:image" content="http://example.com/img/nlp47_3.png">
+<meta property="og:image" content="http://example.com/img/nlp47_4.png">
+<meta property="og:image" content="http://example.com/2023/07/10/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%B8%83%EF%BC%89%E5%B8%B8%E8%A7%81%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0/h/img/nlp47_5.png">
+<meta property="og:image" content="http://example.com/img/nlp47_6.png">
+<meta property="og:image" content="http://example.com/img/nlp47_7.png">
+<meta property="og:image" content="http://example.com/img/nlp47_8.png">
+<meta property="og:image" content="http://example.com/img/nlp47_9.png">
+<meta property="og:image" content="http://example.com/img/nlp47_10.png">
+<meta property="og:image" content="http://example.com/img/nlp47_11.png">
+<meta property="og:image" content="http://example.com/img/nlp47_12.png">
+<meta property="og:image" content="http://example.com/img/nlp47_13.png">
+<meta property="article:published_time" content="2023-07-10T09:25:10.000Z">
+<meta property="article:modified_time" content="2023-07-10T09:31:41.891Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="损失函数">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/nlp47_1.png">
+  
+  
+  
+  <title>NLP（四十七）常见的损失函数 - Hexo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（四十七）常见的损失函数"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-10 17:25" pubdate>
+          星期一, 七月 10日 2023, 5:25 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          42 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（四十七）常见的损失函数</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>本文将给出NLP任务中一些常见的损失函数（Loss
+Function），并使用Keras、PyTorch给出具体例子。</p>
+<p>在讲解具体的损失函数之前，我们有必要了解下什么是损失函数。所谓损失函数，指的是衡量<code>模型预测值y</code>与<code>真实标签Y</code>之间的差距的函数。本文将介绍的损失函数如下：</p>
+<ul>
+<li><p>Mean Squared Error（均方差损失函数）</p></li>
+<li><p>Mean Absolute Error（绝对值损失函数）</p></li>
+<li><p>Binary Cross Entropy（二元交叉熵损失函数）</p></li>
+<li><p>Categorical Cross Entropy（多分类交叉熵损失函数）</p></li>
+<li><p>Sparse Categorical Cross
+Entropy（稀疏多分类交叉熵损失函数）</p></li>
+<li><p>Hingle Loss（合页损失函数）</p></li>
+<li><p>......</p>
+<p>以下将分别介绍上述损失函数，并介绍Keras和PyTorch中的例子。在此之前，我们分别导入Keras所需模块和PyTorch所需模块。Keras所需模块如下：</p></li>
+<li><figure>
+<img src="/img/nlp47_1.png" srcset="/img/loading.gif" lazyload alt="导入Keras相关模块" />
+<figcaption aria-hidden="true">导入Keras相关模块</figcaption>
+</figure></li>
+</ul>
+<p>PyTorch所需模块如下：</p>
+<figure>
+<img src="/img/nlp47_2.png" srcset="/img/loading.gif" lazyload alt="PyTorch所需模块" />
+<figcaption aria-hidden="true">PyTorch所需模块</figcaption>
+</figure>
+<p>从导入模块来看，PyTorch更加简洁，在后面的部分中我们将持续比较这两种框架的差异。</p>
+<h3 id="mean-squared-error">Mean Squared Error</h3>
+<p>Mean Squared
+Error（MSE）为均方差损失函数，一般用于回归问题。我们用<span
+class="math inline">\(\widetilde{y}_{i}\)</span>表示样本预测值序列<span
+class="math inline">\(\{\widetilde{y}_{1},
+\widetilde{y}_{2},...,\widetilde{y}_{n}\}\)</span>中的第i个元素，用<span
+class="math inline">\(y_{i}\)</span>表示样本真实值序列<span
+class="math inline">\(\{y_{1},
+y_{2},...,y_{n}\}\)</span>中的第i个元素，则均方差损失函数MSE的计算公式如下：</p>
+<p><span
+class="math display">\[MSE=\frac{1}{n}\sum_{i=1}^n(\widetilde{y}_{i}-y_{i})^{2}\]</span></p>
+<p>Keras实现代码如下：</p>
+<figure>
+<img src="/img/nlp47_3.png" srcset="/img/loading.gif" lazyload alt="Keras MSE" />
+<figcaption aria-hidden="true">Keras MSE</figcaption>
+</figure>
+<p>PyTorch实现代码如下：</p>
+<figure>
+<img src="/img/nlp47_4.png" srcset="/img/loading.gif" lazyload alt="PyTorch MSE" />
+<figcaption aria-hidden="true">PyTorch MSE</figcaption>
+</figure>
+<h3 id="mean-absolute-error">Mean Absolute Error</h3>
+<p>Mean Absolute
+Error（MAE）为绝对值损失函数，一般用于回归问题。我们用<span
+class="math inline">\(\widetilde{y}_{i}\)</span>表示样本预测值序列<span
+class="math inline">\(\{\widetilde{y}_{1},
+\widetilde{y}_{2},...,\widetilde{y}_{n}\}\)</span>中的第i个元素，用<span
+class="math inline">\(y_{i}\)</span>表示样本真实值序列<span
+class="math inline">\(\{y_{1},
+y_{2},...,y_{n}\}\)</span>中的第i个元素，则绝对值损失函数MAE的计算公式如下：</p>
+<p><span
+class="math display">\[MAE=\frac{1}{n}\sum_{i=1}^n|\widetilde{y}_{i}-y_{i}|\]</span></p>
+<p>Keras实现代码如下：</p>
+<figure>
+<img src="h/img/nlp47_5.png" srcset="/img/loading.gif" lazyload alt="Keras MAE" />
+<figcaption aria-hidden="true">Keras MAE</figcaption>
+</figure>
+<p>PyTorch实现代码如下：</p>
+<figure>
+<img src="/img/nlp47_6.png" srcset="/img/loading.gif" lazyload alt="PyTorch MAE" />
+<figcaption aria-hidden="true">PyTorch MAE</figcaption>
+</figure>
+<p>注意，在PyTorch中L1Loss中的L1表示为L1范数，即通常所说的绝对值，绝对值函数<span
+class="math inline">\(|x|\)</span>处处连续，但在x=0处不可导。</p>
+<h3 id="binary-cross-entropy">Binary Cross Entropy</h3>
+<p>Binary Cross
+Entropy（BCE）为二元交叉熵损失函数，一般用于二分类问题。我们用Y表示样本真实标签序列（每个值为0或者1），用<span
+class="math inline">\(\bar{Y}\)</span>表示样本预测标签序列（每个值为0-1之间的值），则BCE计算公式如下：</p>
+<p><span class="math display">\[BCE=Y \cdot (-log(\bar{Y}))+(1-Y) \cdot
+(-log(1-\bar{Y}))\]</span></p>
+<p>我们不在讲解具体的计算公式，如需具体的计算方式，可以参考文章<a
+target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/details/81224125">Sklearn中二分类问题的交叉熵计算</a>。</p>
+<p>Keras实现代码如下：</p>
+<figure>
+<img src="/img/nlp47_7.png" srcset="/img/loading.gif" lazyload alt="Keras BCE" />
+<figcaption aria-hidden="true">Keras BCE</figcaption>
+</figure>
+<p>PyTorch实现代码如下：</p>
+<figure>
+<img src="/img/nlp47_8.png" srcset="/img/loading.gif" lazyload alt="PyTorch BCE" />
+<figcaption aria-hidden="true">PyTorch BCE</figcaption>
+</figure>
+<p>从上面的结果中可以看到Keras和PyTorch在实现BCE损失函数的差异，给定样本，Keras给出了每个样本的BCE，而PyTorch给出了所有样本BCE的平均值。更大的差异体现在<code>多分类交叉熵损失函数</code>。</p>
+<h3 id="categorical-cross-entropy">Categorical Cross Entropy</h3>
+<p>Categorical Cross
+Entropy（CCE）为多分类交叉熵损失函数，是BCE（二分类交叉熵损失函数）扩充至多分类情形时的损失函数。多分类交叉熵损失函数的数学公式如下：</p>
+<p><span
+class="math display">\[CCE=-\frac{1}{N}\sum_{i=1}^{N}\sum_{c=1}^{C}1_{y_{i}\in
+C_{c}}log(p_{model}[y_{i}\in C_{c}])\]</span></p>
+<p>其中N为样本数，C为类别数，<span class="math inline">\(1_{y_{i}\in
+C_{c}}\)</span>表示第i个样本属于第c个类别的值（0或1），<span
+class="math inline">\(p_{model}[y_{i}\in
+C_{c}]\)</span>表示模型预测的第i个样本属于第c个类别的概率值（0-1之间）。如需查看具体的计算方式，可以参考文章<a
+target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/details/81233277">多分类问题的交叉熵计算</a>。</p>
+<p>Keras实现代码如下：</p>
+<figure>
+<img src="/img/nlp47_9.png" srcset="/img/loading.gif" lazyload alt="Keras CCE" />
+<figcaption aria-hidden="true">Keras CCE</figcaption>
+</figure>
+<p>PyTorch中的CCE采用稀疏多分类交叉熵损失函数实现，因此直接查看稀疏多分类交叉熵损失函数部分即可。</p>
+<h3 id="sparse-categorical-cross-entropy">Sparse Categorical Cross
+Entropy</h3>
+<p>Sparse Categorical Cross
+Entropy（稀疏多分类交叉熵损失函数，SCCE）原理上和多分类交叉熵损失函数（CCE）一致，属于多分类问题的损失函数，不同之处在于多分类交叉熵损失函数中的真实样本值用one-hot向量来表示，其下标i为1，其余为0，表示属于第i个类别；而稀疏多分类交叉熵损失函数中真实样本直接用数字i表示，表示属于第i个类别。</p>
+<p>Keras实现代码如下：</p>
+<figure>
+<img src="/img/nlp47_10.png" srcset="/img/loading.gif" lazyload alt="Keras SCCE" />
+<figcaption aria-hidden="true">Keras SCCE</figcaption>
+</figure>
+<p>例子中一共四个样本，它们的真实样本标签为[2,2,0,1]，不是one-hot向量。</p>
+<p>PyTorch中的SCCE实现代码与上述数学公式不太一致，有些微改动。我们先看例子如下：</p>
+<figure>
+<img src="/img/nlp47_11.png" srcset="/img/loading.gif" lazyload alt="PyTorch SCCE" />
+<figcaption aria-hidden="true">PyTorch SCCE</figcaption>
+</figure>
+<p>这明显与Keras实现代码是不一致的。要解释这种差别，我们就要详细了解PyTorch是如何实现CCE损失函数的。</p>
+<p>简单来说，PyTorch中的输入中的样本预测，不是softmax函数作用后的预测概率，而是softmax函数作用前的值。对该值分别用softmax函数、log函数、NLLLoss()函数作用就是PyTorch计算SCCE的方式。</p>
+<p>在上面的例子中，y_pred_tmp是softmax函数作用前的值，是PyTorch计算SCCE的预测样本的输入，y_pred是softmax函数作用后的值，是sklearn模块、Keras计算SCCE的预测样本的输入。对y_pred_tmp、y_true使用softmax函数、log函数所得到的结果，与y_pred、y_true使用sklearn模块、Keras计算SCCE的结果一致，而对该结算结果再作用NLLLoss()，就是PyTorch计算SCCE的方式。</p>
+<p>也许上面的解释还有点模糊，我们借助知乎上别人给出的一个例子也许能更好地理解PyTorch计算SCCE的方式，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">import</span> torch.nn <span class="hljs-keyword">as</span> nn<br>x_input = torch.randn(<span class="hljs-number">3</span>, <span class="hljs-number">3</span>)   <span class="hljs-comment"># 随机生成输入</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;x_input:\n&#x27;</span>, x_input)<br>y_target = torch.tensor([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">0</span>])    <span class="hljs-comment"># 设置输出具体值 print(&#x27;y_target\n&#x27;,y_target)</span><br><br><span class="hljs-comment"># 计算输入softmax，此时可以看到每一行加到一起结果都是1</span><br>softmax_func = nn.Softmax(dim=<span class="hljs-number">1</span>)<br>soft_output = softmax_func(x_input)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;soft_output:\n&#x27;</span>, soft_output)<br><br><span class="hljs-comment"># 在softmax的基础上取log</span><br>log_output = torch.log(soft_output)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;log_output:\n&#x27;</span>, log_output)<br><br><span class="hljs-comment"># 对比softmax与log的结合与nn.LogSoftmaxloss(负对数似然损失)的输出结果，发现两者是一致的。</span><br>logsoftmax_func = nn.LogSoftmax(dim=<span class="hljs-number">1</span>)<br>logsoftmax_output = logsoftmax_func(x_input)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;logsoftmax_output:\n&#x27;</span>, logsoftmax_output)<br><br><span class="hljs-comment"># pytorch中关于NLLLoss的默认参数配置为：reducetion=True、size_average=True</span><br>nllloss_func = nn.NLLLoss()<br>nlloss_output = nllloss_func(logsoftmax_output, y_target)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;nlloss_output:\n&#x27;</span>, nlloss_output)<br><br><span class="hljs-comment"># 直接使用pytorch中的loss_func=nn.CrossEntropyLoss()看与经过NLLLoss的计算是不是一样</span><br>crossentropyloss = nn.CrossEntropyLoss()<br>crossentropyloss_output = crossentropyloss(x_input, y_target)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;crossentropyloss_output:\n&#x27;</span>, crossentropyloss_output)<br></code></pre></td></tr></table></figure>
+<p>输出结果如下：</p>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs subunit">x_input:<br> tensor([[ 0.1286,  1.1363,  0.5676],<br>        [ 1.0740, <span class="hljs-string">-0</span>.7359, <span class="hljs-string">-0</span>.6731],<br>        [ 0.7915, <span class="hljs-string">-0</span>.8525, <span class="hljs-string">-1</span>.2906]])<br>soft_output:<br> tensor([[0.1890, 0.5178, 0.2932],<br>        [0.7474, 0.1223, 0.1303],<br>        [0.7588, 0.1466, 0.0946]])<br>log_output:<br> tensor([[<span class="hljs-string">-1</span>.6659, <span class="hljs-string">-0</span>.6582, <span class="hljs-string">-1</span>.2269],<br>        [<span class="hljs-string">-0</span>.2911, <span class="hljs-string">-2</span>.1011, <span class="hljs-string">-2</span>.0382],<br>        [<span class="hljs-string">-0</span>.2760, <span class="hljs-string">-1</span>.9200, <span class="hljs-string">-2</span>.3581]])<br>logsoftmax_output:<br> tensor([[<span class="hljs-string">-1</span>.6659, <span class="hljs-string">-0</span>.6582, <span class="hljs-string">-1</span>.2269],<br>        [<span class="hljs-string">-0</span>.2911, <span class="hljs-string">-2</span>.1011, <span class="hljs-string">-2</span>.0382],<br>        [<span class="hljs-string">-0</span>.2760, <span class="hljs-string">-1</span>.9200, <span class="hljs-string">-2</span>.3581]])<br>nlloss_output:<br> tensor(0.9908)<br>crossentropyloss_output:<br> tensor(0.9908)<br></code></pre></td></tr></table></figure>
+<h3 id="hingle-loss">Hingle Loss</h3>
+<p>Hingle
+Loss为合页损失函数，常用于分类问题。合页损失函数不仅要分类正确，而且确信度足够高时损失才是0，也就是说，合页损失函数对学习有更高的要求。一个常见的例子为SVM，其数学公式如下：</p>
+<p><span class="math display">\[Hingle Loss=max(0, 1-y \cdot
+\widetilde{y})\]</span></p>
+<p>其中<span class="math inline">\(y\)</span>为真实标签，<span
+class="math inline">\(\widetilde{y}\)</span>为预测标签。</p>
+<p>Keras实现代码如下：</p>
+<figure>
+<img src="/img/nlp47_12.png" srcset="/img/loading.gif" lazyload alt="Keras Hingle Loss" />
+<figcaption aria-hidden="true">Keras Hingle Loss</figcaption>
+</figure>
+<p>PyTorch中没有专门的Hingle
+Loss实现函数，不过我们可以很轻松地自己实现，代码如下：</p>
+<figure>
+<img src="/img/nlp47_13.png" srcset="/img/loading.gif" lazyload alt="PyTorch Hingle Loss" />
+<figcaption aria-hidden="true">PyTorch Hingle Loss</figcaption>
+</figure>
+<h3 id="总结">总结</h3>
+<p>本文介绍了NLP任务中一些常见的损失函数（Loss
+Function），并使用Keras、PyTorch给出具体例子。</p>
+<p>本文代码已上传至Github，地址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/deep_learning_miscellaneous/tree/master/loss_function">https://github.com/percent4/deep_learning_miscellaneous/tree/master/loss_function</a>
+。</p>
+<p>2021年4月24日于上海浦东，此日惠风和畅~</p>
+<h3 id="参考网址">参考网址</h3>
+<ol type="1">
+<li>How To Build Custom Loss Functions In Keras For Any Use
+Case：https://cnvrg.io/keras-custom-loss-functions/</li>
+<li>Pytorch常用的交叉熵损失函数CrossEntropyLoss()详解：https://zhuanlan.zhihu.com/p/98785902</li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/NLP/" class="print-no-link">#NLP</a>
+      
+        <a href="/tags/%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0/" class="print-no-link">#损失函数</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（四十七）常见的损失函数</div>
+      <div>http://example.com/2023/07/10/NLP（四十七）常见的损失函数/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月10日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/07/10/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E5%85%AB%EF%BC%89%E6%96%87%E6%9C%AC%E7%BA%A0%E9%94%99%E4%B9%8B%E8%8E%B7%E5%8F%96%E5%BD%A2%E8%BF%91%E5%AD%97/" title="NLP（四十八）文本纠错之获取形近字">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NLP（四十八）文本纠错之获取形近字</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/07/10/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E5%85%AD%EF%BC%89%E5%AF%B9%E6%8A%97%E8%AE%AD%E7%BB%83%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95/" title="NLP（四十六）对抗训练的一次尝试">
+                        <span class="hidden-mobile">NLP（四十六）对抗训练的一次尝试</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"你的评论将对作者弥足珍贵！","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
