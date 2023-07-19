@@ -19,27 +19,27 @@
     <meta name="description" content="本文将会通过详细的分析，逐步介绍Self-Attention。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="NLP（二十九）一步一步，理解Self-Attention">
-<meta property="og:url" content="http://example.com/2023/07/09/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B9%9D%EF%BC%89%E4%B8%80%E6%AD%A5%E4%B8%80%E6%AD%A5%EF%BC%8C%E7%90%86%E8%A7%A3Self-Attention/index.html">
+<meta property="og:url" content="https://percent4.github.io/2023/07/09/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B9%9D%EF%BC%89%E4%B8%80%E6%AD%A5%E4%B8%80%E6%AD%A5%EF%BC%8C%E7%90%86%E8%A7%A3Self-Attention/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="本文将会通过详细的分析，逐步介绍Self-Attention。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/nlp29_1.png">
-<meta property="og:image" content="http://example.com/img/nlp29_2.gif">
-<meta property="og:image" content="http://example.com/img/nlp29_3.gif">
-<meta property="og:image" content="http://example.com/img/nlp29_4.gif">
-<meta property="og:image" content="http://example.com/img/nlp29_5.gif">
-<meta property="og:image" content="http://example.com/img/nlp29_6.gif">
-<meta property="og:image" content="http://example.com/img/nlp29_7.gif">
-<meta property="og:image" content="http://example.com/img/nlp29_8.gif">
-<meta property="og:image" content="http://example.com/img/nlp29_9.gif">
-<meta property="og:image" content="http://example.com/img/nlp29_10.gif">
+<meta property="og:image" content="https://percent4.github.io/img/nlp29_1.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp29_2.gif">
+<meta property="og:image" content="https://percent4.github.io/img/nlp29_3.gif">
+<meta property="og:image" content="https://percent4.github.io/img/nlp29_4.gif">
+<meta property="og:image" content="https://percent4.github.io/img/nlp29_5.gif">
+<meta property="og:image" content="https://percent4.github.io/img/nlp29_6.gif">
+<meta property="og:image" content="https://percent4.github.io/img/nlp29_7.gif">
+<meta property="og:image" content="https://percent4.github.io/img/nlp29_8.gif">
+<meta property="og:image" content="https://percent4.github.io/img/nlp29_9.gif">
+<meta property="og:image" content="https://percent4.github.io/img/nlp29_10.gif">
 <meta property="article:published_time" content="2023-07-09T03:46:31.000Z">
 <meta property="article:modified_time" content="2023-07-09T03:55:05.795Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="Self-Attention">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/nlp29_1.png">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp29_1.png">
   
   
   
@@ -81,7 +81,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -530,7 +530,7 @@ aria-hidden="true">将权重后value（黄色）相加得到输出1</figcaption>
   <div class="license-box my-3">
     <div class="license-title">
       <div>NLP（二十九）一步一步，理解Self-Attention</div>
-      <div>http://example.com/2023/07/09/NLP（二十九）一步一步，理解Self-Attention/</div>
+      <div>https://percent4.github.io/2023/07/09/NLP（二十九）一步一步，理解Self-Attention/</div>
     </div>
     <div class="license-meta">
       

@@ -19,12 +19,12 @@
     <meta name="description" content="本文将介绍如何利用ALBERT实现文本二分类。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="NLP（二十二）利用ALBERT实现文本二分类">
-<meta property="og:url" content="http://example.com/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%BA%8C%EF%BC%89%E5%88%A9%E7%94%A8ALBERT%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E4%BA%8C%E5%88%86%E7%B1%BB/index.html">
+<meta property="og:url" content="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%BA%8C%EF%BC%89%E5%88%A9%E7%94%A8ALBERT%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E4%BA%8C%E5%88%86%E7%B1%BB/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="本文将介绍如何利用ALBERT实现文本二分类。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/nlp22_2.png">
-<meta property="og:image" content="http://example.com/img/nlp22_3.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp22_2.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp22_3.png">
 <meta property="article:published_time" content="2023-07-08T14:24:34.000Z">
 <meta property="article:modified_time" content="2023-07-08T14:32:28.162Z">
 <meta property="article:author" content="Jclian91">
@@ -32,7 +32,7 @@
 <meta property="article:tag" content="文本分类">
 <meta property="article:tag" content="ALBERT">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/nlp22_2.png">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp22_2.png">
   
   
   
@@ -74,7 +74,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -318,7 +318,7 @@
               <div class="markdown-body">
                 
                 <p>在文章<a
-target="_blank" rel="noopener" href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%EF%BC%89%E5%88%A9%E7%94%A8BERT%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E4%BA%8C%E5%88%86%E7%B1%BB/">NLP（二十）利用BERT实现文本二分类</a>中，笔者介绍了如何使用BERT来实现文本二分类功能，以判别是否属于出访类事件为例子。但是呢，利用BERT在做模型预测的时候存在预测时间较长的问题。因此，我们考虑用新出来的预训练模型来加快模型预测速度。</p>
+href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%EF%BC%89%E5%88%A9%E7%94%A8BERT%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E4%BA%8C%E5%88%86%E7%B1%BB/">NLP（二十）利用BERT实现文本二分类</a>中，笔者介绍了如何使用BERT来实现文本二分类功能，以判别是否属于出访类事件为例子。但是呢，利用BERT在做模型预测的时候存在预测时间较长的问题。因此，我们考虑用新出来的预训练模型来加快模型预测速度。</p>
 <p>本文将介绍如何利用ALBERT来实现文本二分类。</p>
 <h3 id="关于albert">关于ALBERT</h3>
 <p>ALBERT的提出时间大约是在2019年10月，其第一作者为谷歌科学家蓝振忠博士。ALBERT的论文地址为：<a
@@ -335,14 +335,14 @@ parameterization）；</p></li>
 <li><p>句间连贯（Inter-sentence coherence loss）；</p></li>
 <li><p>移除dropout 。</p>
 <p>笔者在北京的时候也写过ALBERT在提升序列标注算法的预测速度方面的一篇文章：<a
-target="_blank" rel="noopener" href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E5%8D%81%E5%85%AB%EF%BC%89%E5%88%A9%E7%94%A8ALBERT%E6%8F%90%E5%8D%87%E6%A8%A1%E5%9E%8B%E9%A2%84%E6%B5%8B%E9%80%9F%E5%BA%A6%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95/">NLP（十八）利用ALBERT提升模型预测速度的一次尝试</a>
+href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E5%8D%81%E5%85%AB%EF%BC%89%E5%88%A9%E7%94%A8ALBERT%E6%8F%90%E5%8D%87%E6%A8%A1%E5%9E%8B%E9%A2%84%E6%B5%8B%E9%80%9F%E5%BA%A6%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95/">NLP（十八）利用ALBERT提升模型预测速度的一次尝试</a>
 ，该项目的Github地址为：<a
 target="_blank" rel="noopener" href="https://github.com/percent4/ALBERT_4_Time_Recognition">https://github.com/percent4/ALBERT_4_Time_Recognition</a>
 。</p></li>
 </ul>
 <h3 id="项目说明">项目说明</h3>
 <p>本项目的数据和代码主要参考笔者的文章<a
-target="_blank" rel="noopener" href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%EF%BC%89%E5%88%A9%E7%94%A8BERT%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E4%BA%8C%E5%88%86%E7%B1%BB/">NLP（二十）利用BERT实现文本二分类</a>，该项目是想判别输入的句子是否属于政治上的出访类事件。笔者一共收集了340条数据，其中280条用作训练集，60条用作测试集。</p>
+href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%EF%BC%89%E5%88%A9%E7%94%A8BERT%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E4%BA%8C%E5%88%86%E7%B1%BB/">NLP（二十）利用BERT实现文本二分类</a>，该项目是想判别输入的句子是否属于政治上的出访类事件。笔者一共收集了340条数据，其中280条用作训练集，60条用作测试集。</p>
 <p>项目结构如下图：</p>
 <p><a href="/img/nlp22_1.png">项目结构</a></p>
 <p>在这里我们使用ALBERT已经训练好的文件<code>albert_tiny</code>，借鉴BERT的调用方法，我们在这里给出<code>albert_zh</code>模块，能够让ALBERT提取文本的特征，具体代码不在这里给出，有兴趣的读者可以访问该项目的Github地址：<a
@@ -358,7 +358,7 @@ target="_blank" rel="noopener" href="https://github.com/percent4/ALBERT_text_cla
 <h3 id="与bert的预测对比">与BERT的预测对比</h3>
 <p>接下来我们在模型预测上的时间，与BERT的文本二分类模型预测时间做一个对比，这样有助于提升我们对ALBERT的印象。</p>
 <p>BERT的文本二分类模型预测可以参考文章<a
-target="_blank" rel="noopener" href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%EF%BC%89%E5%88%A9%E7%94%A8BERT%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E4%BA%8C%E5%88%86%E7%B1%BB/">NLP（二十）利用BERT实现文本二分类</a>，本文给出的代码与BERT实现的模型预测代码基本一致，只不过BERT提取特征改成ALBERT提取特征。</p>
+href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%EF%BC%89%E5%88%A9%E7%94%A8BERT%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E4%BA%8C%E5%88%86%E7%B1%BB/">NLP（二十）利用BERT实现文本二分类</a>，本文给出的代码与BERT实现的模型预测代码基本一致，只不过BERT提取特征改成ALBERT提取特征。</p>
 <p>本文的模型预测代码（model_predict.py）如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># author: Jclian91</span><br><span class="hljs-comment"># place: Pudong Shanghai</span><br><span class="hljs-comment"># time: 2020-03-04 17:33</span><br><br><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">from</span> albert_zh.extract_feature <span class="hljs-keyword">import</span> BertVector<br><span class="hljs-keyword">from</span> keras.models <span class="hljs-keyword">import</span> load_model<br>load_model = load_model(<span class="hljs-string">&quot;visit_classify.h5&quot;</span>)<br><br><span class="hljs-comment"># 预测语句</span><br>texts = [<span class="hljs-string">&#x27;在访问限制中，用户可以选择禁用iPhone的功能，包括Siri、iTunes购买功能、安装/删除应用等，甚至还可以让iPhone变成一台功能手机。以下是访问限制具体可以实现的一些功能&#x27;</span>,<br>         <span class="hljs-string">&#x27;IT之家4月23日消息 近日，谷歌在其官方论坛发布消息表示，他们为Android Auto添加了一项新功能：可以访问完整联系人列表。用户现在可以通过在Auto的电话拨号界面中打开左上角的菜单访问完整的联系人列表。值得注意的是，这一功能仅支持在车辆停止时使用。&#x27;</span>,<br>         <span class="hljs-string">&#x27;要通过telnet 访问路由器，需要先通过console 口对路由器进行基本配置，例如：IP地址、密码等。&#x27;</span>,<br>         <span class="hljs-string">&#x27;IT之家3月26日消息 近日反盗版的国际咨询公司MUSO发布了2017年的年度报告，其中的数据显示，去年盗版资源网站访问量达到了3000亿次，比前一年（2016年）提高了1.6%。美国是访问盗版站点次数最多的国家，共有279亿次访问；其后分别是俄罗斯、印度和巴西，中国位列第18。&#x27;</span>,<br>         <span class="hljs-string">&#x27;目前A站已经恢复了访问，可以直接登录，网页加载正常，视频已经可以正常播放。&#x27;</span>,<br>         <span class="hljs-string">&#x27;Win7电脑提示无线适配器或访问点有问题怎么办?很多用户在使用无线网连接上网时，发现无线网显示已连接，但旁边却出现了一个黄色感叹号，无法进行网络操作，通过诊断提示电脑无线适配器或访问点有问题，且处于未修复状态，这该怎么办呢?下面小编就和大家分享下Win7电脑提示无线适配器或访问点有问题的解决方法。&#x27;</span>,<br>         <span class="hljs-string">&#x27;未开发所有安全组之前访问，FTP可以链接上，但是打开会很慢，需要1-2分钟才能链接上&#x27;</span>,<br>         <span class="hljs-string">&#x27;win7系统电脑的用户，在连接WIFI网络网上时，有时候会遇到突然上不了网，查看连接的WIFI出现“有限的访问权限”的文字提示。&#x27;</span>,<br>         <span class="hljs-string">&#x27;2月28日，唐山曹妃甸蓝色海洋科技有限公司董事长赵力军等一行5人到黄海水产研究所交流访问。黄海水产研究所副所长辛福言及相关部门负责人、专家等参加了会议。&#x27;</span>,<br>         <span class="hljs-string">&#x27;与标准Mozy一样，Stash文件夹为用户提供了对其备份文件的基于云的访问，但是它们还使他们可以随时，跨多个设备(包括所有计算机，智能手机和平板电脑)访问它们。换句话说，使用浏览器的任何人都可以同时查看文件(如果需要)。操作系统和设备品牌无关。&#x27;</span>,<br>         <span class="hljs-string">&#x27;研究表明，每个网页的平均预期寿命为44至100天。当用户通过浏览器访问已消失的网页时，就会看到「Page Not Found」的错误信息。对于这种情况，相信大多数人也只能不了了之。不过有责任心的组织——互联网档案馆为了提供更可靠的Web服务，它联手Brave浏览器专门针对此类网页提供了一键加载存档页面的功能。&#x27;</span>,<br>         <span class="hljs-string">&#x27;3日，根据三星电子的消息，李在镕副会长这天访问了位于韩国庆尚北道龟尾市的三星电子工厂。&#x27;</span>] * <span class="hljs-number">10</span><br><br>labels = []<br><br>bert_model = BertVector(pooling_strategy=<span class="hljs-string">&quot;REDUCE_MEAN&quot;</span>, max_seq_len=<span class="hljs-number">100</span>)<br><br>init_time = time.time()<br><br><span class="hljs-comment"># 对上述句子进行预测</span><br><span class="hljs-keyword">for</span> text <span class="hljs-keyword">in</span> texts:<br><br>    <span class="hljs-comment"># 将句子转换成向量</span><br>    vec = bert_model.encode([text])[<span class="hljs-string">&quot;encodes&quot;</span>][<span class="hljs-number">0</span>]<br>    x_train = np.array([vec])<br><br>    <span class="hljs-comment"># 模型预测</span><br>    predicted = load_model.predict(x_train)<br>    y = np.argmax(predicted[<span class="hljs-number">0</span>])<br>    label = <span class="hljs-string">&#x27;Y&#x27;</span> <span class="hljs-keyword">if</span> y <span class="hljs-keyword">else</span> <span class="hljs-string">&#x27;N&#x27;</span><br>    labels.append(label)<br><br>cost_time = time.time() - init_time<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Average cost time: %s.&quot;</span> % (cost_time/<span class="hljs-built_in">len</span>(texts)))<br><br><span class="hljs-keyword">for</span> text, label <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(texts, labels):<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;%s\t%s&#x27;</span> % (label, text))<br><br>df = pd.DataFrame(&#123;<span class="hljs-string">&#x27;句子&#x27;</span>:texts, <span class="hljs-string">&quot;是否属于出访类事件&quot;</span>: labels&#125;)<br>df.to_excel(<span class="hljs-string">&#x27;./result.xlsx&#x27;</span>, index=<span class="hljs-literal">False</span>)<br></code></pre></td></tr></table></figure>
 <p>输出的平均预测时长为：<code>16.98ms</code>，而BERT版的平均预测时间为：<code>257.31ms</code>。</p>
@@ -432,7 +432,7 @@ target="_blank" rel="noopener" href="https://github.com/brightmart/albert_zh">ht
   <div class="license-box my-3">
     <div class="license-title">
       <div>NLP（二十二）利用ALBERT实现文本二分类</div>
-      <div>http://example.com/2023/07/08/NLP（二十二）利用ALBERT实现文本二分类/</div>
+      <div>https://percent4.github.io/2023/07/08/NLP（二十二）利用ALBERT实现文本二分类/</div>
     </div>
     <div class="license-meta">
       

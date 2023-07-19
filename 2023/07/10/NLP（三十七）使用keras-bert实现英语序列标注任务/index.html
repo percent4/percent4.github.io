@@ -19,11 +19,11 @@
     <meta name="description" content="本文将会介绍如何使用keras-bert实现英语序列标注任务。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="NLP（三十七）使用keras-bert实现英语序列标注任务">
-<meta property="og:url" content="http://example.com/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E4%B8%83%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E8%8B%B1%E8%AF%AD%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/index.html">
+<meta property="og:url" content="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E4%B8%83%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E8%8B%B1%E8%AF%AD%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="本文将会介绍如何使用keras-bert实现英语序列标注任务。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/nlp37_1.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp37_1.png">
 <meta property="article:published_time" content="2023-07-10T02:10:46.000Z">
 <meta property="article:modified_time" content="2023-07-10T02:13:49.355Z">
 <meta property="article:author" content="Jclian91">
@@ -31,7 +31,7 @@
 <meta property="article:tag" content="keras-bert">
 <meta property="article:tag" content="序列标注">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/nlp37_1.png">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp37_1.png">
   
   
   
@@ -73,7 +73,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -317,11 +317,11 @@
               <div class="markdown-body">
                 
                 <p>在文章<a
-target="_blank" rel="noopener" href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a>中，我们已经用keras-bert模块实现了中文序列标注任务，其中对BERT进行微调。当前，我们也可以顺便实现下英语序列标注任务。</p>
+href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a>中，我们已经用keras-bert模块实现了中文序列标注任务，其中对BERT进行微调。当前，我们也可以顺便实现下英语序列标注任务。</p>
 <p>本文将介绍如何使用keras-bert实现英语序列标注任务。</p>
 <h3 id="一个小测试">一个小测试</h3>
 <p>使用keras-bert实现英语序列标注任务的代码，大体上与文章<a
-target="_blank" rel="noopener" href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a>中的相似，但英语序列标注有其特殊之处。其特殊之处在于，BERT会将复杂的英语单词拆分成多个简单英语单词，进行tokenize.</p>
+href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a>中的相似，但英语序列标注有其特殊之处。其特殊之处在于，BERT会将复杂的英语单词拆分成多个简单英语单词，进行tokenize.</p>
 <p>下面给出一个例子。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> keras_bert <span class="hljs-keyword">import</span> Tokenizer<br><br><span class="hljs-comment"># 读取词典</span><br>dict_path = <span class="hljs-string">&#x27;./uncased_L-12_H-768_A-12/vocab.txt&#x27;</span><br>token_dict = &#123;&#125;<br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(dict_path, <span class="hljs-string">&#x27;r&#x27;</span>, encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>) <span class="hljs-keyword">as</span> reader:<br>    <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> reader:<br>        token = line.strip()<br>        token_dict[token] = <span class="hljs-built_in">len</span>(token_dict)<br><br>id_token_dict = &#123;v: k <span class="hljs-keyword">for</span> k, v <span class="hljs-keyword">in</span> token_dict.items()&#125;<br>tokenizer = Tokenizer(token_dict=token_dict)<br><br><span class="hljs-comment"># tokenize</span><br>code = tokenizer.encode(<span class="hljs-string">&quot;A man waits in the arrivals hall at Heathrow Airport in London.&quot;</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;ids: &quot;</span>, code[<span class="hljs-number">0</span>])<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;type_ids: &quot;</span>, code[<span class="hljs-number">1</span>])<br>encode_text = [id_token_dict[_] <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> code[<span class="hljs-number">0</span>]]<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;encode_text: &quot;</span>, encode_text)<br></code></pre></td></tr></table></figure>
 <p>输出结果为：</p>
@@ -363,7 +363,7 @@ band, sports team, and non-corporate organisations)</label></li>
 </ol>
 <h3 id="模型评估">模型评估</h3>
 <p>英语序列标注使用keras-bert进行模型训练、评估和预测的代码与文章<a
-target="_blank" rel="noopener" href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a>中的相似，本文不再详细给出，感兴趣的读者可以参考Github的实现代码：<a
+href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a>中的相似，本文不再详细给出，感兴趣的读者可以参考Github的实现代码：<a
 target="_blank" rel="noopener" href="https://github.com/percent4/keras_bert_english_sequence_labeling">https://github.com/percent4/keras_bert_english_sequence_labeling</a>
 。 我们利用上述模型，在两个数据集上的评估结果如下：</p>
 <ul>
@@ -475,7 +475,7 @@ target="_blank" rel="noopener" href="https://github.com/percent4/keras_bert_engl
   <div class="license-box my-3">
     <div class="license-title">
       <div>NLP（三十七）使用keras-bert实现英语序列标注任务</div>
-      <div>http://example.com/2023/07/10/NLP（三十七）使用keras-bert实现英语序列标注任务/</div>
+      <div>https://percent4.github.io/2023/07/10/NLP（三十七）使用keras-bert实现英语序列标注任务/</div>
     </div>
     <div class="license-meta">
       

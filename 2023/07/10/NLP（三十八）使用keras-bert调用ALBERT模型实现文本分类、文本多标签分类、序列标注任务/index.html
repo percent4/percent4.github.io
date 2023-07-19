@@ -19,7 +19,7 @@
     <meta name="description" content="本文将会介绍如何使用keras-bert调用ALBERT模型实现文本分类、文本多标签分类、序列标注任务。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="NLP（三十八）使用keras-bert调用ALBERT模型实现文本分类、文本多标签分类、序列标注任务">
-<meta property="og:url" content="http://example.com/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%85%AB%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E8%B0%83%E7%94%A8ALBERT%E6%A8%A1%E5%9E%8B%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E3%80%81%E6%96%87%E6%9C%AC%E5%A4%9A%E6%A0%87%E7%AD%BE%E5%88%86%E7%B1%BB%E3%80%81%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/index.html">
+<meta property="og:url" content="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%85%AB%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E8%B0%83%E7%94%A8ALBERT%E6%A8%A1%E5%9E%8B%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E3%80%81%E6%96%87%E6%9C%AC%E5%A4%9A%E6%A0%87%E7%AD%BE%E5%88%86%E7%B1%BB%E3%80%81%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="本文将会介绍如何使用keras-bert调用ALBERT模型实现文本分类、文本多标签分类、序列标注任务。">
 <meta property="og:locale" content="zh_CN">
@@ -30,8 +30,8 @@
 <meta property="article:tag" content="keras-bert">
 <meta property="article:tag" content="序列标注">
 <meta property="article:tag" content="文本分类">
-<meta property="article:tag" content="多标签分类">
 <meta property="article:tag" content="ALBERT">
+<meta property="article:tag" content="多标签分类">
 <meta name="twitter:card" content="summary_large_image">
   
   
@@ -74,7 +74,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -318,13 +318,13 @@
               <div class="markdown-body">
                 
                 <p>在系列文章<a
-target="_blank" rel="noopener" href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a>、<a
-target="_blank" rel="noopener" href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E4%BA%94%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E5%A4%9A%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1/">NLP（三十五）使用keras-bert实现文本多分类任务</a>、<a
-target="_blank" rel="noopener" href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E5%A4%9A%E6%A0%87%E7%AD%BE%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1/">NLP（三十六）使用keras-bert实现文本多标签分类任务</a>中，笔者介绍了如何使用keras-bert模块来调用BERT等模型来实现文本分类、文本多标签分类、序列标注任务。</p>
+href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a>、<a
+href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E4%BA%94%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E5%A4%9A%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1/">NLP（三十五）使用keras-bert实现文本多分类任务</a>、<a
+href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E5%A4%9A%E6%A0%87%E7%AD%BE%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1/">NLP（三十六）使用keras-bert实现文本多标签分类任务</a>中，笔者介绍了如何使用keras-bert模块来调用BERT等模型来实现文本分类、文本多标签分类、序列标注任务。</p>
 <p>在系列文章<a
-target="_blank" rel="noopener" href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%BA%8C%EF%BC%89%E5%88%A9%E7%94%A8ALBERT%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E4%BA%8C%E5%88%86%E7%B1%BB/">NLP（二十二）利用ALBERT实现文本二分类</a>、<a
-target="_blank" rel="noopener" href="https://percent4.github.io/2023/07/09/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%BA%94%EF%BC%89%E5%AE%9E%E7%8E%B0ALBERT-Bi-LSTM-CRF%E6%A8%A1%E5%9E%8B/">NLP（二十五）实现ALBERT+Bi-LSTM+CRF模型</a>、<a
-target="_blank" rel="noopener" href="https://percent4.github.io/2023/07/09/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E5%85%AB%EF%BC%89%E5%A4%9A%E6%A0%87%E7%AD%BE%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/">NLP（二十八）多标签文本分类</a>中，笔者将ALBERT模型作为特征向量提取工具，实现了文本分类、文本多标签分类、序列标注任务。</p>
+href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%BA%8C%EF%BC%89%E5%88%A9%E7%94%A8ALBERT%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E4%BA%8C%E5%88%86%E7%B1%BB/">NLP（二十二）利用ALBERT实现文本二分类</a>、<a
+href="https://percent4.github.io/2023/07/09/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%BA%94%EF%BC%89%E5%AE%9E%E7%8E%B0ALBERT-Bi-LSTM-CRF%E6%A8%A1%E5%9E%8B/">NLP（二十五）实现ALBERT+Bi-LSTM+CRF模型</a>、<a
+href="https://percent4.github.io/2023/07/09/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E5%85%AB%EF%BC%89%E5%A4%9A%E6%A0%87%E7%AD%BE%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/">NLP（二十八）多标签文本分类</a>中，笔者将ALBERT模型作为特征向量提取工具，实现了文本分类、文本多标签分类、序列标注任务。</p>
 <p>本文将会介绍如何使用keras-bert调用ALBERT模型实现文本分类、文本多标签分类、序列标注任务，其模型效果比单纯将ALBERT模型作为特征向量提取工具的效果肯定来得好。</p>
 <p>使用keras-bert调用ALBERT模型实现文本多分类任务的Github项目网址：<a
 target="_blank" rel="noopener" href="https://github.com/percent4/keras_albert_text_classification">https://github.com/percent4/keras_albert_text_classification</a>
@@ -487,9 +487,9 @@ id="不同版本albert模型与bert模型的参数对比">不同版本ALBERT模�
       
         <a href="/tags/%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/" class="print-no-link">#文本分类</a>
       
-        <a href="/tags/%E5%A4%9A%E6%A0%87%E7%AD%BE%E5%88%86%E7%B1%BB/" class="print-no-link">#多标签分类</a>
-      
         <a href="/tags/ALBERT/" class="print-no-link">#ALBERT</a>
+      
+        <a href="/tags/%E5%A4%9A%E6%A0%87%E7%AD%BE%E5%88%86%E7%B1%BB/" class="print-no-link">#多标签分类</a>
       
     </div>
   
@@ -502,7 +502,7 @@ id="不同版本albert模型与bert模型的参数对比">不同版本ALBERT模�
   <div class="license-box my-3">
     <div class="license-title">
       <div>NLP（三十八）使用keras-bert调用ALBERT模型实现文本分类、文本多标签分类、序列标注任务</div>
-      <div>http://example.com/2023/07/10/NLP（三十八）使用keras-bert调用ALBERT模型实现文本分类、文本多标签分类、序列标注任务/</div>
+      <div>https://percent4.github.io/2023/07/10/NLP（三十八）使用keras-bert调用ALBERT模型实现文本分类、文本多标签分类、序列标注任务/</div>
     </div>
     <div class="license-meta">
       

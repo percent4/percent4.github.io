@@ -19,18 +19,18 @@
     <meta name="description" content="本文将会介绍模型调参技巧之Warmup and Decay。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="NLP（四十三）模型调参技巧之Warmup and Decay">
-<meta property="og:url" content="http://example.com/2023/07/10/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%B8%89%EF%BC%89%E6%A8%A1%E5%9E%8B%E8%B0%83%E5%8F%82%E6%8A%80%E5%B7%A7%E4%B9%8BWarmup-and-Decay/index.html">
+<meta property="og:url" content="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%B8%89%EF%BC%89%E6%A8%A1%E5%9E%8B%E8%B0%83%E5%8F%82%E6%8A%80%E5%B7%A7%E4%B9%8BWarmup-and-Decay/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="本文将会介绍模型调参技巧之Warmup and Decay。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/nlp43_1.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp43_1.png">
 <meta property="article:published_time" content="2023-07-10T08:58:17.000Z">
 <meta property="article:modified_time" content="2023-07-10T09:00:58.640Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="Warmup and Decay">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/nlp43_1.png">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp43_1.png">
   
   
   
@@ -72,7 +72,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -341,7 +341,7 @@ Decay的代码例子，如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">from</span> keras_bert <span class="hljs-keyword">import</span> AdamWarmup, calc_train_steps<br><br>train_x = np.random.standard_normal((<span class="hljs-number">1024</span>, <span class="hljs-number">100</span>))<br><br>total_steps, warmup_steps = calc_train_steps(<br>    num_example=train_x.shape[<span class="hljs-number">0</span>],<br>    batch_size=<span class="hljs-number">32</span>,<br>    epochs=<span class="hljs-number">10</span>,<br>    warmup_proportion=<span class="hljs-number">0.1</span>,<br>)<br><br>optimizer = AdamWarmup(total_steps, warmup_steps, lr=<span class="hljs-number">1e-3</span>, min_lr=<span class="hljs-number">1e-5</span>)<br></code></pre></td></tr></table></figure>
 <h3 id="warmup-and-decay实战">Warmup and Decay实战</h3>
 <p>笔者在文章<a
-target="_blank" rel="noopener" href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a>中，在使用keras-bert训练
+href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a>中，在使用keras-bert训练
 序列标注模型时，学习率调整策略使用了<code>ReduceLROnPlateau</code>，代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">reduce_lr = ReduceLROnPlateau(monitor=<span class="hljs-string">&#x27;val_loss&#x27;</span>, min_delta=<span class="hljs-number">0.0004</span>, patience=<span class="hljs-number">2</span>, factor=<span class="hljs-number">0.1</span>, min_lr=<span class="hljs-number">1e-6</span>,<br>                                  mode=<span class="hljs-string">&#x27;auto&#x27;</span>,<br>                                  verbose=<span class="hljs-number">1</span>)<br></code></pre></td></tr></table></figure>
 <p>在三个数据集上的评估结果如下：</p>
@@ -478,7 +478,7 @@ target="_blank" rel="noopener" href="https://github.com/percent4/keras_bert_sequ
   <div class="license-box my-3">
     <div class="license-title">
       <div>NLP（四十三）模型调参技巧之Warmup and Decay</div>
-      <div>http://example.com/2023/07/10/NLP（四十三）模型调参技巧之Warmup-and-Decay/</div>
+      <div>https://percent4.github.io/2023/07/10/NLP（四十三）模型调参技巧之Warmup-and-Decay/</div>
     </div>
     <div class="license-meta">
       
