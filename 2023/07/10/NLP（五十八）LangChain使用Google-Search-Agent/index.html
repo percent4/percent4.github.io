@@ -23,7 +23,6 @@
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="本文将会介绍如何在LangChain使用Google Search Agent。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://percent4.github.io/img/nlp58_1.png">
 <meta property="og:image" content="https://percent4.github.io/img/nlp58_2.png">
 <meta property="og:image" content="https://percent4.github.io/img/nlp58_3.png">
 <meta property="article:published_time" content="2023-07-10T14:47:48.000Z">
@@ -33,7 +32,7 @@
 <meta property="article:tag" content="LangChain">
 <meta property="article:tag" content="AIGC">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://percent4.github.io/img/nlp58_1.png">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp58_2.png">
   
   
   
@@ -321,54 +320,82 @@
                 <h3 id="大模型存在的问题">大模型存在的问题</h3>
 <p>大模型在给人带来眼前一亮的表现，深深地震撼各行各业人们的同时，其本身也存在着不少问题。</p>
 <p>以OpenAI的ChatGPT模型为例，其存在的问题有：</p>
-<ol>
-<li>事实错误，容易一本正经地胡说八道，造成幻觉问题。<br>
-<img src="/img/nlp58_1.png" srcset="/img/loading.gif" lazyload alt="个园、瘦西湖重复，平江路古街是苏州的景点，回答错误"></li>
-<li>逻辑推理能力弱，缺乏像人类一样的判断能力<br>
-<img src="/img/nlp58_2.png" srcset="/img/loading.gif" lazyload alt="大模型不会坚持自己正确的答案，逻辑推理能力弱"></li>
-<li>世界知识的局限性与时限性，对专业领域知识、私人知识和实时信息，无法回答<br>
-<img src="/img/nlp58_3.png" srcset="/img/loading.gif" lazyload alt="OpenAI的ChatGPT模型的知识库截止至2021年9月，无法回答这之后的信息"></li>
+<ol type="1">
+<li>事实错误，容易一本正经地胡说八道，造成幻觉问题。 <img
+src="/img/nlp58_1.png" srcset="/img/loading.gif" lazyload
+alt="个园、瘦西湖重复，平江路古街是苏州的景点，回答错误" /></li>
+<li>逻辑推理能力弱，缺乏像人类一样的判断能力 <img src="/img/nlp58_2.png" srcset="/img/loading.gif" lazyload
+alt="大模型不会坚持自己正确的答案，逻辑推理能力弱" /></li>
+<li>世界知识的局限性与时限性，对专业领域知识、私人知识和实时信息，无法回答
+<img src="/img/nlp58_3.png" srcset="/img/loading.gif" lazyload
+alt="OpenAI的ChatGPT模型的知识库截止至2021年9月，无法回答这之后的信息" /></li>
 </ol>
-<h3 id="LangChain中的Agent">LangChain中的Agent</h3>
-<p>Agent（代理）是LangChain中的高级功能，可插件化地对模型回答进行修改或补充，弥补模型存在的不足，相当于模型的插件。其中，Google Search代理允许我们使用谷歌搜索。</p>
-<p>首先，我们需要在Google Cloud credential console (<a target="_blank" rel="noopener" href="https://console.cloud.google.com/apis/credentials">https://console.cloud.google.com/apis/credentials</a>)中获取GOOGLE_API_KEY，在Programmable Search Enginge (<a target="_blank" rel="noopener" href="https://programmablesearchengine.google.com/controlpanel/create">https://programmablesearchengine.google.com/controlpanel/create</a>)中获取GOOGLE_CSE_ID，接着安装<code>pip install google-api-python-client</code>第三方模块。具体的设置过程不在此讲述，读者可自行设置。</p>
-<p>下面将介绍如何在LangChain中使用Google Search Agent，Python示例代码如下：</p>
+<h3 id="langchain中的agent">LangChain中的Agent</h3>
+<p>Agent（代理）是LangChain中的高级功能，可插件化地对模型回答进行修改或补充，弥补模型存在的不足，相当于模型的插件。其中，Google
+Search代理允许我们使用谷歌搜索。</p>
+<p>首先，我们需要在Google Cloud credential console (<a
+target="_blank" rel="noopener" href="https://console.cloud.google.com/apis/credentials">https://console.cloud.google.com/apis/credentials</a>)中获取GOOGLE_API_KEY，在Programmable
+Search Enginge (<a
+target="_blank" rel="noopener" href="https://programmablesearchengine.google.com/controlpanel/create">https://programmablesearchengine.google.com/controlpanel/create</a>)中获取GOOGLE_CSE_ID，接着安装<code>pip install google-api-python-client</code>第三方模块。具体的设置过程不在此讲述，读者可自行设置。</p>
+<p>下面将介绍如何在LangChain中使用Google Search
+Agent，Python示例代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><br>os.environ[<span class="hljs-string">&quot;GOOGLE_CSE_ID&quot;</span>] = <span class="hljs-string">&quot;xxx&quot;</span><br>os.environ[<span class="hljs-string">&quot;GOOGLE_API_KEY&quot;</span>] = <span class="hljs-string">&quot;xxx&quot;</span><br><br><span class="hljs-keyword">from</span> langchain.tools <span class="hljs-keyword">import</span> Tool<br><span class="hljs-keyword">from</span> langchain.utilities <span class="hljs-keyword">import</span> GoogleSearchAPIWrapper<br><br>search = GoogleSearchAPIWrapper()<br><br><br><span class="hljs-comment"># return first five search results</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">top3_results</span>(<span class="hljs-params">query</span>):<br>    <span class="hljs-keyword">return</span> search.results(query, <span class="hljs-number">3</span>)<br><br><br>tool = Tool(<br>    name=<span class="hljs-string">&quot;Google Search&quot;</span>,<br>    description=<span class="hljs-string">&quot;Search Google for recent results.&quot;</span>,<br>    func=top3_results,<br>)<br><br><span class="hljs-built_in">print</span>(tool.run(<span class="hljs-string">&quot;2022年诺贝尔物理学奖获得者?&quot;</span>))<br></code></pre></td></tr></table></figure>
 <p>谷歌搜索结果如下：</p>
 <blockquote>
-<p>[{‘title’: ‘三名科学家分享2022年诺贝尔物理学奖-新华网’, ‘link’: ‘<a target="_blank" rel="noopener" href="http://www.news.cn/2022-10/04/c_1129050882.htm">http://www.news.cn/2022-10/04/c_1129050882.htm</a>’, ‘snippet’: ‘Oct 4, 2022 … 新华社斯德哥尔摩10月4日电（记者和苗付一鸣）瑞典皇家科学院4日宣布，将2022年诺贝尔物理学奖授予法国科学家阿兰·阿斯佩、美国科学家约翰·克劳泽和\xa0…’}, {‘title’: ‘2022年诺贝尔物理学奖为何颁给了这三位？ -中新网’, ‘link’: ‘<a target="_blank" rel="noopener" href="https://www.chinanews.com.cn/cj/2022/10-05/9867029.shtml">https://www.chinanews.com.cn/cj/2022/10-05/9867029.shtml</a>’, ‘snippet’: ‘Oct 5, 2022 … 北京时间10月4日下午，瑞典皇家科学院宣布，将2022年诺贝尔物理学奖颁给法国科学家阿兰·阿斯佩(Alain Aspect)、美国科学家约翰·克劳泽(John F.’}, {‘title’: ‘解读2022年诺贝尔物理学奖：为第二次量子革命奠定基础–经济·科技 …’, ‘link’: ‘<a target="_blank" rel="noopener" href="http://finance.people.com.cn/n1/2022/1010/c1004-32542107.html">http://finance.people.com.cn/n1/2022/1010/c1004-32542107.html</a>’, ‘snippet’: ‘Oct 10, 2022 … 瑞典皇家科学院4日宣布，将2022年诺贝尔物理学奖授予法国科学家阿兰·阿斯佩、美国科学家约翰·克劳泽和奥地利科学家安东·蔡林格，以表彰他们在“纠缠光子\xa0…’}]</p>
+<p>[{'title': '三名科学家分享2022年诺贝尔物理学奖-新华网', 'link':
+'http://www.news.cn/2022-10/04/c_1129050882.htm', 'snippet': 'Oct 4,
+2022 ...
+新华社斯德哥尔摩10月4日电（记者和苗付一鸣）瑞典皇家科学院4日宣布，将2022年诺贝尔物理学奖授予法国科学家阿兰·阿斯佩、美国科学家约翰·克劳泽和...'},
+{'title': '2022年诺贝尔物理学奖为何颁给了这三位？ -中新网', 'link':
+'https://www.chinanews.com.cn/cj/2022/10-05/9867029.shtml', 'snippet':
+'Oct 5, 2022 ...
+北京时间10月4日下午，瑞典皇家科学院宣布，将2022年诺贝尔物理学奖颁给法国科学家阿兰·阿斯佩(Alain
+Aspect)、美国科学家约翰·克劳泽(John F.'}, {'title':
+'解读2022年诺贝尔物理学奖：为第二次量子革命奠定基础--经济·科技 ...',
+'link': 'http://finance.people.com.cn/n1/2022/1010/c1004-32542107.html',
+'snippet': 'Oct 10, 2022 ...
+瑞典皇家科学院4日宣布，将2022年诺贝尔物理学奖授予法国科学家阿兰·阿斯佩、美国科学家约翰·克劳泽和奥地利科学家安东·蔡林格，以表彰他们在“纠缠光子...'}]</p>
 </blockquote>
-<h3 id="使用Google-Search-Agent改善大模型">使用Google Search Agent改善大模型</h3>
-<p>借助Google Search Agent，针对大模型回答不了实时信息或超过训练预料库知识的问题，我们能很好地改善这一问题。这也是如何使用外部知识来改善大模型表现的一种办法。</p>
+<h3 id="使用google-search-agent改善大模型">使用Google Search
+Agent改善大模型</h3>
+<p>借助Google Search
+Agent，针对大模型回答不了实时信息或超过训练预料库知识的问题，我们能很好地改善这一问题。这也是如何使用外部知识来改善大模型表现的一种办法。</p>
 <p>以下是示例Python代码：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> langchain.agents <span class="hljs-keyword">import</span> ZeroShotAgent, Tool, AgentExecutor<br><span class="hljs-keyword">from</span> langchain.memory <span class="hljs-keyword">import</span> ConversationBufferMemory<br><span class="hljs-keyword">from</span> langchain <span class="hljs-keyword">import</span> OpenAI, LLMChain<br><span class="hljs-keyword">from</span> langchain.utilities <span class="hljs-keyword">import</span> GoogleSearchAPIWrapper<br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> langchain.agents <span class="hljs-keyword">import</span> initialize_agent<br><span class="hljs-keyword">from</span> langchain.agents <span class="hljs-keyword">import</span> AgentType<br><span class="hljs-keyword">from</span> langchain.agents <span class="hljs-keyword">import</span> load_tools<br><br>os.environ[<span class="hljs-string">&quot;GOOGLE_CSE_ID&quot;</span>] = <span class="hljs-string">&quot;xxx&quot;</span><br>os.environ[<span class="hljs-string">&quot;GOOGLE_API_KEY&quot;</span>] = <span class="hljs-string">&quot;xxx&quot;</span><br>os.environ[<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>] = <span class="hljs-string">&#x27;sk-xxx&#x27;</span><br><br>llm = OpenAI(model_name=<span class="hljs-string">&quot;gpt-3.5-turbo&quot;</span>, temperature=<span class="hljs-number">0</span>)<br>tools = load_tools([<span class="hljs-string">&quot;google-search&quot;</span>], llm=llm)<br><br>agent = initialize_agent(tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=<span class="hljs-literal">True</span>)<br><br><span class="hljs-built_in">print</span>(agent.run(<span class="hljs-string">&quot;现在上海的地铁里程有多少？&quot;</span>))<br></code></pre></td></tr></table></figure>
 <p>对于“现在上海的地铁里程有多少？”这个问题，LangChain的回复链及最终答案如下：</p>
 <figure class="highlight vbnet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs vbnet">&gt; Entering <span class="hljs-built_in">new</span>  chain...<br>I<span class="hljs-comment">&#x27;m not sure about the current length of the Shanghai subway system.</span><br><span class="hljs-symbol">Action:</span> google_search<br>Action Input: <span class="hljs-string">&quot;current length of Shanghai subway system&quot;</span><br><span class="hljs-symbol">Observation:</span> <span class="hljs-keyword">With</span> a total length <span class="hljs-keyword">of</span> <span class="hljs-number">169</span> km it <span class="hljs-built_in">is</span> the world<span class="hljs-comment">&#x27;s 2nd largest fully automated metro system, after the Singapore MRT. Most lines currently use 6 car sets, with the ... Dec 29, 2021 ... Beijing&#x27;s epic subway system added 53 kilometers of new track in 2021, ... addition of Line 14, the total length of the Shanghai Metro now ... This article lists the openings of lines, line segments, stations and fare schemes of the ... The first section opened in 1993, and the system currently has 802 ... Apr 15, 2010</span><br><span class="hljs-symbol">Thought:</span>Based <span class="hljs-keyword">on</span> the search results, the current length <span class="hljs-keyword">of</span> the Shanghai subway system <span class="hljs-built_in">is</span> <span class="hljs-number">831</span> kilometers (<span class="hljs-number">516.4</span> miles).<br>Final Answer: The current length <span class="hljs-keyword">of</span> the Shanghai subway system <span class="hljs-built_in">is</span> <span class="hljs-number">831</span> kilometers.<br><br>&gt; Finished chain.<br>The current length <span class="hljs-keyword">of</span> the Shanghai subway system <span class="hljs-built_in">is</span> <span class="hljs-number">831</span> kilometers.<br></code></pre></td></tr></table></figure>
 <p>我们再来看几个例子：</p>
 <blockquote>
-<p>问题：2022年的诺贝尔物理学家获得者是谁？<br>
-回答：The 2022 Nobel Prize in Physics was awarded to Alain Aspect, John F. Clauser, and Anton Zeilinger.</p>
+<p>问题：2022年的诺贝尔物理学家获得者是谁？ 回答：The 2022 Nobel Prize
+in Physics was awarded to Alain Aspect, John F. Clauser, and Anton
+Zeilinger.</p>
 </blockquote>
 <blockquote>
-<p>问题：2022年的上海市市长是谁？<br>
-回答：2022年的上海市市长是龚正。</p>
+<p>问题：2022年的上海市市长是谁？ 回答：2022年的上海市市长是龚正。</p>
 </blockquote>
 <blockquote>
-<p>问题：2023年苏迪曼杯在哪里举行，获胜者是谁？<br>
-回答：The 2023 Sudirman Cup was held in Suzhou, China, and the winner was China.</p>
+<p>问题：2023年苏迪曼杯在哪里举行，获胜者是谁？ 回答：The 2023 Sudirman
+Cup was held in Suzhou, China, and the winner was China.</p>
 </blockquote>
 <blockquote>
-<p>问题：今年的端午节是哪几天？<br>
-回答：This year’s Dragon Boat Festival will be on June 22nd, 2023.</p>
+<p>问题：今年的端午节是哪几天？ 回答：This year's Dragon Boat Festival
+will be on June 22nd, 2023.</p>
 </blockquote>
-<p>有了Google Search Agent，ChatGPT能很好地回复上述问题，解决了实时信息无法回答的问题，避免了世界知识的局限性和时效性。而没有Google Search Agent，对于上述问题，基本无法回答，就算能回答，也是2021年9月之前的文本信息了。</p>
-<p>美中不足的是，LangChain使用Google Search Agent，给出的问题答复，往往都是英语。而我们想得到中文答案的话，还需要再想一点办法，但回复的内容是令人满意的。</p>
+<p>有了Google Search
+Agent，ChatGPT能很好地回复上述问题，解决了实时信息无法回答的问题，避免了世界知识的局限性和时效性。而没有Google
+Search
+Agent，对于上述问题，基本无法回答，就算能回答，也是2021年9月之前的文本信息了。</p>
+<p>美中不足的是，LangChain使用Google Search
+Agent，给出的问题答复，往往都是英语。而我们想得到中文答案的话，还需要再想一点办法，但回复的内容是令人满意的。</p>
 <h3 id="总结">总结</h3>
-<p>本文主要介绍了如何在LangChain中使用Google Search Agent，来改善大模型存在的不足之处。</p>
+<p>本文主要介绍了如何在LangChain中使用Google Search
+Agent，来改善大模型存在的不足之处。</p>
 <h3 id="参考文献">参考文献</h3>
-<ol>
-<li>Google Search：<a target="_blank" rel="noopener" href="https://python.langchain.com/docs/modules/agents/tools/integrations/google_search">https://python.langchain.com/docs/modules/agents/tools/integrations/google_search</a></li>
-<li>Google搜索包装器：<a target="_blank" rel="noopener" href="https://www.langchain.asia/ecosystem/google_search">https://www.langchain.asia/ecosystem/google_search</a></li>
+<ol type="1">
+<li>Google Search：<a
+target="_blank" rel="noopener" href="https://python.langchain.com/docs/modules/agents/tools/integrations/google_search">https://python.langchain.com/docs/modules/agents/tools/integrations/google_search</a></li>
+<li>Google搜索包装器：<a
+target="_blank" rel="noopener" href="https://www.langchain.asia/ecosystem/google_search">https://www.langchain.asia/ecosystem/google_search</a></li>
 </ol>
 
                 

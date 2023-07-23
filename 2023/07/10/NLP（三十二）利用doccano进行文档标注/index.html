@@ -259,7 +259,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          1.4k 字
+          1.5k 字
         
       </span>
     
@@ -271,7 +271,7 @@
         
         
           <!-- compatible with older versions-->
-          12 分钟
+          13 分钟
         
       </span>
     
@@ -321,8 +321,12 @@
             
               <div class="markdown-body">
                 
-                <p>doccano是一个开源的文本标注工具，适合于机器学习和深度学习的使用者，提供了文档分类、序列标注和sequence to sequence任务的标注，操作简单，上手也快，界面友好，能够让你在几个小时内建立一个可实际训练的数据集。</p>
-<p>doccano的Github访问网址为：<a target="_blank" rel="noopener" href="https://github.com/doccano/doccano">https://github.com/doccano/doccano</a> 。</p>
+                <p>doccano是一个开源的文本标注工具，适合于机器学习和深度学习的使用者，提供了文档分类、序列标注和sequence
+to
+sequence任务的标注，操作简单，上手也快，界面友好，能够让你在几个小时内建立一个可实际训练的数据集。</p>
+<p>doccano的Github访问网址为：<a
+target="_blank" rel="noopener" href="https://github.com/doccano/doccano">https://github.com/doccano/doccano</a>
+。</p>
 <h3 id="安装方式">安装方式</h3>
 <p>doccano的安装也比较简单，我们可以通过Docker很方便地完成安装。</p>
 <p>首先，先从Github上下载该项目，命令如下：</p>
@@ -334,20 +338,40 @@
 <h3 id="使用举例">使用举例</h3>
 <p>本文将演示如何使用doccano来进行序列标注方面的人工标注。</p>
 <p>首先我们创建一个标注项目，名称为<code>example_tagging_platform</code>，项目类型选择<code>Sequence Labeling</code>，如下页面：</p>
-<p><img src="/img/nlp32_1.png" srcset="/img/loading.gif" lazyload alt="创建标注任务"></p>
+<figure>
+<img src="/img/nlp32_1.png" srcset="/img/loading.gif" lazyload alt="创建标注任务" />
+<figcaption aria-hidden="true">创建标注任务</figcaption>
+</figure>
 <p>假设我们需要标注的实体标签为<code>时间</code>、<code>人物</code>、<code>职位</code>和<code>公司</code>。我们可以先创建标签，选择标签颜色，如下页面：</p>
-<p><img src="/img/nlp32_2.png" srcset="/img/loading.gif" lazyload alt="创建标签"></p>
+<figure>
+<img src="/img/nlp32_2.png" srcset="/img/loading.gif" lazyload alt="创建标签" />
+<figcaption aria-hidden="true">创建标签</figcaption>
+</figure>
 <p>其中的k,c,p,t分别是这些标签的标注快捷键，我们在真实标注的时候，选择好标注文字后再按这些快捷键可以快速完成标注。</p>
-<p>接着我们上传标注文档。假设我们的标注文档格式为txt，一行就是一个标注样本，那么在Dataset选择上传数据（Import Dataset ）的时候，可以选择Plain Text。当然也可以选择其它格式的上传文档，比如Json，但需要按照指定格式来。</p>
-<p><img src="/img/nlp32_3.png" srcset="/img/loading.gif" lazyload alt="上传文档"></p>
+<p>接着我们上传标注文档。假设我们的标注文档格式为txt，一行就是一个标注样本，那么在Dataset选择上传数据（Import
+Dataset ）的时候，可以选择Plain
+Text。当然也可以选择其它格式的上传文档，比如Json，但需要按照指定格式来。</p>
+<figure>
+<img src="/img/nlp32_3.png" srcset="/img/loading.gif" lazyload alt="上传文档" />
+<figcaption aria-hidden="true">上传文档</figcaption>
+</figure>
 <p>我们上传的txt文档（a.txt）内容如下：</p>
 <figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs dns">“我们欣喜地看到，科创板和香港联交所推出了一系列改革和创新的举措，为新经济公司能更好地获得资本市场支持包括国际资本支持创造了良好条件，我们很高兴能有机会参与其中。”蚂蚁集团董事长井贤栋说。<br><span class="hljs-number">7</span>月<span class="hljs-number">20</span>日，支付宝母公司蚂蚁集团宣布，启动在香港联合交易所有限公司主板寻求同步发行上市的计划，以进一步支持服务业数字化升级做大内需，加强全球合作助力全球可持续发展，以及支持公司加大技术研发和创新。<br>记者从官方获悉，小鹏汽车于今日宣布完成了近<span class="hljs-number">5</span>亿美元(约<span class="hljs-number">35</span>亿元人民币)C+轮融资，投资方包括Aspex、Coatue、高瓴资本和红杉中国等投资机构。<br>作为百度的总部，百度大厦于<span class="hljs-number">2009年11月17</span>日投入使用，就承载了百度所有的辉煌。<br></code></pre></td></tr></table></figure>
 <p>上传后的界面如下：</p>
-<p><img src="/img/nlp32_4.png" srcset="/img/loading.gif" lazyload alt="上传后的界面"></p>
+<figure>
+<img src="/img/nlp32_4.png" srcset="/img/loading.gif" lazyload alt="上传后的界面" />
+<figcaption aria-hidden="true">上传后的界面</figcaption>
+</figure>
 <p>点击左上方的<code>Start Annotation</code>即可开始标注。如下图：</p>
-<p><img src="/img/nlp32_5.png" srcset="/img/loading.gif" lazyload alt="利用doccano进行标注"></p>
+<figure>
+<img src="/img/nlp32_5.png" srcset="/img/loading.gif" lazyload alt="利用doccano进行标注" />
+<figcaption aria-hidden="true">利用doccano进行标注</figcaption>
+</figure>
 <p>当我们完成部分（或全部）数据的标注时，可以在<code>Statistics</code>中查看标注文档数量，每个标签的标注数量以及每个用户的标注文档数量，如下页面：</p>
-<p><img src="/img/nlp32_6.png" srcset="/img/loading.gif" lazyload alt="标注统计"></p>
+<figure>
+<img src="/img/nlp32_6.png" srcset="/img/loading.gif" lazyload alt="标注统计" />
+<figcaption aria-hidden="true">标注统计</figcaption>
+</figure>
 <p>本次演示到此结束。</p>
 <p>笔者在实际使用的时候，发现doccano确实是一个不错的标注工具。它还有很多强大的功能，比如它可以记忆当前的标注文档，当你退出页面再次访问时，点击<code>Start Annotation</code>按钮即可从上次标注的文档开始进行标注。同时，它还支持多人协同标注和检查机制，非常好用。</p>
 <p>本次分享到此结束~</p>

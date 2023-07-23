@@ -318,7 +318,8 @@
               <div class="markdown-body">
                 
                 <h3 id="引言">引言</h3>
-<p>别名即同义词、近义词，是同一事物的不同称呼。在日常生活中，我们也常常用到别名，比如土豆的别名为马铃薯，KFC的别名为肯德基。在上文<a target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/details/121524964">关于知识图谱上下级概念建设的一点想法</a>中提及了上下级概念的描述及意义，本文将尝试着使用深度学习模型建立同义关系模型。</p>
+<p>别名即同义词、近义词，是同一事物的不同称呼。在日常生活中，我们也常常用到别名，比如土豆的别名为马铃薯，KFC的别名为肯德基。在上文<a
+target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/details/121524964">关于知识图谱上下级概念建设的一点想法</a>中提及了上下级概念的描述及意义，本文将尝试着使用深度学习模型建立同义关系模型。</p>
 <p>比如在下面的文本中：</p>
 <blockquote>
 <p>卡定沟：又名嘎定沟，位于西藏318国道拉萨至林芝段距八一镇24公里处，海拔2980米，地处雅鲁藏布江支流尼洋河畔</p>
@@ -335,19 +336,19 @@
 <p>我们的语料来自于<code>CCF2019年关系抽取比赛数据</code>及<code>阅读理解数据WebQA &amp; SougouQA</code>，借助程序处理（关键词）及人工标注整理，目前共获取有效标注语料共4425条，具体说明如下：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>文件名称</th>
 <th>数据来源</th>
 <th>标注样本数量</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>data/ccf2019_corpus.json</td>
 <td>CCF2019年关系抽取比赛数据</td>
 <td>3369</td>
 </tr>
-<tr>
+<tr class="even">
 <td>data/sougouqa_webqa_corpus.json</td>
 <td>阅读理解数据（WebQA &amp; SougouQA）</td>
 <td>1056</td>
@@ -355,32 +356,37 @@
 </tbody>
 </table>
 <h3 id="模型训练">模型训练</h3>
-<p>本文采用文章<a target="_blank" rel="noopener" href="https://www.kexue.fm/archives/7161">用bert4keras做三元组抽取</a>中给出的关系抽取模型进行模型训练，其中训练集数据:测试集数据=8:2。</p>
-<p>模型的参数设置为maxlen=200, batch_size=16, epoch=20, 使用预训练模型为<code>哈工大的中文Roberta模型: chinese-RoBERTa-wwm-ext</code>，在Google Colab平台上进行模型训练, 在测试集上的最好F1值为88.97%。</p>
+<p>本文采用文章<a
+target="_blank" rel="noopener" href="https://www.kexue.fm/archives/7161">用bert4keras做三元组抽取</a>中给出的关系抽取模型进行模型训练，其中训练集数据:测试集数据=8:2。</p>
+<p>模型的参数设置为maxlen=200, batch_size=16, epoch=20,
+使用预训练模型为<code>哈工大的中文Roberta模型: chinese-RoBERTa-wwm-ext</code>，在Google
+Colab平台上进行模型训练, 在测试集上的最好F1值为88.97%。</p>
 <h3 id="别名发现">别名发现</h3>
 <p>模型训练好之后，我们可以使用该模型对其它非结构化文本进行预测，并写入至Neo4j中进行观察。以下将给出几个抽取例子：</p>
 <blockquote>
-<p>杨桃,又名阳桃、羊桃、五棱子,学名“五敛子”,又因横切面如五角星,故国外又称之为“星梨”。 杨桃原产地,传统认为产於东南亚的马来西亚等地。我国於汉朝就有栽培记载,今我国福建、广东、广西、云南等地;亚洲东南亚、印度;美洲巴西等热带地区均普遍栽培。…</p>
+<p>杨桃,又名阳桃、羊桃、五棱子,学名“五敛子”,又因横切面如五角星,故国外又称之为“星梨”。
+杨桃原产地,传统认为产於东南亚的马来西亚等地。我国於汉朝就有栽培记载,今我国福建、广东、广西、云南等地;亚洲东南亚、印度;美洲巴西等热带地区均普遍栽培。...</p>
 </blockquote>
 <p>预测结果:</p>
 <figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scheme">[(<span class="hljs-string">&quot;杨桃&quot;</span>, <span class="hljs-string">&quot;别名&quot;</span>, <span class="hljs-string">&quot;阳桃&quot;</span>), (<span class="hljs-string">&quot;杨桃&quot;</span>, <span class="hljs-string">&quot;别名&quot;</span>, <span class="hljs-string">&quot;羊桃&quot;</span>), (<span class="hljs-string">&quot;杨桃&quot;</span>, <span class="hljs-string">&quot;别名&quot;</span>, <span class="hljs-string">&quot;五棱子&quot;</span>), (<span class="hljs-string">&quot;杨桃&quot;</span>, <span class="hljs-string">&quot;别名&quot;</span>, <span class="hljs-string">&quot;五敛子&quot;</span>), (<span class="hljs-string">&quot;杨桃&quot;</span>, <span class="hljs-string">&quot;别名&quot;</span>, <span class="hljs-string">&quot;星梨&quot;</span>)]<br></code></pre></td></tr></table></figure>
-<p><img src="/img/nlp50_1.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="/img/nlp50_1.png" srcset="/img/loading.gif" lazyload /></p>
 <blockquote>
 <p>英吉利海峡隧道(thechanneltunnel)又称英法海底隧道或欧洲隧道(eurotunnel)，是一条把英国英伦三岛连接往欧洲法国的铁路隧道，于1994年5月6日开通。</p>
 </blockquote>
 <p>预测结果:</p>
 <figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scheme">[(<span class="hljs-string">&quot;英吉利海峡隧道&quot;</span>, <span class="hljs-string">&quot;别名&quot;</span>, <span class="hljs-string">&quot;英法海底隧道&quot;</span>), (<span class="hljs-string">&quot;英吉利海峡隧道&quot;</span>, <span class="hljs-string">&quot;别名&quot;</span>, <span class="hljs-string">&quot;欧洲隧道&quot;</span>)]<br></code></pre></td></tr></table></figure>
-<p><img src="/img/nlp50_2.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="/img/nlp50_2.png" srcset="/img/loading.gif" lazyload /></p>
 <blockquote>
 <p>中科大是中国科学技术大学的简称，位于安徽省合肥市。</p>
 </blockquote>
 <p>预测结果：</p>
 <figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scheme">[(<span class="hljs-symbol">&#x27;中国科学技术大学</span>&#x27;, <span class="hljs-symbol">&#x27;简称</span>&#x27;, <span class="hljs-symbol">&#x27;中科大</span>&#x27;)]<br></code></pre></td></tr></table></figure>
-<p><img src="/img/nlp50_3.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="/img/nlp50_3.png" srcset="/img/loading.gif" lazyload /></p>
 <h3 id="总结">总结</h3>
 <p>语料维护费时费力，因此可能会存在一定错误，如有问题，请及时指出。另外，语料并没有很全，后续需持续投入进行维护。</p>
 <p>本文给出了一种<code>别名发现模型</code>的思路，希望后续关于这方面的资料和研究会越来越多，感谢阅读~</p>
-<p>本文项目已开源，其Github地址为：<a target="_blank" rel="noopener" href="https://github.com/percent4/alias_find_system">https://github.com/percent4/alias_find_system</a>，欢迎大家参考~</p>
+<p>本文项目已开源，其Github地址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/alias_find_system">https://github.com/percent4/alias_find_system</a>，欢迎大家参考~</p>
 
                 
               </div>

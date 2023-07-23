@@ -268,7 +268,7 @@
         
         
           <!-- compatible with older versions-->
-          25 分钟
+          26 分钟
         
       </span>
     
@@ -320,9 +320,15 @@
                 
                 <p>本文将如何如何使用HuggingFace中的翻译模型。</p>
 <p>HuggingFace是NLP领域中响当当的团体，它在预训练模型方面作出了很多接触的工作，并开源了许多预训练模型和已经针对具体某个NLP人物训练好的直接可以使用的模型。本文将使用HuggingFace提供的可直接使用的翻译模型。</p>
-<p>HuggingFace的翻译模型可参考网址：<a target="_blank" rel="noopener" href="https://huggingface.co/models?pipeline_tag=translation">https://huggingface.co/models?pipeline_tag=translation</a> ，该部分模型中的绝大部分是由Helsinki-NLP（Language Technology Research Group at the University of Helsinki）机构开源，模型数量为1333个。</p>
+<p>HuggingFace的翻译模型可参考网址：<a
+target="_blank" rel="noopener" href="https://huggingface.co/models?pipeline_tag=translation">https://huggingface.co/models?pipeline_tag=translation</a>
+，该部分模型中的绝大部分是由Helsinki-NLP（Language Technology Research
+Group at the University of Helsinki）机构开源，模型数量为1333个。</p>
 <h3 id="模型使用">模型使用</h3>
-<p>笔者将在PyTorch框架下使用HuggingFace的<code>中译英模型</code>和<code>英译中模型</code>。其中<code>中译英模型</code>的模型名称为：opus-mt-zh-en，下载网址为：<a target="_blank" rel="noopener" href="https://huggingface.co/Helsinki-NLP/opus-mt-zh-en/tree/main">https://huggingface.co/Helsinki-NLP/opus-mt-zh-en/tree/main</a>；<code>英译中模型</code>的模型名称为opus-mt-en-zh，下载网址为：<a target="_blank" rel="noopener" href="https://huggingface.co/Helsinki-NLP/opus-mt-en-zh/tree/main">https://huggingface.co/Helsinki-NLP/opus-mt-en-zh/tree/main</a> 。</p>
+<p>笔者将在PyTorch框架下使用HuggingFace的<code>中译英模型</code>和<code>英译中模型</code>。其中<code>中译英模型</code>的模型名称为：opus-mt-zh-en，下载网址为：<a
+target="_blank" rel="noopener" href="https://huggingface.co/Helsinki-NLP/opus-mt-zh-en/tree/main">https://huggingface.co/Helsinki-NLP/opus-mt-zh-en/tree/main</a>；<code>英译中模型</code>的模型名称为opus-mt-en-zh，下载网址为：<a
+target="_blank" rel="noopener" href="https://huggingface.co/Helsinki-NLP/opus-mt-en-zh/tree/main">https://huggingface.co/Helsinki-NLP/opus-mt-en-zh/tree/main</a>
+。</p>
 <p>首先我们先尝试<code>中译英模型</code>，即把中文翻译成英语，代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoTokenizer, AutoModelForSeq2SeqLM<br><br>tokenizer = AutoTokenizer.from_pretrained(<span class="hljs-string">&quot;./opus-mt-zh-en&quot;</span>)<br><br>model = AutoModelForSeq2SeqLM.from_pretrained(<span class="hljs-string">&quot;./opus-mt-zh-en&quot;</span>)<br><br>text = <span class="hljs-string">&quot;从时间上看，中国空间站的建造比国际空间站晚20多年。&quot;</span><br><span class="hljs-comment"># Tokenize the text</span><br>batch = tokenizer.prepare_seq2seq_batch(src_texts=[text])<br><br><span class="hljs-comment"># Make sure that the tokenized text does not exceed the maximum</span><br><span class="hljs-comment"># allowed size of 512</span><br>batch[<span class="hljs-string">&quot;input_ids&quot;</span>] = batch[<span class="hljs-string">&quot;input_ids&quot;</span>][:, :<span class="hljs-number">512</span>]<br>batch[<span class="hljs-string">&quot;attention_mask&quot;</span>] = batch[<span class="hljs-string">&quot;attention_mask&quot;</span>][:, :<span class="hljs-number">512</span>]<br><br><span class="hljs-comment"># Perform the translation and decode the output</span><br>translation = model.generate(**batch)<br>result = tokenizer.batch_decode(translation, skip_special_tokens=<span class="hljs-literal">True</span>)<br><span class="hljs-built_in">print</span>(result)<br></code></pre></td></tr></table></figure>
 <p>翻译结果如下：</p>
@@ -333,22 +339,40 @@
 <figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scheme">[<span class="hljs-symbol">&#x27;就时间而言</span>,中国空间站的建造比国际空间站晚了20多年。&#x27;]<br></code></pre></td></tr></table></figure>
 <p>有了HuggingFace的transformers模块，我们使用起这些模型相当方便，同时也有很不错的翻译效果。</p>
 <h3 id="模型解释">模型解释</h3>
-<p>接着我们再接触一款工具，名称为<code>shap</code>。<code>shap</code>是Python开发的一个模型解释包，可以任何机器学习模型的输出。其名称来源于SHapley Additive exPlanation，在合作博弈论的启发下SHAP构建一个加性的解释模型，所有的特征都视为“贡献者”。对于每个预测样本，模型都产生一个预测值，SHAP value就是该样本中每个特征所分配到的数值。</p>
+<p>接着我们再接触一款工具，名称为<code>shap</code>。<code>shap</code>是Python开发的一个模型解释包，可以任何机器学习模型的输出。其名称来源于SHapley
+Additive
+exPlanation，在合作博弈论的启发下SHAP构建一个加性的解释模型，所有的特征都视为“贡献者”。对于每个预测样本，模型都产生一个预测值，SHAP
+value就是该样本中每个特征所分配到的数值。</p>
 <p>我们尝试着使用<code>shap</code>模块来对翻译模型进行解释，可以看到<code>shap</code>可视化效果非常棒的解释界面，如下：</p>
-<p><img src="/img/nlp41_1.png" srcset="/img/loading.gif" lazyload alt="中译英模型代码"></p>
+<figure>
+<img src="/img/nlp41_1.png" srcset="/img/loading.gif" lazyload alt="中译英模型代码" />
+<figcaption aria-hidden="true">中译英模型代码</figcaption>
+</figure>
 <p>默认输出结果为翻译结果，如下：</p>
-<p><img src="/img/nlp41_2.png" srcset="/img/loading.gif" lazyload alt="默认输出结果"></p>
+<figure>
+<img src="/img/nlp41_2.png" srcset="/img/loading.gif" lazyload alt="默认输出结果" />
+<figcaption aria-hidden="true">默认输出结果</figcaption>
+</figure>
 <p>模型解释的热力图效果如下：</p>
-<p><img src="/img/nlp41_3.png" srcset="/img/loading.gif" lazyload alt="模型解释的热力图效果"></p>
+<figure>
+<img src="/img/nlp41_3.png" srcset="/img/loading.gif" lazyload alt="模型解释的热力图效果" />
+<figcaption aria-hidden="true">模型解释的热力图效果</figcaption>
+</figure>
 <p>从热力图中我们可以发现，空间站这个词语被翻译成space station。</p>
 <p>同样，我们可以看到<code>英译中模型</code>的热力图解释效果，如下：</p>
-<p><img src="/img/nlp41_4.png" srcset="/img/loading.gif" lazyload alt="的热力图解释效果"></p>
+<figure>
+<img src="/img/nlp41_4.png" srcset="/img/loading.gif" lazyload alt="英译中模型的热力图解释效果" />
+<figcaption
+aria-hidden="true"><code>英译中模型</code>的热力图解释效果</figcaption>
+</figure>
 <p>本次分享到此结束，感谢大家阅读~</p>
 <p>2021年3月10日于上海浦东~</p>
 <h3 id="参考网址">参考网址</h3>
-<ol>
-<li>HuggingFace translation model: <a target="_blank" rel="noopener" href="https://huggingface.co/models?filter=zh&amp;pipeline_tag=translation">https://huggingface.co/models?filter=zh&amp;pipeline_tag=translation</a></li>
-<li>Text to Text Explanation: Machine Translation Example: <a target="_blank" rel="noopener" href="https://shap.readthedocs.io/en/latest/example_notebooks/text_examples/translation/Machine%20Translation%20Explanation%20Demo.html">https://shap.readthedocs.io/en/latest/example_notebooks/text_examples/translation/Machine%20Translation%20Explanation%20Demo.html</a></li>
+<ol type="1">
+<li>HuggingFace translation model: <a
+target="_blank" rel="noopener" href="https://huggingface.co/models?filter=zh&amp;pipeline_tag=translation">https://huggingface.co/models?filter=zh&amp;pipeline_tag=translation</a></li>
+<li>Text to Text Explanation: Machine Translation Example: <a
+target="_blank" rel="noopener" href="https://shap.readthedocs.io/en/latest/example_notebooks/text_examples/translation/Machine%20Translation%20Explanation%20Demo.html">https://shap.readthedocs.io/en/latest/example_notebooks/text_examples/translation/Machine%20Translation%20Explanation%20Demo.html</a></li>
 </ol>
 
                 
