@@ -260,7 +260,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          2.2k 字
+          2.1k 字
         
       </span>
     
@@ -272,7 +272,7 @@
         
         
           <!-- compatible with older versions-->
-          19 分钟
+          18 分钟
         
       </span>
     
@@ -322,41 +322,27 @@
             
               <div class="markdown-body">
                 
-                <p>在文章<a
-href="https://percent4.github.io/2023/07/08/NLP%E5%85%A5%E9%97%A8%EF%BC%88%E4%B9%9D%EF%BC%89%E8%AF%8D%E4%B9%89%E6%B6%88%E5%B2%90%EF%BC%88WSD%EF%BC%89%E7%9A%84%E7%AE%80%E4%BB%8B%E4%B8%8E%E5%AE%9E%E7%8E%B0/">NLP入门（九）词义消岐（WSD）的简介与实现</a>中，笔者介绍了词义消歧的含义以及如何使用简单的算法来实现词义消歧。在本文中，笔者将介绍如何使用抽取式NLP模型来实现词义消歧（WSD），模型灵感来源于论文<a
-target="_blank" rel="noopener" href="https://www.researchgate.net/publication/359392427_ExtEnD_Extractive_Entity_Disambiguation">ExtEnD:
-Extractive Entity Disambiguation</a>。</p>
+                <p>在文章<a href="https://percent4.github.io/2023/07/08/NLP%E5%85%A5%E9%97%A8%EF%BC%88%E4%B9%9D%EF%BC%89%E8%AF%8D%E4%B9%89%E6%B6%88%E5%B2%90%EF%BC%88WSD%EF%BC%89%E7%9A%84%E7%AE%80%E4%BB%8B%E4%B8%8E%E5%AE%9E%E7%8E%B0/">NLP入门（九）词义消岐（WSD）的简介与实现</a>中，笔者介绍了词义消歧的含义以及如何使用简单的算法来实现词义消歧。在本文中，笔者将介绍如何使用抽取式NLP模型来实现词义消歧（WSD），模型灵感来源于论文<a target="_blank" rel="noopener" href="https://www.researchgate.net/publication/359392427_ExtEnD_Extractive_Entity_Disambiguation">ExtEnD: Extractive Entity Disambiguation</a>。</p>
 <p>所谓词义消岐，指的是在特定的语境中，识别出某个歧义词的正确含义，即通常所说的一词多义。比如，<strong>苹果</strong>一词在句子<code>我今天吃了一个苹果</code>和句子<code>苹果手机好用吗？</code>中的含义是不同的，词义消歧需要对同一词语判断其在特定语境下的含义。词义消歧与实体链接有分别又有联系，后面将会介绍。</p>
-<p>在通常的NLP模型中，常常会把词义消歧任务当做文本分类去完成，取得了不错的效果。但论文<a
-target="_blank" rel="noopener" href="https://www.researchgate.net/publication/359392427_ExtEnD_Extractive_Entity_Disambiguation">ExtEnD:
-Extractive Entity
-Disambiguation</a>提出了一种新的范式，它通过抽取式NLP模型（即阅读理解模型）来完成词义消歧，也取得了不错的效果。</p>
+<p>在通常的NLP模型中，常常会把词义消歧任务当做文本分类去完成，取得了不错的效果。但论文<a target="_blank" rel="noopener" href="https://www.researchgate.net/publication/359392427_ExtEnD_Extractive_Entity_Disambiguation">ExtEnD: Extractive Entity Disambiguation</a>提出了一种新的范式，它通过抽取式NLP模型（即阅读理解模型）来完成词义消歧，也取得了不错的效果。</p>
 <h3 id="词义消歧与实体链接">词义消歧与实体链接</h3>
-<p>应当说，<code>词义消歧</code>属于<code>实体链接</code>中的一部分。在实体链接（Entity
-Linking）任务中，一般分为三个阶段：</p>
+<p>应当说，<code>词义消歧</code>属于<code>实体链接</code>中的一部分。在实体链接（Entity Linking）任务中，一般分为三个阶段：</p>
 <ul>
 <li>实体识别</li>
 <li>候选词生成</li>
 <li>候选词匹配</li>
 </ul>
 <p>在词义消歧中，同一词语的不同义项会作为候选词生成，在第三阶段的候选词匹配找到最接近的那个义项。我们以实体<code>本草纲目</code>为例，其在百度百科中共有15个义项，如下：</p>
-<figure>
-<img src="/img/nlp53_1.png" srcset="/img/loading.gif" lazyload alt="百度百科中的本草纲目义项" />
-<figcaption aria-hidden="true">百度百科中的本草纲目义项</figcaption>
-</figure>
+<p><img src="/img/nlp53_1.png" srcset="/img/loading.gif" lazyload alt="百度百科中的本草纲目义项"></p>
 <p>在特定的句子中，本草纲目的具体含义是可以确定的，看下面的例子：</p>
-<figure>
-<img src="/img/nlp53_2.png" srcset="/img/loading.gif" lazyload alt="实体链接例子" />
-<figcaption aria-hidden="true">实体链接例子</figcaption>
-</figure>
+<p><img src="/img/nlp53_2.png" srcset="/img/loading.gif" lazyload alt="实体链接例子"></p>
 <p>在上述句子中，<code>本草纲目</code>的正确义项应该是中医典籍，这是一个典型的实体链接任务，也可当作词义消歧任务。</p>
 <p>个人观点是，实体链接一般是将<code>实体</code>链接至图谱中的正确实体，而词义消歧稍微有点区别，绝大多数词语是图谱中的实体，但也有少部分仅仅是词语，而不是实体，比如汉语词语清风、指针等。因此，词义消歧可以通过实体链接很好地实现，但本文仅讨论如何通过抽取式NLP模型（新的范式）来实现词义消歧，以期该模型能在新的数据上有较好的表现。</p>
 <h3 id="数据介绍">数据介绍</h3>
 <p>截止今日，笔者通过假期时间，共构建了26个词语，327个义项，2889条标注样本。绝大多数样本均来自于百度百科。每个样本均会给出文本、mention（待消歧词语）、正确义项以及url（正确义项对应网址），比如：</p>
 <table>
-
 <thead>
-<tr class="header">
+<tr>
 <th>文本</th>
 <th>mention</th>
 <th>正确义项</th>
@@ -364,82 +350,71 @@ Linking）任务中，一般分为三个阶段：</p>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>药圣李时珍和他的《本草纲目》</td>
 <td>本草纲目</td>
 <td>中医典籍</td>
-<td>https://baike.baidu.com/item/本草纲目/15342</td>
+<td><a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E6%9C%AC%E8%8D%89%E7%BA%B2%E7%9B%AE/15342">https://baike.baidu.com/item/本草纲目/15342</a></td>
 </tr>
 </tbody>
 </table>
 <p>将标注数据划分为训练集和测试集，比例为8:2，训练集共有个2233样本，测试集共有656个样本。</p>
 <p>模型输入如下图：</p>
-<figure>
-<img src="/img/nlp53_3.png" srcset="/img/loading.gif" lazyload alt="模型输入" />
-<figcaption aria-hidden="true">模型输入</figcaption>
-</figure>
+<p><img src="/img/nlp53_3.png" srcset="/img/loading.gif" lazyload alt="模型输入"></p>
 <p>文本中的mention需要用特殊符号标识出来，比如用<code>&lt;e&gt;</code>和<code>&lt;/e&gt;</code>标识，候选集集合组合输入为下一句，将<code>&lt;/ec&gt;</code>标识添加至每个义项的结尾。</p>
 <h3 id="模型">模型</h3>
-<p>一般使用<code>文本多分类</code>或者<code>文本多标签文本</code>这个模型范式来进行正确义项匹配。本文借鉴<code>Sapienza NLP Group, Sapienza University of Rome</code>在ACL2022论文<a
-target="_blank" rel="noopener" href="https://www.researchgate.net/publication/359392427_ExtEnD_Extractive_Entity_Disambiguation">《ExtEnD:
-Extractive Entity
-Disambiguation》</a>中给出的抽取式模型，使用较为简单的阅读理解模型（MRC）来实现。模型结构如下图所示：</p>
-<figure>
-<img src="/img/nlp53_4.png" srcset="/img/loading.gif" lazyload alt="抽取式词义消歧模型" />
-<figcaption aria-hidden="true">抽取式词义消歧模型</figcaption>
-</figure>
-<p>对标注数据进行模型训练，文本最大长度为500，batch
-size取16，训练12轮次，学习率取0.00001，在测试集上的<code>Exact Match</code>为0.9029。</p>
+<p>一般使用<code>文本多分类</code>或者<code>文本多标签文本</code>这个模型范式来进行正确义项匹配。本文借鉴<code>Sapienza NLP Group, Sapienza University of Rome</code>在ACL2022论文<a target="_blank" rel="noopener" href="https://www.researchgate.net/publication/359392427_ExtEnD_Extractive_Entity_Disambiguation">《ExtEnD: Extractive Entity Disambiguation》</a>中给出的抽取式模型，使用较为简单的阅读理解模型（MRC）来实现。模型结构如下图所示：</p>
+<p><img src="/img/nlp53_4.png" srcset="/img/loading.gif" lazyload alt="抽取式词义消歧模型"></p>
+<p>对标注数据进行模型训练，文本最大长度为500，batch size取16，训练12轮次，学习率取0.00001，在测试集上的<code>Exact Match</code>为0.9029。</p>
 <h3 id="模型预测">模型预测</h3>
-<h4 id="在原有词语义项上的预测结果">1. 在原有词语义项上的预测结果</h4>
+<h4 id="1-在原有词语义项上的预测结果">1. 在原有词语义项上的预测结果</h4>
 <p>我们对标注过的词语<code>苹果</code>进行预测，其百度百科义项为：</p>
-<p><img src="/img/nlp53_5.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="/img/nlp53_5.png" srcset="/img/loading.gif" lazyload alt=""></p>
 <p>随便选取两个网上的句子进行消歧，结果如下：</p>
 <blockquote>
-<p>文本：【苹果的做法大全_苹果怎么做好吃_菜谱大全】_下厨房
+<p>文本：【苹果的做法大全_苹果怎么做好吃_菜谱大全】_下厨房<br>
 正确义项：蔷薇科苹果属植物</p>
 </blockquote>
 <blockquote>
-<p>苹果2022财年Q2业绩:手机业务增长亮眼 转型初见成效-股票...
+<p>苹果2022财年Q2业绩:手机业务增长亮眼 转型初见成效-股票…<br>
 正确义项：苹果产品公司</p>
 </blockquote>
-<h4 id="在新词语义项上的预测结果">2. 在新词语义项上的预测结果</h4>
+<h4 id="2-在新词语义项上的预测结果">2. 在新词语义项上的预测结果</h4>
 <p>我们对未标注过的词语<code>南京</code>进行预测，其百度百科义项为：</p>
-<p><img src="/img/nlp53_6.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="/img/nlp53_6.png" srcset="/img/loading.gif" lazyload alt=""></p>
 <p>随便选取两个网上的句子进行消歧，结果如下：</p>
 <blockquote>
-<p>文本：南京的饮食以金陵菜著名，金陵菜是指以南京为中心，一直延伸到江西九江的菜系，是苏菜的四大代表菜之一。
+<p>文本：南京的饮食以金陵菜著名，金陵菜是指以南京为中心，一直延伸到江西九江的菜系，是苏菜的四大代表菜之一。<br>
 正确义项：江苏省辖地级市、省会</p>
 </blockquote>
 <blockquote>
-<p>文本：影片制片人莱昂西斯是在2004年萌发拍摄纪录片《南京》的念头的。
+<p>文本：影片制片人莱昂西斯是在2004年萌发拍摄纪录片《南京》的念头的。<br>
 正确义项：美国2007年雨果·阿姆斯特朗主演的电影</p>
 </blockquote>
 <p>我们对未标注过的词语<code>平凡的世界</code>进行预测，其百度百科义项为：</p>
-<p><img src="/img/nlp53_7.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="/img/nlp53_7.png" srcset="/img/loading.gif" lazyload alt=""></p>
 <p>随便选取两个网上的句子进行消歧，结果如下：</p>
 <blockquote>
-<p>文本：《平凡的世界》:永恒的魅力--文史--中国作家网
+<p>文本：《平凡的世界》:永恒的魅力–文史–中国作家网<br>
 正确义项：路遥著长篇小说</p>
 </blockquote>
 <blockquote>
-<p>文本：《平凡的世界》的主演是谁
+<p>文本：《平凡的世界》的主演是谁<br>
 正确义项：2015年王雷、佟丽娅、袁弘主演电视剧</p>
 </blockquote>
 <p>我们对未标注过的词语<code>碧血剑</code>进行预测，其百度百科义项为：</p>
-<p><img src="/img/nlp53_8.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="/img/nlp53_8.png" srcset="/img/loading.gif" lazyload alt=""></p>
 <p>随便选取两个网上的句子进行消歧，结果如下：</p>
 <blockquote>
-<p>文本：《碧血剑》是当代作家金庸先生的长篇武侠小说。大家都知道金庸老先生的著名小说都被翻拍成了电视剧，《碧血剑》也不例外。
+<p>文本：《碧血剑》是当代作家金庸先生的长篇武侠小说。大家都知道金庸老先生的著名小说都被翻拍成了电视剧，《碧血剑》也不例外。<br>
 正确义项：金庸创作长篇小说</p>
 </blockquote>
 <blockquote>
-<p>文本：2000年版《碧血剑》是由李添胜监制，林家栋、佘诗曼、江华领衔主演的古装武侠电视剧。故事还原度并不是很高，这部剧中我真的很喜欢佘诗曼扮演的阿九啊！
+<p>文本：2000年版《碧血剑》是由李添胜监制，林家栋、佘诗曼、江华领衔主演的古装武侠电视剧。故事还原度并不是很高，这部剧中我真的很喜欢佘诗曼扮演的阿九啊！<br>
 正确义项：2000年香港TVB版林家栋主演电视剧</p>
 </blockquote>
 <h3 id="总结">总结</h3>
-<p>本项目已经开源至Github，网址为：<a
-target="_blank" rel="noopener" href="https://github.com/percent4/WSD_With_Text_Extraction">https://github.com/percent4/WSD_With_Text_Extraction</a>。</p>
+<p>本项目已经开源至Github，网址为：<a target="_blank" rel="noopener" href="https://github.com/percent4/WSD_With_Text_Extraction">https://github.com/percent4/WSD_With_Text_Extraction</a>。</p>
 <p>如有任何疑问，欢迎交流~</p>
 
                 

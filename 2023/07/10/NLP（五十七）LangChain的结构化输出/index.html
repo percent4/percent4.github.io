@@ -315,9 +315,7 @@
               <div class="markdown-body">
                 
                 <p>在使用大模型的时候，尽管我们的prompt已经要求大模型给出固定的输出格式，比如JSON，但很多时候，大模型还是会输出额外的信息，使得我们在对输出信息进行结构化的时候产生困难。LangChain工具可以很好地将输出信息进行结构化。</p>
-<p>关于LangChain的结构化输出，可参考网址：<a
-target="_blank" rel="noopener" href="https://python.langchain.com/docs/modules/model_io/output_parsers/">https://python.langchain.com/docs/modules/model_io/output_parsers/</a>
-，这其中，我们较为关注的是<code>Structured output parser</code>，通过定义<code>StructuredOutputParser</code>来使用，使用方式如下：</p>
+<p>关于LangChain的结构化输出，可参考网址：<a target="_blank" rel="noopener" href="https://python.langchain.com/docs/modules/model_io/output_parsers/">https://python.langchain.com/docs/modules/model_io/output_parsers/</a> ，这其中，我们较为关注的是<code>Structured output parser</code>，通过定义<code>StructuredOutputParser</code>来使用，使用方式如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python">response_schemas = [<br>    ResponseSchema(name=<span class="hljs-string">&quot;answer&quot;</span>, description=<span class="hljs-string">&quot;answer to the user&#x27;s question&quot;</span>),<br>    ResponseSchema(name=<span class="hljs-string">&quot;source&quot;</span>, description=<span class="hljs-string">&quot;source used to answer the user&#x27;s question, should be a website.&quot;</span>)<br>]<br>output_parser = StructuredOutputParser.from_response_schemas(response_schemas)<br></code></pre></td></tr></table></figure>
 <h3 id="一个例子">一个例子</h3>
 <p>首先，我们先来看一个简单的结构化输出的prompt的写法：</p>
@@ -328,7 +326,8 @@ target="_blank" rel="noopener" href="https://python.langchain.com/docs/modules/m
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs bash">You will be given a poorly formatted string from a user.<br>Reformat it and make sure all the words are spelled correctly<br><br>The output should be a markdown code snippet formatted <span class="hljs-keyword">in</span> the following schema, including the leading and trailing <span class="hljs-string">&quot;```json&quot;</span> and <span class="hljs-string">&quot;```&quot;</span>:<br><br>\```json<br>&#123;<br>	<span class="hljs-string">&quot;bad_string&quot;</span>: string  // This a poorly formatted user input string<br>	<span class="hljs-string">&quot;good_string&quot;</span>: string  // This is your response, a reformatted response<br>&#125;<br>\```<br><br>% USER INPUT:<br>welcom to califonya!<br><br>YOUR RESPONSE:<br></code></pre></td></tr></table></figure>
 <p>将上述内容使用LLM进行回复，示例Pyhon代码如下（接上述代码）：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> langchain.llms <span class="hljs-keyword">import</span> OpenAI<br><br><span class="hljs-comment"># set api key</span><br><span class="hljs-keyword">import</span> os<br>os.environ[<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>] = <span class="hljs-string">&#x27;sk-xxx&#x27;</span><br><br>llm = OpenAI(model_name=<span class="hljs-string">&quot;text-davinci-003&quot;</span>)<br><br>llm_output = llm(promptValue)<br><span class="hljs-built_in">print</span>(llm_output)<br><br><span class="hljs-comment"># 使用解析器进行解析生成的内容</span><br><span class="hljs-built_in">print</span>(output_parser.parse(llm_output))<br></code></pre></td></tr></table></figure>
-<p>输出结果如下： <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">```json<br>&#123;<br>	<span class="hljs-string">&quot;bad_string&quot;</span>: <span class="hljs-string">&quot;welcom to califonya!&quot;</span>,<br>	<span class="hljs-string">&quot;good_string&quot;</span>: <span class="hljs-string">&quot;Welcome to California!&quot;</span><br>&#125;<br>\```<br>&#123;<span class="hljs-string">&#x27;bad_string&#x27;</span>: <span class="hljs-string">&#x27;welcom to califonya!&#x27;</span>, <span class="hljs-string">&#x27;good_string&#x27;</span>: <span class="hljs-string">&#x27;Welcome to California!&#x27;</span>&#125;<br></code></pre></td></tr></table></figure></p>
+<p>输出结果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">```json<br>&#123;<br>	<span class="hljs-string">&quot;bad_string&quot;</span>: <span class="hljs-string">&quot;welcom to califonya!&quot;</span>,<br>	<span class="hljs-string">&quot;good_string&quot;</span>: <span class="hljs-string">&quot;Welcome to California!&quot;</span><br>&#125;<br>\```<br>&#123;<span class="hljs-string">&#x27;bad_string&#x27;</span>: <span class="hljs-string">&#x27;welcom to califonya!&#x27;</span>, <span class="hljs-string">&#x27;good_string&#x27;</span>: <span class="hljs-string">&#x27;Welcome to California!&#x27;</span>&#125;<br></code></pre></td></tr></table></figure>
 <p>可以看到，大模型的输出结果正是我们所要求的JSON格式，且字段和数据类型、输出结果付出预期。</p>
 <h3 id="结构化抽取">结构化抽取</h3>
 <p>有了上述的结构化输出，我们尝试对文本进行结构化抽取，并使得抽取结果按JSON格式输出。示例代码如下：</p>
@@ -336,12 +335,12 @@ target="_blank" rel="noopener" href="https://python.langchain.com/docs/modules/m
 <p>在这个例子中，我们要求从输入文本中抽取出number、people、place字段，数据类型分别为number、string、string，抽取要求为文本中的数字、人物、地点。注意，ResponseSchema中的数据类型（type）与JSON数据类型一致。</p>
 <p>对两个样例文本进行抽取，抽取结果如下：</p>
 <blockquote>
-<p>输入：张晓明今天在香港坐了2趟地铁。 抽取结果：{'number': 2, 'people':
-'张晓明', 'place': '香港'}</p>
+<p>输入：张晓明今天在香港坐了2趟地铁。<br>
+抽取结果：{‘number’: 2, ‘people’: ‘张晓明’, ‘place’: ‘香港’}</p>
 </blockquote>
 <blockquote>
-<p>输入：昨天B站14周年的分享会上，B站CEO陈睿对这个指标做了官方的定义，用户观看视频所花费的时间，也就是播放分钟数。
-抽取结果：{'number': 14, 'people': '陈睿', 'place': 'B站'}</p>
+<p>输入：昨天B站14周年的分享会上，B站CEO陈睿对这个指标做了官方的定义，用户观看视频所花费的时间，也就是播放分钟数。<br>
+抽取结果：{‘number’: 14, ‘people’: ‘陈睿’, ‘place’: ‘B站’}</p>
 </blockquote>
 <p>抽取的结果大多符合预期，除了第二句中将B站识别为地点，不太合理。当然，我们写的prompt过于简单，读者可以尝试更多更好的prompt的描述方式，这样也许能提升抽取的效果。</p>
 <h3 id="结构化抽取进阶">结构化抽取进阶</h3>
@@ -350,30 +349,24 @@ target="_blank" rel="noopener" href="https://python.langchain.com/docs/modules/m
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> langchain.output_parsers <span class="hljs-keyword">import</span> StructuredOutputParser, ResponseSchema<br><span class="hljs-keyword">from</span> langchain.prompts <span class="hljs-keyword">import</span> PromptTemplate<br><span class="hljs-keyword">from</span> langchain.llms <span class="hljs-keyword">import</span> OpenAI<br><br><span class="hljs-comment"># set api key</span><br><span class="hljs-keyword">import</span> os<br>os.environ[<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>] = <span class="hljs-string">&#x27;sk-xxx&#x27;</span><br><br>llm = OpenAI(model_name=<span class="hljs-string">&quot;gpt-3.5-turbo&quot;</span>)<br><br><span class="hljs-comment"># 告诉他我们生成的内容需要哪些字段，每个字段类型式啥</span><br>response_schemas = [<br>    ResponseSchema(<span class="hljs-built_in">type</span>=<span class="hljs-string">&quot;array&quot;</span>, name=<span class="hljs-string">&quot;time&quot;</span>, description=<span class="hljs-string">&quot;文本中的日期时间列表&quot;</span>),<br>    ResponseSchema(<span class="hljs-built_in">type</span>=<span class="hljs-string">&quot;array&quot;</span>, name=<span class="hljs-string">&quot;people&quot;</span>, description=<span class="hljs-string">&quot;文本中的人物列表&quot;</span>),<br>    ResponseSchema(<span class="hljs-built_in">type</span>=<span class="hljs-string">&quot;array&quot;</span>, name=<span class="hljs-string">&quot;place&quot;</span>, description=<span class="hljs-string">&quot;文本中的地点列表&quot;</span>),<br>    ResponseSchema(<span class="hljs-built_in">type</span>=<span class="hljs-string">&quot;array&quot;</span>, name=<span class="hljs-string">&quot;org&quot;</span>, description=<span class="hljs-string">&quot;文本中的组织机构列表&quot;</span>),<br>]<br><br><span class="hljs-comment"># 初始化解析器</span><br>output_parser = StructuredOutputParser.from_response_schemas(response_schemas)<br><br><span class="hljs-comment"># 生成的格式提示符</span><br>format_instructions = output_parser.get_format_instructions()<br><span class="hljs-built_in">print</span>(format_instructions)<br><br>template = <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">给定下面的文本，找出特定的实体信息，并以结构化数据格式返回。</span><br><span class="hljs-string"></span><br><span class="hljs-string">&#123;format_instructions&#125;</span><br><span class="hljs-string"></span><br><span class="hljs-string">% USER INPUT:</span><br><span class="hljs-string">&#123;user_input&#125;</span><br><span class="hljs-string"></span><br><span class="hljs-string">YOUR RESPONSE:</span><br><span class="hljs-string">&quot;&quot;&quot;</span><br><br><span class="hljs-comment"># prompt</span><br>prompt = PromptTemplate(<br>    input_variables=[<span class="hljs-string">&quot;user_input&quot;</span>],<br>    partial_variables=&#123;<span class="hljs-string">&quot;format_instructions&quot;</span>: format_instructions&#125;,<br>    template=template<br>)<br><br>promptValue = prompt.<span class="hljs-built_in">format</span>(user_input=<span class="hljs-string">&quot;6月26日，广汽集团在科技日上首次公开展示飞行汽车项目，飞行汽车GOVE完成全球首飞。广汽研究院院长吴坚表示，GOVE可以垂直起降，并搭载双备份多旋翼飞行系统，保障飞行安全。&quot;</span>)<br><span class="hljs-built_in">print</span>(promptValue)<br>llm_output = llm(promptValue)<br><span class="hljs-built_in">print</span>(llm_output)<br><br><span class="hljs-comment"># 使用解析器进行解析生成的内容</span><br><span class="hljs-built_in">print</span>(output_parser.parse(llm_output))<br></code></pre></td></tr></table></figure>
 <p>我们在三个示例文本中进行实验，看看大模型在NER方面的表现：</p>
 <blockquote>
-<p>输入：6月26日周一，乌克兰总统泽连斯基视察了乌克兰军队东线司令部总部，而就在几小时前，俄罗斯宣布控制该国东部顿涅茨克以南的利夫诺波尔。
-抽取结果：{'time': ['6月26日周一'], 'people': ['泽连斯基'], 'place':
-['乌克兰军队东线司令部总部', '顿涅茨克', '利夫诺波尔'], 'org':
-['乌克兰总统', '俄罗斯']}</p>
+<p>输入：6月26日周一，乌克兰总统泽连斯基视察了乌克兰军队东线司令部总部，而就在几小时前，俄罗斯宣布控制该国东部顿涅茨克以南的利夫诺波尔。<br>
+抽取结果：{‘time’: [‘6月26日周一’], ‘people’: [‘泽连斯基’], ‘place’: [‘乌克兰军队东线司令部总部’, ‘顿涅茨克’, ‘利夫诺波尔’], ‘org’: [‘乌克兰总统’, ‘俄罗斯’]}</p>
 </blockquote>
 <blockquote>
-<p>输入：日前，马自达找来梁家辉代言汽车，引发了业内的热议。相信很多人对于马自达的品牌认知来自梁家辉的那部电影。
-抽取结果：{'time': [], 'people': ['梁家辉'], 'place': [], 'org':
-['马自达']}</p>
+<p>输入：日前，马自达找来梁家辉代言汽车，引发了业内的热议。相信很多人对于马自达的品牌认知来自梁家辉的那部电影。<br>
+抽取结果：{‘time’: [], ‘people’: [‘梁家辉’], ‘place’: [], ‘org’: [‘马自达’]}</p>
 </blockquote>
 <blockquote>
-<p>输入：6月26日，广汽集团在科技日上首次公开展示飞行汽车项目，飞行汽车GOVE完成全球首飞。广汽研究院院长吴坚表示，GOVE可以垂直起降，并搭载双备份多旋翼飞行系统，保障飞行安全。
-抽取结果：{'time': ['6月26日'], 'people': ['吴坚'], 'place': [], 'org':
-['广汽集团', '广汽研究院']}</p>
+<p>输入：6月26日，广汽集团在科技日上首次公开展示飞行汽车项目，飞行汽车GOVE完成全球首飞。广汽研究院院长吴坚表示，GOVE可以垂直起降，并搭载双备份多旋翼飞行系统，保障飞行安全。<br>
+抽取结果：{‘time’: [‘6月26日’], ‘people’: [‘吴坚’], ‘place’: [], ‘org’: [‘广汽集团’, ‘广汽研究院’]}</p>
 </blockquote>
 <p>可以看到，在经过简单的prompt和结构化输出后，大模型的抽取结果大致上令人满意。</p>
 <h3 id="总结">总结</h3>
 <p>本文主要介绍了LangChain的结构化输出，这在我们需要对模型输出结果进行结构化解析时较为有用，同时，我们也能接住结构化输出完成一些常见的NLP的任务，如NER等。</p>
 <h3 id="参考文献">参考文献</h3>
-<ol type="1">
-<li>LangChain 中文入门教程: <a
-target="_blank" rel="noopener" href="https://liaokong.gitbook.io/llm-kai-fa-jiao-cheng/">https://liaokong.gitbook.io/llm-kai-fa-jiao-cheng/</a></li>
-<li>Structured output parser: <a
-target="_blank" rel="noopener" href="https://python.langchain.com/docs/modules/model_io/output_parsers/structured">https://python.langchain.com/docs/modules/model_io/output_parsers/structured</a></li>
+<ol>
+<li>LangChain 中文入门教程: <a target="_blank" rel="noopener" href="https://liaokong.gitbook.io/llm-kai-fa-jiao-cheng/">https://liaokong.gitbook.io/llm-kai-fa-jiao-cheng/</a></li>
+<li>Structured output parser: <a target="_blank" rel="noopener" href="https://python.langchain.com/docs/modules/model_io/output_parsers/structured">https://python.langchain.com/docs/modules/model_io/output_parsers/structured</a></li>
 </ol>
 
                 

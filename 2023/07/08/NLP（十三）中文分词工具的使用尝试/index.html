@@ -314,104 +314,81 @@
               <div class="markdown-body">
                 
                 <p>本文将对三种中文分词工具进行使用尝试，这三种工具分别为哈工大的LTP，结巴分词以及北大的pkuseg。</p>
-<p>首先我们先准备好环境，即需要安装三个模块：pyltp, jieba,
-pkuseg以及LTP的分词模型文件<code>cws.model</code>。在用户字典中添加以下5个词语：</p>
+<p>首先我们先准备好环境，即需要安装三个模块：pyltp, jieba, pkuseg以及LTP的分词模型文件<code>cws.model</code>。在用户字典中添加以下5个词语：</p>
 <blockquote>
-<p>经 少安 贺凤英 F-35战斗机 埃达尔·阿勒坎</p>
+<p>经<br>
+少安<br>
+贺凤英<br>
+F-35战斗机<br>
+埃达尔·阿勒坎</p>
 </blockquote>
 <p>测试的Python代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> jieba<br><span class="hljs-keyword">import</span> pkuseg<br><span class="hljs-keyword">from</span> pyltp <span class="hljs-keyword">import</span> Segmentor<br><br>lexicon = [<span class="hljs-string">&#x27;经&#x27;</span>, <span class="hljs-string">&#x27;少安&#x27;</span>, <span class="hljs-string">&#x27;贺凤英&#x27;</span>, <span class="hljs-string">&#x27;F-35战斗机&#x27;</span>, <span class="hljs-string">&#x27;埃达尔·阿勒坎&#x27;</span>] <span class="hljs-comment"># 自定义词典</span><br><br><span class="hljs-comment"># 哈工大LTP分词</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">ltp_segment</span>(<span class="hljs-params">sent</span>):<br>    <span class="hljs-comment"># 加载文件</span><br>    cws_model_path = os.path.join(<span class="hljs-string">&#x27;data/cws.model&#x27;</span>) <span class="hljs-comment"># 分词模型路径，模型名称为`cws.model`</span><br>    lexicon_path = os.path.join(<span class="hljs-string">&#x27;data/lexicon.txt&#x27;</span>) <span class="hljs-comment"># 参数lexicon是自定义词典的文件路径</span><br>    segmentor = Segmentor()<br>    segmentor.load_with_lexicon(cws_model_path, lexicon_path)<br>    words = <span class="hljs-built_in">list</span>(segmentor.segment(sent))<br>    segmentor.release()<br><br>    <span class="hljs-keyword">return</span> words<br><br><span class="hljs-comment"># 结巴分词</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">jieba_cut</span>(<span class="hljs-params">sent</span>):<br>    <span class="hljs-keyword">for</span> word <span class="hljs-keyword">in</span> lexicon:<br>        jieba.add_word(word)<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">list</span>(jieba.cut(sent))<br><br><span class="hljs-comment"># pkuseg分词</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">pkuseg_cut</span>(<span class="hljs-params">sent</span>):<br>    seg = pkuseg.pkuseg(user_dict=lexicon)<br>    words = seg.cut(sent)<br>    <span class="hljs-keyword">return</span> words<br><br>sent = <span class="hljs-string">&#x27;尽管玉亭成家以后，他老婆贺凤英那些年把少安妈欺负上一回又一回，怕老婆的玉亭连一声也不敢吭，但少安他妈不计较他。&#x27;</span><br><span class="hljs-comment">#sent = &#x27;据此前报道，以色列于去年5月成为世界上第一个在实战中使用F-35战斗机的国家。&#x27;</span><br><span class="hljs-comment">#sent = &#x27;小船4月8日经长江前往小鸟岛。&#x27;</span><br><span class="hljs-comment">#sent = &#x27;1958年，埃达尔·阿勒坎出生在土耳其首都安卡拉，但他的求学生涯多在美国度过。&#x27;</span><br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;ltp:&#x27;</span>, ltp_segment(sent))<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;jieba:&#x27;</span>, jieba_cut(sent))<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;pkuseg:&#x27;</span>, pkuseg_cut(sent))<br></code></pre></td></tr></table></figure>
 <p>&amp;emsp 对于第一句话，输出结果如下：</p>
 <blockquote>
-<p>原文:
-尽管玉亭成家以后，他老婆贺凤英那些年把少安妈欺负上一回又一回，怕老婆的玉亭连一声也不敢吭，但少安他妈不计较他。</p>
+<p>原文:  尽管玉亭成家以后，他老婆贺凤英那些年把少安妈欺负上一回又一回，怕老婆的玉亭连一声也不敢吭，但少安他妈不计较他。</p>
 </blockquote>
 <blockquote>
-<p>ltp: ['尽管', '玉亭', '成家', '以后', '，', '他', '老婆', '贺凤英',
-'那些', '年', '把', '少安', '妈', '欺负', '上', '一', '回', '又', '一',
-'回', '，', '怕', '老婆', '的', '玉亭', '连', '一', '声', '也', '不',
-'敢', '吭', '，', '但', '少安', '他妈', '不', '计较', '他', '。']</p>
+<p>ltp: [‘尽管’, ‘玉亭’, ‘成家’, ‘以后’, ‘，’, ‘他’, ‘老婆’, ‘贺凤英’, ‘那些’, ‘年’, ‘把’, ‘少安’, ‘妈’, ‘欺负’, ‘上’, ‘一’, ‘回’, ‘又’, ‘一’, ‘回’, ‘，’, ‘怕’, ‘老婆’, ‘的’, ‘玉亭’, ‘连’, ‘一’, ‘声’, ‘也’, ‘不’, ‘敢’, ‘吭’, ‘，’, ‘但’, ‘少安’, ‘他妈’, ‘不’, ‘计较’, ‘他’, ‘。’]</p>
 </blockquote>
 <blockquote>
-<p>jieba: ['尽管', '玉亭', '成家', '以后', '，', '他', '老婆', '贺凤英',
-'那些', '年', '把', '少安', '妈', '欺负', '上', '一回', '又', '一回',
-'，', '怕老婆', '的', '玉亭', '连', '一声', '也', '不敢', '吭', '，',
-'但少安', '他妈', '不', '计较', '他', '。']</p>
+<p>jieba: [‘尽管’, ‘玉亭’, ‘成家’, ‘以后’, ‘，’, ‘他’, ‘老婆’, ‘贺凤英’, ‘那些’, ‘年’, ‘把’, ‘少安’, ‘妈’, ‘欺负’, ‘上’, ‘一回’, ‘又’, ‘一回’, ‘，’, ‘怕老婆’, ‘的’, ‘玉亭’, ‘连’, ‘一声’, ‘也’, ‘不敢’, ‘吭’, ‘，’, ‘但少安’, ‘他妈’, ‘不’, ‘计较’, ‘他’, ‘。’]</p>
 </blockquote>
 <blockquote>
-<p>pkuseg: ['尽管', '玉亭', '成家', '以后', '，', '他', '老婆',
-'贺凤英', '那些', '年', '把', '少安', '妈', '欺负', '上', '一', '回',
-'又', '一', '回', '，', '怕', '老婆', '的', '玉亭', '连', '一', '声',
-'也', '不', '敢', '吭', '，', '但', '少安', '他妈', '不', '计较', '他',
-'。']</p>
+<p>pkuseg: [‘尽管’, ‘玉亭’, ‘成家’, ‘以后’, ‘，’, ‘他’, ‘老婆’, ‘贺凤英’, ‘那些’, ‘年’, ‘把’, ‘少安’, ‘妈’, ‘欺负’, ‘上’, ‘一’, ‘回’, ‘又’, ‘一’, ‘回’, ‘，’, ‘怕’, ‘老婆’, ‘的’, ‘玉亭’, ‘连’, ‘一’, ‘声’, ‘也’, ‘不’, ‘敢’, ‘吭’, ‘，’, ‘但’, ‘少安’, ‘他妈’, ‘不’, ‘计较’, ‘他’, ‘。’]</p>
 </blockquote>
 <p>对于第二句话，输出结果如下：</p>
 <blockquote>
-<p>原文:
-据此前报道，以色列于去年5月成为世界上第一个在实战中使用F-35战斗机的国家。</p>
+<p>原文:  据此前报道，以色列于去年5月成为世界上第一个在实战中使用F-35战斗机的国家。</p>
 </blockquote>
 <blockquote>
-<p>ltp: ['据', '此前', '报道', '，', '以色列', '于', '去年', '5月',
-'成为', '世界', '上', '第一', '个', '在', '实战', '中', '使用', 'F-35',
-'战斗机', '的', '国家', '。']</p>
+<p>ltp: [‘据’, ‘此前’, ‘报道’, ‘，’, ‘以色列’, ‘于’, ‘去年’, ‘5月’, ‘成为’, ‘世界’, ‘上’, ‘第一’, ‘个’, ‘在’, ‘实战’, ‘中’, ‘使用’, ‘F-35’, ‘战斗机’, ‘的’, ‘国家’, ‘。’]</p>
 </blockquote>
 <blockquote>
-<p>jieba: ['据此', '前', '报道', '，', '以色列', '于', '去年', '5',
-'月', '成为', '世界', '上', '第一个', '在', '实战', '中', '使用', 'F',
-'-', '35', '战斗机', '的', '国家', '。']</p>
+<p>jieba: [‘据此’, ‘前’, ‘报道’, ‘，’, ‘以色列’, ‘于’, ‘去年’, ‘5’, ‘月’, ‘成为’, ‘世界’, ‘上’, ‘第一个’, ‘在’, ‘实战’, ‘中’, ‘使用’, ‘F’, ‘-’, ‘35’, ‘战斗机’, ‘的’, ‘国家’, ‘。’]</p>
 </blockquote>
 <blockquote>
-<p>pkuseg: ['据', '此前', '报道', '，', '以色列', '于', '去年', '5月',
-'成为', '世界', '上', '第一', '个', '在', '实战', '中', '使用',
-'F-35战斗机', '的', '国家', '。']</p>
+<p>pkuseg: [‘据’, ‘此前’, ‘报道’, ‘，’, ‘以色列’, ‘于’, ‘去年’, ‘5月’, ‘成为’, ‘世界’, ‘上’, ‘第一’, ‘个’, ‘在’, ‘实战’, ‘中’, ‘使用’, ‘F-35战斗机’, ‘的’, ‘国家’, ‘。’]</p>
 </blockquote>
 <p>对于第三句话，输出结果如下：</p>
 <blockquote>
-<p>原文: 小船4月8日经长江前往小鸟岛。</p>
+<p>原文:  小船4月8日经长江前往小鸟岛。</p>
 </blockquote>
 <blockquote>
-<p>ltp: ['小船', '4月', '8日', '经长江', '前往', '小鸟岛', '。']</p>
+<p>ltp: [‘小船’, ‘4月’, ‘8日’, ‘经长江’, ‘前往’, ‘小鸟岛’, ‘。’]</p>
 </blockquote>
 <blockquote>
-<p>jieba: ['小船', '4', '月', '8', '日经', '长江', '前往', '小', '鸟岛',
-'。']</p>
+<p>jieba: [‘小船’, ‘4’, ‘月’, ‘8’, ‘日经’, ‘长江’, ‘前往’, ‘小’, ‘鸟岛’, ‘。’]</p>
 </blockquote>
 <blockquote>
-<p>pkuseg: ['小船', '4月', '8日', '经', '长江', '前往', '小鸟', '岛',
-'。']</p>
+<p>pkuseg: [‘小船’, ‘4月’, ‘8日’, ‘经’, ‘长江’, ‘前往’, ‘小鸟’, ‘岛’, ‘。’]</p>
 </blockquote>
 <p>对于第四句话，输出结果如下：</p>
 <blockquote>
-<p>原文:
-1958年，埃达尔·阿勒坎出生在土耳其首都安卡拉，但他的求学生涯多在美国度过。</p>
+<p>原文:  1958年，埃达尔·阿勒坎出生在土耳其首都安卡拉，但他的求学生涯多在美国度过。</p>
 </blockquote>
 <blockquote>
-<p>ltp: ['1958年', '，', '埃达尔·阿勒坎', '出生', '在', '土耳其',
-'首都', '安卡拉', '，', '但', '他', '的', '求学', '生涯', '多', '在',
-'美国', '度过', '。']</p>
+<p>ltp: [‘1958年’, ‘，’, ‘埃达尔·阿勒坎’, ‘出生’, ‘在’, ‘土耳其’, ‘首都’, ‘安卡拉’, ‘，’, ‘但’, ‘他’, ‘的’, ‘求学’, ‘生涯’, ‘多’, ‘在’, ‘美国’, ‘度过’, ‘。’]</p>
 </blockquote>
 <blockquote>
-<p>jieba: ['1958', '年', '，', '埃', '达尔', '·', '阿勒', '坎', '出生',
-'在', '土耳其', '首都', '安卡拉', '，', '但', '他', '的', '求学',
-'生涯', '多', '在', '美国', '度过', '。']</p>
+<p>jieba: [‘1958’, ‘年’, ‘，’, ‘埃’, ‘达尔’, ‘·’, ‘阿勒’, ‘坎’, ‘出生’, ‘在’, ‘土耳其’, ‘首都’, ‘安卡拉’, ‘，’, ‘但’, ‘他’, ‘的’, ‘求学’, ‘生涯’, ‘多’, ‘在’, ‘美国’, ‘度过’, ‘。’]</p>
 </blockquote>
 <blockquote>
-<p>pkuseg: ['1958年', '，', '埃达尔·阿勒坎', '出生', '在', '土耳其',
-'首都', '安卡拉', '，', '但', '他', '的', '求学', '生涯', '多', '在',
-'美国', '度过', '。']</p>
+<p>pkuseg: [‘1958年’, ‘，’, ‘埃达尔·阿勒坎’, ‘出生’, ‘在’, ‘土耳其’, ‘首都’, ‘安卡拉’, ‘，’, ‘但’, ‘他’, ‘的’, ‘求学’, ‘生涯’, ‘多’, ‘在’, ‘美国’, ‘度过’, ‘。’]</p>
 </blockquote>
 <p>接着，对以上的测试情况做一个简单的总结：</p>
-<ol type="1">
-<li><p>用户词典方面：LTP和pkuseg的效果都很好，jieba的表现不尽如人意，这主要是因为自定义的字典的词语里面含有标点符号，关于该问题的解决办法，可以参考网址：<a
-target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42471956/article/details/80795534">https://blog.csdn.net/weixin_42471956/article/details/80795534</a></p></li>
-<li><p>从第二句话的效果来看，pkuseg的分词效果应该是最好的，‘经’应该作为单个的词语切分出来，而LTP和jieba即使加了自定义词典，也没有效果，同理，‘F-35战斗机’也是类似的情形。</p></li>
+<ol>
+<li>
+<p>用户词典方面：LTP和pkuseg的效果都很好，jieba的表现不尽如人意，这主要是因为自定义的字典的词语里面含有标点符号，关于该问题的解决办法，可以参考网址：<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42471956/article/details/80795534">https://blog.csdn.net/weixin_42471956/article/details/80795534</a></p>
+</li>
+<li>
+<p>从第二句话的效果来看，pkuseg的分词效果应该是最好的，‘经’应该作为单个的词语切分出来，而LTP和jieba即使加了自定义词典，也没有效果，同理，‘F-35战斗机’也是类似的情形。</p>
+</li>
 </ol>
-<p>总的来说，三者的分词效果都很优秀，差距不是很大，但在自定义词典这块，无疑pkuseg的效果更加稳定些。笔者也会在以后的分词使用中多多考虑pkuseg～
-有关pkuseg的介绍与使用，可以参考网址：<a
-target="_blank" rel="noopener" href="https://github.com/lancopku/PKUSeg-python">https://github.com/lancopku/PKUSeg-python</a></p>
+<p>总的来说，三者的分词效果都很优秀，差距不是很大，但在自定义词典这块，无疑pkuseg的效果更加稳定些。笔者也会在以后的分词使用中多多考虑pkuseg～<br>
+有关pkuseg的介绍与使用，可以参考网址：<a target="_blank" rel="noopener" href="https://github.com/lancopku/PKUSeg-python">https://github.com/lancopku/PKUSeg-python</a></p>
 <blockquote>
-<p>注意：不妨了解下笔者的微信公众号：NLP奇幻之旅（微信号为：easy_web_scrape），
-欢迎大家关注~</p>
+<p>注意：不妨了解下笔者的微信公众号：NLP奇幻之旅（微信号为：easy_web_scrape）， 欢迎大家关注~</p>
 </blockquote>
 
                 

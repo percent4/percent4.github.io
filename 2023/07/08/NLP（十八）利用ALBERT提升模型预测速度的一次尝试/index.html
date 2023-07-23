@@ -316,31 +316,37 @@
               <div class="markdown-body">
                 
                 <h3 id="前沿">前沿</h3>
-<p>在文章<a
-href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E5%8D%81%E4%B8%83%EF%BC%89%E5%88%A9%E7%94%A8tensorflow-serving%E9%83%A8%E7%BD%B2kashgari%E6%A8%A1%E5%9E%8B/">NLP（十七）利用tensorflow-serving部署kashgari模型</a>中，笔者介绍了如何利用tensorflow-serving部署来部署深度模型模型，在那篇文章中，笔者利用kashgari模块实现了经典的BERT+Bi-LSTM+CRF模型结构，在标注了时间的文本语料（大约2000多个训练句子）中也达到了很好的识别效果，但是也存在着不足之处，那就是模型的预测时间过长，平均预测一个句子中的时间耗时约400毫秒，这种预测速度在生产环境或实际应用中是不能忍受的。</p>
+<p>在文章<a href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E5%8D%81%E4%B8%83%EF%BC%89%E5%88%A9%E7%94%A8tensorflow-serving%E9%83%A8%E7%BD%B2kashgari%E6%A8%A1%E5%9E%8B/">NLP（十七）利用tensorflow-serving部署kashgari模型</a>中，笔者介绍了如何利用tensorflow-serving部署来部署深度模型模型，在那篇文章中，笔者利用kashgari模块实现了经典的BERT+Bi-LSTM+CRF模型结构，在标注了时间的文本语料（大约2000多个训练句子）中也达到了很好的识别效果，但是也存在着不足之处，那就是模型的预测时间过长，平均预测一个句子中的时间耗时约400毫秒，这种预测速度在生产环境或实际应用中是不能忍受的。</p>
 <p>查看该模型的耗时原因，很大一部分原因在于BERT的调用。BERT是当下最火，知名度最高的预训练模型，虽然会使得模型的训练、预测耗时增加，但也是小样本语料下的最佳模型工具之一，因此，BERT在模型的架构上是不可缺少的。那么，该如何避免使用预训练模型带来的模型预测耗时过长的问题呢？</p>
 <p>本文决定尝试使用ALBERT，来验证ALBERT在提升模型预测速度方面的应用，同时，也算是本人对于使用ALBERT的一次实战吧~</p>
-<h3 id="albert简介">ALBERT简介</h3>
-<p>我们不妨花一些时间来简单地了解一下ALBERT。ALBERT是最近一周才开源的预训练模型，其Github的网址为：https://github.com/brightmart/albert_zh
-，其论文可以参考网址：https://arxiv.org/pdf/1909.11942.pdf 。</p>
+<h3 id="ALBERT简介">ALBERT简介</h3>
+<p>我们不妨花一些时间来简单地了解一下ALBERT。ALBERT是最近一周才开源的预训练模型，其Github的网址为：<a target="_blank" rel="noopener" href="https://github.com/brightmart/albert_zh">https://github.com/brightmart/albert_zh</a> ，其论文可以参考网址：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1909.11942.pdf">https://arxiv.org/pdf/1909.11942.pdf</a> 。</p>
 <p>根据ALBERT的Github介绍，ALBERT在海量中文语料上进行了预训练，模型的参数更少，效果更好。以albert_tiny_zh为例，其文件大小16M、参数为1.8M，模型大小仅为BERT的1/25，效果仅比BERT略差或者在某些NLP任务上更好。在本文的预训练模型中，将采用albert_tiny_zh。</p>
-<h3 id="利用albert训练时间识别模型">利用ALBERT训练时间识别模型</h3>
+<h3 id="利用ALBERT训练时间识别模型">利用ALBERT训练时间识别模型</h3>
 <p>我们以Github中的bertNER为本次项目的代码模板，在该项目中，实现的模型为BERT+Bi-LSTM+CRF，我们将BERT替换为ALBERT，也就是说笔者的项目中模型为ALBERT+Bi-LSTM+CRF，同时替换bert文件夹的代码为alert_zh，替换预训练模型文件夹chinese_L-12_H-768_A-12（BERT中文预训练模型文件）为albert_tiny。当然，也需要修改一部分的项目源代码，来适应ALBERT的模型训练。</p>
-<p>数据集采用笔者自己标注的时间语料，即标注了时间的句子，大概2000+句子，其中75%作为训练集（time.train文件），10%作为验证集（time.dev文件），15%作为测试集（time.test文件）。在这里笔者不打算给出具体的Python代码，因为工程比较复杂，有兴趣的额读者可以去查看该项目的Github地址：<a
-target="_blank" rel="noopener" href="https://github.com/percent4/ALBERT_4_Time_Recognition">https://github.com/percent4/ALBERT_4_Time_Recognition</a>
-。</p>
+<p>数据集采用笔者自己标注的时间语料，即标注了时间的句子，大概2000+句子，其中75%作为训练集（time.train文件），10%作为验证集（time.dev文件），15%作为测试集（time.test文件）。在这里笔者不打算给出具体的Python代码，因为工程比较复杂，有兴趣的额读者可以去查看该项目的Github地址：<a target="_blank" rel="noopener" href="https://github.com/percent4/ALBERT_4_Time_Recognition">https://github.com/percent4/ALBERT_4_Time_Recognition</a> 。</p>
 <p>一些模型的参数可以如下：</p>
 <ul>
-<li><p>预训练模型：ALBERT（tiny）</p></li>
-<li><p>训练样本的最大字符长度： 128</p></li>
-<li><p>batch_size: 8</p></li>
-<li><p>epoch: 100</p></li>
-<li><p>双向LSTM的个数：100</p>
-<p>ALBERT的模型训练时间也会显著提高，我们耐心地等待模型训练完毕。在time.dev和time.test数据集上的表现如下表：</p></li>
+<li>
+<p>预训练模型：ALBERT（tiny）</p>
+</li>
+<li>
+<p>训练样本的最大字符长度： 128</p>
+</li>
+<li>
+<p>batch_size: 8</p>
+</li>
+<li>
+<p>epoch: 100</p>
+</li>
+<li>
+<p>双向LSTM的个数：100</p>
+<p>ALBERT的模型训练时间也会显著提高，我们耐心地等待模型训练完毕。在time.dev和time.test数据集上的表现如下表：</p>
+</li>
 </ul>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>数据集</th>
 <th>precision</th>
 <th>recall</th>
@@ -348,13 +354,13 @@ target="_blank" rel="noopener" href="https://github.com/percent4/ALBERT_4_Time_R
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>time.dev</td>
 <td>81.41%</td>
 <td>84.95%</td>
 <td>83.14%</td>
 </tr>
-<tr class="even">
+<tr>
 <td>time.test</td>
 <td>83.03%</td>
 <td>86.38%</td>
@@ -364,31 +370,27 @@ target="_blank" rel="noopener" href="https://github.com/percent4/ALBERT_4_Time_R
 </table>
 <p>接着笔者利用训练好的模型，用tornado封装了一个模型预测的HTTP服务，具体的代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">import</span> pickle<br><span class="hljs-keyword">import</span> traceback<br><br><span class="hljs-keyword">import</span> tornado.httpserver<br><span class="hljs-keyword">import</span> tornado.ioloop<br><span class="hljs-keyword">import</span> tornado.options<br><span class="hljs-keyword">import</span> tornado.web<br><span class="hljs-keyword">from</span> tornado.options <span class="hljs-keyword">import</span> define, options<br><br><span class="hljs-keyword">import</span> tensorflow <span class="hljs-keyword">as</span> tf<br><span class="hljs-keyword">from</span> utils <span class="hljs-keyword">import</span> create_model, get_logger<br><span class="hljs-keyword">from</span> model <span class="hljs-keyword">import</span> Model<br><span class="hljs-keyword">from</span> loader <span class="hljs-keyword">import</span> input_from_line<br><span class="hljs-keyword">from</span> train <span class="hljs-keyword">import</span> FLAGS, load_config, train<br><br><span class="hljs-comment"># 定义端口为12306</span><br>define(<span class="hljs-string">&quot;port&quot;</span>, default=<span class="hljs-number">12306</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;run on the given port&quot;</span>, <span class="hljs-built_in">type</span>=<span class="hljs-built_in">int</span>)<br><span class="hljs-comment"># 导入模型</span><br>config = load_config(FLAGS.config_file)<br>logger = get_logger(FLAGS.log_file)<br><span class="hljs-comment"># limit GPU memory</span><br>tf_config = tf.ConfigProto()<br>tf_config.gpu_options.allow_growth = <span class="hljs-literal">False</span><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(FLAGS.map_file, <span class="hljs-string">&quot;rb&quot;</span>) <span class="hljs-keyword">as</span> f:<br>    tag_to_id, id_to_tag = pickle.load(f)<br><br>sess = tf.Session(config=tf_config)<br>model = create_model(sess, Model, FLAGS.ckpt_path, config, logger)<br><br><span class="hljs-comment"># 模型预测的HTTP接口</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">ResultHandler</span>(tornado.web.RequestHandler):<br>    <span class="hljs-comment"># post函数</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">post</span>(<span class="hljs-params">self</span>):<br>        event = self.get_argument(<span class="hljs-string">&#x27;event&#x27;</span>)<br>        result = model.evaluate_line(sess, input_from_line(event, FLAGS.max_seq_len, tag_to_id), id_to_tag)<br>        self.write(json.dumps(result, ensure_ascii=<span class="hljs-literal">False</span>))<br><br><span class="hljs-comment"># 主函数</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    <span class="hljs-comment"># 开启tornado服务</span><br>    tornado.options.parse_command_line()<br>    <span class="hljs-comment"># 定义app</span><br>    app = tornado.web.Application(<br>            handlers=[<br>                      (<span class="hljs-string">r&#x27;/subj_extract&#x27;</span>, ResultHandler)<br>                     ], <span class="hljs-comment">#网页路径控制</span><br>           )<br>    http_server = tornado.httpserver.HTTPServer(app)<br>    http_server.listen(options.port)<br>    tornado.ioloop.IOLoop.instance().start()<br><br>main()<br></code></pre></td></tr></table></figure>
-<h3 id="模型预测提速了吗">模型预测提速了吗？</h3>
+<h3 id="模型预测提速了吗？">模型预测提速了吗？</h3>
 <p>将模型预测封装成HTTP服务后，我们利用Postman来测试模型预测的效果和时间，如下图所示：</p>
-<p><img src="/img/nlp18_1.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="/img/nlp18_1.png" srcset="/img/loading.gif" lazyload alt=""></p>
 <p>可以看到，模型预测的结果正确，且耗时仅为38ms。</p>
 <p>接着我们尝试多测试几个句子的测试，测试代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># Daxing, Beijing</span><br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> time<br><br>url = <span class="hljs-string">&#x27;http://localhost:12306/subj_extract&#x27;</span><br><br>texts = [<span class="hljs-string">&#x27;记者从国家发展改革委、商务部相关方面获悉，日前美方已决定对拟于10月1日实施的中国输美商品加征关税措施做出调整，中方支持相关企业从即日起按照市场化原则和WTO规则，自美采购一定数量大豆、猪肉等农产品，国务院关税税则委员会将对上述采购予以加征关税排除。&#x27;</span>,<br>         <span class="hljs-string">&#x27;据印度Zee新闻网站12日报道，亚洲新闻国际通讯社援引印度军方消息人士的话说，9月11日的对峙事件发生在靠近班公错北岸的实际控制线一带。&#x27;</span>,<br>         <span class="hljs-string">&#x27;儋州市决定，从9月开始，对城市低保、农村低保、特困供养人员、优抚对象、领取失业保险金人员、建档立卡未脱贫人口等低收入群体共3万多人，发放猪肉价格补贴，每人每月发放不低于100元补贴，以后发放标准，将根据猪肉价波动情况进行动态调整。&#x27;</span>,<br>         <span class="hljs-string">&#x27;9月11日，华为心声社区发布美国经济学家托马斯.弗里德曼在《纽约时报》上的专栏内容，弗里德曼透露，在与华为创始人任正非最近一次采访中，任正非表示华为愿意与美国司法部展开话题不设限的讨论。&#x27;</span>,<br>         <span class="hljs-string">&#x27;造血干细胞移植治疗白血病技术已日益成熟，然而，通过该方法同时治愈艾滋病目前还是一道全球尚在攻克的难题。&#x27;</span>,<br>         <span class="hljs-string">&#x27;英国航空事故调查局（AAIB）近日披露，今年2月6日一趟由德国法兰克福飞往墨西哥坎昆的航班上，因飞行员打翻咖啡使操作面板冒烟，导致飞机折返迫降爱尔兰。&#x27;</span>,<br>         <span class="hljs-string">&#x27;当地时间周四（9月12日），印度尼西亚财政部长英卓华（Sri Mulyani Indrawati）明确表示：特朗普的推特是风险之一。&#x27;</span>,<br>         <span class="hljs-string">&#x27;华中科技大学9月12日通过其官方网站发布通报称，9月2日，我校一硕士研究生不幸坠楼身亡。&#x27;</span>,<br>         <span class="hljs-string">&#x27;微博用户@ooooviki 9月12日下午公布发生在自己身上的惊悚遭遇：一个自称网警、名叫郑洋的人利用职务之便，查到她的完备的个人信息，包括但不限于身份证号、家庭地址、电话号码、户籍变动情况等，要求她做他女朋友。&#x27;</span>,<br>         <span class="hljs-string">&#x27;今天，贵阳取消了汽车限购，成为目前全国实行限购政策的9个省市中，首个取消限购的城市。&#x27;</span>,<br>         <span class="hljs-string">&#x27;据悉，与全球同步，中国区此次将于9月13日于iPhone官方渠道和京东正式开启预售，京东成Apple中国区唯一官方授权预售渠道。&#x27;</span>,<br>         <span class="hljs-string">&#x27;根据央行公布的数据，截至2019年6月末，存款类金融机构住户部门短期消费贷款规模为9.11万亿元，2019年上半年该项净增3293.19亿元，上半年增量看起来并不乐观。&#x27;</span>,<br>         <span class="hljs-string">&#x27;9月11日，一段拍摄浙江万里学院学生食堂的视频走红网络，视频显示该学校食堂不仅在用餐区域设置了可以看电影、比赛的大屏幕，还推出了“一人食”餐位。&#x27;</span>,<br>         <span class="hljs-string">&#x27;当日，在北京举行的2019年国际篮联篮球世界杯半决赛中，西班牙队对阵澳大利亚队。&#x27;</span>,<br>         ]<br><br>t1 = time.time()<br><span class="hljs-keyword">for</span> text <span class="hljs-keyword">in</span> texts:<br>    data = &#123;<span class="hljs-string">&#x27;event&#x27;</span>: text.replace(<span class="hljs-string">&#x27; &#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>)&#125;<br>    req = requests.post(url, data)<br>    <span class="hljs-keyword">if</span> req.status_code == <span class="hljs-number">200</span>:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;原文：%s&#x27;</span> % text)<br>        res = json.loads(req.content)[<span class="hljs-string">&#x27;entities&#x27;</span>]<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;抽取结果：%s&#x27;</span> % <span class="hljs-built_in">str</span>([_[<span class="hljs-string">&#x27;word&#x27;</span>] <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> res]))<br><br><br>t2 = time.time()<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;一共耗时：%ss.&#x27;</span> % <span class="hljs-built_in">str</span>(<span class="hljs-built_in">round</span>(t2-t1, <span class="hljs-number">4</span>)))<br></code></pre></td></tr></table></figure>
 <p>输出结果如下：</p>
 <figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs prolog">原文：记者从国家发展改革委、商务部相关方面获悉，日前美方已决定对拟于<span class="hljs-number">10</span>月<span class="hljs-number">1</span>日实施的中国输美商品加征关税措施做出调整，中方支持相关企业从即日起按照市场化原则和<span class="hljs-symbol">WTO</span>规则，自美采购一定数量大豆、猪肉等农产品，国务院关税税则委员会将对上述采购予以加征关税排除。<br>抽取结果：[<span class="hljs-string">&#x27;日前&#x27;</span>, <span class="hljs-string">&#x27;10月1日&#x27;</span>]<br>原文：据印度<span class="hljs-symbol">Zee</span>新闻网站<span class="hljs-number">12</span>日报道，亚洲新闻国际通讯社援引印度军方消息人士的话说，<span class="hljs-number">9</span>月<span class="hljs-number">11</span>日的对峙事件发生在靠近班公错北岸的实际控制线一带。<br>抽取结果：[<span class="hljs-string">&#x27;12日&#x27;</span>, <span class="hljs-string">&#x27;9月11日&#x27;</span>]<br>原文：儋州市决定，从<span class="hljs-number">9</span>月开始，对城市低保、农村低保、特困供养人员、优抚对象、领取失业保险金人员、建档立卡未脱贫人口等低收入群体共<span class="hljs-number">3</span>万多人，发放猪肉价格补贴，每人每月发放不低于<span class="hljs-number">100</span>元补贴，以后发放标准，将根据猪肉价波动情况进行动态调整。<br>抽取结果：[<span class="hljs-string">&#x27;9月&#x27;</span>]<br>原文：<span class="hljs-number">9</span>月<span class="hljs-number">11</span>日，华为心声社区发布美国经济学家托马斯.弗里德曼在《纽约时报》上的专栏内容，弗里德曼透露，在与华为创始人任正非最近一次采访中，任正非表示华为愿意与美国司法部展开话题不设限的讨论。<br>抽取结果：[<span class="hljs-string">&#x27;9月11日&#x27;</span>]<br>原文：造血干细胞移植治疗白血病技术已日益成熟，然而，通过该方法同时治愈艾滋病目前还是一道全球尚在攻克的难题。<br>抽取结果：[]<br>原文：英国航空事故调查局（<span class="hljs-symbol">AAIB</span>）近日披露，今年<span class="hljs-number">2</span>月<span class="hljs-number">6</span>日一趟由德国法兰克福飞往墨西哥坎昆的航班上，因飞行员打翻咖啡使操作面板冒烟，导致飞机折返迫降爱尔兰。<br>抽取结果：[<span class="hljs-string">&#x27;近日&#x27;</span>, <span class="hljs-string">&#x27;今年2月6日&#x27;</span>]<br>原文：当地时间周四（<span class="hljs-number">9</span>月<span class="hljs-number">12</span>日），印度尼西亚财政部长英卓华（<span class="hljs-symbol">Sri</span> <span class="hljs-symbol">Mulyani</span> <span class="hljs-symbol">Indrawati</span>）明确表示：特朗普的推特是风险之一。<br>抽取结果：[<span class="hljs-string">&#x27;当地时间周四（9月12日）&#x27;</span>]<br>原文：华中科技大学<span class="hljs-number">9</span>月<span class="hljs-number">12</span>日通过其官方网站发布通报称，<span class="hljs-number">9</span>月<span class="hljs-number">2</span>日，我校一硕士研究生不幸坠楼身亡。<br>抽取结果：[<span class="hljs-string">&#x27;9月12日&#x27;</span>, <span class="hljs-string">&#x27;9月2日&#x27;</span>]<br>原文：微博用户@ooooviki <span class="hljs-number">9</span>月<span class="hljs-number">12</span>日下午公布发生在自己身上的惊悚遭遇：一个自称网警、名叫郑洋的人利用职务之便，查到她的完备的个人信息，包括但不限于身份证号、家庭地址、电话号码、户籍变动情况等，要求她做他女朋友。<br>抽取结果：[<span class="hljs-string">&#x27;9月12日下午&#x27;</span>]<br>原文：今天，贵阳取消了汽车限购，成为目前全国实行限购政策的<span class="hljs-number">9</span>个省市中，首个取消限购的城市。<br>抽取结果：[<span class="hljs-string">&#x27;今天&#x27;</span>, <span class="hljs-string">&#x27;目前&#x27;</span>]<br>原文：据悉，与全球同步，中国区此次将于<span class="hljs-number">9</span>月<span class="hljs-number">13</span>日于iPhone官方渠道和京东正式开启预售，京东成<span class="hljs-symbol">Apple</span>中国区唯一官方授权预售渠道。<br>抽取结果：[<span class="hljs-string">&#x27;9月13日&#x27;</span>]<br>原文：根据央行公布的数据，截至<span class="hljs-number">2019</span>年<span class="hljs-number">6</span>月末，存款类金融机构住户部门短期消费贷款规模为<span class="hljs-number">9.11</span>万亿元，<span class="hljs-number">2019</span>年上半年该项净增<span class="hljs-number">3293.19</span>亿元，上半年增量看起来并不乐观。<br>抽取结果：[<span class="hljs-string">&#x27;2019年6月末&#x27;</span>, <span class="hljs-string">&#x27;2019年上半年&#x27;</span>, <span class="hljs-string">&#x27;上半年&#x27;</span>]<br>原文：<span class="hljs-number">9</span>月<span class="hljs-number">11</span>日，一段拍摄浙江万里学院学生食堂的视频走红网络，视频显示该学校食堂不仅在用餐区域设置了可以看电影、比赛的大屏幕，还推出了“一人食”餐位。<br>抽取结果：[<span class="hljs-string">&#x27;9月11日&#x27;</span>]<br>原文：当日，在北京举行的<span class="hljs-number">2019</span>年国际篮联篮球世界杯半决赛中，西班牙队对阵澳大利亚队。<br>抽取结果：[<span class="hljs-string">&#x27;当日&#x27;</span>, <span class="hljs-string">&#x27;2019年&#x27;</span>]<br>一共耗时：<span class="hljs-number">0.5314</span>s.<br></code></pre></td></tr></table></figure>
-<p>可以看到，对于测试的14个句子，识别的准确率很高，且预测耗时为531ms，平均每个话的预测时间不超过40ms。相比较而言，文章<a
-href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E5%8D%81%E4%B8%83%EF%BC%89%E5%88%A9%E7%94%A8tensorflow-serving%E9%83%A8%E7%BD%B2kashgari%E6%A8%A1%E5%9E%8B/">NLP（十七）利用tensorflow-serving部署kashgari模型</a>中的模型，该模型的预测时间为每句话1秒多，模型预测的速度为带ALBERT模型的25倍多。</p>
+<p>可以看到，对于测试的14个句子，识别的准确率很高，且预测耗时为531ms，平均每个话的预测时间不超过40ms。相比较而言，文章<a href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E5%8D%81%E4%B8%83%EF%BC%89%E5%88%A9%E7%94%A8tensorflow-serving%E9%83%A8%E7%BD%B2kashgari%E6%A8%A1%E5%9E%8B/">NLP（十七）利用tensorflow-serving部署kashgari模型</a>中的模型，该模型的预测时间为每句话1秒多，模型预测的速度为带ALBERT模型的25倍多。</p>
 <p>因此，ALBERT模型确实提升了模型预测的时间，而且效果非常显著。</p>
 <h3 id="总结">总结</h3>
 <p>由于ALBERT开源不到一周，而且笔者的学识、才能有限，因此，在代码方面可能会存在不足。但是，作为一次使用ALBERT的历经，希望能够与大家分享。</p>
 <p>本文绝不是上述项目代码的抄袭和堆砌，该项目融入了笔者自己的思考，希望不要被误解为是抄袭。笔者使用上述的bertNER和ALBERT，只是为了验证ALBERT在模型预测耗时方面的提速效果，而事实是，ALBERT确实给我带来了很大惊喜，感受源代码作者们～</p>
-<p>最后，附上本文中笔者项目的Github地址：<a
-target="_blank" rel="noopener" href="https://github.com/percent4/ALBERT_4_Time_Recognition">https://github.com/percent4/ALBERT_4_Time_Recognition</a>
-。</p>
+<p>最后，附上本文中笔者项目的Github地址：<a target="_blank" rel="noopener" href="https://github.com/percent4/ALBERT_4_Time_Recognition">https://github.com/percent4/ALBERT_4_Time_Recognition</a> 。</p>
 <p>众里寻他千百度。蓦然回首，那人却在，灯火阑珊处。</p>
 <h3 id="参考文献">参考文献</h3>
-<ol type="1">
-<li>超小型BERT中文版横空出世！模型只有16M，训练速度提升10倍：https://mp.weixin.qq.com/s/eVlNpejrxdE4ctDTBM-fiA</li>
-<li>ALBERT的Github地址：https://github.com/brightmart/albert_zh</li>
-<li>bertNER项目的Github地址：https://github.com/yumath/bertNER</li>
-<li>NLP（十七）利用tensorflow-serving部署kashgari模型：
-https://www.cnblogs.com/jclian91/p/11526547.html</li>
+<ol>
+<li>超小型BERT中文版横空出世！模型只有16M，训练速度提升10倍：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/eVlNpejrxdE4ctDTBM-fiA">https://mp.weixin.qq.com/s/eVlNpejrxdE4ctDTBM-fiA</a></li>
+<li>ALBERT的Github地址：<a target="_blank" rel="noopener" href="https://github.com/brightmart/albert_zh">https://github.com/brightmart/albert_zh</a></li>
+<li>bertNER项目的Github地址：<a target="_blank" rel="noopener" href="https://github.com/yumath/bertNER">https://github.com/yumath/bertNER</a></li>
+<li>NLP（十七）利用tensorflow-serving部署kashgari模型： <a target="_blank" rel="noopener" href="https://www.cnblogs.com/jclian91/p/11526547.html">https://www.cnblogs.com/jclian91/p/11526547.html</a></li>
 </ol>
 
                 

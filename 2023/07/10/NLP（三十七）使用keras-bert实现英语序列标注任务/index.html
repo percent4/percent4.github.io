@@ -316,12 +316,10 @@
             
               <div class="markdown-body">
                 
-                <p>在文章<a
-href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a>中，我们已经用keras-bert模块实现了中文序列标注任务，其中对BERT进行微调。当前，我们也可以顺便实现下英语序列标注任务。</p>
+                <p>在文章<a href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a>中，我们已经用keras-bert模块实现了中文序列标注任务，其中对BERT进行微调。当前，我们也可以顺便实现下英语序列标注任务。</p>
 <p>本文将介绍如何使用keras-bert实现英语序列标注任务。</p>
 <h3 id="一个小测试">一个小测试</h3>
-<p>使用keras-bert实现英语序列标注任务的代码，大体上与文章<a
-href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a>中的相似，但英语序列标注有其特殊之处。其特殊之处在于，BERT会将复杂的英语单词拆分成多个简单英语单词，进行tokenize.</p>
+<p>使用keras-bert实现英语序列标注任务的代码，大体上与文章<a href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a>中的相似，但英语序列标注有其特殊之处。其特殊之处在于，BERT会将复杂的英语单词拆分成多个简单英语单词，进行tokenize.</p>
 <p>下面给出一个例子。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> keras_bert <span class="hljs-keyword">import</span> Tokenizer<br><br><span class="hljs-comment"># 读取词典</span><br>dict_path = <span class="hljs-string">&#x27;./uncased_L-12_H-768_A-12/vocab.txt&#x27;</span><br>token_dict = &#123;&#125;<br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(dict_path, <span class="hljs-string">&#x27;r&#x27;</span>, encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>) <span class="hljs-keyword">as</span> reader:<br>    <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> reader:<br>        token = line.strip()<br>        token_dict[token] = <span class="hljs-built_in">len</span>(token_dict)<br><br>id_token_dict = &#123;v: k <span class="hljs-keyword">for</span> k, v <span class="hljs-keyword">in</span> token_dict.items()&#125;<br>tokenizer = Tokenizer(token_dict=token_dict)<br><br><span class="hljs-comment"># tokenize</span><br>code = tokenizer.encode(<span class="hljs-string">&quot;A man waits in the arrivals hall at Heathrow Airport in London.&quot;</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;ids: &quot;</span>, code[<span class="hljs-number">0</span>])<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;type_ids: &quot;</span>, code[<span class="hljs-number">1</span>])<br>encode_text = [id_token_dict[_] <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> code[<span class="hljs-number">0</span>]]<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;encode_text: &quot;</span>, encode_text)<br></code></pre></td></tr></table></figure>
 <p>输出结果为：</p>
@@ -334,65 +332,53 @@ href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B
 <p>也就是说，拆分后的多个简单英语单词的序列标注标签将会跟随原先复杂单词的标签。</p>
 <h3 id="数据集">数据集</h3>
 <p>本文将会在两个英语命名实体识别的数据集上进行测试。</p>
-<ol type="1">
-<li><p><a
-target="_blank" rel="noopener" href="https://www.clips.uantwerpen.be/conll2003/ner/">Conll2003</a></p>
-<p>conll2003.train 14987条数据和conll2003.test
-3466条数据，共4种标签：</p>
-<ul class="task-list">
-<li><label><input type="checkbox" checked="" />LOC</label></li>
-<li><label><input type="checkbox" checked="" />PER</label></li>
-<li><label><input type="checkbox" checked="" />ORG</label></li>
-<li><label><input type="checkbox" checked="" />MISC</label></li>
-</ul></li>
-<li><p><a
-target="_blank" rel="noopener" href="https://noisy-text.github.io/2017/emerging-rare-entities.html">wnut17</a></p>
+<ol>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.clips.uantwerpen.be/conll2003/ner/">Conll2003</a></p>
+<p>conll2003.train 14987条数据和conll2003.test 3466条数据，共4种标签：</p>
+<ul>
+<li>[x] LOC</li>
+<li>[x] PER</li>
+<li>[x] ORG</li>
+<li>[x] MISC</li>
+</ul>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://noisy-text.github.io/2017/emerging-rare-entities.html">wnut17</a></p>
 <p>wnut17.train 3394条数据和wnut17.test 1009条数据，共6种标签：</p>
-<ul class="task-list">
-<li><label><input type="checkbox" checked="" />Person</label></li>
-<li><label><input type="checkbox" checked="" />Location (including GPE,
-facility)</label></li>
-<li><label><input type="checkbox" checked="" />Corporation</label></li>
-<li><label><input type="checkbox" checked="" />Consumer good (tangible
-goods, or well-defined services)</label></li>
-<li><label><input type="checkbox" checked="" />Creative work (song,
-movie, book, and so on)</label></li>
-<li><label><input type="checkbox" checked="" />Group (subsuming music
-band, sports team, and non-corporate organisations)</label></li>
-</ul></li>
+<ul>
+<li>[x] Person</li>
+<li>[x] Location (including GPE, facility)</li>
+<li>[x] Corporation</li>
+<li>[x] Consumer good (tangible goods, or well-defined services)</li>
+<li>[x] Creative work (song, movie, book, and so on)</li>
+<li>[x] Group (subsuming music band, sports team, and non-corporate organisations)</li>
+</ul>
+</li>
 </ol>
 <h3 id="模型评估">模型评估</h3>
-<p>英语序列标注使用keras-bert进行模型训练、评估和预测的代码与文章<a
-href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a>中的相似，本文不再详细给出，感兴趣的读者可以参考Github的实现代码：<a
-target="_blank" rel="noopener" href="https://github.com/percent4/keras_bert_english_sequence_labeling">https://github.com/percent4/keras_bert_english_sequence_labeling</a>
-。 我们利用上述模型，在两个数据集上的评估结果如下：</p>
+<p>英语序列标注使用keras-bert进行模型训练、评估和预测的代码与文章<a href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a>中的相似，本文不再详细给出，感兴趣的读者可以参考Github的实现代码：<a target="_blank" rel="noopener" href="https://github.com/percent4/keras_bert_english_sequence_labeling">https://github.com/percent4/keras_bert_english_sequence_labeling</a> 。<br>
+我们利用上述模型，在两个数据集上的评估结果如下：</p>
 <ul>
 <li>Conll2003</li>
 </ul>
-<p>模型参数：uncased_L-12_H-768_A-12, MAX_SEQ_LEN=128, BATCH_SIZE=32,
-EPOCH=10</p>
+<p>模型参数：uncased_L-12_H-768_A-12, MAX_SEQ_LEN=128, BATCH_SIZE=32, EPOCH=10</p>
 <p>运行model_evaluate.py,模型评估结果如下：</p>
 <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs apache">           <span class="hljs-attribute">precision</span>    recall  f1-score   support<br><br>      <span class="hljs-attribute">PER</span>     <span class="hljs-number">0</span>.<span class="hljs-number">9650</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9577</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9613</span>      <span class="hljs-number">1842</span><br>      <span class="hljs-attribute">ORG</span>     <span class="hljs-number">0</span>.<span class="hljs-number">8889</span>    <span class="hljs-number">0</span>.<span class="hljs-number">8770</span>    <span class="hljs-number">0</span>.<span class="hljs-number">8829</span>      <span class="hljs-number">1341</span><br>     <span class="hljs-attribute">MISC</span>     <span class="hljs-number">0</span>.<span class="hljs-number">8156</span>    <span class="hljs-number">0</span>.<span class="hljs-number">8395</span>    <span class="hljs-number">0</span>.<span class="hljs-number">8274</span>       <span class="hljs-number">922</span><br>      <span class="hljs-attribute">LOC</span>     <span class="hljs-number">0</span>.<span class="hljs-number">9286</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9271</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9278</span>      <span class="hljs-number">1837</span><br><br><span class="hljs-attribute">micro</span> avg     <span class="hljs-number">0</span>.<span class="hljs-number">9129</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9116</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9123</span>      <span class="hljs-number">5942</span><br><span class="hljs-attribute">macro</span> avg     <span class="hljs-number">0</span>.<span class="hljs-number">9134</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9116</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9125</span>      <span class="hljs-number">5942</span><br></code></pre></td></tr></table></figure>
-<p><a
-target="_blank" rel="noopener" href="https://github.com/sebastianruder/NLP-progress/blob/master/english/named_entity_recognition.md">最新SOTA结果的F1值为94.3%.</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/sebastianruder/NLP-progress/blob/master/english/named_entity_recognition.md">最新SOTA结果的F1值为94.3%.</a></p>
 <ul>
 <li>wnut17</li>
 </ul>
-<p>模型参数：uncased_L-12_H-768_A-12, MAX_SEQ_LEN=128, BATCH_SIZE=20,
-EPOCH=10</p>
+<p>模型参数：uncased_L-12_H-768_A-12, MAX_SEQ_LEN=128, BATCH_SIZE=20, EPOCH=10</p>
 <p>运行model_evaluate.py,模型评估结果如下：</p>
 <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs apache">             <span class="hljs-attribute">precision</span>    recall  f1-score   support<br><br>       <span class="hljs-attribute">work</span>     <span class="hljs-number">0</span>.<span class="hljs-number">2069</span>    <span class="hljs-number">0</span>.<span class="hljs-number">0571</span>    <span class="hljs-number">0</span>.<span class="hljs-number">0896</span>       <span class="hljs-number">105</span><br>     <span class="hljs-attribute">person</span>     <span class="hljs-number">0</span>.<span class="hljs-number">6599</span>    <span class="hljs-number">0</span>.<span class="hljs-number">4830</span>    <span class="hljs-number">0</span>.<span class="hljs-number">5577</span>       <span class="hljs-number">470</span><br>    <span class="hljs-attribute">product</span>     <span class="hljs-number">0</span>.<span class="hljs-number">3333</span>    <span class="hljs-number">0</span>.<span class="hljs-number">0965</span>    <span class="hljs-number">0</span>.<span class="hljs-number">1497</span>       <span class="hljs-number">114</span><br>   <span class="hljs-attribute">location</span>     <span class="hljs-number">0</span>.<span class="hljs-number">5070</span>    <span class="hljs-number">0</span>.<span class="hljs-number">4865</span>    <span class="hljs-number">0</span>.<span class="hljs-number">4966</span>        <span class="hljs-number">74</span><br>      <span class="hljs-attribute">group</span>     <span class="hljs-number">0</span>.<span class="hljs-number">1500</span>    <span class="hljs-number">0</span>.<span class="hljs-number">1538</span>    <span class="hljs-number">0</span>.<span class="hljs-number">1519</span>        <span class="hljs-number">39</span><br><span class="hljs-attribute">corporation</span>     <span class="hljs-number">0</span>.<span class="hljs-number">1935</span>    <span class="hljs-number">0</span>.<span class="hljs-number">1765</span>    <span class="hljs-number">0</span>.<span class="hljs-number">1846</span>        <span class="hljs-number">34</span><br><br>  <span class="hljs-attribute">micro</span> avg     <span class="hljs-number">0</span>.<span class="hljs-number">5328</span>    <span class="hljs-number">0</span>.<span class="hljs-number">3489</span>    <span class="hljs-number">0</span>.<span class="hljs-number">4217</span>       <span class="hljs-number">837</span><br>  <span class="hljs-attribute">macro</span> avg     <span class="hljs-number">0</span>.<span class="hljs-number">5016</span>    <span class="hljs-number">0</span>.<span class="hljs-number">3489</span>    <span class="hljs-number">0</span>.<span class="hljs-number">4033</span>       <span class="hljs-number">837</span><br></code></pre></td></tr></table></figure>
-<h3 id="bert模型效果对比">BERT模型效果对比</h3>
+<h3 id="BERT模型效果对比">BERT模型效果对比</h3>
 <p>Google对BERT进行优化，又开放了几个小版本的BERT英语预训练模型，如下：</p>
-<figure>
-<img src="/img/nlp37_1.png" srcset="/img/loading.gif" lazyload alt="BERT英语各版本模型" />
-<figcaption aria-hidden="true">BERT英语各版本模型</figcaption>
-</figure>
-<p>我们在Conll2003数据集上，模型参数为MAX_SEQ_LEN=128, BATCH_SIZE=32,
-EPOCH=10，对比结果如下：</p>
+<p><img src="/img/nlp37_1.png" srcset="/img/loading.gif" lazyload alt="BERT英语各版本模型"></p>
+<p>我们在Conll2003数据集上，模型参数为MAX_SEQ_LEN=128, BATCH_SIZE=32, EPOCH=10，对比结果如下：</p>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>模型名称</th>
 <th>P</th>
 <th>R</th>
@@ -400,19 +386,19 @@ EPOCH=10，对比结果如下：</p>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>BERT-Small</td>
 <td>0.8744</td>
 <td>0.8859</td>
 <td>0.8801</td>
 </tr>
-<tr class="even">
+<tr>
 <td>BERT-Medium</td>
 <td>0.9052</td>
 <td>0.9031</td>
 <td>0.9041</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>BERT-Base</td>
 <td>0.9129</td>
 <td>0.9116</td>
@@ -421,9 +407,7 @@ EPOCH=10，对比结果如下：</p>
 </tbody>
 </table>
 <h3 id="总结">总结</h3>
-<p>本文采用keras-bert实现了英语序列标注任务，其中对BERT进行微调。本项目已经上传至Github，网址为：<a
-target="_blank" rel="noopener" href="https://github.com/percent4/keras_bert_english_sequence_labeling">https://github.com/percent4/keras_bert_english_sequence_labeling</a>
-。</p>
+<p>本文采用keras-bert实现了英语序列标注任务，其中对BERT进行微调。本项目已经上传至Github，网址为：<a target="_blank" rel="noopener" href="https://github.com/percent4/keras_bert_english_sequence_labeling">https://github.com/percent4/keras_bert_english_sequence_labeling</a> 。</p>
 <p>后续将介绍如何使用keras-bert加载ALBERT模型，并实现文本多分类、文本多标签任务和序列标注任务，欢迎关注~</p>
 
                 
