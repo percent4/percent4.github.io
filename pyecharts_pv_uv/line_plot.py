@@ -2,28 +2,41 @@
 # @place: Pudong, Shanghai
 # @file: line_plot.py
 # @time: 2023/7/24 13:30
+import datetime
 import pyecharts.options as opts
 from pyecharts.charts import Line
+import pandas as pd
 
-now_date = "2023-07-24"
-week_name_list = [now_date]
-pv = [513]
-uv = [92]
-docs = [75]
+now_date = datetime.date.today()
+print(now_date)
+
+df = pd.read_csv('stats.csv', delimiter=',')
+date_str_list = []
+pv_list = []
+uv_list = []
+doc_num_list = []
+for i in range(df.shape[0]):
+    date_str, pv, uv, doc_num = df.iloc[i, :]
+    date_str_list.append(date_str)
+    pv_list.append(pv)
+    uv_list.append(uv)
+    doc_num_list.append(doc_num)
+
+print('read stats data ...')
 
 Line(init_opts=opts.InitOpts(width="100%", height="500px"))\
-    .add_xaxis(xaxis_data=week_name_list)\
+    .add_xaxis(xaxis_data=date_str_list)\
     .add_yaxis(
     series_name="总访问量",
-    y_axis=pv
+    y_axis=pv_list
 )\
     .add_yaxis(
     series_name="总访客数",
-    y_axis=uv
+    y_axis=uv_list
 )\
     .add_yaxis(
     series_name="总文章数",
-    y_axis=docs
+    y_axis=doc_num_list
 )\
     .set_global_opts(
     title_opts=opts.TitleOpts(title="博客访问数据统计"),

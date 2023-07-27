@@ -1,0 +1,869 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文开始学习Elasticsearch，入门笔记讲持续更新。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Elasticsearch入门笔记（一）">
+<meta property="og:url" content="https://percent4.github.io/2023/07/27/Elasticsearch%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="本文开始学习Elasticsearch，入门笔记讲持续更新。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-07-27T14:31:12.000Z">
+<meta property="article:modified_time" content="2023-07-27T14:37:24.166Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="Elasticsearch">
+<meta property="article:tag" content="Kibana">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Elasticsearch入门笔记（一） - Hexo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Elasticsearch入门笔记（一）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-27 22:31" pubdate>
+          星期四, 七月 27日 2023, 10:31 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          3.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          30 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Elasticsearch入门笔记（一）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h3 id="环境搭建">环境搭建</h3>
+<p>Elasticsearch和Kibana的版本采用7.17.0，环境搭建采用Docker，<code>docker-compose.yml</code>文件如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">version:</span> <span class="hljs-string">&quot;3.1&quot;</span><br><span class="hljs-comment"># 服务配置</span><br><span class="hljs-attr">services:</span><br>  <span class="hljs-attr">elasticsearch:</span><br>    <span class="hljs-attr">container_name:</span> <span class="hljs-string">elasticsearch-7.17.0</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">elasticsearch:7.17.0</span><br>    <span class="hljs-attr">environment:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;ES_JAVA_OPTS=-Xms1024m -Xmx1024m&quot;</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;http.host=0.0.0.0&quot;</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;node.name=elastic01&quot;</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;cluster.name=cluster_elasticsearch&quot;</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;discovery.type=single-node&quot;</span><br>    <span class="hljs-attr">ports:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;9200:9200&quot;</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;9300:9300&quot;</span><br>    <span class="hljs-attr">volumes:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">./es/plugins:/usr/share/elasticsearch/plugins</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">./es/data:/usr/share/elasticsearch/data</span><br>    <span class="hljs-attr">networks:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">elastic_net</span><br><br>  <span class="hljs-attr">kibana:</span><br>    <span class="hljs-attr">container_name:</span> <span class="hljs-string">kibana-7.17.0</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">kibana:7.17.0</span><br>    <span class="hljs-attr">ports:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;5601:5601&quot;</span><br>    <span class="hljs-attr">networks:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">elastic_net</span><br><br><span class="hljs-comment"># 网络配置</span><br><span class="hljs-attr">networks:</span><br>  <span class="hljs-attr">elastic_net:</span><br>    <span class="hljs-attr">driver:</span> <span class="hljs-string">bridge</span><br></code></pre></td></tr></table></figure>
+<h3 id="基础命令">基础命令</h3>
+<ul>
+<li>查看ElasticSearch是否启动成功：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl http://IP:9200<br></code></pre></td></tr></table></figure>
+<ul>
+<li>查看集群是否健康</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl http://IP:9200/_cat/health?v<br></code></pre></td></tr></table></figure>
+<ul>
+<li>查看ElasticSearch所有的index</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl http://IP:9200/_cat/indices<br></code></pre></td></tr></table></figure>
+<ul>
+<li>查看ElasticSearch所有indices或者某个index的文档数量</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl http://IP:9200/_cat/count?v<br>curl http://IP:9200/_cat/count/some_index_name?v<br></code></pre></td></tr></table></figure>
+<ul>
+<li>查看每个节点正在运行的插件信息</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl http://IP:9200/_cat/plugins?v&amp;s=component&amp;h=name,component,version,description<br></code></pre></td></tr></table></figure>
+<ul>
+<li>查看ik插件的分词结果</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl -H <span class="hljs-string">&#x27;Content-Type: application/json&#x27;</span>  -XGET <span class="hljs-string">&#x27;http://IP:9200/_analyze?pretty&#x27;</span> -d <span class="hljs-string">&#x27;&#123;&quot;analyzer&quot;:&quot;ik_max_word&quot;,&quot;text&quot;:&quot;美国留给伊拉克的是个烂摊子吗&quot;&#125;&#x27;</span><br></code></pre></td></tr></table></figure>
+<h3 id="index操作">index操作</h3>
+<ul>
+<li>查看某个index的mapping</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl http://IP:9200/some_index_name/_mapping<br></code></pre></td></tr></table></figure>
+<ul>
+<li>查看某个index的所有数据</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl http://IP:9200/some_index_name/_search<br></code></pre></td></tr></table></figure>
+<ul>
+<li>按ID进行查询</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl -X GET http://IP:9200/索引名称/文档类型/ID<br></code></pre></td></tr></table></figure>
+<ul>
+<li>检索某个index的全部数据</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl http://IP:9200/索引名称/_search?pretty<br>curl -X POST http://IP:9200/索引名称/_search?pretty -d <span class="hljs-string">&quot;&#123;\&quot;query\&quot;: &#123;\&quot;match_all\&quot;: &#123;&#125; &#125;&#125;&quot;</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>检索某个index的前几条数据(如果不指定size,则默认为10条)</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl -XPOST IP:9200/索引名称/_search?pretty -d <span class="hljs-string">&quot;&#123;\&quot;query\&quot;: &#123;\&quot;match_all\&quot;: &#123;&#125; &#125;, \&quot;size\&quot; : 2&#125;&quot;</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>检索某个index的中间几条数据(比如第11-20条数据)</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl -XPOST IP:9200/索引名称/_search?pretty -d <span class="hljs-string">&quot;&#123;\&quot;query\&quot;: &#123;\&quot;match_all\&quot;: &#123;&#125; &#125;, \&quot;from\&quot; : 10, \&quot;size\&quot; : 10&#125;&#125;&quot;</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>检索某个index, 只返回context字段</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl -XPOST IP:9200/索引名称/_search?pretty -d <span class="hljs-string">&quot;&#123;\&quot;query\&quot;: &#123;\&quot;match_all\&quot;: &#123;&#125; &#125;, \&quot;_source\&quot;: [\&quot;context\&quot;]&#125;&quot;</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>删除某个index</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl -XDELETE <span class="hljs-string">&#x27;IP:9200/index_name&#x27;</span><br></code></pre></td></tr></table></figure>
+<h3 id="es搜索">ES搜索</h3>
+<ol type="1">
+<li>如果有多个搜索关键字， Elastic 认为它们是or关系。</li>
+<li>如果要执行多个关键词的and搜索，必须使用布尔查询。</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ curl <span class="hljs-string">&#x27;localhost:9200/索引名称/文档类型/_search&#x27;</span>  -d <span class="hljs-string">&#x27;</span><br><span class="hljs-string">&#123;</span><br><span class="hljs-string">  &quot;query&quot;: &#123;</span><br><span class="hljs-string">    &quot;bool&quot;: &#123;</span><br><span class="hljs-string">      &quot;must&quot;: [</span><br><span class="hljs-string">        &#123; &quot;match&quot;: &#123; &quot;content&quot;: &quot;软件&quot; &#125; &#125;,</span><br><span class="hljs-string">        &#123; &quot;match&quot;: &#123; &quot;content&quot;: &quot;系统&quot; &#125; &#125;</span><br><span class="hljs-string">      ]</span><br><span class="hljs-string">    &#125;</span><br><span class="hljs-string">  &#125;</span><br><span class="hljs-string">&#125;&#x27;</span><br></code></pre></td></tr></table></figure>
+<ol start="3" type="1">
+<li>复杂搜索：</li>
+</ol>
+<p>SQL语句：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> test_index <span class="hljs-keyword">where</span> name<span class="hljs-operator">=</span><span class="hljs-string">&#x27;tom&#x27;</span> <span class="hljs-keyword">or</span> (hired <span class="hljs-operator">=</span><span class="hljs-literal">true</span> <span class="hljs-keyword">and</span> (personality <span class="hljs-operator">=</span><span class="hljs-string">&#x27;good&#x27;</span> <span class="hljs-keyword">and</span> rude <span class="hljs-operator">!=</span> <span class="hljs-literal">true</span> ))<br></code></pre></td></tr></table></figure>
+<p>DSL语句：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">GET</span> <span class="hljs-operator">/</span>test_index<span class="hljs-operator">/</span>_search<br>&#123;<br>    &quot;query&quot;: &#123;<br>            &quot;bool&quot;: &#123;<br>                &quot;must&quot;: &#123; &quot;match&quot;:&#123; &quot;name&quot;: &quot;tom&quot; &#125;&#125;,<br>                &quot;should&quot;: [<br>                    &#123; &quot;match&quot;:&#123; &quot;hired&quot;: <span class="hljs-literal">true</span> &#125;&#125;,<br>                    &#123; &quot;bool&quot;: &#123;<br>                        &quot;must&quot;:&#123; &quot;match&quot;: &#123; &quot;personality&quot;: &quot;good&quot; &#125;&#125;,<br>                        &quot;must_not&quot;: &#123; &quot;match&quot;: &#123; &quot;rude&quot;: <span class="hljs-literal">true</span> &#125;&#125;<br>                    &#125;&#125;<br>                ],<br>                &quot;minimum_should_match&quot;: <span class="hljs-number">1</span><br>            &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<ol start="4" type="1">
+<li><p>模糊搜索：<a
+target="_blank" rel="noopener" href="https://blog.csdn.net/UbuntuTouch/article/details/101287399">https://blog.csdn.net/UbuntuTouch/article/details/101287399</a></p></li>
+<li><p>ik分词器使用</p></li>
+</ol>
+<p>查看ik分词器使用情况：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><br></code></pre></td></tr></table></figure>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" class="category-chain-item">数据库</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Elasticsearch/" class="print-no-link">#Elasticsearch</a>
+      
+        <a href="/tags/Kibana/" class="print-no-link">#Kibana</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Elasticsearch入门笔记（一）</div>
+      <div>https://percent4.github.io/2023/07/27/Elasticsearch入门笔记（一）/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月27日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/07/27/Elasticsearch%E7%AE%80%E4%BB%8B%E4%B8%8E%E5%AE%9E%E6%88%98/" title="Elasticsearch简介与实战">
+                        <span class="hidden-mobile">Elasticsearch简介与实战</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"你的评论将对作者弥足珍贵！","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="小站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
