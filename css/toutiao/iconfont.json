@@ -1,0 +1,16 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "3966487",
+      "name": "今日头条",
+      "font_class": "jinritoutiao",
+      "unicode": "e6cb",
+      "unicode_decimal": 59083
+    }
+  ]
+}
