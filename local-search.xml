@@ -13,7 +13,7 @@
     
     <categories>
       
-      <category>草稿</category>
+      <category>数据库</category>
       
     </categories>
     
@@ -232,9 +232,9 @@
       
       <tag>Baichuan-13B-Chat</tag>
       
-      <tag>Milvus</tag>
-      
       <tag>ElasticSearch</tag>
+      
+      <tag>Milvus</tag>
       
       <tag>文档问答</tag>
       
@@ -912,9 +912,9 @@
       
       <tag>文本分类</tag>
       
-      <tag>多标签分类</tag>
-      
       <tag>ALBERT</tag>
+      
+      <tag>多标签分类</tag>
       
     </tags>
     
