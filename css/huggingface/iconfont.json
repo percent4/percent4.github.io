@@ -1,0 +1,16 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "35192783",
+      "name": "huggingface",
+      "font_class": "huggingface",
+      "unicode": "e624",
+      "unicode_decimal": 58916
+    }
+  ]
+}

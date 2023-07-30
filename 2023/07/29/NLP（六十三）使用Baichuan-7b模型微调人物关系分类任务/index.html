@@ -1,0 +1,924 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将介绍如何使用Baichuan-7b模型微调人物关系分类任务，并比BERT时代的模型取得了进步。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（六十三）使用Baichuan-7b模型微调人物关系分类任务">
+<meta property="og:url" content="https://percent4.github.io/2023/07/29/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E4%B8%89%EF%BC%89%E4%BD%BF%E7%94%A8Baichuan-7b%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将介绍如何使用Baichuan-7b模型微调人物关系分类任务，并比BERT时代的模型取得了进步。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://percent4.github.io/img/nlp42_1.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp63_1.png">
+<meta property="article:published_time" content="2023-07-29T13:42:33.000Z">
+<meta property="article:modified_time" content="2023-07-30T04:06:30.569Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="Baichuan-7b">
+<meta property="article:tag" content="人物关系">
+<meta property="article:tag" content="关系分类">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp42_1.png">
+  
+  
+  
+  <title>NLP（六十三）使用Baichuan-7b模型微调人物关系分类任务 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（六十三）使用Baichuan-7b模型微调人物关系分类任务"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-29 21:42" pubdate>
+          星期六, 七月 29日 2023, 9:42 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          6.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          58 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（六十三）使用Baichuan-7b模型微调人物关系分类任务</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h3 id="任务介绍">任务介绍</h3>
+<p>人物关系分类指的是对文本中的两个人物，在特定的任务列表范围内，判断他们之间的人物关系。以样本<code>亲戚 1837年6月20日，威廉四世辞世，他的侄女维多利亚即位。</code>为例，其中<code>亲戚</code>为人物关系，<code>威廉四世</code>为实体1，<code>维多利亚</code>为实体2。</p>
+<p>笔者自己利用业余时间标注的样本数据有3900多条，分布如下图：</p>
+<figure>
+<img src="/img/nlp42_1.png" srcset="/img/loading.gif" lazyload alt="人物关系分布图" />
+<figcaption aria-hidden="true">人物关系分布图</figcaption>
+</figure>
+<p>对上述数据集进行划分，训练集与测试集的比例为8:2，其中训练集3105条，测试集776条。</p>
+<p>在文章<a
+href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%80%EF%BC%89%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E6%8A%BD%E5%8F%96%E7%9A%84%E4%B8%80%E6%AC%A1%E5%AE%9E%E6%88%98/">NLP（二十一）人物关系抽取的一次实战</a>中，当时的标注数据为2900多条，使用BERT向量提取+BiGRU+Attention模型，取得的平均F1值为78.97%.</p>
+<p>在文章<a
+href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%BA%8C%EF%BC%89%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E5%88%86%E7%B1%BB%E7%9A%84%E5%86%8D%E6%AC%A1%E5%B0%9D%E8%AF%95/">NLP（四十二）人物关系分类的再次尝试</a>中，借助BERT微调（当作分类任务），取得的平均F1值为82.69%.</p>
+<p>在文章<a
+href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%BA%94%EF%BC%89R-BERT%E5%9C%A8%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E5%88%86%E7%B1%BB%E4%B8%8A%E7%9A%84%E5%B0%9D%E8%AF%95%E5%8F%8AKeras%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/">NLP（四十五）R-BERT在人物关系分类上的尝试及Keras代码复现</a>中，借助专用于关系分类任务的R-BERT模型，在Chinese
+Roberta模型上取得的F1值为85.35%.</p>
+<p>在本文中，将尝试使用大模型（Large Language Model,
+LLM）中的中文模型代表Baichuan-7b,
+对人物关系分类任务进行微调，看看它的表现。</p>
+<h3 id="好的提示">好的提示</h3>
+<p>在开始模型微调之前，我们需要一个好的提示（Prompt），我们借助GPT-4：</p>
+<figure>
+<img src="/img/nlp63_1.png" srcset="/img/loading.gif" lazyload alt="GPT-4给出的关于关系分类的Prompt" />
+<figcaption
+aria-hidden="true">GPT-4给出的关于关系分类的Prompt</figcaption>
+</figure>
+<p>别小看了Prompt的威力，笔者在使用微调模型过程中，发现自己写的Prompt与GPT-4给出的Prompt，在训练结果F1值上可能相差3-4%。可见Prompt工程的重要性！</p>
+<h3 id="模型微调">模型微调</h3>
+<p>我们使用上述Prompt，加工数据集（当作多轮对话任务），格式如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;conversation_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;category&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;relation classification&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;conversation&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>    <span class="hljs-punctuation">&#123;</span><br>      <span class="hljs-attr">&quot;human&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;给定以下标签：[&#x27;不确定&#x27;, &#x27;夫妻&#x27;, &#x27;父母&#x27;, &#x27;兄弟姐妹&#x27;, &#x27;上下级&#x27;, &#x27;师生&#x27;, &#x27;好友&#x27;, &#x27;同学&#x27;, &#x27;合作&#x27;, &#x27;同一个人&#x27;, &#x27;情侣&#x27;, &#x27;祖孙&#x27;, &#x27;同门&#x27;, &#x27;亲戚&#x27;]，请在以下句子中分析并分类实体之间的关系：&#x27;与李源澄论戴东原书&#x27;在这个句子中，戴东原和李源澄之间的关系应该属于哪个标签？&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;assistant&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;不知道&quot;</span><br>    <span class="hljs-punctuation">&#125;</span><br>  <span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<p>使用Firefly框架进行模型微调，访问网址为：<a
+target="_blank" rel="noopener" href="https://github.com/yangjianxin1/Firefly">https://github.com/yangjianxin1/Firefly</a>.本文基于Baichuan-7b为基座模型，采用QLora方式训练，训练参数如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;output_dir&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;output/firefly-baichuan-7b-people&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;model_name_or_path&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;/home/test/baichun_7b&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;train_file&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;./data/train.jsonl&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;num_train_epochs&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">5</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;per_device_train_batch_size&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">8</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;gradient_accumulation_steps&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;learning_rate&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2e-4</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;max_seq_length&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">256</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;logging_steps&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">100</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;save_steps&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">100</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;save_total_limit&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;lr_scheduler_type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;constant_with_warmup&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;warmup_steps&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">100</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;lora_rank&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">64</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;lora_alpha&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">16</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;lora_dropout&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.05</span><span class="hljs-punctuation">,</span><br><br>    <span class="hljs-attr">&quot;gradient_checkpointing&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;disable_tqdm&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;optim&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;paged_adamw_32bit&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;seed&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">42</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;fp16&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;report_to&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;tensorboard&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;dataloader_num_workers&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;save_strategy&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;steps&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;weight_decay&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;max_grad_norm&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.3</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;remove_unused_columns&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<p>使用命令行<code>torchrun --nproc_per_node=2 train_qlora.py --train_args_file train_args/qlora/baichuan-7b-sft-qlora.json</code>进行训练，训练时间大约20分钟，最终的train
+loss为0.0273。</p>
+<p>在Firefly框架中设置好merge_lora.py中的模型文件路径，将adapter的权重与Baichuan-7b模型合并，合并得到新文件<code>firefly-baichuan-7b-people-merge</code>。</p>
+<p>在Firefly框架，仿造script/chat/single_chat.py文件，将其改写成API调用方式的文件single_chat_server.py，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @place: Pudong, Shanghai</span><br><span class="hljs-comment"># @file: single_chat_server.py</span><br><span class="hljs-comment"># @time: 2023/7/25 22:27</span><br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoModelForCausalLM, AutoTokenizer<br><span class="hljs-keyword">import</span> torch<br><span class="hljs-comment"># 单轮对话web服务</span><br><span class="hljs-keyword">from</span> flask <span class="hljs-keyword">import</span> Flask, request, jsonify<br><br>app = Flask(<span class="hljs-string">&quot;single_chat_server&quot;</span>)<br><br><br><span class="hljs-meta">@app.route(<span class="hljs-params"><span class="hljs-string">&#x27;/people_rel_cls&#x27;</span>, methods=[<span class="hljs-string">&#x27;POST&#x27;</span>]</span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">predict</span>():<br>    req_dict = request.json<br>    text, people1, people2 = req_dict[<span class="hljs-string">&quot;text&quot;</span>], req_dict[<span class="hljs-string">&quot;people1&quot;</span>], req_dict[<span class="hljs-string">&quot;people2&quot;</span>]<br>    text = text.strip()<br>    content = <span class="hljs-string">f&quot;给定以下标签：[&#x27;不确定&#x27;, &#x27;夫妻&#x27;, &#x27;父母&#x27;, &#x27;兄弟姐妹&#x27;, &#x27;上下级&#x27;, &#x27;师生&#x27;, &#x27;好友&#x27;, &#x27;同学&#x27;, &quot;</span> \<br>              <span class="hljs-string">f&quot;&#x27;合作&#x27;, &#x27;同一个人&#x27;, &#x27;情侣&#x27;, &#x27;祖孙&#x27;, &#x27;同门&#x27;, &#x27;亲戚&#x27;]，&quot;</span> \<br>              <span class="hljs-string">f&quot;请在以下句子中分析并分类实体之间的关系：&#x27;<span class="hljs-subst">&#123;text&#125;</span>&#x27;&quot;</span> \<br>              <span class="hljs-string">f&quot;在这个句子中，<span class="hljs-subst">&#123;people1&#125;</span>和<span class="hljs-subst">&#123;people2&#125;</span>之间的关系应该属于哪个标签？&quot;</span><br>    <span class="hljs-built_in">print</span>(content)<br>    input_ids = tokenizer(content, return_tensors=<span class="hljs-string">&quot;pt&quot;</span>, add_special_tokens=<span class="hljs-literal">False</span>).input_ids.to(device)<br>    <span class="hljs-keyword">with</span> torch.no_grad():<br>        outputs = model.generate(<br>            input_ids=input_ids, max_new_tokens=max_new_tokens, do_sample=<span class="hljs-literal">True</span>,<br>            top_p=top_p, temperature=temperature, repetition_penalty=repetition_penalty,<br>            eos_token_id=tokenizer.eos_token_id<br>        )<br>    outputs = outputs.tolist()[<span class="hljs-number">0</span>][<span class="hljs-built_in">len</span>(input_ids[<span class="hljs-number">0</span>]):]<br>    response = tokenizer.decode(outputs)<br>    <span class="hljs-built_in">print</span>(outputs, response)<br>    response = response.strip().replace(text, <span class="hljs-string">&quot;&quot;</span>).replace(<span class="hljs-string">&#x27;&lt;/s&gt;&#x27;</span>, <span class="hljs-string">&quot;&quot;</span>).replace(<span class="hljs-string">&#x27;&lt;s&gt;&#x27;</span>, <span class="hljs-string">&quot;&quot;</span>).strip()<br>    <span class="hljs-keyword">return</span> jsonify(&#123;<span class="hljs-string">&quot;result&quot;</span>: response&#125;)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    model_name = <span class="hljs-string">&quot;/home/test/Firefly/script/checkpoint/firefly-baichuan-7b-people-merge&quot;</span><br>    max_new_tokens = <span class="hljs-number">5</span><br>    top_p = <span class="hljs-number">0.9</span><br>    temperature = <span class="hljs-number">0.01</span><br>    repetition_penalty = <span class="hljs-number">1.0</span><br>    device = <span class="hljs-string">&#x27;cuda:0&#x27;</span><br>    input_pattern = <span class="hljs-string">&#x27;&lt;s&gt;&#123;&#125;&lt;/s&gt;&#x27;</span><br>    model = AutoModelForCausalLM.from_pretrained(<br>        model_name,<br>        trust_remote_code=<span class="hljs-literal">True</span>,<br>        low_cpu_mem_usage=<span class="hljs-literal">True</span>,<br>        torch_dtype=torch.float16,<br>    ).to(device).<span class="hljs-built_in">eval</span>()<br>    tokenizer = AutoTokenizer.from_pretrained(<br>        model_name,<br>        trust_remote_code=<span class="hljs-literal">True</span>,<br>        <span class="hljs-comment"># llama不支持fast</span><br>        use_fast=<span class="hljs-literal">False</span> <span class="hljs-keyword">if</span> model.config.model_type == <span class="hljs-string">&#x27;llama&#x27;</span> <span class="hljs-keyword">else</span> <span class="hljs-literal">True</span><br>    )<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;model loaded!&quot;</span>)<br>    app.run(host=<span class="hljs-string">&quot;0.0.0.0&quot;</span>, port=<span class="hljs-number">5000</span>, threaded=<span class="hljs-literal">True</span>)<br></code></pre></td></tr></table></figure>
+<p>使用API调用方式可以对测试集进行模型评估。</p>
+<h3 id="结果比对">结果比对</h3>
+<p>不同模型（包括BERT时代前后的模型方法）的评估结果（均为当时模型的SOTA结果或接近SOTA结果）如下：</p>
+<table>
+
+<thead>
+<tr class="header">
+<th>模型方法</th>
+<th>基座模型</th>
+<th>F1值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>BERT向量提取+BiGRU+Attention</td>
+<td>BiGRU+Attention</td>
+<td>78.97%</td>
+<td>BERT模型作为特征提取处理</td>
+</tr>
+<tr class="even">
+<td>BERT cls finetuning</td>
+<td>BERT</td>
+<td>82.69%</td>
+<td>当作文本分类任务处理</td>
+</tr>
+<tr class="odd">
+<td>R-BERT</td>
+<td>chinese-roberta-wwm-ext</td>
+<td>85.35%</td>
+<td>BERT时代的关系分类模型代表</td>
+</tr>
+<tr class="even">
+<td>R-BERT</td>
+<td>chinese-roberta-wwm-ext-large</td>
+<td>87.22%</td>
+<td>BERT时代的关系分类模型代表</td>
+</tr>
+<tr class="odd">
+<td>QLora</td>
+<td>Baichuan-7b</td>
+<td>88.25%</td>
+<td>其它参数上文给出，epoch=5</td>
+</tr>
+<tr class="even">
+<td>QLora</td>
+<td>Baichuan-7b</td>
+<td>89.15%</td>
+<td>其它参数上文给出，epoch=10</td>
+</tr>
+</tbody>
+</table>
+<h3 id="存在问题">存在问题</h3>
+<p>在大模型时代中，大模型突破了以前NLP任务的范畴，走向了更加通用化，从上述结果中，我们也不难发现，大模型（Baichuan-7b）在传统的NLP任务（如笔者自己的人物关系数据集）上取得了更好的结果，达到了新的SOTA，这是符合我们的认知的。</p>
+<p>但在笔者模型微调过程中，也发现了不少的问题或有待于进一步验证的地方，记录如下：</p>
+<ul>
+<li><p>Baichuan-7b模型取得了SOTA结果，但同样的训练框架和训练参数，Baichuan-13B-Base模型却表现惨淡，甚至很差</p></li>
+<li><p>不同的Prompt对于训练结果的影响，比如笔者自己写的Prompt和GPT-4写的Prompt对于最终结果差距较大，相差3-4%</p></li>
+<li><p>相同的模型，采用full, lora,
+qlora三种形式进行SFT，训练结果会有何不同</p>
+<p>后续笔者将尝试使用不同的训练框架进行Baichuan-13B-Base的微调。</p></li>
+</ul>
+<h3 id="总结分享">总结分享</h3>
+<p>本文主要介绍如何使用Baichuan-7b模型微调人物关系分类任务，并比BERT时代的模型取得了进步，达到了新的SOTA.</p>
+<p>本文的想法很朴素，主要是想测试下LLM在传统NLP人物上的表现，也是对于笔者自己的人物关系数据集的一次效果提升，这也是笔者一直在关注和构建的数据集。这一次，大模型再一次让我震惊！</p>
+<p>本文使用的人物关系数据集已开源至HuggingFace Datasets, 网址为: <a
+target="_blank" rel="noopener" href="https://huggingface.co/datasets/jclian91/people_relation_classification">https://huggingface.co/datasets/jclian91/people_relation_classification</a>
+.</p>
+<p>本人的个人博客网址为：<a
+href="https://percent4.github.io/">https://percent4.github.io/</a>
+,欢迎大家关注~</p>
+<h3 id="参考文献">参考文献</h3>
+<ol type="1">
+<li>NLP（二十一）人物关系抽取的一次实战: <a
+href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%80%EF%BC%89%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E6%8A%BD%E5%8F%96%E7%9A%84%E4%B8%80%E6%AC%A1%E5%AE%9E%E6%88%98/">https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%80%EF%BC%89%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E6%8A%BD%E5%8F%96%E7%9A%84%E4%B8%80%E6%AC%A1%E5%AE%9E%E6%88%98/</a></li>
+<li>NLP（四十二）人物关系分类的再次尝试: <a
+href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%BA%8C%EF%BC%89%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E5%88%86%E7%B1%BB%E7%9A%84%E5%86%8D%E6%AC%A1%E5%B0%9D%E8%AF%95/">https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%BA%8C%EF%BC%89%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E5%88%86%E7%B1%BB%E7%9A%84%E5%86%8D%E6%AC%A1%E5%B0%9D%E8%AF%95/</a></li>
+<li>NLP（四十五）R-BERT在人物关系分类上的尝试及Keras代码复现: <a
+href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%BA%94%EF%BC%89R-BERT%E5%9C%A8%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E5%88%86%E7%B1%BB%E4%B8%8A%E7%9A%84%E5%B0%9D%E8%AF%95%E5%8F%8AKeras%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/">https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%BA%94%EF%BC%89R-BERT%E5%9C%A8%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E5%88%86%E7%B1%BB%E4%B8%8A%E7%9A%84%E5%B0%9D%E8%AF%95%E5%8F%8AKeras%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/</a></li>
+<li>微调百川Baichuan-13B保姆式教程，手把手教你训练百亿大模型: <a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ZBY6kbogHjbCQvZBzNEqag">https://mp.weixin.qq.com/s/ZBY6kbogHjbCQvZBzNEqag</a></li>
+<li>HuggingFace Dataset people_relation_classification: <a
+target="_blank" rel="noopener" href="https://huggingface.co/datasets/jclian91/people_relation_classification">https://huggingface.co/datasets/jclian91/people_relation_classification</a></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/NLP/" class="print-no-link">#NLP</a>
+      
+        <a href="/tags/Baichuan-7b/" class="print-no-link">#Baichuan-7b</a>
+      
+        <a href="/tags/%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB/" class="print-no-link">#人物关系</a>
+      
+        <a href="/tags/%E5%85%B3%E7%B3%BB%E5%88%86%E7%B1%BB/" class="print-no-link">#关系分类</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（六十三）使用Baichuan-7b模型微调人物关系分类任务</div>
+      <div>https://percent4.github.io/2023/07/29/NLP（六十三）使用Baichuan-7b模型微调人物关系分类任务/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月29日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/07/29/Hexo%E7%9A%84Fluid%E4%B8%BB%E9%A2%98%E4%B8%AD%E8%87%AA%E5%AE%9A%E4%B9%89iconfont%E5%9B%BE%E6%A0%87/" title="Hexo的Fluid主题中自定义iconfont图标">
+                        <span class="hidden-mobile">Hexo的Fluid主题中自定义iconfont图标</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
