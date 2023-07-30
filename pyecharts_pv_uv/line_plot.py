@@ -17,11 +17,12 @@ uv_list = []
 doc_num_list = []
 for i in range(df.shape[0]):
     date_str, pv, uv, doc_num = df.iloc[i, :]
-    date_str_list.append(date_str)
-    pv_list.append(pv)
-    uv_list.append(uv)
-    doc_num_list.append(doc_num)
+    date_str_list.append(str(date_str))
+    pv_list.append(int(pv))
+    uv_list.append(int(uv))
+    doc_num_list.append(int(doc_num))
 
+print(date_str_list, pv_list, uv_list, doc_num_list)
 print('read stats data ...')
 
 Line(init_opts=opts.InitOpts(width="100%", height="500px"))\
