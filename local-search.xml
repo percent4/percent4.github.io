@@ -1203,9 +1203,9 @@
       
       <tag>序列标注</tag>
       
-      <tag>文本分类</tag>
-      
       <tag>ALBERT</tag>
+      
+      <tag>文本分类</tag>
       
       <tag>多标签分类</tag>
       
@@ -1487,9 +1487,9 @@
       
       <tag>NLP</tag>
       
-      <tag>文本分类</tag>
-      
       <tag>ALBERT</tag>
+      
+      <tag>文本分类</tag>
       
       <tag>机器学习</tag>
       
@@ -1736,9 +1736,9 @@
       
       <tag>NLP</tag>
       
-      <tag>文本分类</tag>
-      
       <tag>ALBERT</tag>
+      
+      <tag>文本分类</tag>
       
     </tags>
     
@@ -2278,9 +2278,9 @@
       
       <tag>NLP</tag>
       
-      <tag>NLP工具</tag>
-      
       <tag>NER</tag>
+      
+      <tag>NLP工具</tag>
       
     </tags>
     
