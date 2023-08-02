@@ -321,42 +321,35 @@
             
               <div class="markdown-body">
                 
-                <p>Warmup and Decay是深度学习中模型调参的常用trick。本文将简单介绍Warmup
-and Decay以及如何在keras_bert中使用它们。</p>
-<h3 id="什么是warmup-and-decay">什么是warmup and decay？</h3>
-<p>Warmup and Decay是模型训练过程中，一种学习率（learning
-rate）的调整策略。</p>
+                <p>Warmup and Decay是深度学习中模型调参的常用trick。本文将简单介绍Warmup and Decay以及如何在keras_bert中使用它们。</p>
+<h3 id="什么是warmup-and-decay？">什么是warmup and decay？</h3>
+<p>Warmup and Decay是模型训练过程中，一种学习率（learning rate）的调整策略。</p>
 <p>Warmup是在ResNet论文中提到的一种学习率预热的方法，它在训练开始的时候先选择使用一个较小的学习率，训练了一些epoches或者steps(比如4个epoches,10000steps),再修改为预先设置的学习来进行训练。</p>
-<p>同理，Decay是学习率衰减方法，它指定在训练到一定epoches或者steps后，按照线性或者余弦函数等方式，将学习率降低至指定值。一般，使用Warmup
-and Decay，学习率会遵循从小到大，再减小的规律。</p>
+<p>同理，Decay是学习率衰减方法，它指定在训练到一定epoches或者steps后，按照线性或者余弦函数等方式，将学习率降低至指定值。一般，使用Warmup and Decay，学习率会遵循从小到大，再减小的规律。</p>
 <p>由于刚开始训练时,模型的权重(weights)是随机初始化的，此时若选择一个较大的学习率,可能带来模型的不稳定(振荡)，选择Warmup预热学习率的方式，可以使得开始训练的几个epoches或者一些steps内学习率较小,在预热的小学习率下，模型可以慢慢趋于稳定，等模型相对稳定后再选择预先设置的学习率进行训练,使得模型收敛速度变得更快，模型效果更佳。而当模型训到一定阶段后（比如10个epoch），模型的分布就已经比较固定了，或者说能学到的新东西就比较少了。如果还沿用较大的学习率，就会破坏这种稳定性，用我们通常的话说，就是已经接近损失函数的局部最优值点了，为了靠近这个局部最优值点，我们就要慢慢来。</p>
-<h3
-id="如何在keras_bert中使用warmup-and-decay">如何在keras_bert中使用Warmup
-and Decay？</h3>
+<h3 id="如何在keras-bert中使用Warmup-and-Decay？">如何在keras_bert中使用Warmup and Decay？</h3>
 <p>在keras_bert中，提供了优化器AdamWarmup类，其参数定义如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">AdamWarmup</span>(keras.optimizers.Optimizer):<br>    <span class="hljs-string">&quot;&quot;&quot;Adam optimizer with warmup.</span><br><span class="hljs-string"></span><br><span class="hljs-string">    Default parameters follow those provided in the original paper.</span><br><span class="hljs-string"></span><br><span class="hljs-string">    # Arguments</span><br><span class="hljs-string">        decay_steps: Learning rate will decay linearly to zero in decay steps.</span><br><span class="hljs-string">        warmup_steps: Learning rate will increase linearly to lr in first warmup steps.</span><br><span class="hljs-string">        learning_rate: float &gt;= 0. Learning rate.</span><br><span class="hljs-string">        beta_1: float, 0 &lt; beta &lt; 1. Generally close to 1.</span><br><span class="hljs-string">        beta_2: float, 0 &lt; beta &lt; 1. Generally close to 1.</span><br><span class="hljs-string">        epsilon: float &gt;= 0. Fuzz factor. If `None`, defaults to `K.epsilon()`.</span><br><span class="hljs-string">        weight_decay: float &gt;= 0. Weight decay.</span><br><span class="hljs-string">        weight_decay_pattern: A list of strings. The substring of weight names to be decayed.</span><br><span class="hljs-string">                              All weights will be decayed if it is None.</span><br><span class="hljs-string">        amsgrad: boolean. Whether to apply the AMSGrad variant of this</span><br><span class="hljs-string">            algorithm from the paper &quot;On the Convergence of Adam and</span><br><span class="hljs-string">            Beyond&quot;.</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, decay_steps, warmup_steps, min_lr=<span class="hljs-number">0.0</span>,</span><br><span class="hljs-params">                 learning_rate=<span class="hljs-number">0.001</span>, beta_1=<span class="hljs-number">0.9</span>, beta_2=<span class="hljs-number">0.999</span>,</span><br><span class="hljs-params">                 epsilon=<span class="hljs-literal">None</span>, weight_decay=<span class="hljs-number">0.</span>, weight_decay_pattern=<span class="hljs-literal">None</span>,</span><br><span class="hljs-params">                 amsgrad=<span class="hljs-literal">False</span>, **kwargs</span>):<br></code></pre></td></tr></table></figure>
 <p>在这个类中，我们需要指定<code>decay_steps</code>，<code>warmup_steps</code>，<code>learning_rate</code>，<code>min_lr</code>，其含义为模型在训练<code>warmup_steps</code>后，将学习率逐渐增加至<code>learning_rate</code>，在训练<code>decay_steps</code>后，将学习率逐渐线性地降低至<code>min_lr</code>。</p>
-<p>以下为Warmup预热学习率以及学习率预热完成后衰减(sin or exp
-decay)的曲线图：</p>
-<figure>
-<img src="/img/nlp43_1.png" srcset="/img/loading.gif" lazyload alt="学习率Warmup and Decay示意图" />
-<figcaption aria-hidden="true">学习率Warmup and Decay示意图</figcaption>
-</figure>
-<p>在keras_bert的官方文档中，给出了使用Warmup and
-Decay的代码例子，如下：</p>
+<p>以下为Warmup预热学习率以及学习率预热完成后衰减(sin or exp decay)的曲线图：</p>
+<p><img src="/img/nlp43_1.png" srcset="/img/loading.gif" lazyload alt="学习率Warmup and Decay示意图"></p>
+<p>在keras_bert的官方文档中，给出了使用Warmup and Decay的代码例子，如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">from</span> keras_bert <span class="hljs-keyword">import</span> AdamWarmup, calc_train_steps<br><br>train_x = np.random.standard_normal((<span class="hljs-number">1024</span>, <span class="hljs-number">100</span>))<br><br>total_steps, warmup_steps = calc_train_steps(<br>    num_example=train_x.shape[<span class="hljs-number">0</span>],<br>    batch_size=<span class="hljs-number">32</span>,<br>    epochs=<span class="hljs-number">10</span>,<br>    warmup_proportion=<span class="hljs-number">0.1</span>,<br>)<br><br>optimizer = AdamWarmup(total_steps, warmup_steps, lr=<span class="hljs-number">1e-3</span>, min_lr=<span class="hljs-number">1e-5</span>)<br></code></pre></td></tr></table></figure>
-<h3 id="warmup-and-decay实战">Warmup and Decay实战</h3>
-<p>笔者在文章<a
-href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a>中，在使用keras-bert训练
-序列标注模型时，学习率调整策略使用了<code>ReduceLROnPlateau</code>，代码如下：</p>
+<h3 id="Warmup-and-Decay实战">Warmup and Decay实战</h3>
+<p>笔者在文章<a href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a>中，在使用keras-bert训练 序列标注模型时，学习率调整策略使用了<code>ReduceLROnPlateau</code>，代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">reduce_lr = ReduceLROnPlateau(monitor=<span class="hljs-string">&#x27;val_loss&#x27;</span>, min_delta=<span class="hljs-number">0.0004</span>, patience=<span class="hljs-number">2</span>, factor=<span class="hljs-number">0.1</span>, min_lr=<span class="hljs-number">1e-6</span>,<br>                                  mode=<span class="hljs-string">&#x27;auto&#x27;</span>,<br>                                  verbose=<span class="hljs-number">1</span>)<br></code></pre></td></tr></table></figure>
 <p>在三个数据集上的评估结果如下：</p>
 <ul>
-<li><p>人民日报命名实体识别数据集：micro avg F1=0.9182</p></li>
-<li><p>时间识别数据集：micro avg F1=0.8587</p></li>
-<li><p>CLUENER细粒度实体识别数据集：micro avg F1=0.7603</p>
-<p>我们将学习率调整策略修改为Warmup and
-Decay（模型其他参数不变，数据集不变），代码如下：</p></li>
+<li>
+<p>人民日报命名实体识别数据集：micro avg F1=0.9182</p>
+</li>
+<li>
+<p>时间识别数据集：micro avg F1=0.8587</p>
+</li>
+<li>
+<p>CLUENER细粒度实体识别数据集：micro avg F1=0.7603</p>
+<p>我们将学习率调整策略修改为Warmup and Decay（模型其他参数不变，数据集不变），代码如下：</p>
+</li>
 </ul>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># add warmup</span><br>    total_steps, warmup_steps = calc_train_steps(<br>        num_example=<span class="hljs-built_in">len</span>(input_train),<br>        batch_size=BATCH_SIZE,<br>        epochs=EPOCH,<br>        warmup_proportion=<span class="hljs-number">0.2</span>,<br>    )<br>    optimizer = AdamWarmup(total_steps, warmup_steps, lr=<span class="hljs-number">1e-4</span>, min_lr=<span class="hljs-number">1e-7</span>)<br>    model = BertBilstmCRF(max_seq_length=MAX_SEQ_LEN, lstm_dim=<span class="hljs-number">64</span>).create_model()<br>    model.<span class="hljs-built_in">compile</span>(<br>        optimizer=optimizer,<br>        loss=crf_loss,<br>        metrics=[crf_accuracy]<br>    )<br></code></pre></td></tr></table></figure>
 <p>使用该trick，在三个数据集上的评估结果如下：</p>
@@ -365,7 +358,7 @@ Decay（模型其他参数不变，数据集不变），代码如下：</p></li>
 </ul>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>学习率调整</th>
 <th>预测1</th>
 <th>预测2</th>
@@ -374,7 +367,7 @@ Decay（模型其他参数不变，数据集不变），代码如下：</p></li>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>Warmup</td>
 <td>0.9276</td>
 <td>0.9217</td>
@@ -388,7 +381,7 @@ Decay（模型其他参数不变，数据集不变），代码如下：</p></li>
 </ul>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>学习率调整</th>
 <th>预测1</th>
 <th>预测2</th>
@@ -397,7 +390,7 @@ Decay（模型其他参数不变，数据集不变），代码如下：</p></li>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>Warmup</td>
 <td>0.8926</td>
 <td>0.8934</td>
@@ -411,7 +404,7 @@ Decay（模型其他参数不变，数据集不变），代码如下：</p></li>
 </ul>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>学习率调整</th>
 <th>预测1</th>
 <th>预测2</th>
@@ -420,7 +413,7 @@ Decay（模型其他参数不变，数据集不变），代码如下：</p></li>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>Warmup</td>
 <td>0.7612</td>
 <td>0.7629</td>
@@ -429,11 +422,8 @@ Decay（模型其他参数不变，数据集不变），代码如下：</p></li>
 </tr>
 </tbody>
 </table>
-<p>可以看到，使用了Warmup and
-Decay，模型在不同的数据集上均有不同程度的效果提升。</p>
-<p>本项目已经开源，代码地址为：<a
-target="_blank" rel="noopener" href="https://github.com/percent4/keras_bert_sequence_labeling">https://github.com/percent4/keras_bert_sequence_labeling</a>
-。</p>
+<p>可以看到，使用了Warmup and Decay，模型在不同的数据集上均有不同程度的效果提升。</p>
+<p>本项目已经开源，代码地址为：<a target="_blank" rel="noopener" href="https://github.com/percent4/keras_bert_sequence_labeling">https://github.com/percent4/keras_bert_sequence_labeling</a> 。</p>
 <p>本文到此结束，感谢大家的阅读~</p>
 <p>2021年3月27日于上海浦东~</p>
 

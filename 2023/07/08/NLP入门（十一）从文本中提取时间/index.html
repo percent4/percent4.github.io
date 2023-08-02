@@ -325,8 +325,7 @@
 <blockquote>
 <p>6月28日，杭州市统计局权威公布《2019年5月月报》，杭州市医保参保人数达到1006万，相比于2月份的989万，三个月暴涨16万人参保，傲视新一线城市。</p>
 </blockquote>
-<p>我们可以从文本有提取<code>6月28日</code>，<code>2019年5月</code>，
-<code>2月份</code>这三个有效时间。</p>
+<p>我们可以从文本有提取<code>6月28日</code>，<code>2019年5月</code>， <code>2月份</code>这三个有效时间。</p>
 <p>通常情况下，较好的解决思路是利用深度学习模型来识别文本中的时间，通过一定数量的标记文本和合适的模型。本文尝试利用现有的NLP工具来解决如何从文本中提取时间。</p>
 <p>本文使用的工具为哈工大的pyltp，可以在Python的第三方模块中找到，实现下载好分词模型<code>cws.model</code>和词性标注<code>pos.model</code>这两个模型文件。</p>
 <p>话不多说，我们直接上Python代码，如下：</p>
@@ -358,8 +357,7 @@
 <figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs 1c">提取时间： [&#x27;<span class="hljs-number">1974</span>年4月&#x27;, &#x27;<span class="hljs-number">2016</span>年11月至<span class="hljs-number">2018</span>年9月&#x27;]<br></code></pre></td></tr></table></figure>
 <p>本次分享到此结束，欢迎大家批评指正。</p>
 <blockquote>
-<p>注意：不妨了解下笔者的微信公众号：
-NLP奇幻之旅（微信号为：easy_web_scrape）， 欢迎大家关注~</p>
+<p>注意：不妨了解下笔者的微信公众号： NLP奇幻之旅（微信号为：easy_web_scrape）， 欢迎大家关注~</p>
 </blockquote>
 
                 

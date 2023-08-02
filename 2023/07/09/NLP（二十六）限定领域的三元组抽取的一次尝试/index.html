@@ -271,7 +271,7 @@
         
         
           <!-- compatible with older versions-->
-          123 分钟
+          124 分钟
         
       </span>
     
@@ -323,22 +323,14 @@
                 
                 <p>本文将会介绍笔者在2019语言与智能技术竞赛的三元组抽取比赛方面的一次尝试。由于该比赛早已结束，笔者当时也没有参加这个比赛，因此没有测评成绩，我们也只能拿到训练集和验证集。但是，这并不耽误我们在这方面做实验。</p>
 <h3 id="比赛介绍">比赛介绍</h3>
-<p>该比赛的网址为：<a
-target="_blank" rel="noopener" href="http://lic2019.ccf.org.cn/kg">http://lic2019.ccf.org.cn/kg</a>
-，该比赛主要是从给定的句子中提取三元组，给定schema约束集合及句子sent，其中schema定义了关系P以及其对应的主体S和客体O的类别，例如（S_TYPE:人物，P:妻子，O_TYPE:人物）、（S_TYPE:公司，P:创始人，O_TYPE:人物）等。比如下面的例子：</p>
+<p>该比赛的网址为：<a target="_blank" rel="noopener" href="http://lic2019.ccf.org.cn/kg">http://lic2019.ccf.org.cn/kg</a> ，该比赛主要是从给定的句子中提取三元组，给定schema约束集合及句子sent，其中schema定义了关系P以及其对应的主体S和客体O的类别，例如（S_TYPE:人物，P:妻子，O_TYPE:人物）、（S_TYPE:公司，P:创始人，O_TYPE:人物）等。比如下面的例子：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;text&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;九玄珠是在纵横中文网连载的一部小说，作者是龙马&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;spo_list&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>    <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;九玄珠&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-string">&quot;连载网站&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-string">&quot;纵横中文网&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;九玄珠&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-string">&quot;作者&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-string">&quot;龙马&quot;</span><span class="hljs-punctuation">]</span><br>  <span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
 <p>该比赛一共提供了20多万标注质量很高的三元组，其中17万训练集，2万验证集和2万测试集，实体关系（schema）50个。</p>
 <p>在具体介绍笔者的思路和实战前，先介绍下本次任务的处理思路：</p>
-<figure>
-<img src="/img/nlp26_1.png" srcset="/img/loading.gif" lazyload alt="任务的处理思路" />
-<figcaption aria-hidden="true">任务的处理思路</figcaption>
-</figure>
+<p><img src="/img/nlp26_1.png" srcset="/img/loading.gif" lazyload alt="任务的处理思路"></p>
 <p>首先是对拿到的数据进行数据分析，包括统计每个句子的长度及三元组数量，每种关系的数量分布情况。接着，对数据单独走序列标注模型和关系分析模型。最后在提取三元组的时候，用Pipeline模型，先用序列标注模型预测句子中的实体，再对实体（加上句子）走关系分类模型，预测实体的关系，最后形成有效的三元组。</p>
 <p>接下来笔者将逐一介绍，项目结构图如下：</p>
-<figure>
-<img src="/img/nlp26_2.png" srcset="/img/loading.gif" lazyload alt="项目结构图" />
-<figcaption aria-hidden="true">项目结构图</figcaption>
-</figure>
+<p><img src="/img/nlp26_2.png" srcset="/img/loading.gif" lazyload alt="项目结构图"></p>
 <h3 id="数据分析">数据分析</h3>
 <p>我们能拿到的只有训练集和验证集，没有测试集。我们对训练集做数据分析，训练集数据文件为train_data.json。</p>
 <p>数据分析会统计训练集中每个句子的长度及三元组数量，还有关系的分布图，代码如下：</p>
@@ -347,41 +339,26 @@ target="_blank" rel="noopener" href="http://lic2019.ccf.org.cn/kg">http://lic201
 <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs apache">             <span class="hljs-attribute">spo_num</span>    text_length<br><span class="hljs-attribute">count</span>  <span class="hljs-number">173108</span>.<span class="hljs-number">000000</span>  <span class="hljs-number">173108</span>.<span class="hljs-number">000000</span><br><span class="hljs-attribute">mean</span>        <span class="hljs-number">2</span>.<span class="hljs-number">103993</span>      <span class="hljs-number">54</span>.<span class="hljs-number">057190</span><br><span class="hljs-attribute">std</span>         <span class="hljs-number">1</span>.<span class="hljs-number">569331</span>      <span class="hljs-number">31</span>.<span class="hljs-number">498245</span><br><span class="hljs-attribute">min</span>         <span class="hljs-number">0</span>.<span class="hljs-number">000000</span>       <span class="hljs-number">5</span>.<span class="hljs-number">000000</span><br><span class="hljs-attribute">25</span>%         <span class="hljs-number">1</span>.<span class="hljs-number">000000</span>      <span class="hljs-number">32</span>.<span class="hljs-number">000000</span><br><span class="hljs-attribute">50</span>%         <span class="hljs-number">2</span>.<span class="hljs-number">000000</span>      <span class="hljs-number">45</span>.<span class="hljs-number">000000</span><br><span class="hljs-attribute">75</span>%         <span class="hljs-number">2</span>.<span class="hljs-number">000000</span>      <span class="hljs-number">68</span>.<span class="hljs-number">000000</span><br><span class="hljs-attribute">max</span>        <span class="hljs-number">25</span>.<span class="hljs-number">000000</span>     <span class="hljs-number">300</span>.<span class="hljs-number">000000</span><br></code></pre></td></tr></table></figure>
 <p>句子的平均长度为54，最大长度为300；每句话中的三元组数量的平均值为2.1，最大值为25。</p>
 <p>每句话中的三元组数量的分布图如下：</p>
-<figure>
-<img src="/img/nlp26_3.png" srcset="/img/loading.gif" lazyload alt="每句话中的三元组数量分布图" />
-<figcaption aria-hidden="true">每句话中的三元组数量分布图</figcaption>
-</figure>
+<p><img src="/img/nlp26_3.png" srcset="/img/loading.gif" lazyload alt="每句话中的三元组数量分布图"></p>
 <p>关系数量的分布图如下：</p>
-<figure>
-<img src="/img/nlp26_4.png" srcset="/img/loading.gif" lazyload alt="关系数量分布图" />
-<figcaption aria-hidden="true">关系数量分布图</figcaption>
-</figure>
+<p><img src="/img/nlp26_4.png" srcset="/img/loading.gif" lazyload alt="关系数量分布图"></p>
 <h3 id="序列标注模型">序列标注模型</h3>
 <p>我们将句子中的主体和客体作为实体，分别标注为SUBJ和OBJ，标注体系采用BIO。一个简单的标注例子如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs bash">如 O<br>何 O<br>演 O<br>好 O<br>自 O<br>己 O<br>的 O<br>角 O<br>色 O<br>， O<br>请 O<br>读 O<br>《 O<br>演 O<br>员 O<br>自 O<br>我 O<br>修 O<br>养 O<br>》 O<br>《 O<br>喜 B-SUBJ<br>剧 I-SUBJ<br>之 I-SUBJ<br>王 I-SUBJ<br>》 O<br>周 B-OBJ<br>星 I-OBJ<br>驰 I-OBJ<br>崛 O<br>起 O<br>于 O<br>穷 O<br>困 O<br>潦 O<br>倒 O<br>之 O<br>中 O<br>的 O<br>独 O<br>门 O<br>秘 O<br>笈 O<br></code></pre></td></tr></table></figure>
 <p>序列标注的模型采用ALBERT+Bi-LSTM+CRF，结构图如下：</p>
-<figure>
-<img src="/img/nlp26_5.png" srcset="/img/loading.gif" lazyload alt="序列标注模型结构图" />
-<figcaption aria-hidden="true">序列标注模型结构图</figcaption>
-</figure>
-<p>模型方面的代码不再具体给出，有兴趣的同学可以参考文章<a
-href="https://percent4.github.io/2023/07/09/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%BA%94%EF%BC%89%E5%AE%9E%E7%8E%B0ALBERT-Bi-LSTM-CRF%E6%A8%A1%E5%9E%8B/">NLP（二十五）实现ALBERT+Bi-LSTM+CRF模型</a>，也可以参考文章最后给出的Github项目网址。</p>
+<p><img src="/img/nlp26_5.png" srcset="/img/loading.gif" lazyload alt="序列标注模型结构图"></p>
+<p>模型方面的代码不再具体给出，有兴趣的同学可以参考文章<a href="https://percent4.github.io/2023/07/09/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%BA%94%EF%BC%89%E5%AE%9E%E7%8E%B0ALBERT-Bi-LSTM-CRF%E6%A8%A1%E5%9E%8B/">NLP（二十五）实现ALBERT+Bi-LSTM+CRF模型</a>，也可以参考文章最后给出的Github项目网址。</p>
 <p>模型设置文本最大长度为128，利用ALBERT做特征提取，在自己的电脑上用CPU训练5个epoch，结果如下：</p>
 <figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs gradle">_________________________________________________________________<br>Train on <span class="hljs-number">173109</span> samples, validate on <span class="hljs-number">21639</span> samples<br>Epoch <span class="hljs-number">1</span>/<span class="hljs-number">10</span><br><span class="hljs-number">173109</span><span class="hljs-regexp">/173109 [==============================] - 422s 2ms/</span><span class="hljs-keyword">step</span> - loss: <span class="hljs-number">0.4460</span> - crf_viterbi_accuracy: <span class="hljs-number">0.8710</span> - val_loss: <span class="hljs-number">0.1613</span> - val_crf_viterbi_accuracy: <span class="hljs-number">0.9235</span><br>Epoch <span class="hljs-number">2</span>/<span class="hljs-number">10</span><br><span class="hljs-number">173109</span><span class="hljs-regexp">/173109 [==============================] - 417s 2ms/</span><span class="hljs-keyword">step</span> - loss: <span class="hljs-number">0.1170</span> - crf_viterbi_accuracy: <span class="hljs-number">0.9496</span> - val_loss: <span class="hljs-number">0.0885</span> - val_crf_viterbi_accuracy: <span class="hljs-number">0.9592</span><br>Epoch <span class="hljs-number">3</span>/<span class="hljs-number">10</span><br><span class="hljs-number">173109</span><span class="hljs-regexp">/173109 [==============================] - 417s 2ms/</span><span class="hljs-keyword">step</span> - loss: <span class="hljs-number">0.0758</span> - crf_viterbi_accuracy: <span class="hljs-number">0.9602</span> - val_loss: <span class="hljs-number">0.0653</span> - val_crf_viterbi_accuracy: <span class="hljs-number">0.9638</span><br>Epoch <span class="hljs-number">4</span>/<span class="hljs-number">10</span><br><span class="hljs-number">173109</span><span class="hljs-regexp">/173109 [==============================] - 415s 2ms/</span><span class="hljs-keyword">step</span> - loss: <span class="hljs-number">0.0586</span> - crf_viterbi_accuracy: <span class="hljs-number">0.9645</span> - val_loss: <span class="hljs-number">0.0544</span> - val_crf_viterbi_accuracy: <span class="hljs-number">0.9651</span><br>Epoch <span class="hljs-number">5</span>/<span class="hljs-number">10</span><br><span class="hljs-number">173109</span><span class="hljs-regexp">/173109 [==============================] - 422s 2ms/</span><span class="hljs-keyword">step</span> - loss: <span class="hljs-number">0.0488</span> - crf_viterbi_accuracy: <span class="hljs-number">0.9663</span> - val_loss: <span class="hljs-number">0.0464</span> - val_crf_viterbi_accuracy: <span class="hljs-number">0.9654</span><br>Epoch <span class="hljs-number">6</span>/<span class="hljs-number">10</span><br><span class="hljs-number">173109</span><span class="hljs-regexp">/173109 [==============================] - 423s 2ms/</span><span class="hljs-keyword">step</span> - loss: <span class="hljs-number">0.0399</span> - crf_viterbi_accuracy: <span class="hljs-number">0.9677</span> - val_loss: <span class="hljs-number">0.0375</span> - val_crf_viterbi_accuracy: <span class="hljs-number">0.9660</span><br>Epoch <span class="hljs-number">7</span>/<span class="hljs-number">10</span><br><span class="hljs-number">173109</span><span class="hljs-regexp">/173109 [==============================] - 415s 2ms/</span><span class="hljs-keyword">step</span> - loss: <span class="hljs-number">0.0293</span> - crf_viterbi_accuracy: <span class="hljs-number">0.9687</span> - val_loss: <span class="hljs-number">0.0265</span> - val_crf_viterbi_accuracy: <span class="hljs-number">0.9664</span><br>Epoch <span class="hljs-number">8</span>/<span class="hljs-number">10</span><br><span class="hljs-number">173109</span><span class="hljs-regexp">/173109 [==============================] - 414s 2ms/</span><span class="hljs-keyword">step</span> - loss: <span class="hljs-number">0.0174</span> - crf_viterbi_accuracy: <span class="hljs-number">0.9695</span> - val_loss: <span class="hljs-number">0.0149</span> - val_crf_viterbi_accuracy: <span class="hljs-number">0.9671</span><br>Epoch <span class="hljs-number">9</span>/<span class="hljs-number">10</span><br><span class="hljs-number">173109</span><span class="hljs-regexp">/173109 [==============================] - 422s 2ms/</span><span class="hljs-keyword">step</span> - loss: <span class="hljs-number">0.0049</span> - crf_viterbi_accuracy: <span class="hljs-number">0.9703</span> - val_loss: <span class="hljs-number">0.0036</span> - val_crf_viterbi_accuracy: <span class="hljs-number">0.9670</span><br>Epoch <span class="hljs-number">10</span>/<span class="hljs-number">10</span><br><span class="hljs-number">173109</span><span class="hljs-regexp">/173109 [==============================] - 429s 2ms/</span><span class="hljs-keyword">step</span> - loss: -<span class="hljs-number">0.0072</span> - crf_viterbi_accuracy: <span class="hljs-number">0.9709</span> - val_loss: -<span class="hljs-number">0.0078</span> - val_crf_viterbi_accuracy: <span class="hljs-number">0.9674</span><br>           precision    recall  f1-score   support<br><br>      OBJ     <span class="hljs-number">0.9593</span>    <span class="hljs-number">0.9026</span>    <span class="hljs-number">0.9301</span>     <span class="hljs-number">44598</span><br>     SUBJ     <span class="hljs-number">0.9670</span>    <span class="hljs-number">0.9238</span>    <span class="hljs-number">0.9449</span>     <span class="hljs-number">25521</span><br><br>micro avg     <span class="hljs-number">0.9621</span>    <span class="hljs-number">0.9104</span>    <span class="hljs-number">0.9355</span>     <span class="hljs-number">70119</span><br>macro avg     <span class="hljs-number">0.9621</span>    <span class="hljs-number">0.9104</span>    <span class="hljs-number">0.9355</span>     <span class="hljs-number">70119</span><br></code></pre></td></tr></table></figure>
 <p>利用seqeval模块做评估，在验证集上的F1值约为93.55%。</p>
 <h3 id="关系分类模型">关系分类模型</h3>
-<p>需要对关系做一下说明，因为笔者会对句子（sent）中的主体（S）和客体（O）组合起来，加上句子，形成训练数据。举个例子，在句子<code>历史评价李氏朝鲜的创立并非太祖大王李成桂一人之功﹐其五子李芳远功不可没</code>，三元组为<code>[&#123;"predicate": "父亲", "object_type": "人物", "subject_type": "人物", "object": "李成桂", "subject": "李芳远"&#125;, &#123;"predicate": "国籍", "object_type": "国家", "subject_type": "人物", "object": "朝鲜", "subject": "李成桂"&#125;]&#125;</code>，在这句话中主体有李成桂，李芳远，客体有李成桂和朝鲜，关系有父亲（关系类型：2）和国籍（关系类型：22）。按照笔者的思路，这句话应组成4个关系分类样本，如下：</p>
+<p>需要对关系做一下说明，因为笔者会对句子（sent）中的主体（S）和客体（O）组合起来，加上句子，形成训练数据。举个例子，在句子<code>历史评价李氏朝鲜的创立并非太祖大王李成桂一人之功﹐其五子李芳远功不可没</code>，三元组为<code>[&#123;&quot;predicate&quot;: &quot;父亲&quot;, &quot;object_type&quot;: &quot;人物&quot;, &quot;subject_type&quot;: &quot;人物&quot;, &quot;object&quot;: &quot;李成桂&quot;, &quot;subject&quot;: &quot;李芳远&quot;&#125;, &#123;&quot;predicate&quot;: &quot;国籍&quot;, &quot;object_type&quot;: &quot;国家&quot;, &quot;subject_type&quot;: &quot;人物&quot;, &quot;object&quot;: &quot;朝鲜&quot;, &quot;subject&quot;: &quot;李成桂&quot;&#125;]&#125;</code>，在这句话中主体有李成桂，李芳远，客体有李成桂和朝鲜，关系有父亲（关系类型：2）和国籍（关系类型：22）。按照笔者的思路，这句话应组成4个关系分类样本，如下：</p>
 <figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">2 </span>李芳远$李成桂$历史评价李氏朝鲜的创立并非太祖大王###一人之功﹐其五子###功不可没<br><span class="hljs-symbol">0 </span>李芳远$朝鲜$历史评价李氏##的创立并非太祖大王李成桂一人之功﹐其五子###功不可没<br><span class="hljs-symbol">0 </span>李成桂$李成桂$历史评价李氏朝鲜的创立并非太祖大王###一人之功﹐其五子李芳远功不可没<br><span class="hljs-symbol">22 </span>李成桂$朝鲜$历史评价李氏##的创立并非太祖大王###一人之功﹐其五子李芳远功不可没<br></code></pre></td></tr></table></figure>
 <p>因此，就会出现关系0（表示“未知”），这样我们在提取三元组的时候就可以略过这条关系，形成真正有用的三元组。</p>
 <p>因此，关系一共为51个（加上未知关系：0）。关系分类模型采用ALBERT+Bi-GRU+ATT，结构图如下：</p>
-<figure>
-<img src="/img/nlp26_6.png" srcset="/img/loading.gif" lazyload alt="关系分类模型图" />
-<figcaption aria-hidden="true">关系分类模型图</figcaption>
-</figure>
-<p>模型方面的代码不再具体给出，有兴趣的同学可以参考文章<a
-href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%80%EF%BC%89%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E6%8A%BD%E5%8F%96%E7%9A%84%E4%B8%80%E6%AC%A1%E5%AE%9E%E6%88%98/">NLP（二十一）人物关系抽取的一次实战</a>，也可以参考文章最后给出的Github项目网址。</p>
-<p>模型设置文本最大长度为128，利用ALBERT做特征提取，在自己的电脑上用CPU训练30个epoch（实际上，由于有early
-stopping机制，训练不到30个eopch），在验证集上的评估结果如下：</p>
+<p><img src="/img/nlp26_6.png" srcset="/img/loading.gif" lazyload alt="关系分类模型图"></p>
+<p>模型方面的代码不再具体给出，有兴趣的同学可以参考文章<a href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%80%EF%BC%89%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E6%8A%BD%E5%8F%96%E7%9A%84%E4%B8%80%E6%AC%A1%E5%AE%9E%E6%88%98/">NLP（二十一）人物关系抽取的一次实战</a>，也可以参考文章最后给出的Github项目网址。</p>
+<p>模型设置文本最大长度为128，利用ALBERT做特征提取，在自己的电脑上用CPU训练30个epoch（实际上，由于有early stopping机制，训练不到30个eopch），在验证集上的评估结果如下：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-string">Epoch</span> <span class="hljs-number">23</span><span class="hljs-string">/30</span><br><span class="hljs-number">396766</span><span class="hljs-string">/396766</span> [<span class="hljs-string">==============================</span>] <span class="hljs-bullet">-</span> <span class="hljs-attr">776s 2ms/step - loss: 0.1770 - accuracy: 0.9402 - val_loss: 0.2170 - val_accuracy:</span> <span class="hljs-number">0.9308</span><br><br><span class="hljs-attr">Epoch 00023:</span> <span class="hljs-string">val_accuracy</span> <span class="hljs-string">did</span> <span class="hljs-string">not</span> <span class="hljs-string">improve</span> <span class="hljs-string">from</span> <span class="hljs-number">0.93292</span><br><span class="hljs-number">49506</span><span class="hljs-string">/49506</span> [<span class="hljs-string">==============================</span>] <span class="hljs-bullet">-</span> <span class="hljs-string">151s</span> <span class="hljs-string">3ms/step</span><br><span class="hljs-string">在测试集上的效果：</span> [<span class="hljs-number">0.21701653493155634</span>, <span class="hljs-number">0.930776059627533</span>]<br>    <span class="hljs-string">precision</span>    <span class="hljs-string">recall</span>  <span class="hljs-string">f1-score</span>   <span class="hljs-string">support</span><br><br>          <span class="hljs-string">未知</span>       <span class="hljs-number">0.87</span>      <span class="hljs-number">0.76</span>      <span class="hljs-number">0.81</span>      <span class="hljs-number">5057</span><br>          <span class="hljs-string">祖籍</span>       <span class="hljs-number">0.92</span>      <span class="hljs-number">0.73</span>      <span class="hljs-number">0.82</span>       <span class="hljs-number">181</span><br>          <span class="hljs-string">父亲</span>       <span class="hljs-number">0.79</span>      <span class="hljs-number">0.88</span>      <span class="hljs-number">0.83</span>       <span class="hljs-number">609</span><br>        <span class="hljs-string">总部地点</span>       <span class="hljs-number">0.95</span>      <span class="hljs-number">0.95</span>      <span class="hljs-number">0.95</span>       <span class="hljs-number">310</span><br>         <span class="hljs-string">出生地</span>       <span class="hljs-number">0.94</span>      <span class="hljs-number">0.95</span>      <span class="hljs-number">0.94</span>      <span class="hljs-number">2330</span><br>           <span class="hljs-string">目</span>       <span class="hljs-number">1.00</span>      <span class="hljs-number">1.00</span>      <span class="hljs-number">1.00</span>      <span class="hljs-number">1271</span><br>          <span class="hljs-string">面积</span>       <span class="hljs-number">0.90</span>      <span class="hljs-number">0.92</span>      <span class="hljs-number">0.91</span>        <span class="hljs-number">79</span><br>          <span class="hljs-string">简称</span>       <span class="hljs-number">0.97</span>      <span class="hljs-number">0.99</span>      <span class="hljs-number">0.98</span>       <span class="hljs-number">138</span><br>        <span class="hljs-string">上映时间</span>       <span class="hljs-number">0.94</span>      <span class="hljs-number">0.98</span>      <span class="hljs-number">0.96</span>       <span class="hljs-number">463</span><br>          <span class="hljs-string">妻子</span>       <span class="hljs-number">0.91</span>      <span class="hljs-number">0.83</span>      <span class="hljs-number">0.87</span>       <span class="hljs-number">680</span><br>        <span class="hljs-string">所属专辑</span>       <span class="hljs-number">0.97</span>      <span class="hljs-number">0.97</span>      <span class="hljs-number">0.97</span>      <span class="hljs-number">1282</span><br>        <span class="hljs-string">注册资本</span>       <span class="hljs-number">1.00</span>      <span class="hljs-number">1.00</span>      <span class="hljs-number">1.00</span>        <span class="hljs-number">63</span><br>          <span class="hljs-string">首都</span>       <span class="hljs-number">0.92</span>      <span class="hljs-number">0.96</span>      <span class="hljs-number">0.94</span>        <span class="hljs-number">47</span><br>          <span class="hljs-string">导演</span>       <span class="hljs-number">0.92</span>      <span class="hljs-number">0.94</span>      <span class="hljs-number">0.93</span>      <span class="hljs-number">2603</span><br>           <span class="hljs-string">字</span>       <span class="hljs-number">0.96</span>      <span class="hljs-number">0.97</span>      <span class="hljs-number">0.97</span>       <span class="hljs-number">339</span><br>          <span class="hljs-string">身高</span>       <span class="hljs-number">0.98</span>      <span class="hljs-number">0.98</span>      <span class="hljs-number">0.98</span>       <span class="hljs-number">393</span><br>        <span class="hljs-string">出品公司</span>       <span class="hljs-number">0.96</span>      <span class="hljs-number">0.96</span>      <span class="hljs-number">0.96</span>       <span class="hljs-number">851</span><br>        <span class="hljs-string">修业年限</span>       <span class="hljs-number">1.00</span>      <span class="hljs-number">1.00</span>      <span class="hljs-number">1.00</span>         <span class="hljs-number">2</span><br>        <span class="hljs-string">出生日期</span>       <span class="hljs-number">0.99</span>      <span class="hljs-number">0.99</span>      <span class="hljs-number">0.99</span>      <span class="hljs-number">2892</span><br>         <span class="hljs-string">制片人</span>       <span class="hljs-number">0.69</span>      <span class="hljs-number">0.88</span>      <span class="hljs-number">0.77</span>       <span class="hljs-number">127</span><br>          <span class="hljs-string">母亲</span>       <span class="hljs-number">0.75</span>      <span class="hljs-number">0.88</span>      <span class="hljs-number">0.81</span>       <span class="hljs-number">425</span><br>          <span class="hljs-string">编剧</span>       <span class="hljs-number">0.82</span>      <span class="hljs-number">0.80</span>      <span class="hljs-number">0.81</span>       <span class="hljs-number">771</span><br>          <span class="hljs-string">国籍</span>       <span class="hljs-number">0.92</span>      <span class="hljs-number">0.92</span>      <span class="hljs-number">0.92</span>      <span class="hljs-number">1621</span><br>          <span class="hljs-string">海拔</span>       <span class="hljs-number">1.00</span>      <span class="hljs-number">1.00</span>      <span class="hljs-number">1.00</span>        <span class="hljs-number">43</span><br>        <span class="hljs-string">连载网站</span>       <span class="hljs-number">0.98</span>      <span class="hljs-number">1.00</span>      <span class="hljs-number">0.99</span>      <span class="hljs-number">1658</span><br>          <span class="hljs-string">丈夫</span>       <span class="hljs-number">0.84</span>      <span class="hljs-number">0.91</span>      <span class="hljs-number">0.87</span>       <span class="hljs-number">678</span><br>          <span class="hljs-string">朝代</span>       <span class="hljs-number">0.85</span>      <span class="hljs-number">0.92</span>      <span class="hljs-number">0.88</span>       <span class="hljs-number">419</span><br>          <span class="hljs-string">民族</span>       <span class="hljs-number">0.98</span>      <span class="hljs-number">0.99</span>      <span class="hljs-number">0.99</span>      <span class="hljs-number">1434</span><br>           <span class="hljs-string">号</span>       <span class="hljs-number">0.95</span>      <span class="hljs-number">0.99</span>      <span class="hljs-number">0.97</span>       <span class="hljs-number">197</span><br>         <span class="hljs-string">出版社</span>       <span class="hljs-number">0.98</span>      <span class="hljs-number">0.99</span>      <span class="hljs-number">0.99</span>      <span class="hljs-number">2272</span><br>         <span class="hljs-string">主持人</span>       <span class="hljs-number">0.82</span>      <span class="hljs-number">0.86</span>      <span class="hljs-number">0.84</span>       <span class="hljs-number">200</span><br>        <span class="hljs-string">专业代码</span>       <span class="hljs-number">1.00</span>      <span class="hljs-number">1.00</span>      <span class="hljs-number">1.00</span>         <span class="hljs-number">3</span><br>          <span class="hljs-string">歌手</span>       <span class="hljs-number">0.89</span>      <span class="hljs-number">0.94</span>      <span class="hljs-number">0.91</span>      <span class="hljs-number">2857</span><br>          <span class="hljs-string">作词</span>       <span class="hljs-number">0.85</span>      <span class="hljs-number">0.81</span>      <span class="hljs-number">0.83</span>       <span class="hljs-number">884</span><br>          <span class="hljs-string">主角</span>       <span class="hljs-number">0.86</span>      <span class="hljs-number">0.77</span>      <span class="hljs-number">0.81</span>        <span class="hljs-number">39</span><br>         <span class="hljs-string">董事长</span>       <span class="hljs-number">0.81</span>      <span class="hljs-number">0.74</span>      <span class="hljs-number">0.78</span>        <span class="hljs-number">47</span><br>        <span class="hljs-string">毕业院校</span>       <span class="hljs-number">0.99</span>      <span class="hljs-number">0.99</span>      <span class="hljs-number">0.99</span>      <span class="hljs-number">1433</span><br>        <span class="hljs-string">占地面积</span>       <span class="hljs-number">0.89</span>      <span class="hljs-number">0.89</span>      <span class="hljs-number">0.89</span>        <span class="hljs-number">61</span><br>        <span class="hljs-string">官方语言</span>       <span class="hljs-number">1.00</span>      <span class="hljs-number">1.00</span>      <span class="hljs-number">1.00</span>        <span class="hljs-number">15</span><br>        <span class="hljs-string">邮政编码</span>       <span class="hljs-number">1.00</span>      <span class="hljs-number">1.00</span>      <span class="hljs-number">1.00</span>         <span class="hljs-number">4</span><br>        <span class="hljs-string">人口数量</span>       <span class="hljs-number">1.00</span>      <span class="hljs-number">1.00</span>      <span class="hljs-number">1.00</span>        <span class="hljs-number">45</span><br>        <span class="hljs-string">所在城市</span>       <span class="hljs-number">0.90</span>      <span class="hljs-number">0.94</span>      <span class="hljs-number">0.92</span>        <span class="hljs-number">77</span><br>          <span class="hljs-string">作者</span>       <span class="hljs-number">0.97</span>      <span class="hljs-number">0.97</span>      <span class="hljs-number">0.97</span>      <span class="hljs-number">4359</span><br>        <span class="hljs-string">成立日期</span>       <span class="hljs-number">0.99</span>      <span class="hljs-number">0.99</span>      <span class="hljs-number">0.99</span>      <span class="hljs-number">1608</span><br>          <span class="hljs-string">作曲</span>       <span class="hljs-number">0.78</span>      <span class="hljs-number">0.77</span>      <span class="hljs-number">0.78</span>       <span class="hljs-number">849</span><br>          <span class="hljs-string">气候</span>       <span class="hljs-number">1.00</span>      <span class="hljs-number">1.00</span>      <span class="hljs-number">1.00</span>       <span class="hljs-number">103</span><br>          <span class="hljs-string">嘉宾</span>       <span class="hljs-number">0.76</span>      <span class="hljs-number">0.72</span>      <span class="hljs-number">0.74</span>       <span class="hljs-number">158</span><br>          <span class="hljs-string">主演</span>       <span class="hljs-number">0.94</span>      <span class="hljs-number">0.97</span>      <span class="hljs-number">0.95</span>      <span class="hljs-number">7383</span><br>         <span class="hljs-string">改编自</span>       <span class="hljs-number">0.95</span>      <span class="hljs-number">0.82</span>      <span class="hljs-number">0.88</span>        <span class="hljs-number">71</span><br>         <span class="hljs-string">创始人</span>       <span class="hljs-number">0.86</span>      <span class="hljs-number">0.87</span>      <span class="hljs-number">0.86</span>        <span class="hljs-number">75</span><br><br>    <span class="hljs-string">accuracy</span>                           <span class="hljs-number">0.93</span>     <span class="hljs-number">49506</span><br>   <span class="hljs-string">macro</span> <span class="hljs-string">avg</span>       <span class="hljs-number">0.92</span>      <span class="hljs-number">0.92</span>      <span class="hljs-number">0.92</span>     <span class="hljs-number">49506</span><br><span class="hljs-string">weighted</span> <span class="hljs-string">avg</span>       <span class="hljs-number">0.93</span>      <span class="hljs-number">0.93</span>      <span class="hljs-number">0.93</span>     <span class="hljs-number">49506</span><br></code></pre></td></tr></table></figure>
 <h3 id="三元组提取">三元组提取</h3>
 <p>最后一部分，也是本次比赛的最终目标，就是三元组提取。</p>
@@ -392,102 +369,100 @@ stopping机制，训练不到30个eopch），在验证集上的评估结果如�
 <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># author: Jclian91</span><br><span class="hljs-comment"># place: Pudong Shanghai</span><br><span class="hljs-comment"># time: 2020-03-14 20:53</span><br>import os, re, json, traceback<br><span class="hljs-keyword">from</span> pprint import pprint<br><br><span class="hljs-keyword">from</span> triple_extract.triple_extractor import TripleExtract<br><br><br>text = <span class="hljs-string">&quot;真人版的《花木兰》由新西兰导演妮基·卡罗执导，由刘亦菲、甄子丹、郑佩佩、巩俐、李连杰等加盟，几乎是全亚洲阵容。&quot;</span><br><br>triple_extract = TripleExtract(text)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;原文： %s&quot;</span> % text)<br>entities = triple_extract.get_entity()<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;实体： &quot;</span>, <span class="hljs-attribute">end</span>=<span class="hljs-string">&#x27;&#x27;</span>)<br>pprint(entities)<br><br>spo_list = triple_extract.extractor()<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;三元组： &quot;</span>, <span class="hljs-attribute">end</span>=<span class="hljs-string">&#x27;&#x27;</span>)<br>pprint(spo_list)<br></code></pre></td></tr></table></figure>
 <p>我们在网上找几条样本进行测试，测试的结果如下：</p>
 <blockquote>
-<p>原文：
-真人版的《花木兰》由新西兰导演妮基·卡罗执导，由刘亦菲、甄子丹、郑佩佩、巩俐、李连杰等加盟，几乎是全亚洲阵容。
-实体： {'OBJ': ['妮基·卡罗', '刘亦菲', '甄子丹', '郑佩佩', '巩俐',
-'李连杰'], 'SUBJ': ['花木兰']} 三元组： [['花木兰', '主演', '刘亦菲'],
-['花木兰', '导演', '妮基·卡罗'], ['花木兰', '主演', '甄子丹'],
-['花木兰', '主演', '李连杰'], ['花木兰', '主演', '郑佩佩'], ['花木兰',
-'主演', '巩俐']]</p>
+<p>原文： 真人版的《花木兰》由新西兰导演妮基·卡罗执导，由刘亦菲、甄子丹、郑佩佩、巩俐、李连杰等加盟，几乎是全亚洲阵容。<br>
+实体： {‘OBJ’: [‘妮基·卡罗’, ‘刘亦菲’, ‘甄子丹’, ‘郑佩佩’, ‘巩俐’, ‘李连杰’], ‘SUBJ’: [‘花木兰’]}<br>
+三元组： [[‘花木兰’, ‘主演’, ‘刘亦菲’],<br>
+[‘花木兰’, ‘导演’, ‘妮基·卡罗’],<br>
+[‘花木兰’, ‘主演’, ‘甄子丹’],<br>
+[‘花木兰’, ‘主演’, ‘李连杰’],<br>
+[‘花木兰’, ‘主演’, ‘郑佩佩’],<br>
+[‘花木兰’, ‘主演’, ‘巩俐’]]</p>
 </blockquote>
 <blockquote>
-<p>原文：
-《冒险小王子》作者周艺文先生，教育、文学领域的专家学者以及来自全国各地的出版业从业者参加了此次沙龙，并围绕儿童文学创作这一话题做了精彩的分享与交流。
-实体： {'OBJ': ['周艺文'], 'SUBJ': ['冒险小王子']} 三元组：
-[['冒险小王子', '作者', '周艺文']]</p>
+<p>原文： 《冒险小王子》作者周艺文先生，教育、文学领域的专家学者以及来自全国各地的出版业从业者参加了此次沙龙，并围绕儿童文学创作这一话题做了精彩的分享与交流。<br>
+实体： {‘OBJ’: [‘周艺文’], ‘SUBJ’: [‘冒险小王子’]}<br>
+三元组： [[‘冒险小王子’, ‘作者’, ‘周艺文’]]</p>
 </blockquote>
 <blockquote>
-<p>原文：
-宋应星是江西奉新人，公元1587年生，经历过明朝腐败至灭亡的最后时期。
-实体： {'OBJ': ['江西奉新', '1587年'], 'SUBJ': ['宋应星']} 三元组：
-[['宋应星', '出生地', '江西奉新'], ['宋应星', '出生日期', '1587年']]</p>
+<p>原文： 宋应星是江西奉新人，公元1587年生，经历过明朝腐败至灭亡的最后时期。<br>
+实体： {‘OBJ’: [‘江西奉新’, ‘1587年’], ‘SUBJ’: [‘宋应星’]}<br>
+三元组： [[‘宋应星’, ‘出生地’, ‘江西奉新’], [‘宋应星’, ‘出生日期’, ‘1587年’]]</p>
 </blockquote>
 <blockquote>
-<p>原文： 韩愈，字退之，河阳（今河南孟县）人。 实体： {'OBJ': ['退之',
-'河阳'], 'SUBJ': ['韩愈']} 三元组： [['韩愈', '出生地', '河阳'],
-['韩愈', '字', '退之']]</p>
+<p>原文： 韩愈，字退之，河阳（今河南孟县）人。<br>
+实体： {‘OBJ’: [‘退之’, ‘河阳’], ‘SUBJ’: [‘韩愈’]}<br>
+三元组： [[‘韩愈’, ‘出生地’, ‘河阳’], [‘韩愈’, ‘字’, ‘退之’]]</p>
 </blockquote>
 <blockquote>
-<p>原文：
-公开资料显示，李强，男，汉族，出生于1971年12月，北京市人，北京市委党校在职研究生学历，教育学学士学位，1996年11月入党，1993年7月参加工作。
-实体： {'OBJ': ['汉族', '1971年12月', '北京市', '北京市委党校'], 'SUBJ':
-['李强']} 三元组： [['李强', '民族', '汉族'], ['李强', '出生地',
-'北京市'], ['李强', '毕业院校', '北京市委党校'], ['李强', '出生日期',
-'1971年12月']]</p>
+<p>原文： 公开资料显示，李强，男，汉族，出生于1971年12月，北京市人，北京市委党校在职研究生学历，教育学学士学位，1996年11月入党，1993年7月参加工作。<br>
+实体： {‘OBJ’: [‘汉族’, ‘1971年12月’, ‘北京市’, ‘北京市委党校’], ‘SUBJ’: [‘李强’]}<br>
+三元组： [[‘李强’, ‘民族’, ‘汉族’],<br>
+[‘李强’, ‘出生地’, ‘北京市’],<br>
+[‘李强’, ‘毕业院校’, ‘北京市委党校’],<br>
+[‘李强’, ‘出生日期’, ‘1971年12月’]]</p>
 </blockquote>
 <blockquote>
-<p>原文：
-杨牧，本名王靖献，早期笔名叶珊，1940年生于台湾花莲，著名诗人、作家。
-实体： {'OBJ': ['1940年', '台湾花莲'], 'SUBJ': ['杨牧']} 三元组：
-[['杨牧', '出生地', '台湾花莲'], ['杨牧', '出生日期', '1940年']]</p>
+<p>原文： 杨牧，本名王靖献，早期笔名叶珊，1940年生于台湾花莲，著名诗人、作家。<br>
+实体： {‘OBJ’: [‘1940年’, ‘台湾花莲’], ‘SUBJ’: [‘杨牧’]}<br>
+三元组： [[‘杨牧’, ‘出生地’, ‘台湾花莲’], [‘杨牧’, ‘出生日期’, ‘1940年’]]</p>
 </blockquote>
 <blockquote>
-<p>原文： 杨广是隋文帝杨坚的第二个儿子。 实体： {'OBJ': ['杨坚'],
-'SUBJ': ['杨广']} 三元组： [['杨广', '父亲', '杨坚']]</p>
+<p>原文： 杨广是隋文帝杨坚的第二个儿子。<br>
+实体： {‘OBJ’: [‘杨坚’], ‘SUBJ’: [‘杨广’]}<br>
+三元组： [[‘杨广’, ‘父亲’, ‘杨坚’]]</p>
 </blockquote>
 <blockquote>
-<p>原文：
-此次权益变动后，何金明与妻子宋琦、其子何浩不再拥有对上市公司的控制权。
-实体： {'OBJ': ['何金明'], 'SUBJ': ['宋琦', '何浩']} 三元组： [['何浩',
-'父亲', '何金明'], ['宋琦', '丈夫', '何金明']]</p>
+<p>原文： 此次权益变动后，何金明与妻子宋琦、其子何浩不再拥有对上市公司的控制权。<br>
+实体： {‘OBJ’: [‘何金明’], ‘SUBJ’: [‘宋琦’, ‘何浩’]}<br>
+三元组： [[‘何浩’, ‘父亲’, ‘何金明’], [‘宋琦’, ‘丈夫’, ‘何金明’]]</p>
 </blockquote>
 <blockquote>
-<p>原文：
-线上直播发布会中，谭维维首次演绎了新歌《章存仙》，这首歌由钱雷作曲、尹约作词，尹约也在直播现场透过手机镜头跟网友互动聊天。
-实体： {'OBJ': ['谭维维', '钱雷', '尹约', '尹约'], 'SUBJ': ['章存仙']}
-三元组： [['章存仙', '作曲', '钱雷'], ['章存仙', '作词', '尹约'],
-['章存仙', '歌手', '谭维维']]</p>
+<p>原文： 线上直播发布会中，谭维维首次演绎了新歌《章存仙》，这首歌由钱雷作曲、尹约作词，尹约也在直播现场透过手机镜头跟网友互动聊天。<br>
+实体： {‘OBJ’: [‘谭维维’, ‘钱雷’, ‘尹约’, ‘尹约’], ‘SUBJ’: [‘章存仙’]}<br>
+三元组： [[‘章存仙’, ‘作曲’, ‘钱雷’], [‘章存仙’, ‘作词’, ‘尹约’], [‘章存仙’, ‘歌手’, ‘谭维维’]]</p>
 </blockquote>
 <blockquote>
-<p>原文： “土木之变”后，造就了明代杰出的民族英雄于谦。 实体： {'OBJ':
-['明代'], 'SUBJ': ['于谦']} 三元组： [['于谦', '朝代', '明代']]</p>
+<p>原文： “土木之变”后，造就了明代杰出的民族英雄于谦。<br>
+实体： {‘OBJ’: [‘明代’], ‘SUBJ’: [‘于谦’]}<br>
+三元组： [[‘于谦’, ‘朝代’, ‘明代’]]</p>
 </blockquote>
 <blockquote>
-<p>原文：
-另外，哈尔滨历史博物馆也是全国面积最小的国有博物馆，该场馆面积只有50平方米，可称之“微缩博物馆”。
-实体： {'OBJ': ['50平方米'], 'SUBJ': ['哈尔滨历史博物馆']} 三元组：
-[['哈尔滨历史博物馆', '占地面积', '50平方米']]</p>
+<p>原文： 另外，哈尔滨历史博物馆也是全国面积最小的国有博物馆，该场馆面积只有50平方米，可称之“微缩博物馆”。<br>
+实体： {‘OBJ’: [‘50平方米’], ‘SUBJ’: [‘哈尔滨历史博物馆’]}<br>
+三元组： [[‘哈尔滨历史博物馆’, ‘占地面积’, ‘50平方米’]]</p>
 </blockquote>
 <blockquote>
-<p>原文： 孙杨的妈妈叫杨明，孙杨的名字后面一个字也是来源于她的名字。
-实体： {'OBJ': ['杨明', '孙杨'], 'SUBJ': ['孙杨']} 三元组： [['孙杨',
-'母亲', '杨明']]</p>
+<p>原文： 孙杨的妈妈叫杨明，孙杨的名字后面一个字也是来源于她的名字。<br>
+实体： {‘OBJ’: [‘杨明’, ‘孙杨’], ‘SUBJ’: [‘孙杨’]}<br>
+三元组： [[‘孙杨’, ‘母亲’, ‘杨明’]]</p>
 </blockquote>
 <blockquote>
-<p>原文：
-企查查显示，达鑫电子成立于1998年6月，法定代表人张高圳，注册资本772.33万美元，股东仅新加坡达鑫控股有限公司一名。
-实体： {'OBJ': ['1998年6月'], 'SUBJ': ['达鑫电子']} 三元组：
-[['达鑫电子', '成立日期', '1998年6月']]</p>
+<p>原文： 企查查显示，达鑫电子成立于1998年6月，法定代表人张高圳，注册资本772.33万美元，股东仅新加坡达鑫控股有限公司一名。<br>
+实体： {‘OBJ’: [‘1998年6月’], ‘SUBJ’: [‘达鑫电子’]}<br>
+三元组： [[‘达鑫电子’, ‘成立日期’, ‘1998年6月’]]</p>
 </blockquote>
 <h3 id="总结">总结</h3>
 <p>本文标题为限定领域的三元组抽取的一次尝试，之所以取名为限定领域，是因为该任务的实体关系是确定，一共为50种关系。</p>
-<p>当然，上述方法还存在着诸多不足，参考苏建林的文章<a
-target="_blank" rel="noopener" href="https://spaces.ac.cn/archives/6671">基于DGCNN和概率图的轻量级信息抽取模型</a>，我们发现不足之处如下：</p>
+<p>当然，上述方法还存在着诸多不足，参考苏建林的文章<a target="_blank" rel="noopener" href="https://spaces.ac.cn/archives/6671">基于DGCNN和概率图的轻量级信息抽取模型</a>，我们发现不足之处如下：</p>
 <ul>
-<li><p>主体和客体的标注策略有问题，因为句子中有时候主体和客体会重叠在一起；</p></li>
-<li><p>新引入了一类关系：未知，是否有办法避免引入；</p></li>
-<li><p>其他（暂时未想到）</p>
-<p>从比赛的角度将，本文的办法效果未知，应该会比联合模型的效果差一些。但是，这是作为笔者自己的模型，算法是一种尝试，之所以采用这种方法，是因为笔者一开始是从开放领域的三元组抽取入手的，而这种方法方便扩展至开放领域。关于开放领域的三元组抽取，笔者稍后就会写文章介绍，敬请期待。
-本文的源代码已经公开至Github，网址为： <a
-target="_blank" rel="noopener" href="https://github.com/percent4/ccks_triple_extract">https://github.com/percent4/ccks_triple_extract</a>
-。</p></li>
+<li>
+<p>主体和客体的标注策略有问题，因为句子中有时候主体和客体会重叠在一起；</p>
+</li>
+<li>
+<p>新引入了一类关系：未知，是否有办法避免引入；</p>
+</li>
+<li>
+<p>其他（暂时未想到）</p>
+<p>从比赛的角度将，本文的办法效果未知，应该会比联合模型的效果差一些。但是，这是作为笔者自己的模型，算法是一种尝试，之所以采用这种方法，是因为笔者一开始是从开放领域的三元组抽取入手的，而这种方法方便扩展至开放领域。关于开放领域的三元组抽取，笔者稍后就会写文章介绍，敬请期待。<br>
+本文的源代码已经公开至Github，网址为：<br>
+<a target="_blank" rel="noopener" href="https://github.com/percent4/ccks_triple_extract">https://github.com/percent4/ccks_triple_extract</a> 。</p>
+</li>
 </ul>
 <h3 id="参考网址">参考网址</h3>
-<ol type="1">
-<li>NLP（二十五）实现ALBERT+Bi-LSTM+CRF模型：https://blog.csdn.net/jclian91/article/details/104826655</li>
-<li>NLP（二十一）人物关系抽取的一次实战：
-https://blog.csdn.net/jclian91/article/details/104380371</li>
-<li>基于DGCNN和概率图的轻量级信息抽取模型：https://spaces.ac.cn/archives/6671</li>
+<ol>
+<li>NLP（二十五）实现ALBERT+Bi-LSTM+CRF模型：<a target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/details/104826655">https://blog.csdn.net/jclian91/article/details/104826655</a></li>
+<li>NLP（二十一）人物关系抽取的一次实战： <a target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/details/104380371">https://blog.csdn.net/jclian91/article/details/104380371</a></li>
+<li>基于DGCNN和概率图的轻量级信息抽取模型：<a target="_blank" rel="noopener" href="https://spaces.ac.cn/archives/6671">https://spaces.ac.cn/archives/6671</a></li>
 </ol>
 
                 
