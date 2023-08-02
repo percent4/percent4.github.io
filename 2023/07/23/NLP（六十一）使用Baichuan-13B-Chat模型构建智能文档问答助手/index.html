@@ -262,7 +262,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          2.9k 字
+          3k 字
         
       </span>
     
@@ -324,42 +324,52 @@
             
               <div class="markdown-body">
                 
-                <p>在文章<a href="https://percent4.github.io/2023/07/21/NLP%EF%BC%88%E5%85%AD%E5%8D%81%EF%BC%89Baichuan-13B-Chat%E6%A8%A1%E5%9E%8B%E4%BD%BF%E7%94%A8%E4%BD%93%E9%AA%8C/">NLP（六十）Baichuan-13B-Chat模型使用体验</a>中，我们介绍了Baichuan-13B-Chat模型及其在向量嵌入和文档阅读上的初步尝试。</p>
+                <p>在文章<a
+href="https://percent4.github.io/2023/07/21/NLP%EF%BC%88%E5%85%AD%E5%8D%81%EF%BC%89Baichuan-13B-Chat%E6%A8%A1%E5%9E%8B%E4%BD%BF%E7%94%A8%E4%BD%93%E9%AA%8C/">NLP（六十）Baichuan-13B-Chat模型使用体验</a>中，我们介绍了Baichuan-13B-Chat模型及其在向量嵌入和文档阅读上的初步尝试。</p>
 <p>本文将详细介绍如何使用Baichuan-13B-Chat模型来构建智能文档问答助手。</p>
 <h3 id="文档问答流程">文档问答流程</h3>
 <p>智能文档问答助手的流程图如下：</p>
-<p><img src="http://139.224.0.63:9000/data/img/nlp60_5.jpeg" srcset="/img/loading.gif" lazyload alt="文档问答流程图"></p>
+<figure>
+<img src="http://139.224.0.63:9000/data/img/nlp60_5.jpeg" srcset="/img/loading.gif" lazyload
+alt="文档问答流程图" />
+<figcaption aria-hidden="true">文档问答流程图</figcaption>
+</figure>
 <ul>
-<li>
-<p>文档加载（Document Loading）:加载文档，文档格式为URL，PDF，Database。本项目暂时先支持txt文件，后续将支持更多文件格式；</p>
-</li>
-<li>
-<p>文档划分（Splitting）：将文档按照特定格式进行划分，形成文档片段。本项目采用的文档划分方式为LangChain中的RecursiveCharacterTextSplitter，参考网址为：<a target="_blank" rel="noopener" href="https://python.langchain.com/docs/modules/data_connection/document_transformers/text_splitters/recursive_text_splitter">https://python.langchain.com/docs/modules/data_connection/document_transformers/text_splitters/recursive_text_splitter</a>。</p>
-</li>
-<li>
-<p>文档存储（Storage）:将划分后的文档进行向量嵌入，再插入至向量数据库。本项目采用的储存方式为ElasticSearch及向量数据库Milvus。</p>
-</li>
-<li>
-<p>文档召回：对于输入query，从文档存储中召回相关文档片段。本项目采用的召回方式为ElasticSearch中的内置BM25相似度算法及Milvus中的向量距离。</p>
-</li>
-<li>
-<p>问答输出：对于召回文档和输入query，构建合适的Prompt，利用大模型（LLM）输出最终答案。</p>
-<p>下面讲介绍细节。本项目已在Github上开源，项目网址为：<a target="_blank" rel="noopener" href="https://github.com/percent4/document_qa_with_llm">https://github.com/percent4/document_qa_with_llm</a> 。</p>
-</li>
+<li><p>文档加载（Document
+Loading）:加载文档，文档格式为URL，PDF，Database。本项目暂时先支持txt文件，后续将支持更多文件格式；</p></li>
+<li><p>文档划分（Splitting）：将文档按照特定格式进行划分，形成文档片段。本项目采用的文档划分方式为LangChain中的RecursiveCharacterTextSplitter，参考网址为：<a
+target="_blank" rel="noopener" href="https://python.langchain.com/docs/modules/data_connection/document_transformers/text_splitters/recursive_text_splitter">https://python.langchain.com/docs/modules/data_connection/document_transformers/text_splitters/recursive_text_splitter</a>。</p></li>
+<li><p>文档存储（Storage）:将划分后的文档进行向量嵌入，再插入至向量数据库。本项目采用的储存方式为ElasticSearch及向量数据库Milvus。</p></li>
+<li><p>文档召回：对于输入query，从文档存储中召回相关文档片段。本项目采用的召回方式为ElasticSearch中的内置BM25相似度算法及Milvus中的向量距离。</p></li>
+<li><p>问答输出：对于召回文档和输入query，构建合适的Prompt，利用大模型（LLM）输出最终答案。</p>
+<p>下面讲介绍细节。本项目已在Github上开源，项目网址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/document_qa_with_llm">https://github.com/percent4/document_qa_with_llm</a>
+。</p></li>
 </ul>
 <h3 id="环境搭建">环境搭建</h3>
 <p>本项目开发的Web框架为Flask，API接口两个：文件上传接口和文档问答接口。文件上传接口如下：</p>
-<p><img src="http://139.224.0.63:9000/data/img/nlp61_1.png" srcset="/img/loading.gif" lazyload alt="文件上传接口"></p>
+<figure>
+<img src="http://139.224.0.63:9000/data/img/nlp61_1.png" srcset="/img/loading.gif" lazyload
+alt="文件上传接口" />
+<figcaption aria-hidden="true">文件上传接口</figcaption>
+</figure>
 <p>文档召回采用ElasticSearch和Milvus相结合的方式，设置ElasticSearch和Milvus召回最相似文本数量为2。</p>
 <p>ElasticSearch中创建的index为docs，mapping结构如下：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;docs&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;mappings&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>      <span class="hljs-attr">&quot;properties&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;cont_id&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>          <span class="hljs-attr">&quot;type&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;integer&quot;</span><br>        <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;content&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>          <span class="hljs-attr">&quot;type&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text&quot;</span><span class="hljs-punctuation">,</span><br>          <span class="hljs-attr">&quot;analyzer&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;ik_smart&quot;</span><br>        <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;source&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>          <span class="hljs-attr">&quot;type&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text&quot;</span><br>        <span class="hljs-punctuation">&#125;</span><br>      <span class="hljs-punctuation">&#125;</span><br>    <span class="hljs-punctuation">&#125;</span><br>  <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
 <p>其中source代表上传文档名称，cont_id为文本片段编号，content为文本片段。<code>content</code>字段采用的analyzer为<code>ik_smart</code>，该analyzer可较好地对中文进行分词。</p>
 <p>Milvus创建的collection为docs_qa，schema如下：</p>
-<p><img src="http://139.224.0.63:9000/data/img/nlp61_2.png" srcset="/img/loading.gif" lazyload alt="Milvus中docs_qa集合的schema"></p>
+<figure>
+<img src="http://139.224.0.63:9000/data/img/nlp61_2.png" srcset="/img/loading.gif" lazyload
+alt="Milvus中docs_qa集合的schema" />
+<figcaption aria-hidden="true">Milvus中docs_qa集合的schema</figcaption>
+</figure>
 <p><code>embeddings</code>字段为Baichuan-13B-Chat模型的文本向量嵌入，向量维度为512，范数为1（即单位向量），搜索距离度量采用<code>IP</code>，即两个向量的内积。</p>
-<p>大模型采用Baichuan-13B-Chat，主要用于文本片段的向量嵌入和文档问答。关于Baichuan-13B-Chat模型的部署和使用，可参考文章<a href="https://percent4.github.io/2023/07/21/NLP%EF%BC%88%E5%85%AD%E5%8D%81%EF%BC%89Baichuan-13B-Chat%E6%A8%A1%E5%9E%8B%E4%BD%BF%E7%94%A8%E4%BD%93%E9%AA%8C/">NLP（六十）Baichuan-13B-Chat模型使用体验</a>。</p>
+<p>大模型采用Baichuan-13B-Chat，主要用于文本片段的向量嵌入和文档问答。关于Baichuan-13B-Chat模型的部署和使用，可参考文章<a
+href="https://percent4.github.io/2023/07/21/NLP%EF%BC%88%E5%85%AD%E5%8D%81%EF%BC%89Baichuan-13B-Chat%E6%A8%A1%E5%9E%8B%E4%BD%BF%E7%94%A8%E4%BD%93%E9%AA%8C/">NLP（六十）Baichuan-13B-Chat模型使用体验</a>。</p>
 <h3 id="文档问答">文档问答</h3>
-<p>本文使用的文档为<code>《封神》耗资30亿，第一部上映第次日，北京文化跌停</code>，访问网址为：<a target="_blank" rel="noopener" href="https://m.jrj.com.cn/madapter/stock/2023/07/22141537710254.shtml">https://m.jrj.com.cn/madapter/stock/2023/07/22141537710254.shtml</a> ，将其文本内容保存为txt文件，并通过文件上传接口，将数据内容插入至ES和Milvus。</p>
+<p>本文使用的文档为<code>《封神》耗资30亿，第一部上映第次日，北京文化跌停</code>，访问网址为：<a
+target="_blank" rel="noopener" href="https://m.jrj.com.cn/madapter/stock/2023/07/22141537710254.shtml">https://m.jrj.com.cn/madapter/stock/2023/07/22141537710254.shtml</a>
+，将其文本内容保存为txt文件，并通过文件上传接口，将数据内容插入至ES和Milvus。</p>
 <p>我们的问题（输入query）为：<code>封神第一部什么时候上映的？</code>，对其进行向量嵌入，在ES和Milvus中召回的相似文本为：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">《封神》耗资30亿，第一部上映第次日，北京文化跌停热点快报 2023-07-22 14:15:04《封神第一部》刚刚上映，北京文化股价却出现下跌。7月21日，A股影视传媒板块震荡下挫，北京文化收于跌停，报7.56元，总市值54.12亿元，板块内个股慈文传媒、荣信文化、中国出版、上海电影等跟跌。值得关注的是，《封神第一部》7月20日才正式上映，北京文化为该影片的出品方。<br>落地误差只有1公里，3条飞船实现了第一阶段的全部任务。<br>北京文化曾成功投资《我不是药神》《战狼》《流浪地球》《你好，李焕英》等多部爆款影片。此前《封神第一部》宣布定档，北京文化曾迎来3连板。<br></code></pre></td></tr></table></figure>
 <p>大模型文档问答的Prompt为：</p>
@@ -368,7 +378,9 @@
 <figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dns">根据文档知识，《封神第一部》于<span class="hljs-number">2023年7月20</span>日上映。<br></code></pre></td></tr></table></figure>
 <p>更多测试内容可参考本项目的Github网址。</p>
 <h3 id="总结">总结</h3>
-<p>本项目的Github网址为：<a target="_blank" rel="noopener" href="https://github.com/percent4/document_qa_with_llm">https://github.com/percent4/document_qa_with_llm</a> ，后续将持续优化这个项目，提升文档问答的方便性和智能性。</p>
+<p>本项目的Github网址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/document_qa_with_llm">https://github.com/percent4/document_qa_with_llm</a>
+，后续将持续优化这个项目，提升文档问答的方便性和智能性。</p>
 <p>本文详细介绍了如何使用Baichuan-13B-Chat模型来构建智能文档问答助手，希望能给读者们一些启发。</p>
 
                 

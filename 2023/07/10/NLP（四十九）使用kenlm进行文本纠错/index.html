@@ -322,16 +322,24 @@
               <div class="markdown-body">
                 
                 <p>本文将会介绍如何使用kenlm工具进行文本纠错。</p>
-<p>kenlm是用C++编写的语言模型工具，可以方便、快速地计算n-gram。kenlm工具的首页网址为：<a target="_blank" rel="noopener" href="https://kheafield.com/code/kenlm/">https://kheafield.com/code/kenlm/</a>，该工具的Github网址为：<a target="_blank" rel="noopener" href="https://github.com/kpu/kenlm">https://github.com/kpu/kenlm</a>。</p>
+<p>kenlm是用C++编写的语言模型工具，可以方便、快速地计算n-gram。kenlm工具的首页网址为：<a
+target="_blank" rel="noopener" href="https://kheafield.com/code/kenlm/">https://kheafield.com/code/kenlm/</a>，该工具的Github网址为：<a
+target="_blank" rel="noopener" href="https://github.com/kpu/kenlm">https://github.com/kpu/kenlm</a>。</p>
 <p>关于kenlm的安装，本文不再详细介绍，网上有很多这方面的介绍。安装完kenlm工具包后，其文件夹目录结构如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs bash">BUILDING<br>CMakeLists.txt<br>COPYING<br>COPYING.3<br>COPYING.LESSER.3<br>Doxyfile<br>GIT_REVISION<br>LICENSE<br>MANIFEST.<span class="hljs-keyword">in</span><br>README.md<br>build<br>clean_query_only.sh<br>cmake<br>compile_query_only.sh<br>include<br>lm<br>python<br>setup.py<br>util<br></code></pre></td></tr></table></figure>
 <h3 id="模型训练">模型训练</h3>
-<p>我们训练的语料为<code>people2014_words.txt</code>，来自百度网盘，访问网址为<a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1971a5XLQsIpL0zL0zxuK2A#list/path=/">https://pan.baidu.com/s/1971a5XLQsIpL0zL0zxuK2A#list/path=%2F</a>。我们需要将原来已经分词好的文件（<code>people2014_words.txt</code>）改成单个字的文件（<code>people2014_chars.txt</code>），即每个字用空格隔开，python代码如下：</p>
+<p>我们训练的语料为<code>people2014_words.txt</code>，来自百度网盘，访问网址为<a
+target="_blank" rel="noopener" href="https://pan.baidu.com/s/1971a5XLQsIpL0zL0zxuK2A#list/path=/">https://pan.baidu.com/s/1971a5XLQsIpL0zL0zxuK2A#list/path=%2F</a>。我们需要将原来已经分词好的文件（<code>people2014_words.txt</code>）改成单个字的文件（<code>people2014_chars.txt</code>），即每个字用空格隔开，python代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;people2014_words.txt&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> f:<br>    content = [_.strip() <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> f.readlines()]<br><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;people2014_chars.txt&quot;</span>, <span class="hljs-string">&quot;w&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> g:<br>    <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> content:<br>        g.write(<span class="hljs-string">&quot; &quot;</span>.join(<span class="hljs-built_in">list</span>(<span class="hljs-string">&quot;&quot;</span>.join(line.split())))+<span class="hljs-string">&quot;\n&quot;</span>)<br></code></pre></td></tr></table></figure>
 <p>改写后的文件前两行如下：</p>
 <blockquote>
-<p>1 . 手 指 长 度<br>
-一 项 2 0 0 8 年 在 期 刊 上 发 表 的 调 查 发 现 食 指 比 无 名 指 短 的 女 性 可 能 有 比 其 他 女 性 高 两 倍 的 可 能 性 患 上 在 膝 盖 处 的 关 节 炎 。 研 究 人 员 还 宣 称 ， 有 这 些 明 显 男 性 特 征 的 女 性 更 加 容 易 雌 激 素 激 素 分 泌 水 平 低 ， 这 可 能 会 对 关 节 炎 的 产 生 有 极 大 的 影 响 。 预 防 措 施 ： 加 强 锻 炼 膝 盖 周 围 的 肌 肉 。 在 你 坐 着 的 时 候 ， 把 两 腿 伸 直 并 平 行 于 地 面 ， 做 十 次 每 次 坚 持 5 — 1 0 秒 。</p>
+<p>1 . 手 指 长 度 一 项 2 0 0 8 年 在 期 刊 上 发 表 的 调 查 发 现 食
+指 比 无 名 指 短 的 女 性 可 能 有 比 其 他 女 性 高 两 倍 的 可 能 性
+患 上 在 膝 盖 处 的 关 节 炎 。 研 究 人 员 还 宣 称 ， 有 这 些 明 显
+男 性 特 征 的 女 性 更 加 容 易 雌 激 素 激 素 分 泌 水 平 低 ， 这 可
+能 会 对 关 节 炎 的 产 生 有 极 大 的 影 响 。 预 防 措 施 ： 加 强 锻
+炼 膝 盖 周 围 的 肌 肉 。 在 你 坐 着 的 时 候 ， 把 两 腿 伸 直 并 平
+行 于 地 面 ， 做 十 次 每 次 坚 持 5 — 1 0 秒 。</p>
 </blockquote>
 <p>我们将该文件放在build/result目录下。</p>
 <p>切换至build文件夹所在目录，模型运行的运行命令如下：</p>
@@ -340,7 +348,7 @@
 <ul>
 <li>-o表示n-gram中n的数量，一般取3足够了，也可以取5；</li>
 <li>-verbose_header:在生成的文件头位置加上统计信息；</li>
-<li>–text表示输入的文本文件；–arpa表示输出的模型参数文件；</li>
+<li>--text表示输入的文本文件；--arpa表示输出的模型参数文件；</li>
 <li>-S表示使用系统内存大小，<code>注意：需要设置合适的内存大小，不然可能会运行失败</code></li>
 </ul>
 <p>运行过程如下：</p>
@@ -349,7 +357,9 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">./bin/build_binary ./result/people2014corpus_chars.arps ./result/people2014corpus_chars.klm<br></code></pre></td></tr></table></figure>
 <p>运行完该命令后，就会生成klm格式的模型文件，模型文件体积大大减小，这也是我们所需要的的训练好后的模型文件。至此，我们已完成了使用kenlm训练n-gram模型。</p>
 <h3 id="文本纠错">文本纠错</h3>
-<p><code>pycorrector</code>模块支持使用自己训练好的kenlm模型进行纠错，参考网址：<a target="_blank" rel="noopener" href="https://github.com/shibing624/pycorrector">https://github.com/shibing624/pycorrector</a> 。</p>
+<p><code>pycorrector</code>模块支持使用自己训练好的kenlm模型进行纠错，参考网址：<a
+target="_blank" rel="noopener" href="https://github.com/shibing624/pycorrector">https://github.com/shibing624/pycorrector</a>
+。</p>
 <p>演示的Python代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pycorrector <span class="hljs-keyword">import</span> Corrector<br><br><span class="hljs-comment"># 加载训练好的kenlm模型</span><br>lm_path = <span class="hljs-string">&quot;~/work/kenlm/build/result/people2014corpus_chars.klm&quot;</span><br>model = Corrector(language_model_path=lm_path)<br><br><span class="hljs-comment"># 文本纠错</span><br>corrected_sent, detail = model.correct(<span class="hljs-string">&#x27;真麻烦你了。希望你们好好的跳无&#x27;</span>)<br><span class="hljs-built_in">print</span>(corrected_sent)<br><span class="hljs-built_in">print</span>(detail)<br></code></pre></td></tr></table></figure>
 <p>我们对pycorrector中给出的5个样例句子进行纠错，结果如下：</p>

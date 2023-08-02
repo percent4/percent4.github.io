@@ -274,7 +274,7 @@
         
         
           <!-- compatible with older versions-->
-          10 分钟
+          11 分钟
         
       </span>
     
@@ -324,43 +324,61 @@
             
               <div class="markdown-body">
                 
-                <h3 id="Hexo的Fluid主题介绍">Hexo的Fluid主题介绍</h3>
-<p>Hexo是一个快速、简洁且高效的博客框架。 Hexo使用Markdown（或其他标记语言）解析文章，在几秒内，即可利用靓丽的主题生成静态网页。</p>
-<p>Fluid是Hexo中一个优雅的主题，这是一款Material Design风格的Hexo主题，以简约的设计帮助你专注于写作，其配置页面可参考<a target="_blank" rel="noopener" href="https://hexo.fluid-dev.com/docs/guide/">https://hexo.fluid-dev.com/docs/guide/</a> .</p>
-<p>Fluid主题中的主页（about）中可使用社交图标，使用可参考<a target="_blank" rel="noopener" href="https://fluid-dev.github.io/hexo-fluid-docs/icon/">https://fluid-dev.github.io/hexo-fluid-docs/icon/</a> . 但主页内置的社交图标太少，有时候我们需要自定义图标。</p>
+                <h3 id="hexo的fluid主题介绍">Hexo的Fluid主题介绍</h3>
+<p>Hexo是一个快速、简洁且高效的博客框架。
+Hexo使用Markdown（或其他标记语言）解析文章，在几秒内，即可利用靓丽的主题生成静态网页。</p>
+<p>Fluid是Hexo中一个优雅的主题，这是一款Material
+Design风格的Hexo主题，以简约的设计帮助你专注于写作，其配置页面可参考<a
+target="_blank" rel="noopener" href="https://hexo.fluid-dev.com/docs/guide/">https://hexo.fluid-dev.com/docs/guide/</a>
+.</p>
+<p>Fluid主题中的主页（about）中可使用社交图标，使用可参考<a
+target="_blank" rel="noopener" href="https://fluid-dev.github.io/hexo-fluid-docs/icon/">https://fluid-dev.github.io/hexo-fluid-docs/icon/</a>
+. 但主页内置的社交图标太少，有时候我们需要自定义图标。</p>
 <p>本文将介绍在Hexo的Fluid主题中自定义iconfont图标，并纠正现有公开博客文章的错误。</p>
 <h3 id="如何自定义iconfont图标">如何自定义iconfont图标</h3>
-<p>iconfont是国内功能很强大且图标内容很丰富的矢量图标库，提供矢量图标下载、在线存储、格式转换等功能，由阿里巴巴体验团队倾力打造，是一款有助于设计和前端开发的便捷工具，网址为：<a target="_blank" rel="noopener" href="https://www.iconfont.cn/">https://www.iconfont.cn/</a> .</p>
+<p>iconfont是国内功能很强大且图标内容很丰富的矢量图标库，提供矢量图标下载、在线存储、格式转换等功能，由阿里巴巴体验团队倾力打造，是一款有助于设计和前端开发的便捷工具，网址为：<a
+target="_blank" rel="noopener" href="https://www.iconfont.cn/">https://www.iconfont.cn/</a> .</p>
 <p>在Hexo的Fluid主题中自定义iconfont图标的步骤（以今日头条图标为例）如下：</p>
-<ol>
+<ol type="1">
 <li>在iconfont网站中搜索今日头条图标，添加至购物车，并下载代码至本地；</li>
 </ol>
-<p><img src="/img/hexo_fluid_1.png" srcset="/img/loading.gif" lazyload alt="下载今日头条图标的代码"></p>
-<ol start="2">
-<li>
-<p>将下载代码压缩文件解压，并重命名为toutiao；</p>
-</li>
-<li>
-<p>将toutiao文件夹放至Hexo项目中的source/css文件夹下；</p>
-</li>
-<li>
-<p>在_config.fluid.yml文件中配置如下：</p>
-</li>
+<figure>
+<img src="/img/hexo_fluid_1.png" srcset="/img/loading.gif" lazyload alt="下载今日头条图标的代码" />
+<figcaption aria-hidden="true">下载今日头条图标的代码</figcaption>
+</figure>
+<ol start="2" type="1">
+<li><p>将下载代码压缩文件解压，并重命名为toutiao；</p></li>
+<li><p>将toutiao文件夹放至Hexo项目中的source/css文件夹下；</p></li>
+<li><p>在_config.fluid.yml文件中配置如下：</p></li>
 </ol>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">skip_render:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">&#x27;css/**/*&#x27;</span><br>  <br><span class="hljs-attr">custom_css:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">/css/toutiao/iconfont.css</span><br><br><span class="hljs-attr">about:</span><br>  <span class="hljs-attr">avatar:</span> <span class="hljs-string">/img/avatar.png</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">&quot;Fluid&quot;</span><br>  <span class="hljs-attr">intro:</span> <span class="hljs-string">&quot;个人博客&quot;</span><br>  <span class="hljs-attr">icons:</span><br>    <span class="hljs-bullet">-</span> &#123; <span class="hljs-attr">class:</span> <span class="hljs-string">&#x27;icon iconfont icon-jinritoutiao&#x27;</span>, <span class="hljs-attr">link:</span> <span class="hljs-string">&#x27;you own toutiao website&#x27;</span>, <span class="hljs-attr">tip:</span> <span class="hljs-string">&#x27;今日头条&#x27;</span>&#125;<br></code></pre></td></tr></table></figure>
-<ol start="5">
+<ol start="5" type="1">
 <li>部署Hexo，结果如下：</li>
 </ol>
-<p><img src="/img/hexo_fluid_2.png" srcset="/img/loading.gif" lazyload alt="主页页面自定义图标成功"></p>
+<figure>
+<img src="/img/hexo_fluid_2.png" srcset="/img/loading.gif" lazyload alt="主页页面自定义图标成功" />
+<figcaption aria-hidden="true">主页页面自定义图标成功</figcaption>
+</figure>
 <h3 id="纠错之处">纠错之处</h3>
 <p>在上述配置中的第4步，现在很少有参考文章，而仅有的中文参考文章中的配置icons中的class方法是不正确的。</p>
-<p>正确的方法是打开toutiao文件夹中的示例页面（demo_index.html），右击Font Class中的图标，选择查看：</p>
-<p><img src="/img/hexo_fluid_5.png" srcset="/img/loading.gif" lazyload alt="demo_index.html文件"></p>
-<p><img src="/img/hexo_fluid_3.png" srcset="/img/loading.gif" lazyload alt="查看Font Class图标"></p>
+<p>正确的方法是打开toutiao文件夹中的示例页面（demo_index.html），右击Font
+Class中的图标，选择查看：</p>
+<figure>
+<img src="/img/hexo_fluid_5.png" srcset="/img/loading.gif" lazyload alt="demo_index.html文件" />
+<figcaption aria-hidden="true">demo_index.html文件</figcaption>
+</figure>
+<figure>
+<img src="/img/hexo_fluid_3.png" srcset="/img/loading.gif" lazyload alt="查看Font Class图标" />
+<figcaption aria-hidden="true">查看Font Class图标</figcaption>
+</figure>
 <p>class应该选择如下：</p>
-<p><img src="/img/hexo_fluid_4.png" srcset="/img/loading.gif" lazyload alt="如何查看class"></p>
+<figure>
+<img src="/img/hexo_fluid_4.png" srcset="/img/loading.gif" lazyload alt="如何查看class" />
+<figcaption aria-hidden="true">如何查看class</figcaption>
+</figure>
 <p>以上是本文对现有的公开博客文章关于如何在Hexo的Fluid主题中配置icons的class的纠正之处。</p>
-<p>欢迎访问本人的个人博客：<a href="https://percent4.github.io/">https://percent4.github.io/</a> .</p>
+<p>欢迎访问本人的个人博客：<a
+href="https://percent4.github.io/">https://percent4.github.io/</a> .</p>
 
                 
               </div>

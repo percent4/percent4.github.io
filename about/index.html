@@ -355,16 +355,19 @@
 <li>技术文章写作计划：<a href="https://percent4.github.io/2023/07/06/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0%E5%86%99%E4%BD%9C%E8%AE%A1%E5%88%92/">https://percent4.github.io/2023/07/06/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0%E5%86%99%E4%BD%9C%E8%AE%A1%E5%88%92/</a></li>
 </ul>
 <p>本网站使用Hexo来部署个人博客，主要有以下用途：</p>
-<ol>
+<ol type="1">
 <li>技术文章</li>
 <li>个人日记</li>
 <li>书籍摘抄</li>
 <li>写作计划</li>
 <li>草稿</li>
-<li>…</li>
+<li>...</li>
 </ol>
-<iframe frameborder="no" border="0" src="/pyecharts_pv_uv/2023-07-30.html" width="100%" height="500"></iframe>
-<div id="posts-calendar"></div>
+<iframe frameborder="no" border="0" src="/pyecharts_pv_uv/2023-07-30.html" width="100%" height="500">
+</iframe>
+<div id="posts-calendar">
+
+</div>
   <script id="postsCalendar">
     let postsCalendar = echarts.init(document.getElementById('posts-calendar'));
     let postsCalendarOption = {
@@ -436,7 +439,9 @@
     };
     postsCalendar.setOption(postsCalendarOption);
     </script>
-<div id="posts-chart"></div>
+<div id="posts-chart">
+
+</div>
   <script id="postsChart">
     let postsChart = echarts.init(document.getElementById('posts-chart'));
     let postsOption = {
@@ -487,7 +492,9 @@
     postsChart.setOption(postsOption);
     </script>
 <!-- "data-length" = how many tags to show, default 10 -->
-<div id="tags-chart" data-length="10"></div>
+<div id="tags-chart" data-length="10">
+
+</div>
   <script id="tagsChart">
     let tagsChart = echarts.init(document.getElementById('tags-chart'));
     let tagsOption = {
@@ -535,7 +542,9 @@
     };
     tagsChart.setOption(tagsOption);
     </script>
-<div id="categories-chart"></div>
+<div id="categories-chart">
+
+</div>
   <script id="categoriesChart">
     let categoriesChart = echarts.init(document.getElementById('categories-chart'));
     let categoriesOption = {
@@ -568,7 +577,9 @@
     };
     categoriesChart.setOption(categoriesOption);
     </script>
-<div id="categories-radar"></div>
+<div id="categories-radar">
+
+</div>
   <script id="categoriesRadar">
     let categoriesRadar = echarts.init(document.getElementById('categories-radar'));
     let categoriesRadarOption = {

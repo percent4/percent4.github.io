@@ -327,46 +327,65 @@
                 <p>本文将会介绍如何使用FastChat来部署国产大模型——百川模型。</p>
 <p>在此之前，我们先来了解两个概念——<code>百川模型</code>和<code>FastChat</code>.</p>
 <h3 id="百川模型">百川模型</h3>
-<p>2023年6月15日，被称为「中国 ChatGPT 梦之队」的百川智能公司，推出了 70 亿参数量的中英文预训练大模型——<code>baichuan-7B</code>。</p>
+<p>2023年6月15日，被称为「中国 ChatGPT 梦之队」的百川智能公司，推出了 70
+亿参数量的中英文预训练大模型——<code>baichuan-7B</code>。</p>
 <p><code>baichuan-7B</code>是由百川智能开发的一个开源的大规模预训练模型。基于Transformer结构，在大约1.2万亿tokens上训练的70亿参数模型，支持中英双语，上下文窗口长度为4096。在标准的中文和英文权威benchmark（C-EVAL/MMLU）上均取得同尺寸最好的效果。</p>
-<p>在构建预训练语料库方面，百川智能以高质量中文语料为基础，同时融合了优质的英文数据。相较于其他同参数规模的开源中文预训练模型，数据量提高了超过 50%。</p>
+<p>在构建预训练语料库方面，百川智能以高质量中文语料为基础，同时融合了优质的英文数据。相较于其他同参数规模的开源中文预训练模型，数据量提高了超过
+50%。</p>
 <ul>
 <li>在数据质量方面，通过质量模型对数据进行打分，对原始数据集进行篇章级和句子级的精确筛选</li>
 <li>在内容多样性方面，利用自研超大规模局部敏感哈希聚类系统和语义聚类系统，对数据进行了多层次多粒度的聚类</li>
 <li>最终构建了包含 1.2 万亿 token 的兼顾质量和多样性的预训练数据。</li>
 </ul>
 <p>不同于LLaMA完全禁止商业使用，<code>baichuan-7B</code>代码使用更宽松的开源协议——Apache-2.0协议，允许用于商业目的</p>
-<h3 id="FastChat">FastChat</h3>
+<h3 id="fastchat">FastChat</h3>
 <p><code>FastChat</code>是用于对话机器人模型训练、部署、评估的开放平台，其核心特性包括：</p>
 <ul>
 <li>模型权重，训练代码，评估代码可用于SOTA模型（比如Vicuna，FastChat-T5）</li>
 <li>分布式多模型部署系统，自带Web UI和OpenAI兼容的RESTful APIs</li>
 </ul>
 <p><code>FastChat</code>集成了Vicuna、Koala、alpaca、LLaMA等开源模型，其中Vicuna号称能够达到GPT-4的90%的质量，是开源的chatGPT模型中对答效果比较好的。</p>
-<p><code>FastChat</code>的访问地址是：<a href="https://link.zhihu.com/?target=https%3A//chat.lmsys.org/">https://chat.lmsys.org/</a> , <code>FastChat</code>的安装方式为：<code>pip3 install fschat</code> .</p>
-<h3 id="CLI部署">CLI部署</h3>
-<p>在Huggingface Hub上下载<code>baichuan-7B</code>模型，访问网址为：<a target="_blank" rel="noopener" href="https://huggingface.co/baichuan-inc/Baichuan-7B">https://huggingface.co/baichuan-inc/Baichuan-7B</a> ,放在GPU机器上的本地路径。</p>
+<p><code>FastChat</code>的访问地址是：<a
+href="https://link.zhihu.com/?target=https%3A//chat.lmsys.org/">https://chat.lmsys.org/</a>
+, <code>FastChat</code>的安装方式为：<code>pip3 install fschat</code>
+.</p>
+<h3 id="cli部署">CLI部署</h3>
+<p>在Huggingface Hub上下载<code>baichuan-7B</code>模型，访问网址为：<a
+target="_blank" rel="noopener" href="https://huggingface.co/baichuan-inc/Baichuan-7B"
+class="uri">https://huggingface.co/baichuan-inc/Baichuan-7B</a>
+,放在GPU机器上的本地路径。</p>
 <p>笔者的GPU机器为4 * RTX6000，每张RTX6000的显存为80G。</p>
 <p><code>FastChat</code>使用CLI部署百川大模型的命令为：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">python3 -m fastchat.serve.cli --model-path path_of_Baichuan-7B --num-gpus 2<br></code></pre></td></tr></table></figure>
-<p>在CLI部署时，如遇到以下的报错：<code>trust_remote_code=True</code> ,参考issue网址：<a target="_blank" rel="noopener" href="https://github.com/lm-sys/FastChat/issues/1789">https://github.com/lm-sys/FastChat/issues/1789</a> ,则在对应的Python路径下，将FastChat的fastchat/model/model_adapter.py文件中的代码中的第57至61行：</p>
+<p>在CLI部署时，如遇到以下的报错：<code>trust_remote_code=True</code>
+,参考issue网址：<a target="_blank" rel="noopener" href="https://github.com/lm-sys/FastChat/issues/1789"
+class="uri">https://github.com/lm-sys/FastChat/issues/1789</a>
+,则在对应的Python路径下，将FastChat的fastchat/model/model_adapter.py文件中的代码中的第57至61行：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python">tokenizer = AutoTokenizer.from_pretrained(<br>             model_path,<br>             use_fast=self.use_fast_tokenizer,<br>             revision=revision,<br>         )<br></code></pre></td></tr></table></figure>
 <p>和69至71行</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">model = AutoModelForCausalLM.from_pretrained(<br>          model_path, low_cpu_mem_usage=<span class="hljs-literal">True</span>, **from_pretrained_kwargs<br>      )<br></code></pre></td></tr></table></figure>
 <p>中添加代码：`<code>trust_remote_code=True</code>` ,则可顺利部署。</p>
-<pre><code class="hljs">部署成功后的界面如下：
-</code></pre>
-<p><img src="/img/fastchat_cli.png" srcset="/img/loading.gif" lazyload alt="CLI部署成功后的用户界面"></p>
-<h3 id="WEB部署">WEB部署</h3>
-<p><code>FastChat</code>还支持WEB部署，可Web UI和OpenAI兼容的RESTful APIs.</p>
-<p>这里主要介绍如何实现与OpenAI兼容的具有RESTful APIs的部署方式，参考网址为：<a target="_blank" rel="noopener" href="https://github.com/lm-sys/FastChat/blob/main/docs/openai_api.md">https://github.com/lm-sys/FastChat/blob/main/docs/openai_api.md</a> .</p>
+<pre><code class="hljs">部署成功后的界面如下：</code></pre>
+<figure>
+<img src="/img/fastchat_cli.png" srcset="/img/loading.gif" lazyload alt="CLI部署成功后的用户界面" />
+<figcaption aria-hidden="true">CLI部署成功后的用户界面</figcaption>
+</figure>
+<h3 id="web部署">WEB部署</h3>
+<p><code>FastChat</code>还支持WEB部署，可Web UI和OpenAI兼容的RESTful
+APIs.</p>
+<p>这里主要介绍如何实现与OpenAI兼容的具有RESTful
+APIs的部署方式，参考网址为：<a
+target="_blank" rel="noopener" href="https://github.com/lm-sys/FastChat/blob/main/docs/openai_api.md"
+class="uri">https://github.com/lm-sys/FastChat/blob/main/docs/openai_api.md</a>
+.</p>
 <p>部署一共分为三步：</p>
-<ol>
+<ol type="1">
 <li><code>python3 -m fastchat.serve.controller</code></li>
 <li><code>python3 -m fastchat.serve.model</code><em><code>worker --model-path path_of_</code></em><code>Baichuan-7B</code></li>
 <li><code>python3 -m fastchat.serve.openai_api_server --host localhost --port 8000</code></li>
 </ol>
-<p>在部署过程中，如果遇到<code>PydanticImportError</code> ，原因为pydantic版本的问题，只需将pydantic版本降为<code>1.*</code>版本即可。</p>
+<p>在部署过程中，如果遇到<code>PydanticImportError</code>
+，原因为pydantic版本的问题，只需将pydantic版本降为<code>1.*</code>版本即可。</p>
 <p>部署成功后，该服务可提供与OpenAI风格类似的RESTful APIs，如下：</p>
 <ul>
 <li>查看模型</li>
@@ -404,12 +423,22 @@
 <h3 id="总结">总结</h3>
 <p>本文主要介绍了如何使用FastChat来部署国产大模型——百川模型，并演示了两种部署方式——WEB部署和CLI部署，以及在部署过程中出现的问题和解决方案，希望能给读者带来启示。</p>
 <h3 id="参考文献">参考文献</h3>
-<ol>
-<li>百川智能发布 70 亿参数量开源中英文大模型: <a target="_blank" rel="noopener" href="https://www.geekpark.net/news/320721">https://www.geekpark.net/news/320721</a></li>
-<li>baichuan-inc/Baichuan-7B in Huggingface Hub: <a target="_blank" rel="noopener" href="https://huggingface.co/baichuan-inc/Baichuan-7B">https://huggingface.co/baichuan-inc/Baichuan-7B</a></li>
-<li>OpenAI-Compatible RESTful APIs &amp; SDK: <a target="_blank" rel="noopener" href="https://github.com/lm-sys/FastChat/blob/main/docs/openai_api.md">https://github.com/lm-sys/FastChat/blob/main/docs/openai_api.md</a></li>
-<li>report error while i execute <code>python -m fastchat.serve.openai_api_server --host localhost --port 8000</code>: <a target="_blank" rel="noopener" href="https://github.com/lm-sys/FastChat/issues/1641">https://github.com/lm-sys/FastChat/issues/1641</a></li>
-<li>FastChat in Github: <a target="_blank" rel="noopener" href="https://github.com/lm-sys/FastChat">https://github.com/lm-sys/FastChat</a></li>
+<ol type="1">
+<li>百川智能发布 70 亿参数量开源中英文大模型: <a
+target="_blank" rel="noopener" href="https://www.geekpark.net/news/320721"
+class="uri">https://www.geekpark.net/news/320721</a></li>
+<li>baichuan-inc/Baichuan-7B in Huggingface Hub: <a
+target="_blank" rel="noopener" href="https://huggingface.co/baichuan-inc/Baichuan-7B"
+class="uri">https://huggingface.co/baichuan-inc/Baichuan-7B</a></li>
+<li>OpenAI-Compatible RESTful APIs &amp; SDK: <a
+target="_blank" rel="noopener" href="https://github.com/lm-sys/FastChat/blob/main/docs/openai_api.md"
+class="uri">https://github.com/lm-sys/FastChat/blob/main/docs/openai_api.md</a></li>
+<li>report error while i
+execute <code>python -m fastchat.serve.openai_api_server --host localhost --port 8000</code>:
+<a target="_blank" rel="noopener" href="https://github.com/lm-sys/FastChat/issues/1641"
+class="uri">https://github.com/lm-sys/FastChat/issues/1641</a></li>
+<li>FastChat in Github: <a target="_blank" rel="noopener" href="https://github.com/lm-sys/FastChat"
+class="uri">https://github.com/lm-sys/FastChat</a></li>
 </ol>
 
                 

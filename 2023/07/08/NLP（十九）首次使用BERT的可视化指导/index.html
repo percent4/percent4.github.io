@@ -258,7 +258,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          2.9k 字
+          3k 字
         
       </span>
     
@@ -320,76 +320,113 @@
             
               <div class="markdown-body">
                 
-                <p>本文（部分内容）翻译自文章<a target="_blank" rel="noopener" href="http://jalammar.github.io/a-visual-guide-to-using-bert-for-the-first-time/">A Visual Guide to Using BERT for the First Time</a>，其作者为Jay Alammar，访问网址为：<a target="_blank" rel="noopener" href="http://jalammar.github.io/a-visual-guide-to-using-bert-for-the-first-time/">http://jalammar.github.io/a-visual-guide-to-using-bert-for-the-first-time/</a> ，可以作为那些不熟悉BERT的读者首次阅读。文章中如有翻译不当之处，还请批评指正。</p>
-<p><img src="/img/nlp19_1.png" srcset="/img/loading.gif" lazyload alt=""></p>
+                <p>本文（部分内容）翻译自文章<a
+target="_blank" rel="noopener" href="http://jalammar.github.io/a-visual-guide-to-using-bert-for-the-first-time/">A
+Visual Guide to Using BERT for the First Time</a>，其作者为Jay
+Alammar，访问网址为：<a
+target="_blank" rel="noopener" href="http://jalammar.github.io/a-visual-guide-to-using-bert-for-the-first-time/">http://jalammar.github.io/a-visual-guide-to-using-bert-for-the-first-time/</a>
+，可以作为那些不熟悉BERT的读者首次阅读。文章中如有翻译不当之处，还请批评指正。</p>
+<p><img src="/img/nlp19_1.png" srcset="/img/loading.gif" lazyload /></p>
 <p>本文是关于如何使用BERT的变异版本来进行句子分类的简单教程。该例子足够简单，因此可以作为首次使用BERT的介绍，当然，它也包含了一些关键性的概念。</p>
-<h3 id="数据集：SST2">数据集：SST2</h3>
-<p>本文中使用的数据集为<a target="_blank" rel="noopener" href="https://nlp.stanford.edu/sentiment/index.html">SST2</a>，它包含了电影评论的句子，每一句带有一个标签，或者标注为<code>正面情感</code>（取值为1），或者标注为<code>负面情感</code>（取值为0）。</p>
-<p><img src="/img/nlp19_2.png" srcset="/img/loading.gif" lazyload alt=""></p>
-<h3 id="模型：句子情感分类">模型：句子情感分类</h3>
+<h3 id="数据集sst2">数据集：SST2</h3>
+<p>本文中使用的数据集为<a
+target="_blank" rel="noopener" href="https://nlp.stanford.edu/sentiment/index.html">SST2</a>，它包含了电影评论的句子，每一句带有一个标签，或者标注为<code>正面情感</code>（取值为1），或者标注为<code>负面情感</code>（取值为0）。</p>
+<p><img src="/img/nlp19_2.png" srcset="/img/loading.gif" lazyload /></p>
+<h3 id="模型句子情感分类">模型：句子情感分类</h3>
 <p>我们的目标是创建一个模型，它能够处理一个句子（就行我们数据集中的句子那样）并且输出1（表明该句子具有正面情感）或者0（表明该句子具有负面情感）。我们设想它长这样：</p>
-<p><img src="/img/nlp19_3.png" srcset="/img/loading.gif" lazyload alt="模型描述"></p>
+<figure>
+<img src="/img/nlp19_3.png" srcset="/img/loading.gif" lazyload alt="模型描述" />
+<figcaption aria-hidden="true">模型描述</figcaption>
+</figure>
 <p>事实上，该模型包含两个模型：</p>
 <ul>
 <li><code>DistillBERT</code>会处理句子并把它提取后的信息传递给下一个模型。<code>DistillBERT</code>是<code>BERT</code>的变异版本，由<code>HuggingFace</code>小组开发和开源。它是<code>BERT</code>的更轻量、更快速的版本，同时它的表现基本与<code>BERT</code>相近。</li>
-<li>下一个模型，从scikit learn中导入的一个基本的<code>逻辑回归模型</code>（Logistic Regression model），它会利用 <code>DistillBERT</code>的处理结果，然后将句子进行分类成<code>正面情感</code>或者<code>负面情感</code>（分别为1或者0）。</li>
+<li>下一个模型，从scikit
+learn中导入的一个基本的<code>逻辑回归模型</code>（Logistic Regression
+model），它会利用
+<code>DistillBERT</code>的处理结果，然后将句子进行分类成<code>正面情感</code>或者<code>负面情感</code>（分别为1或者0）。</li>
 </ul>
-<p>在两个模型之间传递的数据为1个768维的向量。我们可以把这个向量理解为这个句子的嵌入向量（Embedding Vector），用于分类。</p>
-<p><img src="/img/nlp19_4.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p>在两个模型之间传递的数据为1个768维的向量。我们可以把这个向量理解为这个句子的嵌入向量（Embedding
+Vector），用于分类。</p>
+<p><img src="/img/nlp19_4.png" srcset="/img/loading.gif" lazyload /></p>
 <h3 id="模型训练">模型训练</h3>
 <p>尽管我们用了两个模型，但是我们只会训练<code>逻辑回归模型</code>。对于<code>DistillBERT</code>，我们会使用已经预训练好的英语模型。该模型，既不会被训练也不会做<code>微调（fine-tuned）</code>，直接进行句子分类。这是因为，我们可以从<code>BERT</code>中获得句子分类的能力。这尤其适合<code>BERT</code>输出的第一个位置（跟[CLS]标志相关）。我相信这是由于<code>BERT</code>的第二个训练模型——<code>下一句分类（Next sentence classification）</code>。该模型的目标在于封装句子级别的语料进行训练，并输出第一个位置。<code>transformers</code>库已经提供了<code>DistillBERT</code>的操作，作为其预训练模型版本。</p>
-<p><img src="/img/nlp19_5.png" srcset="/img/loading.gif" lazyload alt="模型训练"></p>
+<figure>
+<img src="/img/nlp19_5.png" srcset="/img/loading.gif" lazyload alt="模型训练" />
+<figcaption aria-hidden="true">模型训练</figcaption>
+</figure>
 <h3 id="教程总览">教程总览</h3>
 <p>以下是该教程的计划安排。首先我们会使用<code>DistillBERT</code>来产生2000个句子的句子向量。</p>
-<p><img src="/img/nlp19_6.png" srcset="/img/loading.gif" lazyload alt="利用DistillBERT产生句子向量"></p>
-<p>这一步之后我们不会接触<code>DistillBERT</code>。接下去只是Scikit Learn的操作。我们将数据集分为训练集和测试集。</p>
-<p><img src="/img/nlp19_7.png" srcset="/img/loading.gif" lazyload alt="将数据集经过Distilll处理后划分为训练集和测试集，注意sklearn的划分是将数据集打乱(shuffle)后再进行划分，所以不是取数据集的前75%作为训练集。"></p>
+<figure>
+<img src="/img/nlp19_6.png" srcset="/img/loading.gif" lazyload alt="利用DistillBERT产生句子向量" />
+<figcaption aria-hidden="true">利用DistillBERT产生句子向量</figcaption>
+</figure>
+<p>这一步之后我们不会接触<code>DistillBERT</code>。接下去只是Scikit
+Learn的操作。我们将数据集分为训练集和测试集。</p>
+<figure>
+<img src="/img/nlp19_7.png" srcset="/img/loading.gif" lazyload
+alt="将数据集经过Distilll处理后划分为训练集和测试集，注意sklearn的划分是将数据集打乱(shuffle)后再进行划分，所以不是取数据集的前75%作为训练集。" />
+<figcaption
+aria-hidden="true">将数据集经过Distilll处理后划分为训练集和测试集，注意sklearn的划分是将数据集打乱(shuffle)后再进行划分，所以不是取数据集的前75%作为训练集。</figcaption>
+</figure>
 <p>接下来我们在训练集上使用<code>逻辑回归模型</code>进行训练。</p>
-<p><img src="/img/nlp19_8.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="/img/nlp19_8.png" srcset="/img/loading.gif" lazyload /></p>
 <h3 id="单次预测如何计算">单次预测如何计算</h3>
-<p>在我们讲解代码和解释如何训练模型之前，让我们看一下已预训练好的模型如何进行预测。<br>
-我们尝试着预测句子“a visually stunning rumination on love”。第一步是使用BERT tokenizer 将句子划分成tokens。然后加上句子分类的特殊tokens（[CLS]在开始位置，[SEP]在句子结尾）。</p>
-<p><img src="/img/nlp19_9.png" srcset="/img/loading.gif" lazyload alt=""></p>
-<p>第三步是通过已预训练好的模型的嵌入表（embedding table）将每一个tokens映射成各自的id。这一步可以参考<code>word embedding</code>，参考阅读文章<a target="_blank" rel="noopener" href="http://jalammar.github.io/illustrated-word2vec/">The Illustrated Word2vec</a>。</p>
-<p><img src="/img/nlp19_10.png" srcset="/img/loading.gif" lazyload alt=""></p>
-<p>我们注意到，tokenizer仅需要一行代码就能完成以上步骤。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">tokenizer.encode(<span class="hljs-string">&quot;a visually stunning rumination on love&quot;</span>, add_special_tokens=<span class="hljs-literal">True</span>)<br></code></pre></td></tr></table></figure>
-<p>我们的输入句子现在已经处理成<code>DistilBERT</code>可以处理的格式了。<br>
-如果你已经读过<a target="_blank" rel="noopener" href="http://jalammar.github.io/illustrated-bert/">Illustrated BERT</a>，那么这一步的可视化如下：</p>
-<p><img src="/img/nlp19_11.png" srcset="/img/loading.gif" lazyload alt=""></p>
-<h3 id="DistilBERT处理流程">DistilBERT处理流程</h3>
+<p>在我们讲解代码和解释如何训练模型之前，让我们看一下已预训练好的模型如何进行预测。
+我们尝试着预测句子“a visually stunning rumination on
+love”。第一步是使用BERT tokenizer
+将句子划分成tokens。然后加上句子分类的特殊tokens（[CLS]在开始位置，[SEP]在句子结尾）。</p>
+<p><img src="/img/nlp19_9.png" srcset="/img/loading.gif" lazyload /></p>
+<p>第三步是通过已预训练好的模型的嵌入表（embedding
+table）将每一个tokens映射成各自的id。这一步可以参考<code>word embedding</code>，参考阅读文章<a
+target="_blank" rel="noopener" href="http://jalammar.github.io/illustrated-word2vec/">The Illustrated
+Word2vec</a>。</p>
+<p><img src="/img/nlp19_10.png" srcset="/img/loading.gif" lazyload /></p>
+<p>我们注意到，tokenizer仅需要一行代码就能完成以上步骤。 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">tokenizer.encode(<span class="hljs-string">&quot;a visually stunning rumination on love&quot;</span>, add_special_tokens=<span class="hljs-literal">True</span>)<br></code></pre></td></tr></table></figure>
+我们的输入句子现在已经处理成<code>DistilBERT</code>可以处理的格式了。
+如果你已经读过<a
+target="_blank" rel="noopener" href="http://jalammar.github.io/illustrated-bert/">Illustrated
+BERT</a>，那么这一步的可视化如下：</p>
+<p><img src="/img/nlp19_11.png" srcset="/img/loading.gif" lazyload /></p>
+<h3 id="distilbert处理流程">DistilBERT处理流程</h3>
 <p><code>DistilBERT</code>处理输入向量的流程类似于<code>BERT</code>。输出是每一个token对应一个向量。每个向量由768个浮点型数字组成。</p>
-<p><img src="/img/nlp19_12.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="/img/nlp19_12.png" srcset="/img/loading.gif" lazyload /></p>
 <p>因为这是一个句子分类任务，故我们忽略其他向量而只取第一个向量（跟[CLS]相关的那个）。这个向量我们会作为<code>逻辑回归模型</code>的输入。</p>
-<p><img src="/img/nlp19_13.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="/img/nlp19_13.png" srcset="/img/loading.gif" lazyload /></p>
 <p>从这里开始，就是<code>逻辑回归模型</code>的事儿了，它负责将输入的向量进行分类。我们设想一个预测的流程长这样：</p>
-<p><img src="/img/nlp19_14.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="/img/nlp19_14.png" srcset="/img/loading.gif" lazyload /></p>
 <h3 id="代码">代码</h3>
-<p>文章中用到的数据集下载网址为：<a target="_blank" rel="noopener" href="https://github.com/clairett/pytorch-sentiment-classification/raw/master/data/SST2/train.tsv">https://github.com/clairett/pytorch-sentiment-classification/raw/master/data/SST2/train.tsv</a>。下载<code>DistillBERT</code>模型文件，网址为：<a target="_blank" rel="noopener" href="https://www.kaggle.com/abhishek/distilbertbaseuncased">https://www.kaggle.com/abhishek/distilbertbaseuncased</a> 。</p>
+<p>文章中用到的数据集下载网址为：<a
+target="_blank" rel="noopener" href="https://github.com/clairett/pytorch-sentiment-classification/raw/master/data/SST2/train.tsv">https://github.com/clairett/pytorch-sentiment-classification/raw/master/data/SST2/train.tsv</a>。下载<code>DistillBERT</code>模型文件，网址为：<a
+target="_blank" rel="noopener" href="https://www.kaggle.com/abhishek/distilbertbaseuncased">https://www.kaggle.com/abhishek/distilbertbaseuncased</a>
+。</p>
 <p>原文中这部分的代码讲解比较多，我这边忽略过去了，笔者想按自己的思路来处理，因此这部分内容会有调整。完整的思路如下：</p>
 <p>下载数据集和模型文件，与代码放在同一目录下。建立jupyter脚本，先载入必要的模块：</p>
-<p><img src="/img/nlp19_15.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="/img/nlp19_15.png" srcset="/img/loading.gif" lazyload /></p>
 <p>接着我们利用pandas读取训练集数据，并统计标签值的频数：</p>
-<p><img src="/img/nlp19_16.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="/img/nlp19_16.png" srcset="/img/loading.gif" lazyload /></p>
 <p>读取<code>DistillBERT</code>模型文件并创建tokenizer：</p>
-<p><img src="/img/nlp19_17.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="/img/nlp19_17.png" srcset="/img/loading.gif" lazyload /></p>
 <p>通过tokenizer完成句子切分成tokens，并映射到id:</p>
-<p><img src="/img/nlp19_18.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="/img/nlp19_18.png" srcset="/img/loading.gif" lazyload /></p>
 <p>由于每个句子的长度可能会不同，因此需要对句子进行填充（Padding），保持每个句子的输入维度一致，句子填充的长度为该数据集中句子长度的最大值。</p>
-<p><img src="/img/nlp19_19.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="/img/nlp19_19.png" srcset="/img/loading.gif" lazyload /></p>
 <p>对句子进行填充后，然后再进行Masking。这是因为如果我们直接将padded传入<code>BERT</code>，这会造成一定的困扰。我们需要创建另一个变量，来告诉模型去mask之前的填充结果。这就是attention_mask的作用：</p>
-<p><img src="/img/nlp19_20.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="/img/nlp19_20.png" srcset="/img/loading.gif" lazyload /></p>
 <p>我们的输入已经准备完毕，接下来我们尝试着用<code>DistillBERT</code>来获取向量，也就是之前说的第一步。这一步的处理结果会返回<code>last_hidden_states</code>，而我们的分类模型只需要获取<code>[CLS]</code>这个token对应的输出向量。</p>
-<p><img src="/img/nlp19_21.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="/img/nlp19_21.png" srcset="/img/loading.gif" lazyload /></p>
 <p>可视化的操作说明如下图：</p>
-<p><img src="/img/nlp19_22.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="/img/nlp19_22.png" srcset="/img/loading.gif" lazyload /></p>
 <p>这样，我们就把之前的每一个句子映射成了1个768维的句子向量，然后就利用<code>逻辑回归模型</code>直接进行训练就可以了。</p>
-<p><img src="/img/nlp19_23.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="/img/nlp19_23.png" srcset="/img/loading.gif" lazyload /></p>
 <p>最后，我们来看一下这个模型在测试集上的效果：</p>
-<p><img src="/img/nlp19_24.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="/img/nlp19_24.png" srcset="/img/loading.gif" lazyload /></p>
 <h3 id="总结">总结</h3>
 <p>本文主要介绍了如何利用<code>DistillBERT</code>和已经封装好的<code>transformers</code>模块，结合<code>逻辑回归模型</code>对英文句子进行文本二分类。后续笔者还会研究在中文上的文本分类以及如何进行微调（Fine_tuning）。</p>
-<p>本项目的Gitlab地址为：<a target="_blank" rel="noopener" href="https://gitlab.com/jclian91/sentence_classify_using_distillBERT_LR">https://gitlab.com/jclian91/sentence_classify_using_distillBERT_LR</a>，原文章作者的Github地址为<a target="_blank" rel="noopener" href="https://github.com/jalammar/jalammar.github.io/blob/master/notebooks/bert/A_Visual_Notebook_to_Using_BERT_for_the_First_Time.ipynb">https://github.com/jalammar/jalammar.github.io/blob/master/notebooks/bert/A_Visual_Notebook_to_Using_BERT_for_the_First_Time.ipynb</a> 。</p>
+<p>本项目的Gitlab地址为：<a
+target="_blank" rel="noopener" href="https://gitlab.com/jclian91/sentence_classify_using_distillBERT_LR">https://gitlab.com/jclian91/sentence_classify_using_distillBERT_LR</a>，原文章作者的Github地址为<a
+target="_blank" rel="noopener" href="https://github.com/jalammar/jalammar.github.io/blob/master/notebooks/bert/A_Visual_Notebook_to_Using_BERT_for_the_First_Time.ipynb">https://github.com/jalammar/jalammar.github.io/blob/master/notebooks/bert/A_Visual_Notebook_to_Using_BERT_for_the_First_Time.ipynb</a>
+。</p>
 <p>感谢大家阅读~</p>
 
                 

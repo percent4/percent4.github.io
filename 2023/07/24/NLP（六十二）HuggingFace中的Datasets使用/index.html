@@ -322,21 +322,36 @@
             
               <div class="markdown-body">
                 
-                <p><code>Datasets</code>库是<code>HuggingFace</code>生态系统中一个重要的数据集库，可用于轻松地访问和共享数据集，这些数据集是关于音频、计算机视觉、以及自然语言处理等领域。<code>Datasets</code> 库可以通过一行来加载一个数据集，并且可以使用 <code>Hugging Face</code> 强大的数据处理方法来快速准备好你的数据集。在 <code>Apache Arrow</code> 格式的支持下，通过 <code>zero-copy read</code> 来处理大型数据集，而没有任何内存限制，从而实现最佳速度和效率。</p>
+                <p><code>Datasets</code>库是<code>HuggingFace</code>生态系统中一个重要的数据集库，可用于轻松地访问和共享数据集，这些数据集是关于音频、计算机视觉、以及自然语言处理等领域。<code>Datasets</code>
+库可以通过一行来加载一个数据集，并且可以使用 <code>Hugging Face</code>
+强大的数据处理方法来快速准备好你的数据集。在 <code>Apache Arrow</code>
+格式的支持下，通过 <code>zero-copy read</code>
+来处理大型数据集，而没有任何内存限制，从而实现最佳速度和效率。</p>
 <p>当需要微调模型的时候，需要对数据集进行以下操作：</p>
-<ol>
+<ol type="1">
 <li>数据集加载：下载、加载数据集</li>
 <li>数据集预处理：使用Dataset.map() 预处理数据</li>
 <li>数据集评估指标：加载和计算指标</li>
 </ol>
-<p>可以在HuggingFace官网来搜共享索数据集：<a target="_blank" rel="noopener" href="https://huggingface.co/datasets">https://huggingface.co/datasets</a> 。本文中使用的主要数据集为<code>squad</code>数据集，其在HuggingFace网站上的数据前几行如下：</p>
-<p><img src="http://139.224.0.63:9000/data/img/nlp62_1.png" srcset="/img/loading.gif" lazyload alt="squad数据集前几行"></p>
+<p>可以在HuggingFace官网来搜共享索数据集：<a
+target="_blank" rel="noopener" href="https://huggingface.co/datasets"
+class="uri">https://huggingface.co/datasets</a>
+。本文中使用的主要数据集为<code>squad</code>数据集，其在HuggingFace网站上的数据前几行如下：</p>
+<figure>
+<img src="http://139.224.0.63:9000/data/img/nlp62_1.png" srcset="/img/loading.gif" lazyload
+alt="squad数据集前几行" />
+<figcaption aria-hidden="true">squad数据集前几行</figcaption>
+</figure>
 <h3 id="加载数据">加载数据</h3>
 <ul>
 <li>加载Dataset数据集</li>
 </ul>
-<p>Dataset数据集可以是HuggingFace Datasets网站上的数据集或者是本地路径对应的数据集，也可以同时加载多个数据集。</p>
-<p>以下是加载英语阅读理解数据集<code>squad</code>， 该数据集的网址为：<a target="_blank" rel="noopener" href="https://huggingface.co/datasets/squad">https://huggingface.co/datasets/squad</a> ，也是本文中使用的主要数据集。</p>
+<p>Dataset数据集可以是HuggingFace
+Datasets网站上的数据集或者是本地路径对应的数据集，也可以同时加载多个数据集。</p>
+<p>以下是加载英语阅读理解数据集<code>squad</code>， 该数据集的网址为：<a
+target="_blank" rel="noopener" href="https://huggingface.co/datasets/squad"
+class="uri">https://huggingface.co/datasets/squad</a>
+，也是本文中使用的主要数据集。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> datasets<br><br><span class="hljs-comment"># 加载单个数据集</span><br>raw_datasets = datasets.load_dataset(<span class="hljs-string">&#x27;squad&#x27;</span>)<br><span class="hljs-comment"># 加载多个数据集</span><br>raw_datasets = datasets.load_dataset(<span class="hljs-string">&#x27;glue&#x27;</span>, <span class="hljs-string">&#x27;mrpc&#x27;</span>)<br></code></pre></td></tr></table></figure>
 <ul>
 <li>从文件中加载数据</li>
@@ -352,7 +367,7 @@
 <li>数据结构</li>
 </ul>
 <p>数据结构包括：</p>
-<ol>
+<ol type="1">
 <li>数据集的划分：train，valid，test数据集</li>
 <li>数据集的数量</li>
 <li>数据集的feature</li>
@@ -373,7 +388,7 @@
 <li>数据流（stream）</li>
 </ul>
 <p>stream的功能是将数据集进行流式化，可以不用在下载整个数据集的情况下使用该数据集。这在以下场景中特别有用：</p>
-<ol>
+<ol type="1">
 <li>你不想等待整个庞大的数据集下载完毕</li>
 <li>数据集大小超过了你计算机的可用硬盘空间</li>
 <li>你想快速探索数据集的少数样本</li>
@@ -426,22 +441,30 @@
 <ul>
 <li>数据格式（set_format）</li>
 </ul>
-<p><code>set_format()</code>函数改变了一个列的格式，使之与一些常见的数据格式兼容。在类型参数中指定你想要的输出和你想要格式化的列。格式化是即时应用的。支持的数据格式有：None, numpy, torch, tensorflow, pandas, arrow,  如果选择None，就会返回python对象。</p>
+<p><code>set_format()</code>函数改变了一个列的格式，使之与一些常见的数据格式兼容。在类型参数中指定你想要的输出和你想要格式化的列。格式化是即时应用的。支持的数据格式有：None,
+numpy, torch, tensorflow, pandas, arrow,
+如果选择None，就会返回python对象。</p>
 <p>下面的代码将新增标题长度列，并将其转化为numpy格式：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> datasets <span class="hljs-keyword">import</span> load_dataset<br><br>squad = load_dataset(<span class="hljs-string">&#x27;squad&#x27;</span>)<br><span class="hljs-comment"># 新增列, title_length, 标题长度</span><br>new_train_squad = squad[<span class="hljs-string">&#x27;train&#x27;</span>].add_column(<span class="hljs-string">&quot;title_length&quot;</span>, [<span class="hljs-built_in">len</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> squad[<span class="hljs-string">&#x27;train&#x27;</span>][<span class="hljs-string">&#x27;title&#x27;</span>]])<br><span class="hljs-comment"># 转换为numpy支持的数据格式</span><br>new_train_squad.set_format(<span class="hljs-built_in">type</span>=<span class="hljs-string">&quot;numpy&quot;</span>, columns=[<span class="hljs-string">&quot;title_length&quot;</span>])<br></code></pre></td></tr></table></figure>
 <ul>
 <li>数据指标（load metrics）</li>
 </ul>
-<p><a target="_blank" rel="noopener" href="https://huggingface.co/metrics">HuggingFace Hub</a>上提供了一系列的评估指标（metrics），前20个指标如下：</p>
+<p><a target="_blank" rel="noopener" href="https://huggingface.co/metrics">HuggingFace
+Hub</a>上提供了一系列的评估指标（metrics），前20个指标如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> datasets <span class="hljs-keyword">import</span> list_metrics<br>metrics_list = list_metrics()<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;, &#x27;</span>.join(metric <span class="hljs-keyword">for</span> metric <span class="hljs-keyword">in</span> metrics_list[:<span class="hljs-number">20</span>]))<br></code></pre></td></tr></table></figure>
 <p>输出结果如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">accuracy, bertscore, bleu, bleurt, brier_score, cer, character, charcut_mt, chrf, code_eval, comet, competition_math, coval, cuad, exact_match, f1, frugalscore, glue, google_bleu, indic_glue<br></code></pre></td></tr></table></figure>
-<p>从Hub中加载一个指标，使用 <a target="_blank" rel="noopener" href="https://huggingface.co/docs/datasets/v1.0.1/package_reference/loading_methods.html#datasets.load_metric" title="datasets.load_metric"><code>datasets.load_metric()</code></a> 命令，比如加载<code>squad</code>数据集的指标：</p>
+<p>从Hub中加载一个指标，使用 <a
+target="_blank" rel="noopener" href="https://huggingface.co/docs/datasets/v1.0.1/package_reference/loading_methods.html#datasets.load_metric"
+title="datasets.load_metric"><code>datasets.load_metric()</code></a>
+命令，比如加载<code>squad</code>数据集的指标：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> datasets <span class="hljs-keyword">import</span> load_metric<br>metric = load_metric(<span class="hljs-string">&#x27;squad&#x27;</span>)<br></code></pre></td></tr></table></figure>
 <p>输出结果如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs bash">Metric(name: <span class="hljs-string">&quot;squad&quot;</span>, features: &#123;<span class="hljs-string">&#x27;predictions&#x27;</span>: &#123;<span class="hljs-string">&#x27;id&#x27;</span>: Value(dtype=<span class="hljs-string">&#x27;string&#x27;</span>, <span class="hljs-built_in">id</span>=None), <span class="hljs-string">&#x27;prediction_text&#x27;</span>: Value(dtype=<span class="hljs-string">&#x27;string&#x27;</span>, <span class="hljs-built_in">id</span>=None)&#125;, <span class="hljs-string">&#x27;references&#x27;</span>: &#123;<span class="hljs-string">&#x27;id&#x27;</span>: Value(dtype=<span class="hljs-string">&#x27;string&#x27;</span>, <span class="hljs-built_in">id</span>=None), <span class="hljs-string">&#x27;answers&#x27;</span>: Sequence(feature=&#123;<span class="hljs-string">&#x27;text&#x27;</span>: Value(dtype=<span class="hljs-string">&#x27;string&#x27;</span>, <span class="hljs-built_in">id</span>=None), <span class="hljs-string">&#x27;answer_start&#x27;</span>: Value(dtype=<span class="hljs-string">&#x27;int32&#x27;</span>, <span class="hljs-built_in">id</span>=None)&#125;, length=-1, <span class="hljs-built_in">id</span>=None)&#125;&#125;, usage: <span class="hljs-string">&quot;&quot;</span><span class="hljs-string">&quot;</span><br><span class="hljs-string">Computes SQuAD scores (F1 and EM).</span><br><span class="hljs-string">Args:</span><br><span class="hljs-string">    predictions: List of question-answers dictionaries with the following key-values:</span><br><span class="hljs-string">        - &#x27;id&#x27;: id of the question-answer pair as given in the references (see below)</span><br><span class="hljs-string">        - &#x27;prediction_text&#x27;: the text of the answer</span><br><span class="hljs-string">    references: List of question-answers dictionaries with the following key-values:</span><br><span class="hljs-string">        - &#x27;id&#x27;: id of the question-answer pair (see above),</span><br><span class="hljs-string">        - &#x27;answers&#x27;: a Dict in the SQuAD dataset format</span><br><span class="hljs-string">            &#123;</span><br><span class="hljs-string">                &#x27;text&#x27;: list of possible texts for the answer, as a list of strings</span><br><span class="hljs-string">                &#x27;answer_start&#x27;: list of start positions for the answer, as a list of ints</span><br><span class="hljs-string">            &#125;</span><br><span class="hljs-string">            Note that answer_start values are not taken into account to compute the metric.</span><br><span class="hljs-string">Returns:</span><br><span class="hljs-string">    &#x27;exact_match&#x27;: Exact match (the normalized answer exactly match the gold answer)</span><br><span class="hljs-string">    &#x27;f1&#x27;: The F-score of predicted tokens versus the gold answer</span><br><span class="hljs-string">Examples:</span><br><span class="hljs-string"></span><br><span class="hljs-string">    &gt;&gt;&gt; predictions = [&#123;&#x27;prediction_text&#x27;: &#x27;1976&#x27;, &#x27;id&#x27;: &#x27;56e10a3be3433e1400422b22&#x27;&#125;]</span><br><span class="hljs-string">    &gt;&gt;&gt; references = [&#123;&#x27;answers&#x27;: &#123;&#x27;answer_start&#x27;: [97], &#x27;text&#x27;: [&#x27;1976&#x27;]&#125;, &#x27;id&#x27;: &#x27;56e10a3be3433e1400422b22&#x27;&#125;]</span><br><span class="hljs-string">    &gt;&gt;&gt; squad_metric = datasets.load_metric(&quot;</span>squad<span class="hljs-string">&quot;)</span><br><span class="hljs-string">    &gt;&gt;&gt; results = squad_metric.compute(predictions=predictions, references=references)</span><br><span class="hljs-string">    &gt;&gt;&gt; print(results)</span><br><span class="hljs-string">    &#123;&#x27;exact_match&#x27;: 100.0, &#x27;f1&#x27;: 100.0&#125;</span><br><span class="hljs-string">&quot;</span><span class="hljs-string">&quot;&quot;</span>, stored examples: 0)<br></code></pre></td></tr></table></figure>
 <p>load_metric还支持分布式计算，本文不再详细讲述。</p>
-<p>load_metric现在已经是老版本了，新版本将用<code>evaluate</code>模块代替，访问网址为：<a target="_blank" rel="noopener" href="https://github.com/huggingface/evaluate">https://github.com/huggingface/evaluate</a> 。</p>
+<p>load_metric现在已经是老版本了，新版本将用<code>evaluate</code>模块代替，访问网址为：<a
+target="_blank" rel="noopener" href="https://github.com/huggingface/evaluate"
+class="uri">https://github.com/huggingface/evaluate</a> 。</p>
 <ul>
 <li>数据映射（map）</li>
 </ul>
@@ -452,7 +475,8 @@
 <ul>
 <li>数据保存/加载（save to disk/ load from disk）</li>
 </ul>
-<p>使用<code>save_to_disk()</code>来保存数据集，方便在以后重新使用它,使用 <code>load_from_disk()</code>函数重新加载数据集。我们将上面map后的tokenized_dataset数据集进行保存：</p>
+<p>使用<code>save_to_disk()</code>来保存数据集，方便在以后重新使用它,使用
+<code>load_from_disk()</code>函数重新加载数据集。我们将上面map后的tokenized_dataset数据集进行保存：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">tokenized_dataset.save_to_disk(<span class="hljs-string">&quot;squad_tokenized&quot;</span>)<br></code></pre></td></tr></table></figure>
 <p>保存后的文件结构如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">squad_tokenized/<br>├── dataset_dict.json<br>├── train<br>│   ├── data-00000-of-00001.arrow<br>│   ├── dataset_info.json<br>│   └── state.json<br>└── validation<br>    ├── data-00000-of-00001.arrow<br>    ├── dataset_info.json<br>    └── state.json<br></code></pre></td></tr></table></figure>
@@ -461,11 +485,18 @@
 <h3 id="总结">总结</h3>
 <p>本文可作为dataset库的入门，详细介绍了数据集的各种操作，这样方便后续进行模型训练。</p>
 <h3 id="参考文献">参考文献</h3>
-<ol>
-<li>Datasets: <a target="_blank" rel="noopener" href="https://www.huaxiaozhuan.com/%E5%B7%A5%E5%85%B7/huggingface_transformer/chapters/2_datasets.html">https://www.huaxiaozhuan.com/工具/huggingface_transformer/chapters/2_datasets.html</a></li>
-<li>Huggingface详细入门介绍之dataset库：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/554678463">https://zhuanlan.zhihu.com/p/554678463</a></li>
-<li>Stream: <a target="_blank" rel="noopener" href="https://huggingface.co/docs/datasets/stream">https://huggingface.co/docs/datasets/stream</a></li>
-<li>HuggingFace教程 Datasets基本操作: Process: <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/557032513">https://zhuanlan.zhihu.com/p/557032513</a></li>
+<ol type="1">
+<li>Datasets: <a
+target="_blank" rel="noopener" href="https://www.huaxiaozhuan.com/%E5%B7%A5%E5%85%B7/huggingface_transformer/chapters/2_datasets.html"
+class="uri">https://www.huaxiaozhuan.com/%E5%B7%A5%E5%85%B7/huggingface_transformer/chapters/2_datasets.html</a></li>
+<li>Huggingface详细入门介绍之dataset库：<a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/554678463"
+class="uri">https://zhuanlan.zhihu.com/p/554678463</a></li>
+<li>Stream: <a target="_blank" rel="noopener" href="https://huggingface.co/docs/datasets/stream"
+class="uri">https://huggingface.co/docs/datasets/stream</a></li>
+<li>HuggingFace教程 Datasets基本操作: Process: <a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/557032513"
+class="uri">https://zhuanlan.zhihu.com/p/557032513</a></li>
 </ol>
 
                 
