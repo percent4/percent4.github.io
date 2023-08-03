@@ -23,14 +23,14 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文将会介绍文本纠错之获取形近字。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta property="og:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
 <meta property="article:published_time" content="2023-07-10T09:32:54.000Z">
-<meta property="article:modified_time" content="2023-07-27T15:51:19.936Z">
+<meta property="article:modified_time" content="2023-08-03T05:28:26.816Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="文本纠错">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta name="twitter:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
   
   
   
@@ -336,7 +336,8 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> pygame<br><br>pygame.init()<br><span class="hljs-comment"># 获取3500个汉字</span><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;all_3500_chars.txt&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> f:<br>    chars = f.read().strip()<br><br><span class="hljs-comment"># 通过pygame将汉字转化为黑白图片</span><br><span class="hljs-keyword">for</span> char <span class="hljs-keyword">in</span> chars:<br>    font = pygame.font.Font(<span class="hljs-string">&quot;C://Windows/Fonts/simkai.ttf&quot;</span>, <span class="hljs-number">100</span>)<br>    rtext = font.render(char, <span class="hljs-literal">True</span>, (<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>), (<span class="hljs-number">255</span>, <span class="hljs-number">255</span>, <span class="hljs-number">255</span>))<br>    pygame.image.save(rtext, <span class="hljs-string">&quot;&#123;&#125;.png&quot;</span>.<span class="hljs-built_in">format</span>(char))<br></code></pre></td></tr></table></figure>
 <p>前10个汉字为<code>一乙二十丁厂七卜人入</code>,其对应的黑白图片如下：</p>
 <figure>
-<img src="/img/nlp48_1.png" srcset="/img/loading.gif" lazyload alt="前10个汉字图片" />
+<img src="http://139.224.0.63:9000/files/img/nlp48_1.png" srcset="/img/loading.gif" lazyload
+alt="前10个汉字图片" />
 <figcaption aria-hidden="true">前10个汉字图片</figcaption>
 </figure>
 <p>接着我们获取每个汉字的向量表示，并将这两个向量的余弦相似度作为对应汉字的余弦相似度，Python程序如下：</p>

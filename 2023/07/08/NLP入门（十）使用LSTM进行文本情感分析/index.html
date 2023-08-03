@@ -23,14 +23,14 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文将介绍如何使用LSTM进行文本情感分析">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta property="og:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
 <meta property="article:published_time" content="2023-07-08T02:55:03.000Z">
-<meta property="article:modified_time" content="2023-07-27T15:51:19.950Z">
+<meta property="article:modified_time" content="2023-08-03T05:32:07.855Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="情感分析">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta name="twitter:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
   
   
   
@@ -341,14 +341,15 @@ target="_blank" rel="noopener" href="https://github.com/renjunxiang/Text-Classif
 <p>输出的结果如下：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-string">label</span><br><span class="hljs-string">正面</span>    <span class="hljs-number">1908</span><br><span class="hljs-string">负面</span>    <span class="hljs-number">2375</span><br><span class="hljs-attr">Name:</span> <span class="hljs-string">label,</span> <span class="hljs-attr">dtype:</span> <span class="hljs-string">int64</span><br><br><span class="hljs-string">分位点为0.91的句子长度:183.</span><br></code></pre></td></tr></table></figure>
 <p>可以看到，正反面两类情感的比例差不多。句子长度及出现频数统计图如下：</p>
-<p><img src="/img/nlp10_1.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="http://139.224.0.63:9000/files/img/nlp10_1.png" srcset="/img/loading.gif" lazyload /></p>
 <p>句子长度累积分布函数图如下：</p>
-<p><img src="/img/nlp10_2.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="http://139.224.0.63:9000/files/img/nlp10_2.png" srcset="/img/loading.gif" lazyload /></p>
 <p>可以看到，大多数样本的句子长度集中在1-200之间，句子长度累计频率取0.91分位点，则长度为183左右。</p>
 <h3 id="使用lstm模型">使用LSTM模型</h3>
 <p>接着我们使用深度学习中的LSTM模型来对上述数据集做情感分析，笔者实现的模型框架如下：</p>
 <figure>
-<img src="/img/nlp10_3.png" srcset="/img/loading.gif" lazyload alt="模型结构图" />
+<img src="http://139.224.0.63:9000/files/img/nlp10_3.png" srcset="/img/loading.gif" lazyload
+alt="模型结构图" />
 <figcaption aria-hidden="true">模型结构图</figcaption>
 </figure>
 <p>完整的Python代码如下：</p>

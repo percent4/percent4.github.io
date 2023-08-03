@@ -23,15 +23,15 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文将会介绍如何使用keras-bert实现文本多标签分类任务。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta property="og:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
 <meta property="article:published_time" content="2023-07-10T02:06:49.000Z">
-<meta property="article:modified_time" content="2023-07-27T15:51:19.900Z">
+<meta property="article:modified_time" content="2023-08-03T05:32:07.863Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="keras-bert">
 <meta property="article:tag" content="多标签分类">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta name="twitter:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
   
   
   
@@ -326,7 +326,8 @@
 <h3 id="项目结构">项目结构</h3>
 <p>本项目的项目结构如下：</p>
 <figure>
-<img src="/img/nlp36_1.png" srcset="/img/loading.gif" lazyload alt="项目结构" />
+<img src="http://139.224.0.63:9000/files/img/nlp36_1.png" srcset="/img/loading.gif" lazyload
+alt="项目结构" />
 <figcaption aria-hidden="true">项目结构</figcaption>
 </figure>
 <p>其中依赖的Python第三方模块如下：</p>
@@ -353,7 +354,8 @@ Loss为多标签分类所特有的评估方式，其值越小代表多标签分�
 <p>在这里，笔者希望与之前的文章<a
 href="https://percent4.github.io/2023/07/09/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E5%85%AB%EF%BC%89%E5%A4%9A%E6%A0%87%E7%AD%BE%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/">NLP（二十八）多标签文本分类</a>中的模型对比一下。当时采用的模型为用ALBERT提取特征向量，再用Bi-GRU+Attention+FCN进行分类，模型结构如下：</p>
 <figure>
-<img src="/img/nlp36_2.png" srcset="/img/loading.gif" lazyload alt="Bi-GRU+Attention+FCN" />
+<img src="http://139.224.0.63:9000/files/img/nlp36_2.png" srcset="/img/loading.gif" lazyload
+alt="Bi-GRU+Attention+FCN" />
 <figcaption aria-hidden="true">Bi-GRU+Attention+FCN</figcaption>
 </figure>
 <p>对该模型同样采用上述评估办法，输出的结果如下：</p>

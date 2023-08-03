@@ -23,14 +23,14 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文将介绍人物关系抽取的一次实战。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta property="og:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
 <meta property="article:published_time" content="2023-07-08T05:31:29.000Z">
-<meta property="article:modified_time" content="2023-07-27T15:51:19.909Z">
+<meta property="article:modified_time" content="2023-08-03T05:32:07.889Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="关系抽取">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta name="twitter:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
   
   
   
@@ -330,14 +330,16 @@ target="_blank" rel="noopener" href="https://github.com/percent4/people_relation
 。</p>
 <p>本项目的项目结构图如下：</p>
 <figure>
-<img src="/img/nlp21_1.png" srcset="/img/loading.gif" lazyload alt="人物关系抽取项目结构" />
+<img src="http://139.224.0.63:9000/files/img/nlp21_1.png" srcset="/img/loading.gif" lazyload
+alt="人物关系抽取项目结构" />
 <figcaption aria-hidden="true">人物关系抽取项目结构</figcaption>
 </figure>
 <h3 id="数据集介绍">数据集介绍</h3>
 <p>在进行这方面的尝试之前，我们还不得不面对这样一个难题，那就是中文人物关系抽取语料的缺失。数据是模型的前提，没有数据，一切模型无从谈起。因此，笔者不得不花费大量的时间收集数据。</p>
 <p>笔者利用大量自己业余的时间，收集了大约2900条人物关系样本，整理成Excel（文件名称为<code>人物关系表.xlsx</code>），其中几行如下：</p>
 <figure>
-<img src="/img/nlp21_2.png" srcset="/img/loading.gif" lazyload alt="笔者自己收集的数据集" />
+<img src="http://139.224.0.63:9000/files/img/nlp21_2.png" srcset="/img/loading.gif" lazyload
+alt="笔者自己收集的数据集" />
 <figcaption aria-hidden="true">笔者自己收集的数据集</figcaption>
 </figure>
 <p>人物关系一共有14类，分别为<code>unknown</code>,<code>夫妻</code>,<code>父母</code>,<code>兄弟姐妹</code>,<code>上下级</code>,<code>师生</code>,<code>好友</code>,<code>同学</code>,<code>合作</code>,<code>同人</code>,<code>情侣</code>,<code>祖孙</code>,<code>同门</code>,<code>亲戚</code>，其中<code>unknown</code>类别表示该人物关系不在其余的13类中（人物之间没有关系或者为其他关系），<code>同人</code>关系指的是两个人物其实是同一个人，比如下面的例子：</p>
@@ -347,7 +349,8 @@ target="_blank" rel="noopener" href="https://github.com/percent4/people_relation
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># 绘制人物关系频数统计条形图</span><br><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br><span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt<br><br><span class="hljs-comment"># 读取EXCEL数据</span><br>df = pd.read_excel(<span class="hljs-string">&#x27;人物关系表.xlsx&#x27;</span>)<br>label_list = <span class="hljs-built_in">list</span>(df[<span class="hljs-string">&#x27;关系&#x27;</span>].value_counts().index)<br>num_list= df[<span class="hljs-string">&#x27;关系&#x27;</span>].value_counts().tolist()<br><br><span class="hljs-comment"># Mac系统设置中文字体支持</span><br>plt.rcParams[<span class="hljs-string">&quot;font.family&quot;</span>] = <span class="hljs-string">&#x27;Arial Unicode MS&#x27;</span><br><br><span class="hljs-comment"># 利用Matplotlib绘制条形图</span><br>x = <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(num_list))<br>rects = plt.bar(left=x, height=num_list, width=<span class="hljs-number">0.6</span>, color=<span class="hljs-string">&#x27;blue&#x27;</span>, label=<span class="hljs-string">&quot;频数&quot;</span>)<br>plt.ylim(<span class="hljs-number">0</span>, <span class="hljs-number">500</span>) <span class="hljs-comment"># y轴范围</span><br>plt.ylabel(<span class="hljs-string">&quot;数量&quot;</span>)<br>plt.xticks([index + <span class="hljs-number">0.1</span> <span class="hljs-keyword">for</span> index <span class="hljs-keyword">in</span> x], label_list)<br>plt.xticks(rotation=<span class="hljs-number">45</span>) <span class="hljs-comment"># x轴的标签旋转45度</span><br>plt.xlabel(<span class="hljs-string">&quot;人物关系&quot;</span>)<br>plt.title(<span class="hljs-string">&quot;人物关系频数统计&quot;</span>)<br>plt.legend()<br><br><span class="hljs-comment"># 条形图的文字说明</span><br><span class="hljs-keyword">for</span> rect <span class="hljs-keyword">in</span> rects:<br>    height = rect.get_height()<br>    plt.text(rect.get_x() + rect.get_width() / <span class="hljs-number">2</span>, height+<span class="hljs-number">1</span>, <span class="hljs-built_in">str</span>(height), ha=<span class="hljs-string">&quot;center&quot;</span>, va=<span class="hljs-string">&quot;bottom&quot;</span>)<br><br>plt.show()<br></code></pre></td></tr></table></figure>
 <p>运行后的结果如下：</p>
 <figure>
-<img src="/img/nlp21_3.png" srcset="/img/loading.gif" lazyload alt="人物关系条形图" />
+<img src="http://139.224.0.63:9000/files/img/nlp21_3.png" srcset="/img/loading.gif" lazyload
+alt="人物关系条形图" />
 <figcaption aria-hidden="true">人物关系条形图</figcaption>
 </figure>
 <p><code>unknown</code>类别最多，有791条，其余的如<code>祖孙</code>,
@@ -377,7 +380,8 @@ test.txt和rel_dict.json，该json文件中保存的信息如下：</p>
 FC，其中BERT用来提取文本的特征，关于这一部分的介绍，已经在文章<a
 href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%EF%BC%89%E5%88%A9%E7%94%A8BERT%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E4%BA%8C%E5%88%86%E7%B1%BB/">NLP（二十）利用BERT实现文本二分类</a>中给出；Attention为注意力机制层，FC为全连接层，模型的结构图如下（利用Keras导出）：</p>
 <figure>
-<img src="/img/nlp21_4.png" srcset="/img/loading.gif" lazyload alt="模型结构示例图" />
+<img src="http://139.224.0.63:9000/files/img/nlp21_4.png" srcset="/img/loading.gif" lazyload
+alt="模型结构示例图" />
 <figcaption aria-hidden="true">模型结构示例图</figcaption>
 </figure>
 <p>模型训练的脚本为<code>model_train.py</code>，完整的Python代码如下：</p>
@@ -387,7 +391,8 @@ href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%EF%BC
 <p>整个训练过程持续十来分钟，经过30个epoch的训练，最终在测试集上的loss为1.1099，acc为0.7709，在小数据量下的效果还是不错的。训练过程（加入了early
 stopping机制）生成的loss和acc图形如下：</p>
 <figure>
-<img src="/img/nlp21_5.png" srcset="/img/loading.gif" lazyload alt="加入early stopping后的训练结果" />
+<img src="http://139.224.0.63:9000/files/img/nlp21_5.png" srcset="/img/loading.gif" lazyload
+alt="加入early stopping后的训练结果" />
 <figcaption aria-hidden="true">加入early
 stopping后的训练结果</figcaption>
 </figure>

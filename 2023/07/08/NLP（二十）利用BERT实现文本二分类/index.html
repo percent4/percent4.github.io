@@ -23,15 +23,15 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文将介绍如何利用BERT实现文本二分类。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta property="og:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
 <meta property="article:published_time" content="2023-07-08T05:26:33.000Z">
-<meta property="article:modified_time" content="2023-07-27T15:51:19.974Z">
+<meta property="article:modified_time" content="2023-08-03T05:32:07.876Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="BERT">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="文本分类">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta name="twitter:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
   
   
   
@@ -323,20 +323,22 @@
               <div class="markdown-body">
                 
                 <p>在我们进行事件抽取的时候，我们需要触发词来确定是否属于某个特定的事件类型，比如我们以政治上的出访类事件为例，这类事件往往会出现“访问”这个词语，但是仅仅通过“访问”这个触发词来判断是否属于出访类事件是不可靠的，比如我们会碰到以下情况：</p>
-<p><img src="/img/nlp20_1.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="http://139.224.0.63:9000/files/img/nlp20_1.png" srcset="/img/loading.gif" lazyload /></p>
 <p>通过上面的例子，我们知道，像访问速度，访问量这种文档虽然出现了访问，但却不属于政治上的出访类事件。因此，这时候我们需要借助<code>文本分类</code>模型来判断，显然，这是一个二分类模型。</p>
 <p>本文将会讲述如何利用BERT+DNN模型来判断文档是否属于政治上的出访类事件。</p>
 <h3 id="数据集">数据集</h3>
 <p>笔者找了300个文档，里面的文档都含有“出访”这个词语，标签1表示属于政治上的出访类事件，标签0则不是。将数据集分为训练集（250个样本）和测试集（50个样本），比例为5:1，样本不是很多，但借助BERT，我们可以在小样本上取得不错的效果。</p>
 <p>训练集（部分）的样本如下：</p>
 <figure>
-<img src="/img/nlp20_2.png" srcset="/img/loading.gif" lazyload alt="训练集部分数据" />
+<img src="http://139.224.0.63:9000/files/img/nlp20_2.png" srcset="/img/loading.gif" lazyload
+alt="训练集部分数据" />
 <figcaption aria-hidden="true">训练集部分数据</figcaption>
 </figure>
 <h3 id="代码">代码</h3>
 <p>本项目的结构如下：</p>
 <figure>
-<img src="/img/nlp20_3.png" srcset="/img/loading.gif" lazyload alt="项目结构" />
+<img src="http://139.224.0.63:9000/files/img/nlp20_3.png" srcset="/img/loading.gif" lazyload
+alt="项目结构" />
 <figcaption aria-hidden="true">项目结构</figcaption>
 </figure>
 <p>因为我们这边是小样本量，所以需要用到BERT。又因为是中文，所以需要下载BERT的中文训练文件<code>chinese_L-12_H-768_A-12</code>，这是已经训练好的模型文件。</p>
@@ -360,7 +362,8 @@ masking以及BERT模型产生输出向量等，幸运的是，有人已经帮助
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># author: Jclian91</span><br><span class="hljs-comment"># place: Pudong Shanghai</span><br><span class="hljs-comment"># time: 2020-02-12 17:33</span><br><br><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">from</span> bert.extract_feature <span class="hljs-keyword">import</span> BertVector<br><span class="hljs-keyword">from</span> keras.models <span class="hljs-keyword">import</span> load_model<br>load_model = load_model(<span class="hljs-string">&quot;visit_classify.h5&quot;</span>)<br><br><span class="hljs-comment"># 预测语句</span><br>texts = [<span class="hljs-string">&#x27;在访问限制中，用户可以选择禁用iPhone的功能，包括Siri、iTunes购买功能、安装/删除应用等，甚至还可以让iPhone变成一台功能手机。以下是访问限制具体可以实现的一些功能&#x27;</span>,<br>         <span class="hljs-string">&#x27;IT之家4月23日消息 近日，谷歌在其官方论坛发布消息表示，他们为Android Auto添加了一项新功能：可以访问完整联系人列表。用户现在可以通过在Auto的电话拨号界面中打开左上角的菜单访问完整的联系人列表。值得注意的是，这一功能仅支持在车辆停止时使用。&#x27;</span>,<br>         <span class="hljs-string">&#x27;要通过telnet 访问路由器，需要先通过console 口对路由器进行基本配置，例如：IP地址、密码等。&#x27;</span>,<br>         <span class="hljs-string">&#x27;IT之家3月26日消息 近日反盗版的国际咨询公司MUSO发布了2017年的年度报告，其中的数据显示，去年盗版资源网站访问量达到了3000亿次，比前一年（2016年）提高了1.6%。美国是访问盗版站点次数最多的国家，共有279亿次访问；其后分别是俄罗斯、印度和巴西，中国位列第18。&#x27;</span>,<br>         <span class="hljs-string">&#x27;应葡萄牙议会邀请，全国人大常委会副委员长吉炳轩率团于12月14日至16日访问葡萄牙，会见副议长费利佩、社会党副总书记卡内罗。&#x27;</span>,<br>         <span class="hljs-string">&#x27;2月26日至3月2日，应香港特区政府“内地贵宾访港计划”邀请，省委常委、常务副省长陈向群赴港考察访问，重点围绕“香港所长、湖南所需”，与特区政府相关部门和机构深入交流，推动湖南与香港交流合作取得新进展。&#x27;</span>,<br>         <span class="hljs-string">&#x27;目前A站已经恢复了访问，可以直接登录，网页加载正常，视频已经可以正常播放。&#x27;</span>,<br>         <span class="hljs-string">&#x27;难民署特使安吉丽娜·朱莉6月8日结束了对哥伦比亚和委内瑞拉边境地区的难民营地为期两天的访问，她对哥伦比亚人民展现的人道主义和勇气表示赞扬。&#x27;</span>,<br>         <span class="hljs-string">&#x27;据《南德意志报》报道，德国总理默克尔计划明年1月就前往安卡拉，和土耳其总统埃尔多安进行会谈。&#x27;</span>,<br>         <span class="hljs-string">&#x27;自9月14日至18日，由越共中央政治局委员、中央书记处书记、中央经济部部长阮文平率领工作代表团对希腊进行工作访问。&#x27;</span>,<br>         <span class="hljs-string">&#x27;Win7电脑提示无线适配器或访问点有问题怎么办?很多用户在使用无线网连接上网时，发现无线网显示已连接，但旁边却出现了一个黄色感叹号，无法进行网络操作，通过诊断提示电脑无线适配器或访问点有问题，且处于未修复状态，这该怎么办呢?下面小编就和大家分享下Win7电脑提示无线适配器或访问点有问题的解决方法。&#x27;</span>,<br>         <span class="hljs-string">&#x27;2019年10月13日至14日，外交部副部长马朝旭访问智利，会见智利外长里韦拉，同智利总统外事顾问萨拉斯举行会谈，就智利举办亚太经合组织（APEC）第二十七次领导人非正式会议等深入交换意见。&#x27;</span>,<br>         <span class="hljs-string">&#x27;未开发所有安全组之前访问，FTP可以链接上，但是打开会很慢，需要1-2分钟才能链接上&#x27;</span>,<br>         <span class="hljs-string">&#x27;win7系统电脑的用户，在连接WIFI网络网上时，有时候会遇到突然上不了网，查看连接的WIFI出现“有限的访问权限”的文字提示。&#x27;</span>,<br>         <span class="hljs-string">&#x27;联合国秘书长潘基文８日访问了日本福岛县，与当地灾民交流并访问了一所高中。&#x27;</span>,<br>         <span class="hljs-string">&#x27;国务院总理温家宝当地时间23日下午乘专机抵达布宜诺斯艾利斯，开始对阿根廷进行正式访问。&#x27;</span>,<br>         <span class="hljs-string">&#x27;正在中国访问的巴巴多斯总理斯图尔特１５日在陕西西安参观访问。&#x27;</span>,<br>         <span class="hljs-string">&#x27;据外媒报道,当地时间10日,美国白宫发声明称,美国总统特朗普将于2月底访问印度,与印度总理莫迪进行战略对话。&#x27;</span>,<br>         <span class="hljs-string">&#x27;2月28日，唐山曹妃甸蓝色海洋科技有限公司董事长赵力军等一行5人到黄海水产研究所交流访问。黄海水产研究所副所长辛福言及相关部门负责人、专家等参加了会议。&#x27;</span>,<br>         <span class="hljs-string">&#x27;2018年7月2日，莫斯科孔子文化促进会会长姜彦彬，常务副会长陈国建，在中国著名留俄油画大师牟克教授的陪同下，访问了莫斯科国立苏里科夫美术学院，受到第一副校长伊戈尔·戈尔巴秋克先生接待。&#x27;</span><br>         ]<br><br>labels = []<br><br>bert_model = BertVector(pooling_strategy=<span class="hljs-string">&quot;REDUCE_MEAN&quot;</span>, max_seq_len=<span class="hljs-number">100</span>)<br><br><span class="hljs-comment"># 对上述句子进行预测</span><br><span class="hljs-keyword">for</span> text <span class="hljs-keyword">in</span> texts:<br><br>    <span class="hljs-comment"># 将句子转换成向量</span><br>    vec = bert_model.encode([text])[<span class="hljs-string">&quot;encodes&quot;</span>][<span class="hljs-number">0</span>]<br>    x_train = np.array([vec])<br><br>    <span class="hljs-comment"># 模型预测</span><br>    predicted = load_model.predict(x_train)<br>    y = np.argmax(predicted[<span class="hljs-number">0</span>])<br>    label = <span class="hljs-string">&#x27;Y&#x27;</span> <span class="hljs-keyword">if</span> y <span class="hljs-keyword">else</span> <span class="hljs-string">&#x27;N&#x27;</span><br>    labels.append(label)<br><br><span class="hljs-keyword">for</span> text,label <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(texts, labels):<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;%s\t%s&#x27;</span>%(label, text))<br><br><span class="hljs-comment"># 将结果保存为xlsx文件</span><br>df = pd.DataFrame(&#123;<span class="hljs-string">&#x27;句子&#x27;</span>:texts, <span class="hljs-string">&quot;是否属于出访类事件&quot;</span>: labels&#125;)<br>df.to_excel(<span class="hljs-string">&#x27;./result.xlsx&#x27;</span>, index=<span class="hljs-literal">False</span>)<br></code></pre></td></tr></table></figure>
 <p>模型预测的结果会输出，同时也会保存至Excel，文件的内容如下：</p>
 <figure>
-<img src="/img/nlp20_4.png" srcset="/img/loading.gif" lazyload alt="excel文件中的内容" />
+<img src="http://139.224.0.63:9000/files/img/nlp20_4.png" srcset="/img/loading.gif" lazyload
+alt="excel文件中的内容" />
 <figcaption aria-hidden="true">excel文件中的内容</figcaption>
 </figure>
 <p>所有预测的文档完全正确！</p>

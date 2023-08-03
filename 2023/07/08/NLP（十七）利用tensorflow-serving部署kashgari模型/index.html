@@ -23,13 +23,13 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文将介绍如何利用tensorflow-serving部署kashgari模型。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta property="og:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
 <meta property="article:published_time" content="2023-07-08T04:55:25.000Z">
-<meta property="article:modified_time" content="2023-07-27T15:51:19.938Z">
+<meta property="article:modified_time" content="2023-08-03T05:28:26.897Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="NLP">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta name="twitter:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
   
   
   
@@ -338,7 +338,7 @@ Serving的Docker镜像来使用TensorFlow Serving，安装的命令如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker pull tensorflow/serving<br></code></pre></td></tr></table></figure>
 <h3 id="工程实践">工程实践</h3>
 <p>本项目将演示如何利用tensorflow/serving来部署kashgari中的模型，项目结构如下：</p>
-<p><img src="/img/nlp17_1.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="http://139.224.0.63:9000/files/img/nlp17_1.png" srcset="/img/loading.gif" lazyload /></p>
 <p>本项目的data来自之前笔者标注的时间数据集，即标注出文本中的时间，采用BIO标注系统。chinese_wwm_ext文件夹为哈工大的预训练模型文件。</p>
 <p>model_train.py为模型训练的代码，主要功能是完成时间序列标注模型的训练，完整的代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># time: 2019-09-12</span><br><span class="hljs-comment"># place: Huangcun Beijing</span><br><br><span class="hljs-keyword">import</span> kashgari<br><span class="hljs-keyword">from</span> kashgari <span class="hljs-keyword">import</span> utils<br><span class="hljs-keyword">from</span> kashgari.corpus <span class="hljs-keyword">import</span> DataReader<br><span class="hljs-keyword">from</span> kashgari.embeddings <span class="hljs-keyword">import</span> BERTEmbedding<br><span class="hljs-keyword">from</span> kashgari.tasks.labeling <span class="hljs-keyword">import</span> BiLSTM_CRF_Model<br><br><span class="hljs-comment"># 模型训练</span><br><br>train_x, train_y = DataReader().read_conll_format_file(<span class="hljs-string">&#x27;./data/time.train&#x27;</span>)<br>valid_x, valid_y = DataReader().read_conll_format_file(<span class="hljs-string">&#x27;./data/time.dev&#x27;</span>)<br>test_x, test_y = DataReader().read_conll_format_file(<span class="hljs-string">&#x27;./data/time.test&#x27;</span>)<br><br>bert_embedding = BERTEmbedding(<span class="hljs-string">&#x27;chinese_wwm_ext_L-12_H-768_A-12&#x27;</span>,<br>                               task=kashgari.LABELING,<br>                               sequence_length=<span class="hljs-number">128</span>)<br><br>model = BiLSTM_CRF_Model(bert_embedding)<br><br>model.fit(train_x, train_y, valid_x, valid_y, batch_size=<span class="hljs-number">16</span>, epochs=<span class="hljs-number">1</span>)<br><br><span class="hljs-comment"># Save model</span><br>utils.convert_to_saved_model(model,<br>                             model_path=<span class="hljs-string">&#x27;saved_model/time_entity&#x27;</span>,<br>                             version=<span class="hljs-number">1</span>)<br></code></pre></td></tr></table></figure>

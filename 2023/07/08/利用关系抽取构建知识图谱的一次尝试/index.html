@@ -23,20 +23,20 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文将介绍如何利用关系抽取构建知识图谱。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://percent4.github.io/img/kg1_1.png">
-<meta property="og:image" content="https://percent4.github.io/img/kg1_2.png">
-<meta property="og:image" content="https://percent4.github.io/img/kg1_3.png">
-<meta property="og:image" content="https://percent4.github.io/img/kg1_4.png">
-<meta property="og:image" content="https://percent4.github.io/img/kg1_5.png">
-<meta property="og:image" content="https://percent4.github.io/img/kg1_6.png">
-<meta property="og:image" content="https://percent4.github.io/img/kg1_7.png">
+<meta property="og:image" content="http://139.224.0.63:9000/files/img/kg1_1.png">
+<meta property="og:image" content="http://139.224.0.63:9000/files/img/kg1_2.png">
+<meta property="og:image" content="http://139.224.0.63:9000/files/img/kg1_3.png">
+<meta property="og:image" content="http://139.224.0.63:9000/files/img/kg1_4.png">
+<meta property="og:image" content="http://139.224.0.63:9000/files/img/kg1_5.png">
+<meta property="og:image" content="http://139.224.0.63:9000/files/img/kg1_6.png">
+<meta property="og:image" content="http://139.224.0.63:9000/files/img/kg1_7.png">
 <meta property="article:published_time" content="2023-07-08T05:06:32.000Z">
-<meta property="article:modified_time" content="2023-07-09T03:01:19.086Z">
+<meta property="article:modified_time" content="2023-08-03T05:28:26.843Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="关系抽取">
 <meta property="article:tag" content="知识图谱">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://percent4.github.io/img/kg1_1.png">
+<meta name="twitter:image" content="http://139.224.0.63:9000/files/img/kg1_1.png">
   
   
   
@@ -338,7 +338,7 @@ RE）是其中的重要子任务之一，主要目的是从文本中识别实体
 <p>可以抽取出如下三元组，用来表示实体之间的关系：</p>
 <figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs scheme">[<span class="hljs-symbol">&#x27;鸿海集团</span>&#x27;, <span class="hljs-symbol">&#x27;董事长</span>&#x27;, <span class="hljs-symbol">&#x27;郭台铭</span>&#x27;]<br>[<span class="hljs-symbol">&#x27;阿里巴巴集团</span>&#x27;, <span class="hljs-symbol">&#x27;主席</span>&#x27;, <span class="hljs-symbol">&#x27;马云</span>&#x27;]<br></code></pre></td></tr></table></figure>
 <p>并且能够形成如下的简单的知识图谱（Knowledge Graph）。</p>
-<p><img src="/img/kg1_1.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="http://139.224.0.63:9000/files/img/kg1_1.png" srcset="/img/loading.gif" lazyload /></p>
 <p>关于知识图谱，笔者已经在文章<a
 target="_blank" rel="noopener" href="https://www.jianshu.com/p/286eeef0e0c3">SPARQL入门（一）SPARQL简介与简单使用</a>中给出了一些介绍，而利用关系抽取，我们可以从一些非结构化数据中，提取出实体之间的关系，形成知识图谱，这在很大程度上可以帮助我们减轻构建知识图谱的成本。非结构化数据越多，关系抽取效果越好，我们构建的知识图谱就会越庞大，实体之间的关系也会越丰富。</p>
 <h3 id="如何做好关系抽取">如何做好关系抽取？</h3>
@@ -364,7 +364,7 @@ target="_blank" rel="noopener" href="http://lic2019.ccf.org.cn/kg">http://lic201
 target="_blank" rel="noopener" href="https://www.wisers.ai/zh-cn/browse/relation-extraction/demo/">https://www.wisers.ai/zh-cn/browse/relation-extraction/demo/</a>
 ，截图如下：</p></li>
 </ul>
-<p><img src="/img/kg1_2.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="http://139.224.0.63:9000/files/img/kg1_2.png" srcset="/img/loading.gif" lazyload /></p>
 <p>这个图给人以一种非常炫酷的感觉，因此，笔者就被它所吸引了。但笔者在这个demo网站上尝试了几篇新的语料，有些效果好，有些效果不尽如人意，因此，笔者决定自己动手实现一个关系抽取的模型！</p>
 <p>虽然网上已经有许多现成的很好的关系抽取的模型，但笔者还是希望能够按照自己的意愿和想法来实现一下，当然，仅仅是作为一次尝试。笔者的思路如下：</p>
 <ul>
@@ -524,7 +524,7 @@ target="_blank" rel="noopener" href="https://www.wisers.ai/zh-cn/browse/relation
 </blockquote>
 <p>对于这篇文章，我们没有抽取出<code>李斌阳（国际关系学院副教授）</code>中的实体关系，并且<code>吴华（百度技术委员会主席</code>这句为抽取有误，正确的应为：百度技术委员会,主席,吴华。</p>
 <p>将上述关系修改下，导入至Neo4J中，得到的实体关系图如下：</p>
-<p><img src="/img/kg1_3.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="http://139.224.0.63:9000/files/img/kg1_3.png" srcset="/img/loading.gif" lazyload /></p>
 <p>第二篇文章为凤凰网的新闻，标题为<code>南阳“水氢车”风波：一个中部城市的招商突围战</code>，访问网址为：<a
 target="_blank" rel="noopener" href="https://news.ifeng.com/c/7ntawxhCDvj">https://news.ifeng.com/c/7ntawxhCDvj</a>
 ，我们抽取出来的实体关系（带原文）如下表：</p>
@@ -545,7 +545,7 @@ target="_blank" rel="noopener" href="https://news.ifeng.com/c/7ntawxhCDvj">https
 </blockquote>
 <p>对于这篇文章，我们没有抽取出一些关系，比如<code>南阳市发展和改革委员会主任乔长恩受访时承认，招商引入南阳洛斯特之前“掌握这个情况。”</code>等，并且<code>庞青年告诉界面新闻，南阳市高新区投资有限公司已经为他提供了9600万元，用途是南阳高新区投资有限公司给南阳市洛特斯新能源汽车有限公司的注册资金，占股49%。</code>这句为抽取有误，应当删除。</p>
 <p>将上述关系修改下，导入至Neo4J中，得到的实体关系图如下：</p>
-<p><img src="/img/kg1_4.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="http://139.224.0.63:9000/files/img/kg1_4.png" srcset="/img/loading.gif" lazyload /></p>
 <p>最后一篇为长篇小说——著名作家路遥的《平凡的世界》第一部。利用我们的关系抽取模型，一共在该小说中抽取了169对实体关系，其中有效实体关系100对。由于我们在该小说中抽取的实体关系过多，因此只展示前10条原文及抽取的实体关系：</p>
 <blockquote>
 <p>原文,s,p,o
@@ -562,9 +562,9 @@ target="_blank" rel="noopener" href="https://news.ifeng.com/c/7ntawxhCDvj">https
 ……</p>
 </blockquote>
 <p>将上述关系修改下，导入至Neo4J中，得到的实体关系图如下：</p>
-<p><img src="/img/kg1_5.png" srcset="/img/loading.gif" lazyload /></p>
-<p><img src="/img/kg1_6.png" srcset="/img/loading.gif" lazyload /></p>
-<p><img src="/img/kg1_7.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="http://139.224.0.63:9000/files/img/kg1_5.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="http://139.224.0.63:9000/files/img/kg1_6.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="http://139.224.0.63:9000/files/img/kg1_7.png" srcset="/img/loading.gif" lazyload /></p>
 <h3 id="总结">总结</h3>
 <p>本次关系抽取仅仅作为笔者的一次尝试，在实际的应用中还存在着许多的不足之处，比如：</p>
 <ul>

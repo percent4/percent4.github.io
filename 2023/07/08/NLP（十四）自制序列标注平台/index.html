@@ -23,14 +23,14 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文将介绍如何使用tornado框架来开发自制的序列标注平台。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta property="og:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
 <meta property="article:published_time" content="2023-07-08T04:44:49.000Z">
-<meta property="article:modified_time" content="2023-07-27T15:51:19.951Z">
+<meta property="article:modified_time" content="2023-08-03T05:28:26.934Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="标注平台">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta name="twitter:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
   
   
   
@@ -332,7 +332,7 @@
 <h3 id="序列标注平台">序列标注平台</h3>
 <p>由于开发时间仓促以及笔者能力有限，因此，序列标注平台的功能还没有很完善，希望笔者的工作能抛砖引玉。</p>
 <p>项目的结构图如下：</p>
-<p><img src="/img/nlp14_1.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="http://139.224.0.63:9000/files/img/nlp14_1.png" srcset="/img/loading.gif" lazyload /></p>
 <p>templates中存放静态资源，time_index.html为平台的操作界面，time_output为平台标注完实体后的文件保存路径，time_server.py是用tornado写的服务端路径控制代码，utils.py中是获取某个路径下的txt文件的最大数值的函数。</p>
 <p>其中，utils.py的完整代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># time: 2019-03-14</span><br><span class="hljs-comment"># place: Xinbeiqiao, Beijing</span><br><br><span class="hljs-keyword">import</span> os<br><br><span class="hljs-comment"># 获取当前所在目录的txt文本的最大数值</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_max_num</span>(<span class="hljs-params">path</span>):<br>    files = os.listdir(path)<br>    <span class="hljs-keyword">if</span> files:<br>        numbers = <span class="hljs-built_in">list</span>(<span class="hljs-built_in">map</span>(<span class="hljs-keyword">lambda</span> x: <span class="hljs-built_in">int</span>(x.replace(<span class="hljs-string">&#x27;.txt&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>)), files))<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">max</span>(numbers)<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span><br></code></pre></td></tr></table></figure>
@@ -344,20 +344,20 @@
 <p>运行上述time_server.py后，在浏览器端输入网址: <a
 target="_blank" rel="noopener" href="http://localhost:9005/query">http://localhost:9005/query</a> ,
 则会显示如下界面：</p>
-<p><img src="/img/nlp14_2.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="http://139.224.0.63:9000/files/img/nlp14_2.png" srcset="/img/loading.gif" lazyload /></p>
 <p>在<code>输入语料框</code>中，我们输入语料：</p>
 <blockquote>
 <p>8月8日是“全民健身日”，推出重磅微视频《我们要赢的，是自己》。</p>
 </blockquote>
 <p>在时间这个输入框中，可以标注语料中的时间，同时双击同一行中的下拉列表，就能显示该标注时间在语料中的起始位置，有时候同样的标注时间会在语料中出现多次，那么我们在下拉列表中选择我们需要的标注的起始位置即可。</p>
 <p>点击<code>添加时间</code>按钮，它会增加一行标注，允许我们在同一份预料中标注多个时间。我们的一个简单的标注例子如下：</p>
-<p><img src="/img/nlp14_3.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="http://139.224.0.63:9000/files/img/nlp14_3.png" srcset="/img/loading.gif" lazyload /></p>
 <p>点击<code>显示标注</code>，则会显示我们标注完后形成的序列标注信息，同时将该序列信息保存为txt文件，该txt文件位于time_output目录下。在网页上的序列标注信息如下：</p>
-<p><img src="/img/nlp14_4.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="http://139.224.0.63:9000/files/img/nlp14_4.png" srcset="/img/loading.gif" lazyload /></p>
 <p>同时，我们也可以查看保存的txt文档信息，如下：</p>
-<p><img src="/img/nlp14_5.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="http://139.224.0.63:9000/files/img/nlp14_5.png" srcset="/img/loading.gif" lazyload /></p>
 <p>点击<code>返回</code>按钮，它会允许我们进行下一次的标注。刚才展示的只是一个简单例子，稍微复杂的标注如下图：</p>
-<p><img src="/img/nlp14_6.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="http://139.224.0.63:9000/files/img/nlp14_6.png" srcset="/img/loading.gif" lazyload /></p>
 <p>它形成的标注序列(部分)如下：</p>
 <figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><code class="hljs mathematica">按	<span class="hljs-built_in">O</span><br>计	<span class="hljs-built_in">O</span><br>划	<span class="hljs-built_in">O</span><br>，	<span class="hljs-built_in">O</span><br><span class="hljs-number">2</span>	<span class="hljs-variable">B</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br><span class="hljs-number">0</span>	<span class="hljs-built_in">I</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br><span class="hljs-number">1</span>	<span class="hljs-built_in">I</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br><span class="hljs-number">9</span>	<span class="hljs-built_in">I</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br>年	<span class="hljs-built_in">I</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br><span class="hljs-number">8</span>	<span class="hljs-built_in">I</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br>月	<span class="hljs-built_in">I</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br><span class="hljs-number">1</span>	<span class="hljs-built_in">I</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br><span class="hljs-number">0</span>	<span class="hljs-built_in">I</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br>日	<span class="hljs-built_in">I</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br>，	<span class="hljs-built_in">O</span><br>荣	<span class="hljs-built_in">O</span><br>耀	<span class="hljs-built_in">O</span><br>智	<span class="hljs-built_in">O</span><br>慧	<span class="hljs-built_in">O</span><br>屏	<span class="hljs-built_in">O</span><br>将	<span class="hljs-built_in">O</span><br>在	<span class="hljs-built_in">O</span><br>华	<span class="hljs-built_in">O</span><br>为	<span class="hljs-built_in">O</span><br>开	<span class="hljs-built_in">O</span><br>发	<span class="hljs-built_in">O</span><br>者	<span class="hljs-built_in">O</span><br>大	<span class="hljs-built_in">O</span><br>会	<span class="hljs-built_in">O</span><br>上	<span class="hljs-built_in">O</span><br>正	<span class="hljs-built_in">O</span><br>式	<span class="hljs-built_in">O</span><br>亮	<span class="hljs-built_in">O</span><br>相	<span class="hljs-built_in">O</span><br>，	<span class="hljs-built_in">O</span><br>在	<span class="hljs-built_in">O</span><br><span class="hljs-number">8</span>	<span class="hljs-variable">B</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br>月	<span class="hljs-built_in">I</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br><span class="hljs-number">6</span>	<span class="hljs-built_in">I</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br>日	<span class="hljs-built_in">I</span><span class="hljs-operator">-</span><span class="hljs-variable">TIME</span><br>，	<span class="hljs-built_in">O</span><br>荣	<span class="hljs-built_in">O</span><br>耀	<span class="hljs-built_in">O</span><br>官	<span class="hljs-built_in">O</span><br>微	<span class="hljs-built_in">O</span><br>表	<span class="hljs-built_in">O</span><br>示	<span class="hljs-built_in">O</span><br>该	<span class="hljs-built_in">O</span><br>产	<span class="hljs-built_in">O</span><br>品	<span class="hljs-built_in">O</span><br><span class="hljs-operator">......</span><br></code></pre></td></tr></table></figure>
 <h3 id="总结">总结</h3>

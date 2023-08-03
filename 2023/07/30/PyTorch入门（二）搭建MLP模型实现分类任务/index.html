@@ -23,13 +23,13 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文将会介绍如何在PyTorch中搭建MLP模型实现分类任务（二本类、多分类）。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://percent4.github.io/img/pytorch2.png">
+<meta property="og:image" content="http://139.224.0.63:9000/files/img/pytorch2.png">
 <meta property="article:published_time" content="2023-07-30T05:47:30.000Z">
-<meta property="article:modified_time" content="2023-07-30T06:08:03.660Z">
+<meta property="article:modified_time" content="2023-08-03T05:28:26.941Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="PyTorch">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://percent4.github.io/img/pytorch2.png">
+<meta name="twitter:image" content="http://139.224.0.63:9000/files/img/pytorch2.png">
   
   
   
@@ -327,23 +327,26 @@ Perceptron，多层感知机）模型，来实现二分类及多分类任务。<
 <p>二分类数据集为<code>ionosphere.csv</code>(电离层数据集)，是<a
 target="_blank" rel="noopener" href="http://archive.ics.uci.edu/ml/index.php">UCI机器学习数据集</a>中的经典二分类数据集。它一共有351个观测值，34个自变量，1个因变量（类别），类别取值为<code>g</code>(good)和<code>b</code>(bad)。在<code>ionosphere.csv</code>文件中，共351行，前34列作为自变量（输入的X），最后一列作为类别值（输出的y）。</p>
 <figure>
-<img src="/img/pytorch2_1.png" srcset="/img/loading.gif" lazyload alt="电离层数据" />
+<img src="http://139.224.0.63:9000/files/img/pytorch2_1.png" srcset="/img/loading.gif" lazyload
+alt="电离层数据" />
 <figcaption aria-hidden="true">电离层数据</figcaption>
 </figure>
 <p>多分类数据集为<code>iris.csv</code>（鸢尾花数据集），是<a
 target="_blank" rel="noopener" href="http://archive.ics.uci.edu/ml/index.php">UCI机器学习数据集</a>中的经典多分类数据集。它一共有150个观测值，4个自变量（萼片长度，萼片宽度，花瓣长度，花瓣宽度），1个因变量（类别），类别取值为<code>Iris-setosa</code>,<code>Iris-versicolour</code>,<code>Iris-virginica</code>。在<code>iris.csv</code>文件中，共150行，前4列作为自变量（输入的X），最后一列作为类别值（输出的y）。前几行数据如下图：</p>
 <figure>
-<img src="/img/pytorch2_2.png" srcset="/img/loading.gif" lazyload alt="鸢尾花数据集" />
+<img src="http://139.224.0.63:9000/files/img/pytorch2_2.png" srcset="/img/loading.gif" lazyload
+alt="鸢尾花数据集" />
 <figcaption aria-hidden="true">鸢尾花数据集</figcaption>
 </figure>
 <h3 id="分类模型流程">分类模型流程</h3>
 <p>使用PyTorch构建神经网络模型来解决分类问题的基本流程如下：</p>
-<p><img src="/img/pytorch2_4.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="http://139.224.0.63:9000/files/img/pytorch2_4.png" srcset="/img/loading.gif" lazyload /></p>
 <p>其中<code>加载数据集</code>和<code>划分数据集</code>为数据处理部分，<code>构建模型</code>和<code>选择损失函数及优化器</code>为创建模型部分，<code>模型训练</code>的目标是选择合适的优化器及训练步长使得损失函数的值很小，<code>模型预测</code>是在模型测试集或新数据上的预测。</p>
 <h3 id="二分类模型">二分类模型</h3>
 <p>使用PyTorch构建MLP模型来实现二分类任务，模型结果图如下：</p>
 <figure>
-<img src="/img/pytorch2_3.png" srcset="/img/loading.gif" lazyload alt="MLP模型示意图" />
+<img src="http://139.224.0.63:9000/files/img/pytorch2_3.png" srcset="/img/loading.gif" lazyload
+alt="MLP模型示意图" />
 <figcaption aria-hidden="true">MLP模型示意图</figcaption>
 </figure>
 <p>实现MLP模型的Python代码如下：</p>

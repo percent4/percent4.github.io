@@ -23,14 +23,14 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文将使用kashgari-tf工具来完成文本分类任务。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta property="og:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
 <meta property="article:published_time" content="2023-07-08T04:52:26.000Z">
-<meta property="article:modified_time" content="2023-07-27T15:51:19.906Z">
+<meta property="article:modified_time" content="2023-08-03T05:28:26.875Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="Kashgari">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta name="twitter:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
   
   
   
@@ -333,7 +333,7 @@ classification！</p>
 GB），均为UTF-8纯文本格式。我们在原始新浪新闻分类体系的基础上，从中选择10个候选分类类别：体育、娱乐、家居、房产、教育、时尚、时政、游戏、科技、财经。</p>
 <p>数据总量一共为6.5万条，其中训练集数据5万条，每个类别5000条，验证集数据0.5万条，每个类别500条，测试集数据1万条，每个类别1000条。笔者已将数据放在Github上，读者可以在最后的总结中找到。</p>
 <p>项目结构，如下图：</p>
-<p><img src="/img/nlp16_1.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="http://139.224.0.63:9000/files/img/nlp16_1.png" srcset="/img/loading.gif" lazyload /></p>
 <p>接着，我们尝试着利用kashgari-tf来训练一个文本分类模型，其中模型我们采用CNN-LSTM，完整的Python代码（text_classification_model_train.py）如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># time: 2019-08-13 11:16</span><br><span class="hljs-comment"># place: Pudong Shanghai</span><br><br><span class="hljs-keyword">from</span> kashgari.tasks.classification <span class="hljs-keyword">import</span> CNN_LSTM_Model<br><br><span class="hljs-comment"># 获取数据集</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">load_data</span>(<span class="hljs-params">data_type</span>):<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;./data/cnews.%s.txt&#x27;</span> % data_type, <span class="hljs-string">&#x27;r&#x27;</span>, encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>        content = [_.strip() <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> f.readlines() <span class="hljs-keyword">if</span> _.strip()]<br><br>    x, y = [], []<br>    <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> content:<br>        label, text = line.split(maxsplit=<span class="hljs-number">1</span>)<br>        y.append(label)<br>        x.append([_ <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> text])<br><br>    <span class="hljs-keyword">return</span> x, y<br><br><span class="hljs-comment"># 获取数据</span><br>train_x, train_y = load_data(<span class="hljs-string">&#x27;train&#x27;</span>)<br>valid_x, valid_y = load_data(<span class="hljs-string">&#x27;val&#x27;</span>)<br>test_x, test_y = load_data(<span class="hljs-string">&#x27;test&#x27;</span>)<br><br><span class="hljs-comment"># 训练模型</span><br>model = CNN_LSTM_Model()<br>model.fit(train_x, train_y, valid_x, valid_y, batch_size=<span class="hljs-number">16</span>, epochs=<span class="hljs-number">5</span>)<br><br><span class="hljs-comment"># 评估模型</span><br>model.evaluate(test_x, test_y)<br><br><span class="hljs-comment"># 保存模型</span><br>model.save(<span class="hljs-string">&#x27;text_classification_model&#x27;</span>)<br></code></pre></td></tr></table></figure>
 <p>输出的模型结果如下：</p>

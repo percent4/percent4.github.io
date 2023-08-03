@@ -23,14 +23,14 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文将会介绍人物关系分类的再次尝试。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta property="og:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
 <meta property="article:published_time" content="2023-07-10T08:53:10.000Z">
-<meta property="article:modified_time" content="2023-07-27T15:51:19.973Z">
+<meta property="article:modified_time" content="2023-08-03T05:28:26.863Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="关系分类">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta name="twitter:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
   
   
   
@@ -327,7 +327,8 @@ target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/deta
 <p>经过笔者一年断断续续的努力，现在的标注样本已经达到3900多条。鉴于笔者已做过BERT微调相关工作，当然希望在此数据集上进行再次尝试。</p>
 <p>现有的人物关系数据集大约3900多条，分布如下图：</p>
 <figure>
-<img src="/img/nlp42_1.png" srcset="/img/loading.gif" lazyload alt="人物关系分布图" />
+<img src="http://139.224.0.63:9000/files/img/nlp42_1.png" srcset="/img/loading.gif" lazyload
+alt="人物关系分布图" />
 <figcaption aria-hidden="true">人物关系分布图</figcaption>
 </figure>
 <p>首先，我们只使用BERT分类模型，对输入数据进行格式改造，进行简单地尝试。</p>
@@ -417,7 +418,8 @@ target="_blank" rel="noopener" href="https://arxiv.org/pdf/1905.08284.pdf">Enric
 Language Model with Entity Information for Relation
 Classification</a>，顾名思义为使用实体信息将预训练模型用于关系分类（RC）。其模型结构如下图：</p>
 <figure>
-<img src="/img/nlp42_1.png" srcset="/img/loading.gif" lazyload alt="R-BERT模型结构图" />
+<img src="http://139.224.0.63:9000/files/img/nlp42_1.png" srcset="/img/loading.gif" lazyload
+alt="R-BERT模型结构图" />
 <figcaption aria-hidden="true">R-BERT模型结构图</figcaption>
 </figure>
 <p>该模型被称为<code>R-BERT</code>，模型结构在此不多介绍，后面有机会再介绍。在Github上有<code>R-BERT</code>模型的Torch框架实现方式，在<code>Semeval 2010 Task 8 Dataset</code>取得了不错的效果。</p>
