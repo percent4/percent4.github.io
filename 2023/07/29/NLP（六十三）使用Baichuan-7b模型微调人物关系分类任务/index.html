@@ -23,16 +23,16 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文将介绍如何使用Baichuan-7b模型微调人物关系分类任务，并比BERT时代的模型取得了进步。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
+<meta property="og:image" content="https://percent4.github.io/img/nlp.jpeg">
 <meta property="article:published_time" content="2023-07-29T13:42:33.000Z">
-<meta property="article:modified_time" content="2023-08-03T05:28:27.119Z">
+<meta property="article:modified_time" content="2023-08-06T14:55:18.886Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="Baichuan-7b">
 <meta property="article:tag" content="人物关系">
 <meta property="article:tag" content="关系分类">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp.jpeg">
   
   
   
@@ -327,8 +327,7 @@
 <p>人物关系分类指的是对文本中的两个人物，在特定的关系列表中，判断他们之间的人物关系。以样本<code>亲戚 1837年6月20日，威廉四世辞世，他的侄女维多利亚即位。</code>为例，其中<code>亲戚</code>为人物关系，<code>威廉四世</code>为实体1，<code>维多利亚</code>为实体2。</p>
 <p>笔者自己利用业余时间标注的样本数据有3881条，分布如下图：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp42_1.png" srcset="/img/loading.gif" lazyload
-alt="人物关系分布图" />
+<img src="/img/nlp42_1.png" srcset="/img/loading.gif" lazyload alt="人物关系分布图" />
 <figcaption aria-hidden="true">人物关系分布图</figcaption>
 </figure>
 <p>对上述数据集进行划分，训练集与测试集的比例为8:2，其中训练集3105条，测试集776条。</p>
@@ -345,8 +344,7 @@ LLM）中的中文模型代表Baichuan-7b,
 <h3 id="好的提示">好的提示</h3>
 <p>在开始模型微调之前，我们需要一个好的提示（Prompt），我们借助GPT-4：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp63_1.png" srcset="/img/loading.gif" lazyload
-alt="GPT-4给出的关于关系分类的Prompt" />
+<img src="/img/nlp63_1.png" srcset="/img/loading.gif" lazyload alt="GPT-4给出的关于关系分类的Prompt" />
 <figcaption
 aria-hidden="true">GPT-4给出的关于关系分类的Prompt</figcaption>
 </figure>

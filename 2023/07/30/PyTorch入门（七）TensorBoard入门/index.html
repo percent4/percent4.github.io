@@ -23,14 +23,14 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="TensorBoard入门">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://139.224.0.63:9000/files/img/pytorch2.png">
+<meta property="og:image" content="https://percent4.github.io/img/pytorch2.png">
 <meta property="article:published_time" content="2023-07-30T06:19:50.000Z">
-<meta property="article:modified_time" content="2023-08-03T05:28:26.855Z">
+<meta property="article:modified_time" content="2023-08-06T14:55:18.972Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="PyTorch">
 <meta property="article:tag" content="TensorBoard">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://139.224.0.63:9000/files/img/pytorch2.png">
+<meta name="twitter:image" content="https://percent4.github.io/img/pytorch2.png">
   
   
   
@@ -368,8 +368,7 @@ arrcuracy, learning rate等数值的变化，直观地监控训练过程。</p>
 <p>示例代码：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># import modules</span><br><span class="hljs-keyword">from</span> tensorboardX <span class="hljs-keyword">import</span> SummaryWriter<br><span class="hljs-comment"># add_scalar</span><br>writer = SummaryWriter(<span class="hljs-string">&#x27;run/scalar&#x27;</span>)<br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">10</span>):<br>    writer.add_scalar(<span class="hljs-string">&#x27;指数&#x27;</span>, <span class="hljs-number">3</span>**i, global_step=i)<br></code></pre></td></tr></table></figure>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch7_1.png" srcset="/img/loading.gif" lazyload
-alt="在tensorboard中查看scalar" />
+<img src="/img/pytorch7_1.png" srcset="/img/loading.gif" lazyload alt="在tensorboard中查看scalar" />
 <figcaption aria-hidden="true">在tensorboard中查看scalar</figcaption>
 </figure>
 <ol start="2" type="1">
@@ -378,8 +377,7 @@ alt="在tensorboard中查看scalar" />
 <p>使用add_images方法来记录图像数据，一般会使用add_images来实时观察模型的生成效果，或者可视化分割、目标检测的结果，帮助调试模型。</p>
 <p>示例代码： <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># add_images</span><br><span class="hljs-keyword">import</span> cv2<br><br>writer = SummaryWriter(<span class="hljs-string">&#x27;run/image&#x27;</span>)<br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, <span class="hljs-number">4</span>):<br>    writer.add_images(<span class="hljs-string">&#x27;&#x27;</span>, <br>                      cv2.cvtColor(cv2.imread(<span class="hljs-string">&#x27;./image/image&#123;&#125;.png&#x27;</span>.<span class="hljs-built_in">format</span>(i)), cv2.COLOR_BGR2RGB), <br>                      global_step=i, <br>                      dataformats=<span class="hljs-string">&#x27;HWC&#x27;</span>)<br></code></pre></td></tr></table></figure></p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch7_2.png" srcset="/img/loading.gif" lazyload
-alt="在tensorboard中查看图片" />
+<img src="/img/pytorch7_2.png" srcset="/img/loading.gif" lazyload alt="在tensorboard中查看图片" />
 <figcaption aria-hidden="true">在tensorboard中查看图片</figcaption>
 </figure>
 <ol start="3" type="1">
@@ -389,8 +387,7 @@ alt="在tensorboard中查看图片" />
 <p>示例代码： <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># add_histogram</span><br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><br>writer = SummaryWriter(<span class="hljs-string">&#x27;run/histogram&#x27;</span>)<br>writer.add_histogram(<span class="hljs-string">&#x27;正态分布中心化&#x27;</span>, np.random.normal(<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1000</span>), global_step=<span class="hljs-number">1</span>)<br>writer.add_histogram(<span class="hljs-string">&#x27;正态分布中心化&#x27;</span>, np.random.normal(<span class="hljs-number">0</span>, <span class="hljs-number">2</span>, <span class="hljs-number">1000</span>), global_step=<span class="hljs-number">50</span>)<br>writer.add_histogram(<span class="hljs-string">&#x27;正态分布中心化&#x27;</span>, np.random.normal(<span class="hljs-number">0</span>, <span class="hljs-number">3</span>, <span class="hljs-number">1000</span>), global_step=<span class="hljs-number">100</span>)<br></code></pre></td></tr></table></figure></p>
 <p>在TensorBoard可视化界面中，我们会发现DISTRIBUTIONS和HISTOGRAMS两栏，它们都是用来观察数据分布的。在HISTOGRAMS中，同一数据不同步数的直方图可以上下错位排布（OFFSET）也可以重叠排布（OVERLAY）。</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch7_3.png" srcset="/img/loading.gif" lazyload
-alt="在tensorboard中查看柱状图" />
+<img src="/img/pytorch7_3.png" srcset="/img/loading.gif" lazyload alt="在tensorboard中查看柱状图" />
 <figcaption aria-hidden="true">在tensorboard中查看柱状图</figcaption>
 </figure>
 <ol start="4" type="1">
@@ -400,8 +397,7 @@ alt="在tensorboard中查看柱状图" />
 <p>示例代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">import</span> torch.nn <span class="hljs-keyword">as</span> nn<br><span class="hljs-keyword">import</span> torch.nn.functional <span class="hljs-keyword">as</span> F<br><br>dummy_input = (torch.zeros(<span class="hljs-number">1</span>, <span class="hljs-number">3</span>),)<br>writer = SummaryWriter(<span class="hljs-string">&#x27;run/graph&#x27;</span>)<br><br><span class="hljs-comment"># simple MLP model</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">LinearInLinear</span>(nn.Module):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-built_in">super</span>(LinearInLinear, self).__init__()<br>        self.l = nn.Linear(<span class="hljs-number">3</span>, <span class="hljs-number">5</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">forward</span>(<span class="hljs-params">self, x</span>):<br>        <span class="hljs-keyword">return</span> self.l(x)<br><br>writer.add_graph(LinearInLinear(), dummy_input)<br></code></pre></td></tr></table></figure>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch7_4.png" srcset="/img/loading.gif" lazyload
-alt="在tensorboard中查看模型图" />
+<img src="/img/pytorch7_4.png" srcset="/img/loading.gif" lazyload alt="在tensorboard中查看模型图" />
 <figcaption aria-hidden="true">在tensorboard中查看模型图</figcaption>
 </figure>
 <ol start="5" type="1">
@@ -413,8 +409,7 @@ T-SNE等方法降维至二维平面或三维空间，还可以观察每一个数
 <p>示例代码如下： <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># add_embedding</span><br><span class="hljs-keyword">import</span> torchvision<br><br>writer = SummaryWriter(<span class="hljs-string">&#x27;run/vector&#x27;</span>)<br>mnist = torchvision.datasets.MNIST(<span class="hljs-string">&#x27;./&#x27;</span>, download=<span class="hljs-literal">False</span>)<br>writer.add_embedding(mnist.data.reshape((-<span class="hljs-number">1</span>, <span class="hljs-number">28</span>*<span class="hljs-number">28</span>))[:<span class="hljs-number">30</span>, :],<br>                     metadata=mnist.targets[:<span class="hljs-number">30</span>],<br>                     label_img = mnist.data[:<span class="hljs-number">30</span>, :, :].reshape((-<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">28</span>, <span class="hljs-number">28</span>)).<span class="hljs-built_in">float</span>()/<span class="hljs-number">255</span>,<br>                     global_step=<span class="hljs-number">0</span><br>                    )<br></code></pre></td></tr></table></figure></p>
 <p>可以发现，虽然还没有做任何特征提取工作，但MNIST数据已经呈现出聚类的效果，相同数字之间距离更近一些。</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch7_5.png" srcset="/img/loading.gif" lazyload
-alt="在tensorboard中查看向量嵌入" />
+<img src="/img/pytorch7_5.png" srcset="/img/loading.gif" lazyload alt="在tensorboard中查看向量嵌入" />
 <figcaption aria-hidden="true">在tensorboard中查看向量嵌入</figcaption>
 </figure>
 <h3 id="tensorboard实战">TensorBoard实战</h3>
@@ -424,7 +419,7 @@ alt="在tensorboard中查看向量嵌入" />
 </ol>
 <p>在训练过程中的训练集的损失值以及验证集的准确率如下：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch7_6.png" srcset="/img/loading.gif" lazyload
+<img src="/img/pytorch7_6.png" srcset="/img/loading.gif" lazyload
 alt="在tensorboard中查看loss和accuracy" />
 <figcaption
 aria-hidden="true">在tensorboard中查看loss和accuracy</figcaption>
@@ -435,8 +430,7 @@ aria-hidden="true">在tensorboard中查看loss和accuracy</figcaption>
 <p>需安装Python第三方模块onnx, Python代码如下： <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> tensorboardX <span class="hljs-keyword">import</span> SummaryWriter<br><br><span class="hljs-keyword">with</span> SummaryWriter(<span class="hljs-string">&#x27;./run/onnx&#x27;</span>) <span class="hljs-keyword">as</span> w:<br>    w.add_onnx_graph(<span class="hljs-string">&#x27;iris.onnx&#x27;</span>)<br></code></pre></td></tr></table></figure></p>
 <p>在TensorBoard中选择Graphs, Run选项选择onnx，模型图如下：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch7_7.png" srcset="/img/loading.gif" lazyload
-alt="在tensorboard中查看onnx模型图" />
+<img src="/img/pytorch7_7.png" srcset="/img/loading.gif" lazyload alt="在tensorboard中查看onnx模型图" />
 <figcaption
 aria-hidden="true">在tensorboard中查看onnx模型图</figcaption>
 </figure>

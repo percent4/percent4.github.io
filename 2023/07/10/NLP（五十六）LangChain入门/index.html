@@ -23,14 +23,14 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文主要介绍LangChain入门。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
+<meta property="og:image" content="https://percent4.github.io/img/nlp.jpeg">
 <meta property="article:published_time" content="2023-07-10T12:23:01.000Z">
-<meta property="article:modified_time" content="2023-08-03T05:28:26.837Z">
+<meta property="article:modified_time" content="2023-08-06T14:55:18.858Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="LangChain">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp.jpeg">
   
   
   
@@ -385,7 +385,7 @@ key，比如OpenAI key等。</p>
 <h4 id="模型支持">模型支持</h4>
 <p>LangChain提供了一系列大模型的支持，但首先你需要这些大模型的API
 key。LangChain支持的大模型如下图：</p>
-<p><img src="http://139.224.0.63:9000/files/img/nlp56_1.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="/img/nlp56_1.png" srcset="/img/loading.gif" lazyload /></p>
 <ul>
 <li>Proprietary
 models（私有模型）：由拥有大型专业团队和大额AI预算的公司研发的闭源模型，它们通常会比开源模型更大，且表现更好，但API调用较为昂贵。私有模型的提供商有OpenAI,
@@ -429,7 +429,7 @@ key，你将会有更好的使用langchain的体验。</p>
 target="_blank" rel="noopener" href="https://python.langchain.com/docs/modules/agents/tools">https://python.langchain.com/docs/modules/agents/tools</a>。本文将介绍文档问答，天气查询，数学计算这三个插件应用。</p>
 <h4 id="文档问答">文档问答</h4>
 <p>众所周知，ChatGPT的知识库截至2021年9月，因此，ChatGPT无法回答这以后的问题，比如我们询问ChatGPT“2022年的诺贝尔文学奖获得者是谁？”，结果如下图：</p>
-<p><img src="http://139.224.0.63:9000/files/img/nlp56_2.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="/img/nlp56_2.png" srcset="/img/loading.gif" lazyload /></p>
 <p>langchain的文档阅读允许我们将大模型与外部文档结合起来，对文档内容进行回答。我们在网上寻找有关于2022年的诺贝尔文学奖获得者的信息，比如网址：<a
 target="_blank" rel="noopener" href="https://www.theguardian.com/books/2022/oct/06/annie-ernaux-wins-the-2022-nobel-prize-in-literature">https://www.theguardian.com/books/2022/oct/06/annie-ernaux-wins-the-2022-nobel-prize-in-literature</a>
 , 保存为Annie Ernaux.txt，作为ChatGPT的外部输入文档。</p>
@@ -452,7 +452,7 @@ in
 literature?”无法给出准确答案，而加入了外部数据后，再使用文档问答，可以准确地回答出该问题。</p>
 <h4 id="天气查询">天气查询</h4>
 <p>ChatGPT无法查询实时信息，比如天气、股票信息等，以下为ChatGPT回答“上海今天天气如何？”的示例，如下图：</p>
-<p><img src="http://139.224.0.63:9000/files/img/nlp56_3.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="/img/nlp56_3.png" srcset="/img/loading.gif" lazyload /></p>
 <p>因此，我们需要用到代理（Agents）工具<code>OpenWeatherMap API</code>来获取天气信息。OpenWeatherMap可以获取全世界各地的天气信息，但首先你需要在它的官网上注册并获取<code>OPENWEATHERMAP_API_KEY</code>。以下为使用代理工具<code>OpenWeatherMap API</code>来回答天气的Python示例代码：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> langchain.llms <span class="hljs-keyword">import</span> OpenAI<br><span class="hljs-keyword">from</span> langchain.agents <span class="hljs-keyword">import</span> load_tools, initialize_agent, AgentType<br><span class="hljs-keyword">from</span> langchain.utilities <span class="hljs-keyword">import</span> OpenWeatherMapAPIWrapper<br><span class="hljs-keyword">import</span> os<br><br>os.environ[<span class="hljs-string">&quot;OPENWEATHERMAP_API_KEY&quot;</span>] = <span class="hljs-string">&quot;xxx&quot;</span><br>os.environ[<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>] = <span class="hljs-string">&quot;sk-xxx&quot;</span><br><br><span class="hljs-comment"># direct get weather info</span><br>weather = OpenWeatherMapAPIWrapper()<br>weather_data = weather.run(<span class="hljs-string">&quot;shanghai&quot;</span>)<br><span class="hljs-built_in">print</span>(weather_data)<br><br><span class="hljs-comment"># use LLM to do NLU</span><br>llm = OpenAI(temperature=<span class="hljs-number">0</span>)<br>tools = load_tools([<span class="hljs-string">&quot;openweathermap-api&quot;</span>], llm)<br><br>agent_chain = initialize_agent(<br>    tools=tools,<br>    llm=llm,<br>    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,<br>    verbose=<span class="hljs-literal">True</span><br>)<br><br><span class="hljs-comment"># get weather info by natural language</span><br><span class="hljs-built_in">print</span>(agent_chain.run(<span class="hljs-string">&quot;今天上海天气如何？&quot;</span>))<br></code></pre></td></tr></table></figure>
 <p>输出结果如下：</p>

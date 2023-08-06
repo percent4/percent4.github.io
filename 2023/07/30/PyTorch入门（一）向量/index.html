@@ -23,14 +23,14 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文作为PyTorch入门的第一篇文章，将介绍PyTorch中的向量。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://139.224.0.63:9000/files/img/pytorch2.png">
+<meta property="og:image" content="https://percent4.github.io/img/pytorch2.png">
 <meta property="article:published_time" content="2023-07-30T05:27:07.000Z">
-<meta property="article:modified_time" content="2023-08-03T05:28:26.873Z">
+<meta property="article:modified_time" content="2023-08-06T14:55:18.958Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="PyTorch">
 <meta property="article:tag" content="向量">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://139.224.0.63:9000/files/img/pytorch2.png">
+<meta name="twitter:image" content="https://percent4.github.io/img/pytorch2.png">
   
   
   
@@ -322,11 +322,11 @@
               <div class="markdown-body">
                 
                 <h3 id="什么是pytorch">什么是PyTorch？</h3>
-<p><img src="http://139.224.0.63:9000/files/img/pytorch1_1.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="/img/pytorch1_1.png" srcset="/img/loading.gif" lazyload /></p>
 <p>PyTorch是Facebook人工智能团队开发的一个机器学习和深度学习工具，用于处理大规模图像分析，包括物体检测，分割与分类。但是它的功能不仅限于此。它与其它深度学习框架结合，能够完成复杂的算法。PyTorch用Python和C++编写。</p>
 <p>PyTorch属于深度学习框架中的重要一员，与TensorFlow, Keras,
 Theano等其它深度学习框架不同，它是动态计算图模式，其应用模型支持在运行过程中根据运行参数动态改变，而其它框架都是静态计算图模式，其模型在运行之前就已经确定。以下是各个深度学习框架的热度对比:</p>
-<p><img src="http://139.224.0.63:9000/files/img/pytorch1_2.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="/img/pytorch1_2.png" srcset="/img/loading.gif" lazyload /></p>
 <p>关于各个深度学习框架的对比，可以参考网址：<a
 target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Comparison_of_deep_learning_software">Comparison
 of deep learning software</a> 。</p>
@@ -343,59 +343,51 @@ of deep learning software</a> 。</p>
 <h3 id="向量的基本操作">向量的基本操作</h3>
 <h5 id="导入模块">导入模块</h5>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch1_3.png" srcset="/img/loading.gif" lazyload
-alt="导入模块" />
+<img src="/img/pytorch1_3.png" srcset="/img/loading.gif" lazyload alt="导入模块" />
 <figcaption aria-hidden="true">导入模块</figcaption>
 </figure>
 <h5 id="检测是否为pytorch中的向量">检测是否为PyTorch中的向量</h5>
 <p>is_tensor()函数可以检测某个序列是否为PyTorch中的向量，is_storage()可以检测某个序列是否被存储为PyTorch中的向量。</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch1_4.png" srcset="/img/loading.gif" lazyload
-alt="向量检测" />
+<img src="/img/pytorch1_4.png" srcset="/img/loading.gif" lazyload alt="向量检测" />
 <figcaption aria-hidden="true">向量检测</figcaption>
 </figure>
 <p>可以看到，Python中的列表并不是PyTorch中的向量，也不会被存储为PyTorch中的向量。那么，如何创建PyTorch中的向量呢？</p>
 <h5 id="创建随机向量">创建随机向量</h5>
 <p>利用randn()函数可以创建随机向量，随机数为0~1的随机浮点数，可以指定创建的向量的维数。</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch1_5.png" srcset="/img/loading.gif" lazyload
-alt="创建随机向量" />
+<img src="/img/pytorch1_5.png" srcset="/img/loading.gif" lazyload alt="创建随机向量" />
 <figcaption aria-hidden="true">创建随机向量</figcaption>
 </figure>
 <p>可以看到，我们创建了1*2*3维的向量，用size()函数可以查看向量的维数情况，用numel()函数可以查看向量中的所有元素个数。</p>
 <h5 id="创建零向量">创建零向量</h5>
 <p>利用zeros()函数可以创建零向量，即所有元素均为零的向量，只需指定向量的维数即可。</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch1_6.png" srcset="/img/loading.gif" lazyload
-alt="创建零向量" />
+<img src="/img/pytorch1_6.png" srcset="/img/loading.gif" lazyload alt="创建零向量" />
 <figcaption aria-hidden="true">创建零向量</figcaption>
 </figure>
 <p>在上面，我们创建了4*4的零向量。</p>
 <h5 id="创建单位向量">创建单位向量</h5>
 <p>利用eye()函数可以创建单位向量，即主对角元素为1，其余元素均为零的向量，只需指定向量的维数即可。当二维向量的行数与列数不一样时，主对角元素为1，其余为0。</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch1_7.png" srcset="/img/loading.gif" lazyload
-alt="创建单位向量" />
+<img src="/img/pytorch1_7.png" srcset="/img/loading.gif" lazyload alt="创建单位向量" />
 <figcaption aria-hidden="true">创建单位向量</figcaption>
 </figure>
 <h5 id="从numpy中创建向量">从numpy中创建向量</h5>
 <p>PyTorch支持直接从numpy中创建向量，这为PyTorch和numpy提供了无缝对接，这也是PyTorch的一个优势。</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch1_8.png" srcset="/img/loading.gif" lazyload
-alt="从numpy直接创建向量" />
+<img src="/img/pytorch1_8.png" srcset="/img/loading.gif" lazyload alt="从numpy直接创建向量" />
 <figcaption aria-hidden="true">从numpy直接创建向量</figcaption>
 </figure>
 <p>当然，PyTorch也可以将向量转化为numpy中的ndarrays.</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch1_9.png" srcset="/img/loading.gif" lazyload
-alt="向量转化为numpy.ndarrays" />
+<img src="/img/pytorch1_9.png" srcset="/img/loading.gif" lazyload alt="向量转化为numpy.ndarrays" />
 <figcaption aria-hidden="true">向量转化为numpy.ndarrays</figcaption>
 </figure>
 <h5 id="tensor函数创建向量">Tensor函数创建向量</h5>
 <p>可以利用Tensor()直接创建向量。</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch1_10.png" srcset="/img/loading.gif" lazyload
-alt="Tensor函数" />
+<img src="/img/pytorch1_10.png" srcset="/img/loading.gif" lazyload alt="Tensor函数" />
 <figcaption aria-hidden="true">Tensor函数</figcaption>
 </figure>
 <h5 id="linspace与logspace创建向量">linspace与logspace创建向量</h5>
@@ -405,62 +397,54 @@ out=None)通过指定开始值、终值和元素个数创建表示等差数列�
 out=None)返回一个1维张量，包含在区间10exp(start)和10exp(end)上以对数刻度均匀间隔的
 steps个点。</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch1_11.png" srcset="/img/loading.gif" lazyload
-alt="linspace() &amp; logspace()" />
+<img src="/img/pytorch1_11.png" srcset="/img/loading.gif" lazyload alt="linspace() &amp; logspace()" />
 <figcaption aria-hidden="true">linspace() &amp; logspace()</figcaption>
 </figure>
 <h5 id="创建均匀分布向量">创建均匀分布向量</h5>
 <p>rand()函数可以创建指定维数的满足均匀分布的向量。</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch1_12.png" srcset="/img/loading.gif" lazyload
-alt="rand()" />
+<img src="/img/pytorch1_12.png" srcset="/img/loading.gif" lazyload alt="rand()" />
 <figcaption aria-hidden="true">rand()</figcaption>
 </figure>
 <h5 id="随机整数排列向量">随机整数排列向量</h5>
 <p>randperm(n, out=None) ,给定参数n，返回一个从0 到n -1
 的随机整数排列。</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch1_13.png" srcset="/img/loading.gif" lazyload
-alt="randperm()" />
+<img src="/img/pytorch1_13.png" srcset="/img/loading.gif" lazyload alt="randperm()" />
 <figcaption aria-hidden="true">randperm()</figcaption>
 </figure>
 <h5 id="等差数列向量">等差数列向量</h5>
 <p>arange(start, end, step=1, out=None) ,
 返回一个1维张量，包含从start到end，以step为步长的一组序列值(默认步长为1)。</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch1_14.png" srcset="/img/loading.gif" lazyload
-alt="arange()" />
+<img src="/img/pytorch1_14.png" srcset="/img/loading.gif" lazyload alt="arange()" />
 <figcaption aria-hidden="true">arange()</figcaption>
 </figure>
 <h5 id="寻找最大值最小组">寻找最大值、最小组</h5>
 <p>argmin()和argmax()函数可以寻找向量所在的最小值和最大值的下标，0表示沿着行查找，1表示沿着列查找。</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch1_15.png" srcset="/img/loading.gif" lazyload
-alt="argmin(), argmax()" />
+<img src="/img/pytorch1_15.png" srcset="/img/loading.gif" lazyload alt="argmin(), argmax()" />
 <figcaption aria-hidden="true">argmin(), argmax()</figcaption>
 </figure>
 <h5 id="向量拼接">向量拼接</h5>
 <p>cat()函数在给定维度上对输入的张量序列seq
 进行连接操作，默认的维度为0，即按行拼接。</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch1_16.png" srcset="/img/loading.gif" lazyload
-alt="cat()" />
+<img src="/img/pytorch1_16.png" srcset="/img/loading.gif" lazyload alt="cat()" />
 <figcaption aria-hidden="true">cat()</figcaption>
 </figure>
 <h6 id="向量分块">向量分块</h6>
 <p>chunk(tensor, chunks,
 dim=0)函数在给定维度(轴)上将输入张量进行分块，默认为0，即按行进行分块。</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch1_25.png" srcset="/img/loading.gif" lazyload
-alt="chunk()" />
+<img src="/img/pytorch1_25.png" srcset="/img/loading.gif" lazyload alt="chunk()" />
 <figcaption aria-hidden="true">chunk()</figcaption>
 </figure>
 <h5 id="gather函数">gather()函数</h5>
 <p>gather(input, dim, index, out=None),
 沿给定轴dim，将输入索引张量index指定位置的值进行聚合。gather()函数理解起来比较困难，先看例子，再解释：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch1_17.png" srcset="/img/loading.gif" lazyload
-alt="gather()" />
+<img src="/img/pytorch1_17.png" srcset="/img/loading.gif" lazyload alt="gather()" />
 <figcaption aria-hidden="true">gather()</figcaption>
 </figure>
 <p>gather的作用是这样的，index是索引，具体是行还是列的索引要看前面dim
@@ -473,8 +457,7 @@ alt="gather()" />
 <p>index_select(input, dim, index, out=None)
 ，沿着指定维度对输入进行切片，取index中指定的相应项(index为一个LongTensor)，然后返回到一个新的张量，返回的张量与原始张量_Tensor_有相同的维度(在指定轴上)。</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch1_18.png" srcset="/img/loading.gif" lazyload
-alt="index_select()" />
+<img src="/img/pytorch1_18.png" srcset="/img/loading.gif" lazyload alt="index_select()" />
 <figcaption aria-hidden="true">index_select()</figcaption>
 </figure>
 <h5 id="split函数">split()函数</h5>
@@ -483,43 +466,37 @@ alt="index_select()" />
 如果沿指定维的张量形状大小不能被split_size整分，
 则最后一个分块会小于其它分块。</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch1_19.png" srcset="/img/loading.gif" lazyload
-alt="split()" />
+<img src="/img/pytorch1_19.png" srcset="/img/loading.gif" lazyload alt="split()" />
 <figcaption aria-hidden="true">split()</figcaption>
 </figure>
 <h6 id="向量转置">向量转置</h6>
 <p>二维向量的转置可以用t()或transpos(1, 0)实现。</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch1_20.png" srcset="/img/loading.gif" lazyload
-alt="向量转置" />
+<img src="/img/pytorch1_20.png" srcset="/img/loading.gif" lazyload alt="向量转置" />
 <figcaption aria-hidden="true">向量转置</figcaption>
 </figure>
 <h5 id="unbind">unbind()</h5>
 <p>unbind(tensor, dim=0),
 移除指定维后，返回一个元组，包含了沿着指定维切片后的各个切片，默认维度为1，表示行，1表示列。</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch1_21.png" srcset="/img/loading.gif" lazyload
-alt="unbind()" />
+<img src="/img/pytorch1_21.png" srcset="/img/loading.gif" lazyload alt="unbind()" />
 <figcaption aria-hidden="true">unbind()</figcaption>
 </figure>
 <h5 id="判断是否为零元素">判断是否为零元素</h5>
 <p>nonzero()函数可以判断向量中的元素是否为0.</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch1_22.png" srcset="/img/loading.gif" lazyload
-alt="nonzero()" />
+<img src="/img/pytorch1_22.png" srcset="/img/loading.gif" lazyload alt="nonzero()" />
 <figcaption aria-hidden="true">nonzero()</figcaption>
 </figure>
 <h5 id="向量运算">向量运算</h5>
 <p>以下将演示几种常见的矩阵运算。</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch1_23.png" srcset="/img/loading.gif" lazyload
-alt="矩阵运算" />
+<img src="/img/pytorch1_23.png" srcset="/img/loading.gif" lazyload alt="矩阵运算" />
 <figcaption aria-hidden="true">矩阵运算</figcaption>
 </figure>
 <p>矩阵的点乘与矩阵乘法</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/pytorch1_24.png" srcset="/img/loading.gif" lazyload
-alt="矩阵点乘与矩阵乘法" />
+<img src="/img/pytorch1_24.png" srcset="/img/loading.gif" lazyload alt="矩阵点乘与矩阵乘法" />
 <figcaption aria-hidden="true">矩阵点乘与矩阵乘法</figcaption>
 </figure>
 <h3 id="总结">总结</h3>

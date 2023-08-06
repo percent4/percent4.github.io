@@ -23,14 +23,14 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文将会介绍抽取式词义消歧（WSD）。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
+<meta property="og:image" content="https://percent4.github.io/img/nlp.jpeg">
 <meta property="article:published_time" content="2023-07-10T09:49:14.000Z">
-<meta property="article:modified_time" content="2023-08-03T05:32:07.890Z">
+<meta property="article:modified_time" content="2023-08-06T14:55:18.852Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="词义消歧">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp.jpeg">
   
   
   
@@ -340,14 +340,12 @@ Linking）任务中，一般分为三个阶段：</p>
 </ul>
 <p>在词义消歧中，同一词语的不同义项会作为候选词生成，在第三阶段的候选词匹配找到最接近的那个义项。我们以实体<code>本草纲目</code>为例，其在百度百科中共有15个义项，如下：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp53_1.png" srcset="/img/loading.gif" lazyload
-alt="百度百科中的本草纲目义项" />
+<img src="/img/nlp53_1.png" srcset="/img/loading.gif" lazyload alt="百度百科中的本草纲目义项" />
 <figcaption aria-hidden="true">百度百科中的本草纲目义项</figcaption>
 </figure>
 <p>在特定的句子中，本草纲目的具体含义是可以确定的，看下面的例子：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp53_2.png" srcset="/img/loading.gif" lazyload
-alt="实体链接例子" />
+<img src="/img/nlp53_2.png" srcset="/img/loading.gif" lazyload alt="实体链接例子" />
 <figcaption aria-hidden="true">实体链接例子</figcaption>
 </figure>
 <p>在上述句子中，<code>本草纲目</code>的正确义项应该是中医典籍，这是一个典型的实体链接任务，也可当作词义消歧任务。</p>
@@ -376,8 +374,7 @@ alt="实体链接例子" />
 <p>将标注数据划分为训练集和测试集，比例为8:2，训练集共有个2233样本，测试集共有656个样本。</p>
 <p>模型输入如下图：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp53_3.png" srcset="/img/loading.gif" lazyload
-alt="模型输入" />
+<img src="/img/nlp53_3.png" srcset="/img/loading.gif" lazyload alt="模型输入" />
 <figcaption aria-hidden="true">模型输入</figcaption>
 </figure>
 <p>文本中的mention需要用特殊符号标识出来，比如用<code>&lt;e&gt;</code>和<code>&lt;/e&gt;</code>标识，候选集集合组合输入为下一句，将<code>&lt;/ec&gt;</code>标识添加至每个义项的结尾。</p>
@@ -387,8 +384,7 @@ target="_blank" rel="noopener" href="https://www.researchgate.net/publication/35
 Extractive Entity
 Disambiguation》</a>中给出的抽取式模型，使用较为简单的阅读理解模型（MRC）来实现。模型结构如下图所示：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp53_4.png" srcset="/img/loading.gif" lazyload
-alt="抽取式词义消歧模型" />
+<img src="/img/nlp53_4.png" srcset="/img/loading.gif" lazyload alt="抽取式词义消歧模型" />
 <figcaption aria-hidden="true">抽取式词义消歧模型</figcaption>
 </figure>
 <p>对标注数据进行模型训练，文本最大长度为500，batch
@@ -396,7 +392,7 @@ size取16，训练12轮次，学习率取0.00001，在测试集上的<code>Exact
 <h3 id="模型预测">模型预测</h3>
 <h4 id="在原有词语义项上的预测结果">1. 在原有词语义项上的预测结果</h4>
 <p>我们对标注过的词语<code>苹果</code>进行预测，其百度百科义项为：</p>
-<p><img src="http://139.224.0.63:9000/files/img/nlp53_5.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="/img/nlp53_5.png" srcset="/img/loading.gif" lazyload /></p>
 <p>随便选取两个网上的句子进行消歧，结果如下：</p>
 <blockquote>
 <p>文本：【苹果的做法大全_苹果怎么做好吃_菜谱大全】_下厨房
@@ -408,7 +404,7 @@ size取16，训练12轮次，学习率取0.00001，在测试集上的<code>Exact
 </blockquote>
 <h4 id="在新词语义项上的预测结果">2. 在新词语义项上的预测结果</h4>
 <p>我们对未标注过的词语<code>南京</code>进行预测，其百度百科义项为：</p>
-<p><img src="http://139.224.0.63:9000/files/img/nlp53_6.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="/img/nlp53_6.png" srcset="/img/loading.gif" lazyload /></p>
 <p>随便选取两个网上的句子进行消歧，结果如下：</p>
 <blockquote>
 <p>文本：南京的饮食以金陵菜著名，金陵菜是指以南京为中心，一直延伸到江西九江的菜系，是苏菜的四大代表菜之一。
@@ -419,7 +415,7 @@ size取16，训练12轮次，学习率取0.00001，在测试集上的<code>Exact
 正确义项：美国2007年雨果·阿姆斯特朗主演的电影</p>
 </blockquote>
 <p>我们对未标注过的词语<code>平凡的世界</code>进行预测，其百度百科义项为：</p>
-<p><img src="http://139.224.0.63:9000/files/img/nlp53_7.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="/img/nlp53_7.png" srcset="/img/loading.gif" lazyload /></p>
 <p>随便选取两个网上的句子进行消歧，结果如下：</p>
 <blockquote>
 <p>文本：《平凡的世界》:永恒的魅力--文史--中国作家网
@@ -430,7 +426,7 @@ size取16，训练12轮次，学习率取0.00001，在测试集上的<code>Exact
 正确义项：2015年王雷、佟丽娅、袁弘主演电视剧</p>
 </blockquote>
 <p>我们对未标注过的词语<code>碧血剑</code>进行预测，其百度百科义项为：</p>
-<p><img src="http://139.224.0.63:9000/files/img/nlp53_8.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="/img/nlp53_8.png" srcset="/img/loading.gif" lazyload /></p>
 <p>随便选取两个网上的句子进行消歧，结果如下：</p>
 <blockquote>
 <p>文本：《碧血剑》是当代作家金庸先生的长篇武侠小说。大家都知道金庸老先生的著名小说都被翻拍成了电视剧，《碧血剑》也不例外。

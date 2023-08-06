@@ -23,14 +23,14 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文将会介绍NLP中常见的损失函数。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
+<meta property="og:image" content="https://percent4.github.io/img/nlp.jpeg">
 <meta property="article:published_time" content="2023-07-10T09:25:10.000Z">
-<meta property="article:modified_time" content="2023-08-03T05:28:26.955Z">
+<meta property="article:modified_time" content="2023-08-06T14:55:18.878Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="损失函数">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp.jpeg">
   
   
   
@@ -335,15 +335,13 @@ Entropy（稀疏多分类交叉熵损失函数）</p></li>
 <li><p>......</p>
 <p>以下将分别介绍上述损失函数，并介绍Keras和PyTorch中的例子。在此之前，我们分别导入Keras所需模块和PyTorch所需模块。Keras所需模块如下：</p></li>
 <li><figure>
-<img src="http://139.224.0.63:9000/files/img/nlp47_1.png" srcset="/img/loading.gif" lazyload
-alt="导入Keras相关模块" />
+<img src="/img/nlp47_1.png" srcset="/img/loading.gif" lazyload alt="导入Keras相关模块" />
 <figcaption aria-hidden="true">导入Keras相关模块</figcaption>
 </figure></li>
 </ul>
 <p>PyTorch所需模块如下：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp47_2.png" srcset="/img/loading.gif" lazyload
-alt="PyTorch所需模块" />
+<img src="/img/nlp47_2.png" srcset="/img/loading.gif" lazyload alt="PyTorch所需模块" />
 <figcaption aria-hidden="true">PyTorch所需模块</figcaption>
 </figure>
 <p>从导入模块来看，PyTorch更加简洁，在后面的部分中我们将持续比较这两种框架的差异。</p>
@@ -360,14 +358,12 @@ y_{2},...,y_{n}\}\)</span>中的第i个元素，则均方差损失函数MSE的�
 class="math display">\[MSE=\frac{1}{n}\sum_{i=1}^n(\widetilde{y}_{i}-y_{i})^{2}\]</span></p>
 <p>Keras实现代码如下：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp47_3.png" srcset="/img/loading.gif" lazyload
-alt="Keras MSE" />
+<img src="/img/nlp47_3.png" srcset="/img/loading.gif" lazyload alt="Keras MSE" />
 <figcaption aria-hidden="true">Keras MSE</figcaption>
 </figure>
 <p>PyTorch实现代码如下：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp47_4.png" srcset="/img/loading.gif" lazyload
-alt="PyTorch MSE" />
+<img src="/img/nlp47_4.png" srcset="/img/loading.gif" lazyload alt="PyTorch MSE" />
 <figcaption aria-hidden="true">PyTorch MSE</figcaption>
 </figure>
 <h3 id="mean-absolute-error">Mean Absolute Error</h3>
@@ -383,14 +379,12 @@ y_{2},...,y_{n}\}\)</span>中的第i个元素，则绝对值损失函数MAE的�
 class="math display">\[MAE=\frac{1}{n}\sum_{i=1}^n|\widetilde{y}_{i}-y_{i}|\]</span></p>
 <p>Keras实现代码如下：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp47_5.png" srcset="/img/loading.gif" lazyload
-alt="Keras MAE" />
+<img src="/img/nlp47_5.png" srcset="/img/loading.gif" lazyload alt="Keras MAE" />
 <figcaption aria-hidden="true">Keras MAE</figcaption>
 </figure>
 <p>PyTorch实现代码如下：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp47_6.png" srcset="/img/loading.gif" lazyload
-alt="PyTorch MAE" />
+<img src="/img/nlp47_6.png" srcset="/img/loading.gif" lazyload alt="PyTorch MAE" />
 <figcaption aria-hidden="true">PyTorch MAE</figcaption>
 </figure>
 <p>注意，在PyTorch中L1Loss中的L1表示为L1范数，即通常所说的绝对值，绝对值函数<span
@@ -405,14 +399,12 @@ class="math inline">\(\bar{Y}\)</span>表示样本预测标签序列（每个值
 target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/details/81224125">Sklearn中二分类问题的交叉熵计算</a>。</p>
 <p>Keras实现代码如下：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp47_7.png" srcset="/img/loading.gif" lazyload
-alt="Keras BCE" />
+<img src="/img/nlp47_7.png" srcset="/img/loading.gif" lazyload alt="Keras BCE" />
 <figcaption aria-hidden="true">Keras BCE</figcaption>
 </figure>
 <p>PyTorch实现代码如下：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp47_8.png" srcset="/img/loading.gif" lazyload
-alt="PyTorch BCE" />
+<img src="/img/nlp47_8.png" srcset="/img/loading.gif" lazyload alt="PyTorch BCE" />
 <figcaption aria-hidden="true">PyTorch BCE</figcaption>
 </figure>
 <p>从上面的结果中可以看到Keras和PyTorch在实现BCE损失函数的差异，给定样本，Keras给出了每个样本的BCE，而PyTorch给出了所有样本BCE的平均值。更大的差异体现在<code>多分类交叉熵损失函数</code>。</p>
@@ -429,8 +421,7 @@ C_{c}]\)</span>表示模型预测的第i个样本属于第c个类别的概率值
 target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/details/81233277">多分类问题的交叉熵计算</a>。</p>
 <p>Keras实现代码如下：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp47_9.png" srcset="/img/loading.gif" lazyload
-alt="Keras CCE" />
+<img src="/img/nlp47_9.png" srcset="/img/loading.gif" lazyload alt="Keras CCE" />
 <figcaption aria-hidden="true">Keras CCE</figcaption>
 </figure>
 <p>PyTorch中的CCE采用稀疏多分类交叉熵损失函数实现，因此直接查看稀疏多分类交叉熵损失函数部分即可。</p>
@@ -440,15 +431,13 @@ Entropy</h3>
 Entropy（稀疏多分类交叉熵损失函数，SCCE）原理上和多分类交叉熵损失函数（CCE）一致，属于多分类问题的损失函数，不同之处在于多分类交叉熵损失函数中的真实样本值用one-hot向量来表示，其下标i为1，其余为0，表示属于第i个类别；而稀疏多分类交叉熵损失函数中真实样本直接用数字i表示，表示属于第i个类别。</p>
 <p>Keras实现代码如下：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp47_10.png" srcset="/img/loading.gif" lazyload
-alt="Keras SCCE" />
+<img src="/img/nlp47_10.png" srcset="/img/loading.gif" lazyload alt="Keras SCCE" />
 <figcaption aria-hidden="true">Keras SCCE</figcaption>
 </figure>
 <p>例子中一共四个样本，它们的真实样本标签为[2,2,0,1]，不是one-hot向量。</p>
 <p>PyTorch中的SCCE实现代码与上述数学公式不太一致，有些微改动。我们先看例子如下：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp47_11.png" srcset="/img/loading.gif" lazyload
-alt="PyTorch SCCE" />
+<img src="/img/nlp47_11.png" srcset="/img/loading.gif" lazyload alt="PyTorch SCCE" />
 <figcaption aria-hidden="true">PyTorch SCCE</figcaption>
 </figure>
 <p>这明显与Keras实现代码是不一致的。要解释这种差别，我们就要详细了解PyTorch是如何实现CCE损失函数的。</p>
@@ -467,15 +456,13 @@ Loss为合页损失函数，常用于分类问题。合页损失函数不仅要�
 class="math inline">\(\widetilde{y}\)</span>为预测标签。</p>
 <p>Keras实现代码如下：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp47_12.png" srcset="/img/loading.gif" lazyload
-alt="Keras Hingle Loss" />
+<img src="/img/nlp47_12.png" srcset="/img/loading.gif" lazyload alt="Keras Hingle Loss" />
 <figcaption aria-hidden="true">Keras Hingle Loss</figcaption>
 </figure>
 <p>PyTorch中没有专门的Hingle
 Loss实现函数，不过我们可以很轻松地自己实现，代码如下：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp47_13.png" srcset="/img/loading.gif" lazyload
-alt="PyTorch Hingle Loss" />
+<img src="/img/nlp47_13.png" srcset="/img/loading.gif" lazyload alt="PyTorch Hingle Loss" />
 <figcaption aria-hidden="true">PyTorch Hingle Loss</figcaption>
 </figure>
 <h3 id="总结">总结</h3>

@@ -23,15 +23,15 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文将会介绍如何利用ALBERT实现命名实体识别。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
+<meta property="og:image" content="https://percent4.github.io/img/nlp.jpeg">
 <meta property="article:published_time" content="2023-07-09T03:08:58.000Z">
-<meta property="article:modified_time" content="2023-08-03T05:32:07.850Z">
+<meta property="article:modified_time" content="2023-08-06T14:55:18.884Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="NER">
 <meta property="article:tag" content="ALBERT">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp.jpeg">
   
   
   
@@ -327,8 +327,7 @@ href="https://percent4.github.io/2023/07/08/NLP%E5%85%A5%E9%97%A8%EF%BC%88%E5%9B
 。</p>
 <p>本文的项目结构如下：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp24_1.png" srcset="/img/loading.gif" lazyload
-alt="项目结构" />
+<img src="/img/nlp24_1.png" srcset="/img/loading.gif" lazyload alt="项目结构" />
 <figcaption aria-hidden="true">项目结构</figcaption>
 </figure>
 <p>其中，<code>albert_zh</code>为ALBERT提取文本特征模块，这方面的代码已经由别人开源，我们只需要拿来使用即可。data目录下为我们本次讲解所需要的数据，图中只有example开头的数据集，这是人民日报的标注语料，实体为人名（PER）、地名（LOC）和组织机构名（ORG）。数据集一行一个字符以及标注符号，标注系统采用<code>BIO</code>系统，我们以example.train的第一句为例，标注信息如下：</p>
@@ -342,8 +341,7 @@ alt="项目结构" />
 <p>生成该文件是为了方便我们后边的模型训练和预测的时候调用。</p>
 <p>接着就是最重要的模型训练部分了，模型的结构图如下：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp24_2.png" srcset="/img/loading.gif" lazyload
-alt="模型结构图" />
+<img src="/img/nlp24_2.png" srcset="/img/loading.gif" lazyload alt="模型结构图" />
 <figcaption aria-hidden="true">模型结构图</figcaption>
 </figure>
 <p>我们采用ALBERT作为文本特征提取，后接经典的序列标注算法——Bi-LSTM算法。<code>albert_model_train.py</code>的完整代码如下：</p>
@@ -352,8 +350,7 @@ alt="模型结构图" />
 <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs markdown">sentences length: 20864 <br>last sentence:  思想自由是对自我而言，用中国传统的说法是有所为；兼容并包是指对待他人，要有所不为。<br>start ALBERT encding<br>end ALBERT encoding<br>sentences length: 2318 <br>last sentence:  良性肿瘤、恶性肿瘤虽然只是一字之差，但两者有根本性的差别。<br>start ALBERT encding<br>end ALBERT encoding<br>sentences length: 4636 <br>last sentence:  因此，村民进行民主选举的心态是在这样一种背景映衬下加以表现的，这无疑给该片增添了几分厚重的历史文化氛围。<br>start ALBERT encding<br>end ALBERT encoding<br><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span>_<br><span class="hljs-section">Layer (type)                 Output Shape              Param #   </span><br><span class="hljs-section">=================================================================</span><br>bert<span class="hljs-emphasis">_output (InputLayer)     (None, 128, 312)          0         </span><br><span class="hljs-emphasis"><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span>_</span><br>bi<span class="hljs-emphasis">_lstm (Bidirectional)      (None, 128, 256)          451584    </span><br><span class="hljs-emphasis"><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span>_</span><br>dropout (Dropout)            (None, 128, 256)          0         <br><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span>_<br><span class="hljs-section">time<span class="hljs-emphasis">_distributed (TimeDistri (None, 128, 8)            2056      </span></span><br><span class="hljs-emphasis"><span class="hljs-section">=================================================================</span></span><br><span class="hljs-emphasis"><span class="hljs-section">Total params: 453,640</span></span><br><span class="hljs-emphasis"><span class="hljs-section">Trainable params: 453,640</span></span><br><span class="hljs-emphasis"><span class="hljs-section">Non-trainable params: 0</span></span><br><span class="hljs-emphasis"><span class="hljs-section"><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span>_</span></span><br><span class="hljs-section">Train on 20864 samples, validate on 2318 samples</span><br><span class="hljs-section">......</span><br><span class="hljs-section">......</span><br><span class="hljs-section">......</span><br><span class="hljs-section">20864/20864 [==============================] - 97s 5ms/step - loss: 0.0091 - acc: 0.9969 - val<span class="hljs-emphasis">_loss: 0.0397 - val_</span>acc: 0.9900</span><br><span class="hljs-section">           precision    recall  f1-score   support</span><br><span class="hljs-section"></span><br><span class="hljs-section">      ORG     0.9001    0.9112    0.9056      2185</span><br><span class="hljs-section">      LOC     0.9383    0.8898    0.9134      3658</span><br><span class="hljs-section">      PER     0.9543    0.9415    0.9479      1864</span><br><span class="hljs-section"></span><br><span class="hljs-section">micro avg     0.9310    0.9084    0.9196      7707</span><br><span class="hljs-section">macro avg     0.9313    0.9084    0.9195      7707</span><br></code></pre></td></tr></table></figure>
 <p>在测试集上的F1值为91.96%。同时，训练过程中的loss和acc曲线如下图：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp24_3.png" srcset="/img/loading.gif" lazyload
-alt="训练过程中的loss和acc曲线图" />
+<img src="/img/nlp24_3.png" srcset="/img/loading.gif" lazyload alt="训练过程中的loss和acc曲线图" />
 <figcaption aria-hidden="true">训练过程中的loss和acc曲线图</figcaption>
 </figure>
 <p>模型预测部分的代码（脚本为model_predict.py）如下：</p>

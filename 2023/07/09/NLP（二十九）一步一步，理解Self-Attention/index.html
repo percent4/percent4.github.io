@@ -23,14 +23,14 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文将会通过详细的分析，逐步介绍Self-Attention。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
+<meta property="og:image" content="https://percent4.github.io/img/nlp.jpeg">
 <meta property="article:published_time" content="2023-07-09T03:46:31.000Z">
-<meta property="article:modified_time" content="2023-08-03T05:32:07.839Z">
+<meta property="article:modified_time" content="2023-08-06T14:55:18.867Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="Self-Attention">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp.jpeg">
   
   
   
@@ -346,8 +346,7 @@ id="什么是self-attention自注意力机制">什么是Self-Attention（自注�
 </blockquote>
 <h4 id="第一步准备输入">第一步：准备输入</h4>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp29_1.png" srcset="/img/loading.gif" lazyload
-alt="准备数据" />
+<img src="/img/nlp29_1.png" srcset="/img/loading.gif" lazyload alt="准备数据" />
 <figcaption aria-hidden="true">准备数据</figcaption>
 </figure>
 <p>在这个教程中，我们从3个输入开始，每个输入的维数为4。</p>
@@ -358,7 +357,7 @@ alt="准备数据" />
 <p>注意：我们稍后会看到<code>value</code>的维数也是output的维数。</p>
 </blockquote>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp29_2.gif" srcset="/img/loading.gif" lazyload
+<img src="/img/nlp29_2.gif" srcset="/img/loading.gif" lazyload
 alt="从每个输入中获取key，value，query的表示" />
 <figcaption
 aria-hidden="true">从每个输入中获取key，value，query的表示</figcaption>
@@ -387,21 +386,18 @@ id="第三步获取keyquery和value">第三步：获取<code>key</code>，<code>
 <p>更快的方式是将这些运算用向量来描述：</p>
 <figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs inform7">               <span class="hljs-comment">[0, 0, 1]</span><br><span class="hljs-comment">[1, 0, 1, 0]</span>   <span class="hljs-comment">[1, 1, 0]</span>   <span class="hljs-comment">[0, 1, 1]</span><br><span class="hljs-comment">[0, 2, 0, 2]</span> x <span class="hljs-comment">[0, 1, 0]</span> = <span class="hljs-comment">[4, 4, 0]</span><br><span class="hljs-comment">[1, 1, 1, 1]</span>   <span class="hljs-comment">[1, 1, 0]</span>   <span class="hljs-comment">[2, 3, 1]</span><br></code></pre></td></tr></table></figure>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp29_3.gif" srcset="/img/loading.gif" lazyload
-alt="获取key表示" />
+<img src="/img/nlp29_3.gif" srcset="/img/loading.gif" lazyload alt="获取key表示" />
 <figcaption aria-hidden="true">获取key表示</figcaption>
 </figure>
 <p>让我们用相同的操作来获取每个输入的<code>value</code>表示：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp29_4.gif" srcset="/img/loading.gif" lazyload
-alt="获取value" />
+<img src="/img/nlp29_4.gif" srcset="/img/loading.gif" lazyload alt="获取value" />
 <figcaption aria-hidden="true">获取value</figcaption>
 </figure>
 <p>最后是<code>query</code>的表示：</p>
 <figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs inform7">               <span class="hljs-comment">[1, 0, 1]</span><br><span class="hljs-comment">[1, 0, 1, 0]</span>   <span class="hljs-comment">[1, 0, 0]</span>   <span class="hljs-comment">[1, 0, 2]</span><br><span class="hljs-comment">[0, 2, 0, 2]</span> x <span class="hljs-comment">[0, 0, 1]</span> = <span class="hljs-comment">[2, 2, 2]</span><br><span class="hljs-comment">[1, 1, 1, 1]</span>   <span class="hljs-comment">[0, 1, 1]</span>   <span class="hljs-comment">[2, 1, 3]</span><br></code></pre></td></tr></table></figure>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp29_5.gif" srcset="/img/loading.gif" lazyload
-alt="获取query" />
+<img src="/img/nlp29_5.gif" srcset="/img/loading.gif" lazyload alt="获取query" />
 <figcaption aria-hidden="true">获取query</figcaption>
 </figure>
 <blockquote>
@@ -410,8 +406,7 @@ alt="获取query" />
 <h4
 id="第四步为第1个输入计算注意力分数">第四步：为第1个输入计算注意力分数</h4>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp29_6.gif" srcset="/img/loading.gif" lazyload
-alt="为第1个输入计算注意力分数（蓝色）" />
+<img src="/img/nlp29_6.gif" srcset="/img/loading.gif" lazyload alt="为第1个输入计算注意力分数（蓝色）" />
 <figcaption
 aria-hidden="true">为第1个输入计算注意力分数（蓝色）</figcaption>
 </figure>
@@ -420,15 +415,14 @@ aria-hidden="true">为第1个输入计算注意力分数（蓝色）</figcaption
 <p>注意到我们只用了输入的<code>query</code>。后面我们会为其他的<code>queries</code>重复这些步骤。</p>
 <h4 id="第五步计算softmax">第五步：计算softmax</h4>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp29_7.gif" srcset="/img/loading.gif" lazyload
-alt="对注意力分数进行softmax运算" />
+<img src="/img/nlp29_7.gif" srcset="/img/loading.gif" lazyload alt="对注意力分数进行softmax运算" />
 <figcaption aria-hidden="true">对注意力分数进行softmax运算</figcaption>
 </figure>
 <p>对这些注意力分数进行softmax函数运算（蓝色部分）。</p>
 <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">softmax</span>([<span class="hljs-number">2</span>, <span class="hljs-number">4</span>, <span class="hljs-number">4</span>]) =<span class="hljs-meta"> [0.0, 0.5, 0.5]</span><br></code></pre></td></tr></table></figure>
 <h4 id="第六步-将分数乘以values">第六步： 将分数乘以values</h4>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp29_8.gif" srcset="/img/loading.gif" lazyload
+<img src="/img/nlp29_8.gif" srcset="/img/loading.gif" lazyload
 alt="将value（紫色）和score（蓝色）相乘得到权重化value的表示" />
 <figcaption
 aria-hidden="true">将value（紫色）和score（蓝色）相乘得到权重化value的表示</figcaption>
@@ -438,8 +432,7 @@ aria-hidden="true">将value（紫色）和score（蓝色）相乘得到权重化
 <h4
 id="第七步对权重化后的values求和得到输出1">第七步：对权重化后的values求和，得到输出1</h4>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp29_9.gif" srcset="/img/loading.gif" lazyload
-alt="将权重后value（黄色）相加得到输出1" />
+<img src="/img/nlp29_9.gif" srcset="/img/loading.gif" lazyload alt="将权重后value（黄色）相加得到输出1" />
 <figcaption
 aria-hidden="true">将权重后value（黄色）相加得到输出1</figcaption>
 </figure>
@@ -450,8 +443,7 @@ aria-hidden="true">将权重后value（黄色）相加得到输出1</figcaption>
 <h4 id="第八步对输入23重复第4-7步">第八步：对输入2、3，重复第4-7步</h4>
 <p>既然我们已经完成了输入1，我们重复步骤4-7能得到输出2和3。这个可以留给读者自己尝试，相信聪明的你可以做出来。</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp29_10.gif" srcset="/img/loading.gif" lazyload
-alt="重复之前的步骤，得到输出2和3" />
+<img src="/img/nlp29_10.gif" srcset="/img/loading.gif" lazyload alt="重复之前的步骤，得到输出2和3" />
 <figcaption aria-hidden="true">重复之前的步骤，得到输出2和3</figcaption>
 </figure>
 <h3 id="代码">代码</h3>

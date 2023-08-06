@@ -23,15 +23,15 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文将会介绍如何利用doccano进行文档标注。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
+<meta property="og:image" content="https://percent4.github.io/img/nlp.jpeg">
 <meta property="article:published_time" content="2023-07-10T01:46:54.000Z">
-<meta property="article:modified_time" content="2023-08-03T05:32:07.833Z">
+<meta property="article:modified_time" content="2023-08-06T14:55:18.951Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="NLP工具">
 <meta property="article:tag" content="doccano">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://139.224.0.63:9000/files/img/nlp.jpeg">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp.jpeg">
   
   
   
@@ -340,14 +340,12 @@ target="_blank" rel="noopener" href="https://github.com/doccano/doccano">https:/
 <p>本文将演示如何使用doccano来进行序列标注方面的人工标注。</p>
 <p>首先我们创建一个标注项目，名称为<code>example_tagging_platform</code>，项目类型选择<code>Sequence Labeling</code>，如下页面：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp32_1.png" srcset="/img/loading.gif" lazyload
-alt="创建标注任务" />
+<img src="/img/nlp32_1.png" srcset="/img/loading.gif" lazyload alt="创建标注任务" />
 <figcaption aria-hidden="true">创建标注任务</figcaption>
 </figure>
 <p>假设我们需要标注的实体标签为<code>时间</code>、<code>人物</code>、<code>职位</code>和<code>公司</code>。我们可以先创建标签，选择标签颜色，如下页面：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp32_2.png" srcset="/img/loading.gif" lazyload
-alt="创建标签" />
+<img src="/img/nlp32_2.png" srcset="/img/loading.gif" lazyload alt="创建标签" />
 <figcaption aria-hidden="true">创建标签</figcaption>
 </figure>
 <p>其中的k,c,p,t分别是这些标签的标注快捷键，我们在真实标注的时候，选择好标注文字后再按这些快捷键可以快速完成标注。</p>
@@ -355,28 +353,24 @@ alt="创建标签" />
 Dataset ）的时候，可以选择Plain
 Text。当然也可以选择其它格式的上传文档，比如Json，但需要按照指定格式来。</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp32_3.png" srcset="/img/loading.gif" lazyload
-alt="上传文档" />
+<img src="/img/nlp32_3.png" srcset="/img/loading.gif" lazyload alt="上传文档" />
 <figcaption aria-hidden="true">上传文档</figcaption>
 </figure>
 <p>我们上传的txt文档（a.txt）内容如下：</p>
 <figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs dns">“我们欣喜地看到，科创板和香港联交所推出了一系列改革和创新的举措，为新经济公司能更好地获得资本市场支持包括国际资本支持创造了良好条件，我们很高兴能有机会参与其中。”蚂蚁集团董事长井贤栋说。<br><span class="hljs-number">7</span>月<span class="hljs-number">20</span>日，支付宝母公司蚂蚁集团宣布，启动在香港联合交易所有限公司主板寻求同步发行上市的计划，以进一步支持服务业数字化升级做大内需，加强全球合作助力全球可持续发展，以及支持公司加大技术研发和创新。<br>记者从官方获悉，小鹏汽车于今日宣布完成了近<span class="hljs-number">5</span>亿美元(约<span class="hljs-number">35</span>亿元人民币)C+轮融资，投资方包括Aspex、Coatue、高瓴资本和红杉中国等投资机构。<br>作为百度的总部，百度大厦于<span class="hljs-number">2009年11月17</span>日投入使用，就承载了百度所有的辉煌。<br></code></pre></td></tr></table></figure>
 <p>上传后的界面如下：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp32_4.png" srcset="/img/loading.gif" lazyload
-alt="上传后的界面" />
+<img src="/img/nlp32_4.png" srcset="/img/loading.gif" lazyload alt="上传后的界面" />
 <figcaption aria-hidden="true">上传后的界面</figcaption>
 </figure>
 <p>点击左上方的<code>Start Annotation</code>即可开始标注。如下图：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp32_5.png" srcset="/img/loading.gif" lazyload
-alt="利用doccano进行标注" />
+<img src="/img/nlp32_5.png" srcset="/img/loading.gif" lazyload alt="利用doccano进行标注" />
 <figcaption aria-hidden="true">利用doccano进行标注</figcaption>
 </figure>
 <p>当我们完成部分（或全部）数据的标注时，可以在<code>Statistics</code>中查看标注文档数量，每个标签的标注数量以及每个用户的标注文档数量，如下页面：</p>
 <figure>
-<img src="http://139.224.0.63:9000/files/img/nlp32_6.png" srcset="/img/loading.gif" lazyload
-alt="标注统计" />
+<img src="/img/nlp32_6.png" srcset="/img/loading.gif" lazyload alt="标注统计" />
 <figcaption aria-hidden="true">标注统计</figcaption>
 </figure>
 <p>本次演示到此结束。</p>
