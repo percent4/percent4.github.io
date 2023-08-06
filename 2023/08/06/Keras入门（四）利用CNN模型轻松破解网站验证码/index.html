@@ -1,0 +1,859 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍如何利用CNN模型轻松破解网站验证码。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Keras入门（四）利用CNN模型轻松破解网站验证码">
+<meta property="og:url" content="https://percent4.github.io/2023/08/06/Keras%E5%85%A5%E9%97%A8%EF%BC%88%E5%9B%9B%EF%BC%89%E5%88%A9%E7%94%A8CNN%E6%A8%A1%E5%9E%8B%E8%BD%BB%E6%9D%BE%E7%A0%B4%E8%A7%A3%E7%BD%91%E7%AB%99%E9%AA%8C%E8%AF%81%E7%A0%81/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍如何利用CNN模型轻松破解网站验证码。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://percent4.github.io/img/keras.png">
+<meta property="article:published_time" content="2023-08-06T15:35:06.000Z">
+<meta property="article:modified_time" content="2023-08-06T15:38:58.282Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="CNN">
+<meta property="article:tag" content="Keras">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://percent4.github.io/img/keras.png">
+  
+  
+  
+  <title>Keras入门（四）利用CNN模型轻松破解网站验证码 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Keras入门（四）利用CNN模型轻松破解网站验证码"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-08-06 23:35" pubdate>
+          星期日, 八月 6日 2023, 11:35 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          5.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          43 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Keras入门（四）利用CNN模型轻松破解网站验证码</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h3 id="项目简介">项目简介</h3>
+<p>在之前的文章<a
+target="_blank" rel="noopener" href="https://www.jianshu.com/p/b653c0781073">keras入门（三）搭建CNN模型破解网站验证码</a>中，笔者介绍介绍了如何用Keras来搭建CNN模型来破解网站的验证码，其中验证码含有字母和数字。</p>
+<p>让我们一起回顾一下<a
+target="_blank" rel="noopener" href="https://www.jianshu.com/p/b653c0781073">那篇文章</a>的处理思路：</p>
+<ul>
+<li><p>利用OpenCV对图像进行单个字符的切割，大概400多张图片；</p></li>
+<li><p>对切割好的单个字符进行人工手动标记；</p></li>
+<li><p>搭建合适的CNN模型，对标记好的数据集进行训练；</p></li>
+<li><p>对于新的验证码，先切割单个字符，再对单个字符进行预测，组成总的预测结果。</p>
+<p>这一次，笔者将会换种思路，使用CNN模型来破解网站的验证码。我们的数据集如下：</p></li>
+</ul>
+<p><img src="/img/keras4_1.png" srcset="/img/loading.gif" lazyload /></p>
+<p>一共是946张图片，这里只展示了一部分，可以看到，这些验证码全部由数字组成。那么，新的破解验证码的思路是什么呢？如下：</p>
+<ul>
+<li>直接对验证码进行标记，标记的结果见上图；</li>
+<li>搭建合适的CNN模型对标记好的数据集进行训练；</li>
+<li>对新验证码进行预测。</li>
+</ul>
+<p>这种思路的好处是，不需要对验证码进行繁琐的预处理，只需要简单的数据标记即可。</p>
+<p>下面，笔者将会具体展示这个过程。</p>
+<h3 id="数据标记">数据标记</h3>
+<p>数据标记绝对是个累活，当我想到要对946张图片进行标记并重命名，而且还要保证标记的准确性的时候，我开始是有点拒绝的心态，毕竟这项工作费时费力，而且能不能保证识别的效果还是个未知数。</p>
+<p>就这么纠结了一段时间，原本年前就想做的项目一直拖到了现在，后来我想，能不能写个脚本，能够帮助我快速地进行数据标注，并自动保存呢？这么想着，我就动手自己做了一个由Tornado实现的前端页面，可以帮助我快速地标记数据并保存图片，页面如下：</p>
+<figure>
+<img src="/img/keras4_2.png" srcset="/img/loading.gif" lazyload alt="数据标记界面.png" />
+<figcaption aria-hidden="true">数据标记界面.png</figcaption>
+</figure>
+<p>界面虽然简陋，却能帮助我很好地提升数据标记的速度，只需要在value文本框中输入自己识别的结果，程序就能自动保存标记好的图片，并切换至下一张未标记的验证码。有了如此好的工具，结果我用了不到一小时就标记完了这946张验证码（其实是1000张，因为标记好的结果会有重复）。有机会笔者会介绍这个验证码标记的项目～</p>
+<h3 id="模型训练">模型训练</h3>
+<p>标记完验证码后，我们就利用这946张验证码作为训练数据，训练CNN模型。我们使用Keras框架，CNN模型的结构图如下：</p>
+<p><img src="/img/keras4_3.png" srcset="/img/loading.gif" lazyload /></p>
+<p>模型训练的Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># CNN模型训练</span><br><br><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> cv2<br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> random<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">from</span> keras.models <span class="hljs-keyword">import</span> *<br><span class="hljs-keyword">from</span> keras.layers <span class="hljs-keyword">import</span> *<br><span class="hljs-keyword">from</span> keras <span class="hljs-keyword">import</span> callbacks<br><br>characters = <span class="hljs-string">&#x27;0123456789&#x27;</span><br>width, height, n_len, n_class = <span class="hljs-number">50</span>, <span class="hljs-number">22</span>, <span class="hljs-number">4</span>, <span class="hljs-number">10</span><br><br><span class="hljs-comment"># 产生训练的一批图片，默认是32张图片</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">gen</span>(<span class="hljs-params"><span class="hljs-built_in">dir</span>, batch_size=<span class="hljs-number">32</span></span>):<br>    X = np.zeros((batch_size, height, width, <span class="hljs-number">3</span>), dtype=np.uint8)<br>    y = [np.zeros((batch_size, n_class), dtype=np.uint8) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n_len)]<br>    files = os.listdir(<span class="hljs-built_in">dir</span>)<br>    <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(batch_size):<br>            path = random.choice(files)<br>            imagePixel = cv2.imread(<span class="hljs-built_in">dir</span>+<span class="hljs-string">&#x27;/&#x27;</span>+path, <span class="hljs-number">1</span>)<br>            filename = path[:<span class="hljs-number">4</span>]<br>            X[i] = imagePixel<br>            <span class="hljs-keyword">for</span> j, ch <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(filename):<br>                y[j][i, :] = <span class="hljs-number">0</span><br>                y[j][i, characters.find(ch)] = <span class="hljs-number">1</span><br><br>        <span class="hljs-keyword">yield</span> X, y<br><br><br>input_tensor = Input((height, width, <span class="hljs-number">3</span>))<br>x = input_tensor<br><br><span class="hljs-comment"># 产生有四个block的卷积神经网络</span><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">4</span>):<br>    <span class="hljs-comment"># 卷积层</span><br>    x = Conv2D(<span class="hljs-number">32</span> * <span class="hljs-number">2</span> ** i, (<span class="hljs-number">3</span>, <span class="hljs-number">3</span>), activation=<span class="hljs-string">&#x27;relu&#x27;</span>, padding=<span class="hljs-string">&#x27;same&#x27;</span>)(x)<br>    x = Conv2D(<span class="hljs-number">32</span> * <span class="hljs-number">2</span> ** i, (<span class="hljs-number">3</span>, <span class="hljs-number">3</span>), activation=<span class="hljs-string">&#x27;relu&#x27;</span>, padding=<span class="hljs-string">&#x27;same&#x27;</span>)(x)<br>    <span class="hljs-comment"># 池化层</span><br>    x = MaxPooling2D((<span class="hljs-number">2</span>, <span class="hljs-number">2</span>))(x)<br><br>x = Flatten()(x)<br>x = Dropout(<span class="hljs-number">0.25</span>)(x)<br><br><span class="hljs-comment"># 多输出模型，使用了4个&#x27;softmax&#x27;來分别预测4個字母的输出</span><br>x = [Dense(n_class, activation=<span class="hljs-string">&#x27;softmax&#x27;</span>, name=<span class="hljs-string">&#x27;c%d&#x27;</span> % (i + <span class="hljs-number">1</span>))(x) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">4</span>)]<br>model = Model(inputs=input_tensor, outputs=x)<br>model.summary()<br><br><span class="hljs-comment"># 保存模型结构图</span><br><span class="hljs-keyword">from</span> keras.utils.vis_utils <span class="hljs-keyword">import</span> plot_model<br>plot_model(model, to_file=<span class="hljs-string">&quot;./model.png&quot;</span>, show_shapes=<span class="hljs-literal">True</span>)<br><br>model.<span class="hljs-built_in">compile</span>(loss=<span class="hljs-string">&#x27;categorical_crossentropy&#x27;</span>,<br>              optimizer=<span class="hljs-string">&#x27;adadelta&#x27;</span>,<br>              metrics=[<span class="hljs-string">&#x27;accuracy&#x27;</span>])<br><br><span class="hljs-comment"># 保存效果最好的模型</span><br>cbks = [callbacks.ModelCheckpoint(<span class="hljs-string">&quot;best_model.h5&quot;</span>, save_best_only=<span class="hljs-literal">True</span>)]<br><br><span class="hljs-built_in">dir</span> = <span class="hljs-string">&#x27;./result&#x27;</span><br>history = model.fit_generator(gen(<span class="hljs-built_in">dir</span>, batch_size=<span class="hljs-number">8</span>),      <span class="hljs-comment"># 每次生成器会产生8张小批量的图片</span><br>                    steps_per_epoch=<span class="hljs-number">120</span>,    <span class="hljs-comment"># 每次的epoch要训练120批图片</span><br>                    epochs=<span class="hljs-number">50</span>,                <span class="hljs-comment"># 总共训练50次</span><br>                    callbacks=cbks,          <span class="hljs-comment"># 保存最好的模型</span><br>                    validation_data=gen(<span class="hljs-built_in">dir</span>),   <span class="hljs-comment"># 验证数据也是用生成器來产生</span><br>                    validation_steps=<span class="hljs-number">10</span>      <span class="hljs-comment"># 用10组图片来进行验证</span><br>                   )<br><br><span class="hljs-comment"># 绘制损失值图像</span><br><span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">plot_train_history</span>(<span class="hljs-params">history, train_metrics, val_metrics</span>):<br>    plt.plot(history.history.get(train_metrics), <span class="hljs-string">&#x27;-o&#x27;</span>)<br>    plt.plot(history.history.get(val_metrics), <span class="hljs-string">&#x27;-o&#x27;</span>)<br>    plt.ylabel(train_metrics)<br>    plt.xlabel(<span class="hljs-string">&#x27;Epochs&#x27;</span>)<br>    plt.legend([<span class="hljs-string">&#x27;train&#x27;</span>, <span class="hljs-string">&#x27;validation&#x27;</span>])<br><br><br><span class="hljs-comment"># 打印整体的loss与val_loss，并保存图片</span><br>plot_train_history(history, <span class="hljs-string">&#x27;loss&#x27;</span>, <span class="hljs-string">&#x27;val_loss&#x27;</span>)<br>plt.savefig(<span class="hljs-string">&#x27;./all_loss.png&#x27;</span>)<br><br>plt.figure(figsize=(<span class="hljs-number">12</span>, <span class="hljs-number">4</span>))<br><br><span class="hljs-comment"># 第一个数字的正确率</span><br>plt.subplot(<span class="hljs-number">2</span>, <span class="hljs-number">2</span>, <span class="hljs-number">1</span>)<br>plot_train_history(history, <span class="hljs-string">&#x27;c1_acc&#x27;</span>, <span class="hljs-string">&#x27;val_c1_acc&#x27;</span>)<br><br><span class="hljs-comment"># 第二个数字的正确率</span><br>plt.subplot(<span class="hljs-number">2</span>, <span class="hljs-number">2</span>, <span class="hljs-number">2</span>)<br>plot_train_history(history, <span class="hljs-string">&#x27;c2_acc&#x27;</span>, <span class="hljs-string">&#x27;val_c2_acc&#x27;</span>)<br><br><span class="hljs-comment"># 第三個数字的正確率</span><br>plt.subplot(<span class="hljs-number">2</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>)<br>plot_train_history(history, <span class="hljs-string">&#x27;c3_acc&#x27;</span>, <span class="hljs-string">&#x27;val_c3_acc&#x27;</span>)<br><br><span class="hljs-comment"># 第四個数字的正确率</span><br>plt.subplot(<span class="hljs-number">2</span>, <span class="hljs-number">2</span>, <span class="hljs-number">4</span>)<br>plot_train_history(history, <span class="hljs-string">&#x27;c4_acc&#x27;</span>, <span class="hljs-string">&#x27;val_c4_acc&#x27;</span>)<br><br><span class="hljs-comment"># 保存图片</span><br>plt.savefig(<span class="hljs-string">&#x27;./train.png&#x27;</span>)<br></code></pre></td></tr></table></figure>
+<p>在这个代码中，我们总共训练了50个epoch，每个epoch共120次批次，每个批次是8张验证码，每张验证码的大小为50*22。</p>
+<p>运行该训练模型，后几个epoch的输出结果如下：</p>
+<p><img src="/img/keras4_4.png" srcset="/img/loading.gif" lazyload /></p>
+<p>总的损失值图像如下：</p>
+<p><img src="/img/keras4_5.png" srcset="/img/loading.gif" lazyload /></p>
+<p>四个数字每个数字的损失值图像如下：</p>
+<p><img src="/img/keras4_6.png" srcset="/img/loading.gif" lazyload /></p>
+<p>训练完后，程序会将训练效果最好的epoch保存为best_model.h5文件，便于后续的模型预测。由输出的结果及图像来看，该CNN模型的训练效果应该是相当好的，下面，我们来看看对新验证码的预测效果。</p>
+<h3 id="模型预测">模型预测</h3>
+<p>新的验证码共有20张，如下：</p>
+<p><img src="/img/keras4_7.png" srcset="/img/loading.gif" lazyload /></p>
+<p>模型预测的Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 使用训练好的CNN模型对新图片进行预测</span><br><br><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> keras.models <span class="hljs-keyword">import</span> load_model<br><span class="hljs-keyword">import</span> cv2<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><br><span class="hljs-comment"># 导入训练好的模型</span><br>model = load_model(<span class="hljs-string">&#x27;best_model.h5&#x27;</span>)<br><br>batch_size = <span class="hljs-number">20</span><br>width, height, n_len, n_class = <span class="hljs-number">50</span>, <span class="hljs-number">22</span>, <span class="hljs-number">4</span>, <span class="hljs-number">10</span><br><br><span class="hljs-comment"># 导入验证码数据并进行预测</span><br>X = np.zeros((batch_size, height, width, <span class="hljs-number">3</span>), dtype=np.uint8)<br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(batch_size):<br>    X_test = cv2.imread(<span class="hljs-string">&#x27;./new_image/code%d.png&#x27;</span> %(i+<span class="hljs-number">1</span>), <span class="hljs-number">1</span>)<br>    X[i] = X_test<br><br>y_pred = model.predict(X)<br>y_pred = np.argmax(y_pred, axis=<span class="hljs-number">2</span>)<br><br><span class="hljs-comment"># 输出每张验证码的预测结果</span><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(batch_size):<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;第%d张验证码的识别结果为：&#x27;</span> %(i+<span class="hljs-number">1</span>), end=<span class="hljs-string">&#x27;&#x27;</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;&#x27;</span>.join(<span class="hljs-built_in">map</span>(<span class="hljs-built_in">str</span>, y_pred[:, i].tolist())))<br></code></pre></td></tr></table></figure>
+<p>运行该模型，得到的输出结果如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs">第1张验证码的识别结果为：3568<br>第2张验证码的识别结果为：5402<br>第3张验证码的识别结果为：6051<br>第4张验证码的识别结果为：6769<br>第5张验证码的识别结果为：2675<br>第6张验证码的识别结果为：2450<br>第7张验证码的识别结果为：2364<br>第8张验证码的识别结果为：6879<br>第9张验证码的识别结果为：3702<br>第10张验证码的识别结果为：3459<br>第11张验证码的识别结果为：5895<br>第12张验证码的识别结果为：8042<br>第13张验证码的识别结果为：6897<br>第14张验证码的识别结果为：6558<br>第15张验证码的识别结果为：9428<br>第16张验证码的识别结果为：5662<br>第17张验证码的识别结果为：5431<br>第18张验证码的识别结果为：4981<br>第19张验证码的识别结果为：0567<br>第20张验证码的识别结果为：5239<br></code></pre></td></tr></table></figure>
+<p>对这20张新的验证码，预测完全正确！不得不说，CNN模型的识别效果非常好！</p>
+<h3 id="总结">总结</h3>
+<p>本文采用了一种新的思路，搭建CNN模型来实现验证码的识别，取得了不错的识别效果，而且识别的验证码是从网页中下载下来的，具有实际背景，增强了该项目的应用性。</p>
+<p>本项目已放至Github，地址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/CAPTCHA-Recognizition">https://github.com/percent4/CAPTCHA-Recognizition</a>
+。</p>
+<p>注意：本人现已开通微信公众号：
+NLP奇幻之旅（微信号为：easy_web_scrape）， 欢迎大家关注哦~~</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/" class="category-chain-item">深度学习框架</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/CNN/" class="print-no-link">#CNN</a>
+      
+        <a href="/tags/Keras/" class="print-no-link">#Keras</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Keras入门（四）利用CNN模型轻松破解网站验证码</div>
+      <div>https://percent4.github.io/2023/08/06/Keras入门（四）利用CNN模型轻松破解网站验证码/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年8月6日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/08/06/Keras%E5%85%A5%E9%97%A8%EF%BC%88%E4%BA%94%EF%BC%89%E6%90%AD%E5%BB%BAResNet%E5%AF%B9CIFAR-10%E8%BF%9B%E8%A1%8C%E5%9B%BE%E5%83%8F%E5%88%86%E7%B1%BB/" title="Keras入门（五）搭建ResNet对CIFAR-10进行图像分类">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Keras入门（五）搭建ResNet对CIFAR-10进行图像分类</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/08/06/keras%E5%85%A5%E9%97%A8%EF%BC%88%E4%B8%89%EF%BC%89%E6%90%AD%E5%BB%BACNN%E6%A8%A1%E5%9E%8B%E7%A0%B4%E8%A7%A3%E7%BD%91%E7%AB%99%E9%AA%8C%E8%AF%81%E7%A0%81/" title="keras入门（三）搭建CNN模型破解网站验证码">
+                        <span class="hidden-mobile">keras入门（三）搭建CNN模型破解网站验证码</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
