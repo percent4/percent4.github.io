@@ -321,61 +321,34 @@
             
               <div class="markdown-body">
                 
-                <h3 id="什么是elasticsearch">什么是Elasticsearch?</h3>
-<p><img src="/img/es1_1.png" srcset="/img/loading.gif" lazyload /></p>
-<p>Elasticsearch是一个开源的分布式、RESTful
-风格的搜索和数据分析引擎，它的底层是开源库Apache Lucene。</p>
-<p>Lucene
-可以说是当下最先进、高性能、全功能的搜索引擎库——无论是开源还是私有，但它也仅仅只是一个库。为了充分发挥其功能，你需要使用
-Java 并将 Lucene 直接集成到应用程序中。
-更糟糕的是，您可能需要获得信息检索学位才能了解其工作原理，因为Lucene
-非常复杂。</p>
-<p>为了解决Lucene使用时的繁复性，于是Elasticsearch便应运而生。它使用
-Java 编写，内部采用 Lucene
-做索引与搜索，但是它的目标是使全文检索变得更简单，简单来说，就是对Lucene
-做了一层封装，它提供了一套简单一致的 RESTful API
-来帮助我们实现存储和检索。</p>
-<p>当然，Elasticsearch 不仅仅是
-Lucene，并且也不仅仅只是一个全文搜索引擎。
-它可以被下面这样准确地形容：</p>
+                <h3 id="什么是Elasticsearch">什么是Elasticsearch?</h3>
+<p><img src="/img/es1_1.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p>Elasticsearch是一个开源的分布式、RESTful 风格的搜索和数据分析引擎，它的底层是开源库Apache Lucene。</p>
+<p>Lucene 可以说是当下最先进、高性能、全功能的搜索引擎库——无论是开源还是私有，但它也仅仅只是一个库。为了充分发挥其功能，你需要使用 Java 并将 Lucene 直接集成到应用程序中。 更糟糕的是，您可能需要获得信息检索学位才能了解其工作原理，因为Lucene 非常复杂。</p>
+<p>为了解决Lucene使用时的繁复性，于是Elasticsearch便应运而生。它使用 Java 编写，内部采用 Lucene 做索引与搜索，但是它的目标是使全文检索变得更简单，简单来说，就是对Lucene 做了一层封装，它提供了一套简单一致的 RESTful API 来帮助我们实现存储和检索。</p>
+<p>当然，Elasticsearch 不仅仅是 Lucene，并且也不仅仅只是一个全文搜索引擎。 它可以被下面这样准确地形容：</p>
 <ul>
 <li>一个分布式的实时文档存储，每个字段可以被索引与搜索；</li>
 <li>一个分布式实时分析搜索引擎；</li>
-<li>能胜任上百个服务节点的扩展，并支持 PB
-级别的结构化或者非结构化数据。</li>
+<li>能胜任上百个服务节点的扩展，并支持 PB 级别的结构化或者非结构化数据。</li>
 </ul>
-<p>由于Elasticsearch的功能强大和使用简单，维基百科、卫报、Stack
-Overflow、GitHub等都纷纷采用它来做搜索。现在，Elasticsearch已成为全文搜索领域的主流软件之一。</p>
+<p>由于Elasticsearch的功能强大和使用简单，维基百科、卫报、Stack Overflow、GitHub等都纷纷采用它来做搜索。现在，Elasticsearch已成为全文搜索领域的主流软件之一。</p>
 <p>下面将介绍Elasticsearch的安装与简单使用。</p>
-<h3 id="安装并运行elasticsearch">安装并运行Elasticsearch</h3>
-<p>安装 Elasticsearch 之前，你需要先安装一个较新版本的
-Java，最好的选择是，你可以从 <a
-target="_blank" rel="noopener" href="http://www.java.com/"><em>www.java.com</em></a>
-获得官方提供的最新版本的Java。</p>
-<p>你可以从 elastic 的官网 <a
-target="_blank" rel="noopener" href="https://www.elastic.co/downloads/elasticsearch">elastic.co/downloads/elasticsearch</a>
-获取最新版本的Elasticsearch。解压文档后，按照下面的操作，即可在前台(foregroud)启动
-Elasticsearch：</p>
+<h3 id="安装并运行Elasticsearch">安装并运行Elasticsearch</h3>
+<p>安装 Elasticsearch 之前，你需要先安装一个较新版本的 Java，最好的选择是，你可以从 <a target="_blank" rel="noopener" href="http://www.java.com/"><em>www.java.com</em></a> 获得官方提供的最新版本的Java。</p>
+<p>你可以从 elastic 的官网 <a target="_blank" rel="noopener" href="https://www.elastic.co/downloads/elasticsearch">elastic.co/downloads/elasticsearch</a> 获取最新版本的Elasticsearch。解压文档后，按照下面的操作，即可在前台(foregroud)启动 Elasticsearch：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> elasticsearch-&lt;version&gt;<br>./bin/elasticsearch<br></code></pre></td></tr></table></figure>
-<p>此时，Elasticsearch运行在本地的9200端口，在浏览器中输入网址“http://localhost:9200/”
-，如果看到以下信息就说明你的电脑已成功安装Elasticsearch：</p>
+<p>此时，Elasticsearch运行在本地的9200端口，在浏览器中输入网址“<a target="_blank" rel="noopener" href="http://localhost:9200/%E2%80%9D">http://localhost:9200/”</a> ，如果看到以下信息就说明你的电脑已成功安装Elasticsearch：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;name&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;YTK8L4q&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;cluster_name&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;elasticsearch&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;cluster_uuid&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;hB2CZPlvSJavhJxx85fUqQ&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;version&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;number&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;6.5.4&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;build_flavor&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;default&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;build_type&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;tar&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;build_hash&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;d2ef93d&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;build_date&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2018-12-17T21:17:40.758843Z&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;build_snapshot&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;lucene_version&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;7.5.0&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;minimum_wire_compatibility_version&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;5.6.0&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;minimum_index_compatibility_version&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;5.0.0&quot;</span><br>  <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;tagline&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;You Know, for Search&quot;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
 <p>在这里，我们安装的Elasticsearch版本号为6.5.4。</p>
-<p>Kibana 是一个开源的分析和可视化平台，旨在与 Elasticsearch
-合作。Kibana 提供搜索、查看和与存储在 Elasticsearch
-索引中的数据进行交互的功能。开发者或运维人员可以轻松地执行高级数据分析，并在各种图表、表格和地图中可视化数据。</p>
-<p>你可以从 elastic 的官网 <a
-target="_blank" rel="noopener" href="https://www.elastic.co/downloads/kibana">https://www.elastic.co/downloads/kibana</a>
-获取最新版本的Kibana。解压文档后，按照下面的操作，即可在前台(foregroud)启动Kibana：</p>
+<p>Kibana 是一个开源的分析和可视化平台，旨在与 Elasticsearch 合作。Kibana 提供搜索、查看和与存储在 Elasticsearch 索引中的数据进行交互的功能。开发者或运维人员可以轻松地执行高级数据分析，并在各种图表、表格和地图中可视化数据。</p>
+<p>你可以从 elastic 的官网 <a target="_blank" rel="noopener" href="https://www.elastic.co/downloads/kibana">https://www.elastic.co/downloads/kibana</a> 获取最新版本的Kibana。解压文档后，按照下面的操作，即可在前台(foregroud)启动Kibana：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> kibana-&lt;version&gt;<br>./bin/kabana<br></code></pre></td></tr></table></figure>
-<p>此时，Kibana运行在本地的5601端口，在浏览器中输入网址“http://localhost:5601”，即可看到以下界面：</p>
-<figure>
-<img src="/img/es1_2.png" srcset="/img/loading.gif" lazyload alt="Kibana启动界面" />
-<figcaption aria-hidden="true">Kibana启动界面</figcaption>
-</figure>
+<p>此时，Kibana运行在本地的5601端口，在浏览器中输入网址“<a target="_blank" rel="noopener" href="http://localhost:5601">http://localhost:5601</a>”，即可看到以下界面：</p>
+<p><img src="/img/es1_2.png" srcset="/img/loading.gif" lazyload alt="Kibana启动界面"></p>
 <p>下面，让我们来了解Elasticsearch的一些基本概念，这有助于我们更好地理解和使用Elasticsearch。</p>
-<h3 id="elasticsearch基本概念">Elasticsearch基本概念</h3>
-<h4 id="全文搜索full-text-search">全文搜索(Full-text Search)</h4>
+<h3 id="Elasticsearch基本概念">Elasticsearch基本概念</h3>
+<h4 id="全文搜索-Full-text-Search">全文搜索(Full-text Search)</h4>
 <p>全文检索是指计算机索引程序通过扫描文章中的每一个词，对每一个词建立一个索引，指明该词在文章中出现的次数和位置，当用户查询时，检索程序就根据事先建立的索引进行查找，并将查找的结果反馈给用户的检索方式。</p>
 <p>在全文搜索的世界中，存在着几个庞大的帝国，也就是主流工具，主要有：</p>
 <ul>
@@ -384,92 +357,61 @@ target="_blank" rel="noopener" href="https://www.elastic.co/downloads/kibana">ht
 <li>Solr</li>
 <li>Ferret</li>
 </ul>
-<h4 id="倒排索引inverted-index">倒排索引（Inverted Index）</h4>
-<p>该索引表中的每一项都包括一个属性值和具有该属性值的各记录的地址。由于不是由记录来确定属性值，而是由属性值来确定记录的位置，因而称为倒排索引(inverted
-index)。Elasticsearch能够实现快速、高效的搜索功能，正是基于倒排索引原理。</p>
-<h4 id="节点-集群node-cluster">节点 &amp; 集群（Node &amp;
-Cluster）</h4>
-<p>Elasticsearch
-本质上是一个分布式数据库，允许多台服务器协同工作，每台服务器可以运行多个Elasticsearch实例。单个Elasticsearch实例称为一个节点（Node），一组节点构成一个集群（Cluster）。</p>
-<h4 id="索引index">索引（Index）</h4>
-<p>Elasticsearch 数据管理的顶层单位就叫做
-Index（索引），相当于关系型数据库里的数据库的概念。另外，每个Index的名字必须是小写。</p>
-<h4 id="文档document">文档（Document）</h4>
-<p>Index里面单条的记录称为 Document（文档）。许多条 Document 构成了一个
-Index。Document 使用 JSON 格式表示。同一个 Index 里面的
-Document，不要求有相同的结构（scheme），但是最好保持相同，这样有利于提高搜索效率。</p>
-<h4 id="类型type">类型（Type）</h4>
-<p>Document 可以分组，比如employee这个 Index
-里面，可以按部门分组，也可以按职级分组。这种分组就叫做
-Type，它是虚拟的逻辑分组，用来过滤
-Document，类似关系型数据库中的数据表。</p>
-<p>不同的 Type 应该有相似的结构（Schema），性质完全不同的数据（比如
-products 和 logs）应该存成两个 Index，而不是一个 Index 里面的两个
-Type（虽然可以做到）。</p>
-<h3 id="文档元数据document-metadata">文档元数据（Document
-metadata）</h3>
-<p>文档元数据为_index, _type, _id,
-这三者可以唯一表示一个文档，_index表示文档在哪存放，_type表示文档的对象类别，_id为文档的唯一标识。</p>
-<h4 id="字段fields">字段（Fields）</h4>
-<p>每个Document都类似一个JSON结构，它包含了许多字段，每个字段都有其对应的值，多个字段组成了一个
-Document，可以类比关系型数据库数据表中的字段。</p>
-<p>在 Elasticsearch
-中，文档（Document）归属于一种类型（Type），而这些类型存在于索引（Index）中，下图展示了Elasticsearch与传统关系型数据库的类比：</p>
-<p><img src="/img/es1_3.png" srcset="/img/loading.gif" lazyload /></p>
-<h3 id="elasticsearch入门">Elasticsearch入门</h3>
-<p>Elasticsearch提供了多种交互使用方式，包括Java API和RESTful API
-，本文主要介绍RESTful API 。所有其他语言可以使用RESTful API 通过端口
-<em>9200</em> 和 Elasticsearch 进行通信，你可以用你最喜爱的 web
-客户端访问 Elasticsearch 。甚至，你还可以使用 <code>curl</code> 命令来和
-Elasticsearch 交互。</p>
-<p>一个Elasticsearch请求和任何 HTTP
-请求一样，都由若干相同的部件组成：</p>
+<h4 id="倒排索引（Inverted-Index）">倒排索引（Inverted Index）</h4>
+<p>该索引表中的每一项都包括一个属性值和具有该属性值的各记录的地址。由于不是由记录来确定属性值，而是由属性值来确定记录的位置，因而称为倒排索引(inverted index)。Elasticsearch能够实现快速、高效的搜索功能，正是基于倒排索引原理。</p>
+<h4 id="节点-集群（Node-Cluster）">节点 &amp; 集群（Node &amp; Cluster）</h4>
+<p>Elasticsearch 本质上是一个分布式数据库，允许多台服务器协同工作，每台服务器可以运行多个Elasticsearch实例。单个Elasticsearch实例称为一个节点（Node），一组节点构成一个集群（Cluster）。</p>
+<h4 id="索引（Index）">索引（Index）</h4>
+<p>Elasticsearch 数据管理的顶层单位就叫做 Index（索引），相当于关系型数据库里的数据库的概念。另外，每个Index的名字必须是小写。</p>
+<h4 id="文档（Document）">文档（Document）</h4>
+<p>Index里面单条的记录称为 Document（文档）。许多条 Document 构成了一个 Index。Document 使用 JSON 格式表示。同一个 Index 里面的 Document，不要求有相同的结构（scheme），但是最好保持相同，这样有利于提高搜索效率。</p>
+<h4 id="类型（Type）">类型（Type）</h4>
+<p>Document 可以分组，比如employee这个 Index 里面，可以按部门分组，也可以按职级分组。这种分组就叫做 Type，它是虚拟的逻辑分组，用来过滤 Document，类似关系型数据库中的数据表。</p>
+<p>不同的 Type 应该有相似的结构（Schema），性质完全不同的数据（比如 products 和 logs）应该存成两个 Index，而不是一个 Index 里面的两个 Type（虽然可以做到）。</p>
+<h3 id="文档元数据（Document-metadata）">文档元数据（Document metadata）</h3>
+<p>文档元数据为_index, _type, _id, 这三者可以唯一表示一个文档，_index表示文档在哪存放，_type表示文档的对象类别，_id为文档的唯一标识。</p>
+<h4 id="字段（Fields）">字段（Fields）</h4>
+<p>每个Document都类似一个JSON结构，它包含了许多字段，每个字段都有其对应的值，多个字段组成了一个 Document，可以类比关系型数据库数据表中的字段。</p>
+<p>在 Elasticsearch 中，文档（Document）归属于一种类型（Type），而这些类型存在于索引（Index）中，下图展示了Elasticsearch与传统关系型数据库的类比：</p>
+<p><img src="/img/es1_3.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<h3 id="Elasticsearch入门">Elasticsearch入门</h3>
+<p>Elasticsearch提供了多种交互使用方式，包括Java API和RESTful API ，本文主要介绍RESTful API 。所有其他语言可以使用RESTful API 通过端口 <em>9200</em> 和 Elasticsearch 进行通信，你可以用你最喜爱的 web 客户端访问 Elasticsearch 。甚至，你还可以使用 <code>curl</code> 命令来和 Elasticsearch 交互。</p>
+<p>一个Elasticsearch请求和任何 HTTP 请求一样，都由若干相同的部件组成：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl -X&lt;VERB&gt; <span class="hljs-string">&#x27;&lt;PROTOCOL&gt;://&lt;HOST&gt;:&lt;PORT&gt;/&lt;PATH&gt;?&lt;QUERY_STRING&gt;&#x27;</span> -d <span class="hljs-string">&#x27;&lt;BODY&gt;&#x27;</span><br></code></pre></td></tr></table></figure>
-<p>返回的数据格式为JSON，因为Elasticsearch中的文档以JSON格式储存。其中，被
-<code>&lt; &gt;</code> 标记的部件：</p>
+<p>返回的数据格式为JSON，因为Elasticsearch中的文档以JSON格式储存。其中，被 <code>&lt; &gt;</code> 标记的部件：</p>
 <table>
-
 <thead>
-<tr class="header">
+<tr>
 <th>部件</th>
 <th>说明</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>VERB</td>
-<td>适当的 HTTP <em>方法</em> 或 <em>谓词</em> : <code>GET</code>、
-<code>POST</code>、 <code>PUT</code>、 <code>HEAD</code> 或者
-<code>DELETE</code>。</td>
+<td>适当的 HTTP <em>方法</em> 或 <em>谓词</em> : <code>GET</code>、 <code>POST</code>、 <code>PUT</code>、 <code>HEAD</code> 或者 <code>DELETE</code>。</td>
 </tr>
-<tr class="even">
+<tr>
 <td>PROTOCOL</td>
-<td><code>http</code> 或者 <code>https</code>（如果你在 Elasticsearch
-前面有一个 <code>https</code> 代理）</td>
+<td><code>http</code> 或者 <code>https</code>（如果你在 Elasticsearch 前面有一个 <code>https</code> 代理）</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>HOST</td>
-<td>Elasticsearch 集群中任意节点的主机名，或者用 <code>localhost</code>
-代表本地机器上的节点。</td>
+<td>Elasticsearch 集群中任意节点的主机名，或者用 <code>localhost</code> 代表本地机器上的节点。</td>
 </tr>
-<tr class="even">
+<tr>
 <td>PORT</td>
-<td>运行 Elasticsearch HTTP 服务的端口号，默认是 <code>9200</code>
-。</td>
+<td>运行 Elasticsearch HTTP 服务的端口号，默认是 <code>9200</code> 。</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>PATH</td>
-<td>API 的终端路径（例如 <code>_count</code>
-将返回集群中文档数量）。Path
-可能包含多个组件，例如：<code>_cluster/stats</code> 和
-<code>_nodes/stats/jvm</code> 。</td>
+<td>API 的终端路径（例如 <code>_count</code> 将返回集群中文档数量）。Path 可能包含多个组件，例如：<code>_cluster/stats</code> 和 <code>_nodes/stats/jvm</code> 。</td>
 </tr>
-<tr class="even">
+<tr>
 <td>QUERY_STRING</td>
-<td>任意可选的查询字符串参数 (例如 <code>?pretty</code> 将格式化地输出
-JSON 返回值，使其更容易阅读)</td>
+<td>任意可选的查询字符串参数 (例如 <code>?pretty</code> 将格式化地输出 JSON 返回值，使其更容易阅读)</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>BODY</td>
 <td>一个 JSON 格式的请求体 (如果请求需要的话)</td>
 </tr>
@@ -478,49 +420,42 @@ JSON 返回值，使其更容易阅读)</td>
 <p>对于HTTP方法，它们的具体作用为：</p>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>HTTP方法</th>
 <th>说明</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>GET</td>
 <td>获取请求对象的当前状态</td>
 </tr>
-<tr class="even">
+<tr>
 <td>POST</td>
 <td>改变对象的当前状态</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>PUT</td>
 <td>创建一个对象</td>
 </tr>
-<tr class="even">
+<tr>
 <td>DELETE</td>
 <td>销毁对象</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>HEAD</td>
 <td>请求获取对象的基础信息</td>
 </tr>
 </tbody>
 </table>
 <p>我们以下面的数据为例，来展示Elasticsearch的用法。</p>
-<p><img src="/img/es1_4.png" srcset="/img/loading.gif" lazyload /></p>
-<p>以下全部的操作都在Kibana中完成，创建的index为conference, type为event
-.</p>
+<p><img src="/img/es1_4.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p>以下全部的操作都在Kibana中完成，创建的index为conference, type为event .</p>
 <h5 id="插入数据">插入数据</h5>
-<p>首先创建index为conference, 创建type为event,
-插入id为1的第一条数据，只需运行下面命令就行：</p>
+<p>首先创建index为conference, 创建type为event, 插入id为1的第一条数据，只需运行下面命令就行：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash">PUT /conference/event/1<br>&#123;<br>  <span class="hljs-string">&quot;host&quot;</span>: <span class="hljs-string">&quot;Dave&quot;</span>,<br>  <span class="hljs-string">&quot;title&quot;</span>: <span class="hljs-string">&quot;Elasticsearch at Rangespan and Exonar&quot;</span>,<br>  <span class="hljs-string">&quot;description&quot;</span>: <span class="hljs-string">&quot;Representatives from Rangespan and Exonar will come and discuss how they use Elasticsearch&quot;</span>,<br>  <span class="hljs-string">&quot;attendees&quot;</span>: [<span class="hljs-string">&quot;Dave&quot;</span>, <span class="hljs-string">&quot;Andrew&quot;</span>, <span class="hljs-string">&quot;David&quot;</span>, <span class="hljs-string">&quot;Clint&quot;</span>],<br>  <span class="hljs-string">&quot;date&quot;</span>: <span class="hljs-string">&quot;2013-06-24T18:30&quot;</span>,<br>  <span class="hljs-string">&quot;reviews&quot;</span>: 3<br>&#125;<br></code></pre></td></tr></table></figure>
-<p>在上面的命令中，路径/conference/event/1表示文档的index为conference,
-type为event, id为1.
-类似于上面的操作，依次插入剩余的4条数据，完成插入后，查看数据如下：</p>
-<figure>
-<img src="/img/es1_5.png" srcset="/img/loading.gif" lazyload alt="插入数据" />
-<figcaption aria-hidden="true">插入数据</figcaption>
-</figure>
+<p>在上面的命令中，路径/conference/event/1表示文档的index为conference, type为event, id为1. 类似于上面的操作，依次插入剩余的4条数据，完成插入后，查看数据如下：</p>
+<p><img src="/img/es1_5.png" srcset="/img/loading.gif" lazyload alt="插入数据"></p>
 <h5 id="删除数据">删除数据</h5>
 <p>比如我们想要删除conference中event里面id为5的数据，只需运行下面命令即可：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">DELETE /conference/event/5<br></code></pre></td></tr></table></figure>
@@ -531,50 +466,37 @@ type为event, id为1.
 <p>如果想删除整个conference索引，可输入命令:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">DELETE /conference<br></code></pre></td></tr></table></figure>
 <h5 id="修改数据">修改数据</h5>
-<p>修改数据的命令为POST,
-比如我们想要将conference中event里面id为4的文档的作者改为Bob，那么需要运行命令如下：</p>
+<p>修改数据的命令为POST, 比如我们想要将conference中event里面id为4的文档的作者改为Bob，那么需要运行命令如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">POST /conference/event/4/_update<br>&#123;<br>  <span class="hljs-string">&quot;doc&quot;</span>: &#123;<span class="hljs-string">&quot;host&quot;</span>: <span class="hljs-string">&quot;Bob&quot;</span>&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>返回的信息如下：（表示修改数据成功）</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;_index&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;conference&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;_type&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;event&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;_id&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;4&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;_version&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-number">7</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;result&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;updated&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;_shards&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;total&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-number">2</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;successful&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;failed&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-number">0</span><br>  <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;_seq_no&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-number">7</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;_primary_term&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
 <p>查看修改后的数据如下：</p>
-<figure>
-<img src="/img/es1_6.png" srcset="/img/loading.gif" lazyload alt="修改数据" />
-<figcaption aria-hidden="true">修改数据</figcaption>
-</figure>
+<p><img src="/img/es1_6.png" srcset="/img/loading.gif" lazyload alt="修改数据"></p>
 <h5 id="查询数据">查询数据</h5>
 <p>查询数据的命令为GET，查询命令也是Elasticsearch最为重要的功能之一。比如我们想查询conference中event里面id为1的数据，运行命令如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">GET /conference/event/1<br></code></pre></td></tr></table></figure>
 <p>返回的结果如下：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;_index&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;conference&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;_type&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;event&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;_id&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;_version&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-number">2</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;found&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;_source&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;host&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Dave&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;title&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Elasticsearch at Rangespan and Exonar&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;description&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Representatives from Rangespan and Exonar will come and discuss how they use Elasticsearch&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;attendees&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>      <span class="hljs-string">&quot;Dave&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-string">&quot;Andrew&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-string">&quot;David&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-string">&quot;Clint&quot;</span><br>    <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;date&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2013-06-24T18:30&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;reviews&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-number">3</span><br>  <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
-<p>在_source 属性中，内容是原始的 JSON
-文档，还包含有其它属性，比如_index, _type, _id, _found等。</p>
+<p>在_source 属性中，内容是原始的 JSON 文档，还包含有其它属性，比如_index, _type, _id, _found等。</p>
 <p>如果想要搜索conference中event里面所有的文档，运行命令如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">GET /conference/event/_search<br></code></pre></td></tr></table></figure>
 <p>返回结果包括了所有四个文档，放在数组 hits 中。</p>
-<p>当然，Elasticsearch 提供更加丰富灵活的查询语言叫做
-<em>查询表达式</em> ，
-它支持构建更加复杂和健壮的查询。利用<em>查询表达式</em>，我们可以检索出conference中event里面所有host为Bob的文档，命令如下：</p>
+<p>当然，Elasticsearch 提供更加丰富灵活的查询语言叫做 <em>查询表达式</em> ， 它支持构建更加复杂和健壮的查询。利用<em>查询表达式</em>，我们可以检索出conference中event里面所有host为Bob的文档，命令如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">GET /conference/event/_search<br>&#123;<br>    <span class="hljs-string">&quot;query&quot;</span> : &#123;<br>        <span class="hljs-string">&quot;match&quot;</span> : &#123;<br>            <span class="hljs-string">&quot;host&quot;</span> : <span class="hljs-string">&quot;Bob&quot;</span><br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>返回的结果只包括了一个文档，放在数组 hits 中。</p>
-<p>接着，让我们尝试稍微高级点儿的全文搜索——一项传统数据库确实很难搞定的任务。搜索下所有description中含有"use
-Elasticsearch"的event：</p>
+<p>接着，让我们尝试稍微高级点儿的全文搜索——一项传统数据库确实很难搞定的任务。搜索下所有description中含有&quot;use Elasticsearch&quot;的event：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">GET /conference/event/_search<br>&#123;<br>    <span class="hljs-string">&quot;query&quot;</span> : &#123;<br>        <span class="hljs-string">&quot;match&quot;</span> : &#123;<br>            <span class="hljs-string">&quot;description&quot;</span> : <span class="hljs-string">&quot;use Elasticsearch&quot;</span><br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>返回的结果（部分）如下：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br> ...<br>  <span class="hljs-attr">&quot;hits&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;total&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-number">2</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;max_score&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-number">0.65109104</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;hits&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>      <span class="hljs-punctuation">&#123;</span><br>        ...<br>        <span class="hljs-attr">&quot;_score&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-number">0.65109104</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;_source&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>          <span class="hljs-attr">&quot;host&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Dave Nolan&quot;</span><span class="hljs-punctuation">,</span><br>          <span class="hljs-attr">&quot;title&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;real-time Elasticsearch&quot;</span><span class="hljs-punctuation">,</span><br>          <span class="hljs-attr">&quot;description&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;We will discuss using Elasticsearch to index data in real time&quot;</span><span class="hljs-punctuation">,</span><br>          ...<br>        <span class="hljs-punctuation">&#125;</span><br>      <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-punctuation">&#123;</span><br>        ...<br>        <span class="hljs-attr">&quot;_score&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-number">0.5753642</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;_source&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>          <span class="hljs-attr">&quot;host&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Dave&quot;</span><span class="hljs-punctuation">,</span><br>          <span class="hljs-attr">&quot;title&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Elasticsearch at Rangespan and Exonar&quot;</span><span class="hljs-punctuation">,</span><br>          <span class="hljs-attr">&quot;description&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Representatives from Rangespan and Exonar will come and discuss how they use Elasticsearch&quot;</span><span class="hljs-punctuation">,</span><br>          ...<br>        <span class="hljs-punctuation">&#125;</span><br>      <span class="hljs-punctuation">&#125;</span><br>    <span class="hljs-punctuation">]</span><br>  <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br><br></code></pre></td></tr></table></figure>
-<p>返回的结果包含了两个文档，放在数组 hits
-中。让我们对这个结果做一些分析，第一个文档的description里面含有“using
-Elasticsearch”，这个能匹配“use
-Elasticsearch”是因为Elasticsearch含有内置的词干提取算法，之后两个文档按_score进行排序，_score字段表示文档的相似度（默认的相似度算法为BM25）。</p>
-<p>如果想搜索下所有description中严格含有"use
-Elasticsearch"这个短语的event，可以使用下面的命令：</p>
+<p>返回的结果包含了两个文档，放在数组 hits 中。让我们对这个结果做一些分析，第一个文档的description里面含有“using Elasticsearch”，这个能匹配“use Elasticsearch”是因为Elasticsearch含有内置的词干提取算法，之后两个文档按_score进行排序，_score字段表示文档的相似度（默认的相似度算法为BM25）。</p>
+<p>如果想搜索下所有description中严格含有&quot;use Elasticsearch&quot;这个短语的event，可以使用下面的命令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">GET /conference/event/_search<br>&#123;<br>    <span class="hljs-string">&quot;query&quot;</span> : &#123;<br>        <span class="hljs-string">&quot;match_phrase&quot;</span>: &#123;<br>            <span class="hljs-string">&quot;description&quot;</span> : <span class="hljs-string">&quot;use Elasticsearch&quot;</span><br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>这时候返回的结果只有一个文档，就是上面输出的第二个文档。</p>
 <p>当然，Elasticsearch还支持更多的搜索功能，比如过滤器，高亮搜索，结构化搜索等，希望接下来能有更多的时间和经历来介绍~</p>
 <h3 id="总结">总结</h3>
 <p>后续有机会再介绍如何利用Python来操作Elasticsearch~</p>
 <p>本次分享到此结束，感谢大家阅读~</p>
-<p>注意：本人现已开通微信公众号：
-NLP奇幻之旅（微信号为：easy_web_scrape）， 欢迎大家关注哦~~</p>
+<p>注意：本人现已开通微信公众号： NLP奇幻之旅（微信号为：easy_web_scrape）， 欢迎大家关注哦~~</p>
 
                 
               </div>

@@ -322,26 +322,14 @@
             
               <div class="markdown-body">
                 
-                <p>英文Roberta模型是2019年Facebook在论文<a
-target="_blank" rel="noopener" href="https://arxiv.org/pdf/1907.11692.pdf">RoBERTa: A Robustly
-Optimized BERT Pretraining
-Approach</a>中新提出的预训练模型，其目的是改进BERT模型存在的一些问题，当时也刷新了一众NLP任务的榜单，达到SOTA效果，其模型和代码已开源，放在Github中的<code>fairseq</code>项目中。众所周知，英文Roberta模型使用Torch框架训练的，因此，其torch版本模型最为常见。</p>
+                <p>英文Roberta模型是2019年Facebook在论文<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1907.11692.pdf">RoBERTa: A Robustly Optimized BERT Pretraining Approach</a>中新提出的预训练模型，其目的是改进BERT模型存在的一些问题，当时也刷新了一众NLP任务的榜单，达到SOTA效果，其模型和代码已开源，放在Github中的<code>fairseq</code>项目中。众所周知，英文Roberta模型使用Torch框架训练的，因此，其torch版本模型最为常见。</p>
 <p>当然，torch模型也是可以转化为tensorflow模型的。本文将会介绍如何将原始torch版本的英文Roberta模型转化为tensorflow版本模型，并且Keras中使用tensorflow版本模型实现英语文本分类。</p>
 <p>项目结构如下图所示：</p>
-<figure>
-<img src="/img/nlp54_1.png" srcset="/img/loading.gif" lazyload alt="项目结构图" />
-<figcaption aria-hidden="true">项目结构图</figcaption>
-</figure>
+<p><img src="/img/nlp54_1.png" srcset="/img/loading.gif" lazyload alt="项目结构图"></p>
 <h3 id="模型转化">模型转化</h3>
-<p>本项目首先会将原始torch版本的英文Roberta模型转化为tensorflow版本模型，该部分代码主要参考Github项目<a
-target="_blank" rel="noopener" href="https://github.com/midori1/keras_roberta">keras_roberta</a>。</p>
-<p>首先需下载Facebook发布在<code>fairseq</code>项目中的roberta
-base模型，其访问网址为: <a
-target="_blank" rel="noopener" href="https://github.com/pytorch/fairseq/blob/main/examples/roberta/README.md">https://github.com/pytorch/fairseq/blob/main/examples/roberta/README.md</a>。</p>
-<figure>
-<img src="/img/nlp54_2.png" srcset="/img/loading.gif" lazyload alt="Roberta模型" />
-<figcaption aria-hidden="true">Roberta模型</figcaption>
-</figure>
+<p>本项目首先会将原始torch版本的英文Roberta模型转化为tensorflow版本模型，该部分代码主要参考Github项目<a target="_blank" rel="noopener" href="https://github.com/midori1/keras_roberta">keras_roberta</a>。</p>
+<p>首先需下载Facebook发布在<code>fairseq</code>项目中的roberta base模型，其访问网址为: <a target="_blank" rel="noopener" href="https://github.com/pytorch/fairseq/blob/main/examples/roberta/README.md">https://github.com/pytorch/fairseq/blob/main/examples/roberta/README.md</a>。</p>
+<p><img src="/img/nlp54_2.png" srcset="/img/loading.gif" lazyload alt="Roberta模型"></p>
 <p>运行<code>convert_roberta_to_tf.py</code>脚本，将torch模型转化为tensorflow模型。具体代码不在此给出，可以参考文章后续给出的Github项目地址。</p>
 <p>在模型的tokenizer方面，将RobertaTokenizer改为GPT2Tokenizer，因为RobertaTokenizer是继承自GPT2Tokenizer的，两者相似性很高。测试原始torch模型和tensorflow模型的表现，代码如下（tf_roberta_demo.py）：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> tensorflow <span class="hljs-keyword">as</span> tf<br><span class="hljs-keyword">from</span> keras_roberta.roberta <span class="hljs-keyword">import</span> build_bert_model<br><span class="hljs-keyword">from</span> keras_roberta.tokenizer <span class="hljs-keyword">import</span> RobertaTokenizer<br><span class="hljs-keyword">from</span> fairseq.models.roberta <span class="hljs-keyword">import</span> RobertaModel <span class="hljs-keyword">as</span> FairseqRobertaModel<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">import</span> argparse<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    roberta_path = <span class="hljs-string">&#x27;roberta-base&#x27;</span><br>    tf_roberta_path = <span class="hljs-string">&#x27;tf_roberta_base&#x27;</span><br>    tf_ckpt_name = <span class="hljs-string">&#x27;tf_roberta_base.ckpt&#x27;</span><br>    vocab_path = <span class="hljs-string">&#x27;keras_roberta&#x27;</span><br><br>    config_path = os.path.join(tf_roberta_path, <span class="hljs-string">&#x27;bert_config.json&#x27;</span>)<br>    checkpoint_path = os.path.join(tf_roberta_path, tf_ckpt_name)<br>    <span class="hljs-keyword">if</span> os.path.splitext(checkpoint_path)[-<span class="hljs-number">1</span>] != <span class="hljs-string">&#x27;.ckpt&#x27;</span>:<br>        checkpoint_path += <span class="hljs-string">&#x27;.ckpt&#x27;</span><br><br>    gpt_bpe_vocab = os.path.join(vocab_path, <span class="hljs-string">&#x27;encoder.json&#x27;</span>)<br>    gpt_bpe_merge = os.path.join(vocab_path, <span class="hljs-string">&#x27;vocab.bpe&#x27;</span>)<br>    roberta_dict = os.path.join(roberta_path, <span class="hljs-string">&#x27;dict.txt&#x27;</span>)<br><br>    tokenizer = RobertaTokenizer(gpt_bpe_vocab, gpt_bpe_merge, roberta_dict)<br>    model = build_bert_model(config_path, checkpoint_path, roberta=<span class="hljs-literal">True</span>)  <span class="hljs-comment"># 建立模型，加载权重</span><br><br>    <span class="hljs-comment"># 编码测试</span><br>    text1 = <span class="hljs-string">&quot;hello, world!&quot;</span><br>    text2 = <span class="hljs-string">&quot;This is Roberta!&quot;</span><br>    sep = [tokenizer.sep_token]<br>    cls = [tokenizer.cls_token]<br>    <span class="hljs-comment"># 1. 先用&#x27;bpe_tokenize&#x27;将文本转换成bpe tokens</span><br>    tokens1 = cls + tokenizer.bpe_tokenize(text1) + sep<br>    tokens2 = sep + tokenizer.bpe_tokenize(text2) + sep<br>    <span class="hljs-comment"># 2. 最后转换成id</span><br>    token_ids1 = tokenizer.convert_tokens_to_ids(tokens1)<br>    token_ids2 = tokenizer.convert_tokens_to_ids(tokens2)<br>    token_ids = token_ids1 + token_ids2<br>    segment_ids = [<span class="hljs-number">0</span>] * <span class="hljs-built_in">len</span>(token_ids1) + [<span class="hljs-number">1</span>] * <span class="hljs-built_in">len</span>(token_ids2)<br>    <span class="hljs-built_in">print</span>(token_ids)<br>    <span class="hljs-built_in">print</span>(segment_ids)<br><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;\n ===== tf model predicting =====\n&#x27;</span>)<br>    our_output = model.predict([np.array([token_ids]), np.array([segment_ids])])<br>    <span class="hljs-built_in">print</span>(our_output)<br><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;\n ===== torch model predicting =====\n&#x27;</span>)<br>    roberta = FairseqRobertaModel.from_pretrained(roberta_path)<br>    roberta.<span class="hljs-built_in">eval</span>()  <span class="hljs-comment"># disable dropout</span><br><br>    input_ids = roberta.encode(text1, text2).unsqueeze(<span class="hljs-number">0</span>)  <span class="hljs-comment"># batch of size 1</span><br>    <span class="hljs-built_in">print</span>(input_ids)<br>    their_output = roberta.model(input_ids, features_only=<span class="hljs-literal">True</span>)[<span class="hljs-number">0</span>]<br>    <span class="hljs-built_in">print</span>(their_output)<br></code></pre></td></tr></table></figure>
@@ -350,10 +338,7 @@ target="_blank" rel="noopener" href="https://github.com/pytorch/fairseq/blob/mai
 <p>可以看到，两者在tokenize时的token_ids是一致的。</p>
 <h3 id="英语文本分类">英语文本分类</h3>
 <p>接着我们需要看下转化为的tensorflow版本的Roberta模型在英语文本分类数据集上的效果了。</p>
-<p>这里我们使用的是GLUE数据集中的<code>SST-2</code>。<code>SST-2</code>(The
-Stanford Sentiment
-Treebank，斯坦福情感树库)，单句子分类任务，包含电影评论中的句子和它们情感的人类注释。这项任务是给定句子的情感，类别分为两类正面情感（positive，样本标签对应为1）和负面情感（negative，样本标签对应为0），并且只用句子级别的标签。也就是，本任务也是一个二分类任务，针对句子级别，分为正面和负面情感。关于该数据集的具体介绍可参考网址：<a
-target="_blank" rel="noopener" href="https://nlp.stanford.edu/sentiment/index.html">https://nlp.stanford.edu/sentiment/index.html</a>。</p>
+<p>这里我们使用的是GLUE数据集中的<code>SST-2</code>。<code>SST-2</code>(The Stanford Sentiment Treebank，斯坦福情感树库)，单句子分类任务，包含电影评论中的句子和它们情感的人类注释。这项任务是给定句子的情感，类别分为两类正面情感（positive，样本标签对应为1）和负面情感（negative，样本标签对应为0），并且只用句子级别的标签。也就是，本任务也是一个二分类任务，针对句子级别，分为正面和负面情感。关于该数据集的具体介绍可参考网址：<a target="_blank" rel="noopener" href="https://nlp.stanford.edu/sentiment/index.html">https://nlp.stanford.edu/sentiment/index.html</a>。</p>
 <p><code>SST-2</code>数据集中训练集样本数量为67349，验证集样本数量为872，测试集样本数量为1820，数据存储格式为tsv，读取数据的代码如下:（utils/load_data.py）</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">read_model_data</span>(<span class="hljs-params">file_path</span>):<br>    data = []<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(file_path, <span class="hljs-string">&#x27;r&#x27;</span>, encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>        lines = [_.strip() <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> f.readlines()]<br>    <span class="hljs-keyword">for</span> i, line <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(lines):<br>        <span class="hljs-keyword">if</span> i:<br>            items = line.split(<span class="hljs-string">&#x27;\t&#x27;</span>)<br>            label = [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>] <span class="hljs-keyword">if</span> <span class="hljs-built_in">int</span>(items[<span class="hljs-number">1</span>]) <span class="hljs-keyword">else</span> [<span class="hljs-number">1</span>, <span class="hljs-number">0</span>]<br>            data.append([label, items[<span class="hljs-number">0</span>]])<br>    <span class="hljs-keyword">return</span> data<br></code></pre></td></tr></table></figure>
 <p>在tokenizer部分，我们采用GTP2Tokenizer，该部分代码如下（utils/roberta_tokenizer.py）:</p>
@@ -366,33 +351,28 @@ target="_blank" rel="noopener" href="https://nlp.stanford.edu/sentiment/index.ht
 <h3 id="模型预测">模型预测</h3>
 <p>我们对新样本进行模型预测（model_predict.py），预测结果如下：</p>
 <blockquote>
-<p>Awesome movie for everyone to watch. Animation was flawless. label:
-1, prob: 0.9999607</p>
+<p>Awesome movie for everyone to watch. Animation was flawless.<br>
+label: 1, prob: 0.9999607</p>
 </blockquote>
 <blockquote>
-<p>I almost balled my eyes out 5 times. Almost. Beautiful movie, very
-inspiring. label: 1, prob: 0.9999519</p>
+<p>I almost balled my eyes out 5 times. Almost. Beautiful movie, very inspiring.<br>
+label: 1, prob: 0.9999519</p>
 </blockquote>
 <blockquote>
-<p>Not even worth it. It's a movie that's too stupid for adults, and too
-crappy for everyone. Skip if you're not 13, or even if you are. label:
-0, prob: 0.9999864</p>
+<p>Not even worth it. It’s a movie that’s too stupid for adults, and too crappy for everyone. Skip if you’re not 13, or even if you are.<br>
+label: 0, prob: 0.9999864</p>
 </blockquote>
 <h3 id="总结">总结</h3>
 <p>本文介绍了如何将原始torch版本的英文Roberta模型转化为tensorflow版本模型，并且Keras中使用tensorflow版本模型实现英语文本分类。</p>
-<p>本项目代码已放至Github，网址为:<a
-target="_blank" rel="noopener" href="https://github.com/percent4/keras_roberta_text_classificaiton">https://github.com/percent4/keras_roberta_text_classificaiton</a>。</p>
+<p>本项目代码已放至Github，网址为:<a target="_blank" rel="noopener" href="https://github.com/percent4/keras_roberta_text_classificaiton">https://github.com/percent4/keras_roberta_text_classificaiton</a>。</p>
 <p>感谢阅读，如有任何问题，欢迎大家交流~</p>
 <h3 id="参考网址">参考网址</h3>
-<ol type="1">
-<li><code>fairseq</code>: https://github.com/pytorch/fairseq</li>
-<li><code>GLUE tasks</code>: https://gluebenchmark.com/tasks</li>
-<li><code>SST-2</code>:
-https://nlp.stanford.edu/sentiment/index.html</li>
-<li><code>keras_roberta</code>:
-https://github.com/midori1/keras_roberta</li>
-<li><code>Roberta paper</code>:
-https://arxiv.org/pdf/1907.11692.pdf</li>
+<ol>
+<li><code>fairseq</code>: <a target="_blank" rel="noopener" href="https://github.com/pytorch/fairseq">https://github.com/pytorch/fairseq</a></li>
+<li><code>GLUE tasks</code>: <a target="_blank" rel="noopener" href="https://gluebenchmark.com/tasks">https://gluebenchmark.com/tasks</a></li>
+<li><code>SST-2</code>: <a target="_blank" rel="noopener" href="https://nlp.stanford.edu/sentiment/index.html">https://nlp.stanford.edu/sentiment/index.html</a></li>
+<li><code>keras_roberta</code>: <a target="_blank" rel="noopener" href="https://github.com/midori1/keras_roberta">https://github.com/midori1/keras_roberta</a></li>
+<li><code>Roberta paper</code>: <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1907.11692.pdf">https://arxiv.org/pdf/1907.11692.pdf</a></li>
 </ol>
 
                 

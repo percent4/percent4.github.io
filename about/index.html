@@ -355,19 +355,16 @@
 <li>技术文章写作计划：<a href="https://percent4.github.io/2023/07/06/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0%E5%86%99%E4%BD%9C%E8%AE%A1%E5%88%92/">https://percent4.github.io/2023/07/06/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0%E5%86%99%E4%BD%9C%E8%AE%A1%E5%88%92/</a></li>
 </ul>
 <p>本网站使用Hexo来部署个人博客，主要有以下用途：</p>
-<ol type="1">
+<ol>
 <li>技术文章</li>
 <li>个人日记</li>
 <li>书籍摘抄</li>
 <li>写作计划</li>
 <li>草稿</li>
-<li>...</li>
+<li>…</li>
 </ol>
-<iframe frameborder="no" border="0" src="/pyecharts_pv_uv/2023-08-06.html" width="100%" height="500">
-</iframe>
-<div id="posts-calendar">
-
-</div>
+<iframe frameborder="no" border="0" src="/pyecharts_pv_uv/2023-08-06.html" width="100%" height="500"></iframe>
+<div id="posts-calendar"></div>
   <script id="postsCalendar">
     let postsCalendar = echarts.init(document.getElementById('posts-calendar'));
     let postsCalendarOption = {
@@ -439,9 +436,7 @@
     };
     postsCalendar.setOption(postsCalendarOption);
     </script>
-<div id="posts-chart">
-
-</div>
+<div id="posts-chart"></div>
   <script id="postsChart">
     let postsChart = echarts.init(document.getElementById('posts-chart'));
     let postsOption = {
@@ -492,9 +487,7 @@
     postsChart.setOption(postsOption);
     </script>
 <!-- "data-length" = how many tags to show, default 10 -->
-<div id="tags-chart" data-length="10">
-
-</div>
+<div id="tags-chart" data-length="10"></div>
   <script id="tagsChart">
     let tagsChart = echarts.init(document.getElementById('tags-chart'));
     let tagsOption = {
@@ -542,9 +535,7 @@
     };
     tagsChart.setOption(tagsOption);
     </script>
-<div id="categories-chart">
-
-</div>
+<div id="categories-chart"></div>
   <script id="categoriesChart">
     let categoriesChart = echarts.init(document.getElementById('categories-chart'));
     let categoriesOption = {
@@ -564,7 +555,7 @@
                 type: 'pie',
                 radius: '75%',
                 color: ['#6772e5', '#ff9e0f', '#fa755a', '#3ecf8e', '#82d3f4', '#ab47bc', '#525f7f', '#f51c47', '#26A69A'],
-                data: [{"name":"NLP","value":66},{"name":"数据库","value":2},{"name":"草稿","value":2},{"name":"Hexo","value":3},{"name":"深度学习框架","value":17},{"name":"书籍摘抄","value":9},{"name":"知识图谱","value":2},{"name":"写作计划","value":1}],
+                data: [{"name":"数据库","value":2},{"name":"草稿","value":2},{"name":"Hexo","value":3},{"name":"深度学习框架","value":17},{"name":"NLP","value":66},{"name":"书籍摘抄","value":9},{"name":"知识图谱","value":2},{"name":"写作计划","value":1}],
                 itemStyle: {
                     emphasis: {
                         shadowBlur: 10,
@@ -577,9 +568,7 @@
     };
     categoriesChart.setOption(categoriesOption);
     </script>
-<div id="categories-radar">
-
-</div>
+<div id="categories-radar"></div>
   <script id="categoriesRadar">
     let categoriesRadar = echarts.init(document.getElementById('categories-radar'));
     let categoriesRadarOption = {
@@ -598,7 +587,7 @@
                     color: '#3C4858'
                 }
             },
-            indicator: [{"name":"NLP","max":67},{"name":"数据库","max":67},{"name":"草稿","max":67},{"name":"Hexo","max":67},{"name":"深度学习框架","max":67},{"name":"书籍摘抄","max":67},{"name":"知识图谱","max":67},{"name":"写作计划","max":67}],
+            indicator: [{"name":"数据库","max":67},{"name":"草稿","max":67},{"name":"Hexo","max":67},{"name":"深度学习框架","max":67},{"name":"NLP","max":67},{"name":"书籍摘抄","max":67},{"name":"知识图谱","max":67},{"name":"写作计划","max":67}],
             nameGap: 5,
             center: ['50%','55%'],
             radius: '75%'
@@ -609,7 +598,7 @@
             itemStyle: {normal: {areaStyle: {type: 'default'}}},
             data : [
                 {
-                    value : [66,2,2,3,17,9,2,1],
+                    value : [2,2,3,17,66,9,2,1],
                     // name : 'Categories:'
                     name: '# Category articles'
                 }

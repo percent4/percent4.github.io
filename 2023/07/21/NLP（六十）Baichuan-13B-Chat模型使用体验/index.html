@@ -260,7 +260,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          6.4k 字
+          6.3k 字
         
       </span>
     
@@ -272,7 +272,7 @@
         
         
           <!-- compatible with older versions-->
-          54 分钟
+          53 分钟
         
       </span>
     
@@ -323,36 +323,29 @@
               <div class="markdown-body">
                 
                 <p>2023年7月11日，百川智能正式发布参数量130亿的通用大语言模型Baichuan-13B-Base、对话模型Baichuan-13B-Chat及其INT4/INT8两个量化版本。</p>
-<p>本文将介绍大模型BaiChuan-13B-Chat的使用体验，其HuggingFace网址为：<a
-target="_blank" rel="noopener" href="https://huggingface.co/baichuan-inc/Baichuan-13B-Chat">https://huggingface.co/baichuan-inc/Baichuan-13B-Chat</a>
-。</p>
-<p>BaiChuan-13B-Chat模型采用<code>FastChat</code>工具部署，部署方式与Baichuan-7B模型相同，关于部署的详细步骤，可参考文章：<a
-href="https://percent4.github.io/2023/07/11/NLP%EF%BC%88%E4%BA%94%E5%8D%81%E4%B9%9D%EF%BC%89%E4%BD%BF%E7%94%A8FastChat%E9%83%A8%E7%BD%B2%E7%99%BE%E5%B7%9D%E5%A4%A7%E6%A8%A1%E5%9E%8B/">NLP（五十九）使用FastChat部署百川大模型</a>
-。</p>
+<p>本文将介绍大模型BaiChuan-13B-Chat的使用体验，其HuggingFace网址为：<a target="_blank" rel="noopener" href="https://huggingface.co/baichuan-inc/Baichuan-13B-Chat">https://huggingface.co/baichuan-inc/Baichuan-13B-Chat</a> 。</p>
+<p>BaiChuan-13B-Chat模型采用<code>FastChat</code>工具部署，部署方式与Baichuan-7B模型相同，关于部署的详细步骤，可参考文章：<a href="https://percent4.github.io/2023/07/11/NLP%EF%BC%88%E4%BA%94%E5%8D%81%E4%B9%9D%EF%BC%89%E4%BD%BF%E7%94%A8FastChat%E9%83%A8%E7%BD%B2%E7%99%BE%E5%B7%9D%E5%A4%A7%E6%A8%A1%E5%9E%8B/">NLP（五十九）使用FastChat部署百川大模型</a> 。</p>
 <h3 id="使用初体验">使用初体验</h3>
 <p>GPT3.5或者GPT4模型在中文问答上偶尔会出现“幻觉”问题，比如一些常识性的中文问题，在这方面，Baichuan-13B-Chat模型的表现较好。</p>
 <p>我们考虑以下三个问题：</p>
 <ul>
-<li><p>鲁迅和周树人是同一个人吗，简要回答？</p></li>
-<li><p>中国第三大岛是哪个？</p></li>
-<li><p>拉普拉斯获得过诺贝尔奖吗？</p>
-<p>这是GPT3.5的回答：</p></li>
+<li>
+<p>鲁迅和周树人是同一个人吗，简要回答？</p>
+</li>
+<li>
+<p>中国第三大岛是哪个？</p>
+</li>
+<li>
+<p>拉普拉斯获得过诺贝尔奖吗？</p>
+<p>这是GPT3.5的回答：</p>
+</li>
 </ul>
-<figure>
-<img src="/img/nlp60_1.png" srcset="/img/loading.gif" lazyload alt="GPT3.5的回复" />
-<figcaption aria-hidden="true">GPT3.5的回复</figcaption>
-</figure>
+<p><img src="/img/nlp60_1.png" srcset="/img/loading.gif" lazyload alt="GPT3.5的回复"></p>
 <p>这是GPT4的回复：</p>
-<figure>
-<img src="/img/nlp60_2.png" srcset="/img/loading.gif" lazyload alt="GPT4的回复" />
-<figcaption aria-hidden="true">GPT4的回复</figcaption>
-</figure>
+<p><img src="/img/nlp60_2.png" srcset="/img/loading.gif" lazyload alt="GPT4的回复"></p>
 <p>这是Baichuan-13B-Chat模型的回复：</p>
-<figure>
-<img src="/img/nlp60_3.png" srcset="/img/loading.gif" lazyload alt="Baichuan-13B-Chat模型的回复" />
-<figcaption aria-hidden="true">Baichuan-13B-Chat模型的回复</figcaption>
-</figure>
-<h3 id="向量嵌入embedding">向量嵌入（Embedding）</h3>
+<p><img src="/img/nlp60_3.png" srcset="/img/loading.gif" lazyload alt="Baichuan-13B-Chat模型的回复"></p>
+<h3 id="向量嵌入（Embedding）">向量嵌入（Embedding）</h3>
 <p>当我们完成Baichuan-13B-Chat模型的部署后，我们可以使用类似OpenAI的调用方式来调用该模型，以下是其在向量嵌入方面的表现。</p>
 <p>我们选择五个初始文本：</p>
 <ul>
@@ -366,51 +359,45 @@ href="https://percent4.github.io/2023/07/11/NLP%EF%BC%88%E4%BA%94%E5%8D%81%E4%B9
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_text_embedding</span>(<span class="hljs-params">text</span>):<br>	<span class="hljs-comment"># Baichuan-13B-Chat Embedding</span><br>    url = <span class="hljs-string">&quot;http://localhost:8000/v1/embeddings&quot;</span><br>    headers = &#123;<span class="hljs-string">&#x27;Content-Type&#x27;</span>: <span class="hljs-string">&#x27;application/json&#x27;</span>&#125;<br>    payload = json.dumps(&#123;<br>        <span class="hljs-string">&quot;model&quot;</span>: <span class="hljs-string">&quot;Baichuan-13B-Chat&quot;</span>,<br>        <span class="hljs-string">&quot;input&quot;</span>: text<br>    &#125;)<br>    response = requests.request(<span class="hljs-string">&quot;POST&quot;</span>, url, headers=headers, data=payload)<br>    <span class="hljs-keyword">return</span> response.json()[<span class="hljs-string">&quot;data&quot;</span>][<span class="hljs-number">0</span>][<span class="hljs-string">&#x27;embedding&#x27;</span>]<br><br><br>contents = [<span class="hljs-string">&quot;唯心主义的对立面是什么&quot;</span>,<br>            <span class="hljs-string">&quot;你好&quot;</span>,<br>            <span class="hljs-string">&quot;上海的人口是多少？&quot;</span>,<br>            <span class="hljs-string">&quot;北京的旅游景点有哪些？&quot;</span>,<br>            <span class="hljs-string">&quot;中国的第一高楼&quot;</span>]<br><br>embeddings = [get_text_embedding(content) <span class="hljs-keyword">for</span> content <span class="hljs-keyword">in</span> contents]<br><br>new_text = <span class="hljs-string">&#x27;苏州的旅游景点有哪些？&#x27;</span><br>new_embedding = get_text_embedding(new_text)<br><br>cosine_sim_list = []<br><span class="hljs-keyword">for</span> embedding <span class="hljs-keyword">in</span> embeddings:<br>    cosine_sim_list.append(np.dot(np.array(new_embedding), np.array(embedding)))<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;输入：<span class="hljs-subst">&#123;new_text&#125;</span>&#x27;</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;最相似文本：<span class="hljs-subst">&#123;contents[cosine_sim_list.index(<span class="hljs-built_in">max</span>(cosine_sim_list))]&#125;</span>&#x27;</span>)<br></code></pre></td></tr></table></figure>
 <p>测试结果如下：</p>
 <blockquote>
-<p>输入：苏州的旅游景点有哪些？ 最相似文本：北京的旅游景点有哪些？</p>
+<p>输入：苏州的旅游景点有哪些？<br>
+最相似文本：北京的旅游景点有哪些？</p>
 </blockquote>
 <blockquote>
-<p>输入：柏拉图的哲学思想是什么？ 最相似文本：唯心主义的对立面是什么</p>
+<p>输入：柏拉图的哲学思想是什么？<br>
+最相似文本：唯心主义的对立面是什么</p>
 </blockquote>
 <blockquote>
-<p>输入：北京的人口 最相似文本：上海的人口是多少？</p>
+<p>输入：北京的人口<br>
+最相似文本：上海的人口是多少？</p>
 </blockquote>
 <h3 id="文档阅读">文档阅读</h3>
 <p>在向量嵌入的基础上，我们使用LangChain工具，将文档进行切分（split），之后转化为向量（Embedding），存入向量数据库（如Milvus），这样完成文档的储存。</p>
 <p>对于用户的新问题，使用文本相似度进行向量数据库查询，找到最接近的K条文本，使用这K条文本和新问题，进行文档问答，类似于BERT时代的阅读理解（MRC）。</p>
-<p>我们以<code>中国载人登月工程</code>百度百科中的文本为例，访问网址为：<a
-target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E4%B8%AD%E5%9B%BD%E8%BD%BD%E4%BA%BA%E7%99%BB%E6%9C%88%E5%B7%A5%E7%A8%8B/7147309">https://baike.baidu.com/item/%E4%B8%AD%E5%9B%BD%E8%BD%BD%E4%BA%BA%E7%99%BB%E6%9C%88%E5%B7%A5%E7%A8%8B/7147309</a>
-，将其储存为txt文件。</p>
-<figure>
-<img src="/img/nlp60_4.png" srcset="/img/loading.gif" lazyload alt="中国载人登月工程百度百科" />
-<figcaption aria-hidden="true">中国载人登月工程百度百科</figcaption>
-</figure>
+<p>我们以<code>中国载人登月工程</code>百度百科中的文本为例，访问网址为：<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E4%B8%AD%E5%9B%BD%E8%BD%BD%E4%BA%BA%E7%99%BB%E6%9C%88%E5%B7%A5%E7%A8%8B/7147309">https://baike.baidu.com/item/%E4%B8%AD%E5%9B%BD%E8%BD%BD%E4%BA%BA%E7%99%BB%E6%9C%88%E5%B7%A5%E7%A8%8B/7147309</a> ，将其储存为txt文件。</p>
+<p><img src="/img/nlp60_4.png" srcset="/img/loading.gif" lazyload alt="中国载人登月工程百度百科"></p>
 <p>以此为例进行文档问答，流程图参考如下：</p>
-<figure>
-<img src="/img/nlp60_5.jpeg" srcset="/img/loading.gif" lazyload alt="LangChain中的文档问答流程" />
-<figcaption aria-hidden="true">LangChain中的文档问答流程</figcaption>
-</figure>
+<p><img src="/img/nlp60_5.jpeg" srcset="/img/loading.gif" lazyload alt="LangChain中的文档问答流程"></p>
 <p>实现Python代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">from</span> langchain.document_loaders <span class="hljs-keyword">import</span> TextLoader<br><span class="hljs-keyword">from</span> langchain.text_splitter <span class="hljs-keyword">import</span> RecursiveCharacterTextSplitter<br><span class="hljs-keyword">from</span> pymilvus <span class="hljs-keyword">import</span> (<br>    connections,<br>    utility,<br>    FieldSchema,<br>    CollectionSchema,<br>    DataType,<br>    Collection,<br>)<br><br><span class="hljs-comment"># 指定要使用的文档加载器</span><br>documents = TextLoader(<span class="hljs-string">&#x27;dengyue.txt&#x27;</span>, encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>).load()<br><span class="hljs-comment"># 接下来，我们将文档拆分成块。</span><br>text_splitter = RecursiveCharacterTextSplitter(chunk_size=<span class="hljs-number">250</span>, chunk_overlap=<span class="hljs-number">0</span>)<br>texts = text_splitter.split_documents(documents)<br><br><br><span class="hljs-comment"># 获取文本的向量嵌入，使用Baichuan-13B-Chat模型</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_text_embedding</span>(<span class="hljs-params">req_text</span>):<br>    url = <span class="hljs-string">&quot;http://localhost:8000/v1/embeddings&quot;</span><br>    headers = &#123;<span class="hljs-string">&#x27;Content-Type&#x27;</span>: <span class="hljs-string">&#x27;application/json&#x27;</span>&#125;<br>    payload = json.dumps(&#123;<span class="hljs-string">&quot;model&quot;</span>: <span class="hljs-string">&quot;Baichuan-13B-Chat&quot;</span>, <span class="hljs-string">&quot;input&quot;</span>: req_text&#125;)<br>    new_req = requests.request(<span class="hljs-string">&quot;POST&quot;</span>, url, headers=headers, data=payload)<br>    <span class="hljs-keyword">return</span> new_req.json()[<span class="hljs-string">&#x27;data&#x27;</span>][<span class="hljs-number">0</span>][<span class="hljs-string">&#x27;embedding&#x27;</span>]<br><br><span class="hljs-comment"># 使用Baichuan-13B-Chat模型获取文档问答的答案</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_doc_qa</span>(<span class="hljs-params">qa_template</span>):<br>    url = <span class="hljs-string">&quot;http://localhost:8000/v1/chat/completions&quot;</span><br>    payload = json.dumps(&#123;<br>        <span class="hljs-string">&quot;model&quot;</span>: <span class="hljs-string">&quot;Baichuan-13B-Chat&quot;</span>,<br>        <span class="hljs-string">&quot;messages&quot;</span>: [<br>            &#123;<br>                <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>,<br>                <span class="hljs-string">&quot;content&quot;</span>: qa_chain_prompt<br>            &#125;<br>        ]<br>    &#125;)<br>    headers = &#123;<span class="hljs-string">&#x27;Content-Type&#x27;</span>: <span class="hljs-string">&#x27;application/json&#x27;</span>&#125;<br>    response = requests.request(<span class="hljs-string">&quot;POST&quot;</span>, url, headers=headers, data=payload)<br>    <span class="hljs-keyword">return</span> response.json()[<span class="hljs-string">&#x27;choices&#x27;</span>][<span class="hljs-number">0</span>][<span class="hljs-string">&#x27;message&#x27;</span>][<span class="hljs-string">&#x27;content&#x27;</span>]<br><br><br><span class="hljs-comment"># 连接Milvus</span><br>connections.connect(<span class="hljs-string">&quot;default&quot;</span>, host=<span class="hljs-string">&quot;localhost&quot;</span>, port=<span class="hljs-string">&quot;19530&quot;</span>)<br><br><span class="hljs-comment"># 创建一个collection</span><br>fields = [<br>    FieldSchema(name=<span class="hljs-string">&quot;pk&quot;</span>, dtype=DataType.INT64, is_primary=<span class="hljs-literal">True</span>, auto_id=<span class="hljs-literal">False</span>),<br>    FieldSchema(name=<span class="hljs-string">&quot;source&quot;</span>, dtype=DataType.VARCHAR, max_length=<span class="hljs-number">100</span>),<br>    FieldSchema(name=<span class="hljs-string">&quot;text&quot;</span>, dtype=DataType.VARCHAR, max_length=<span class="hljs-number">1000</span>),<br>    FieldSchema(name=<span class="hljs-string">&quot;embeddings&quot;</span>, dtype=DataType.FLOAT_VECTOR, dim=<span class="hljs-number">5120</span>)<br>]<br>schema = CollectionSchema(fields, <span class="hljs-string">&quot;vector db for docs qa&quot;</span>)<br>hello_milvus = Collection(<span class="hljs-string">&quot;docs_qa&quot;</span>, schema)<br><br><span class="hljs-comment"># 数据插入</span><br>_ids = []<br>sources = []<br>contents = []<br>embeddings = []<br><span class="hljs-keyword">for</span> i, text <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(texts):<br>    source = text.metadata[<span class="hljs-string">&#x27;source&#x27;</span>]<br>    <span class="hljs-built_in">print</span>(i+<span class="hljs-number">1</span>, source)<br>    content = text.page_content<br>    embedding = get_text_embedding(content)<br>    _ids.append(i+<span class="hljs-number">1</span>)<br>    sources.append(source)<br>    contents.append(content)<br>    embeddings.append(embedding)<br><br>insert_result = hello_milvus.insert([_ids, sources, contents, embeddings])<br><span class="hljs-comment"># After final entity is inserted, it is best to call flush to have no growing segments left in memory</span><br>hello_milvus.flush()<br><br><span class="hljs-comment"># 在entities字段创建索引</span><br>index = &#123;<br>    <span class="hljs-string">&quot;index_type&quot;</span>: <span class="hljs-string">&quot;IVF_FLAT&quot;</span>,<br>    <span class="hljs-string">&quot;metric_type&quot;</span>: <span class="hljs-string">&quot;IP&quot;</span>,<br>    <span class="hljs-string">&quot;params&quot;</span>: &#123;<span class="hljs-string">&quot;nlist&quot;</span>: <span class="hljs-number">128</span>&#125;,<br>&#125;<br>hello_milvus.create_index(<span class="hljs-string">&quot;embeddings&quot;</span>, index)<br><br><span class="hljs-comment"># 将collection加载至内存</span><br>hello_milvus.load()<br><br><span class="hljs-comment"># 输入问题，进行文档问答</span><br><span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>    query = <span class="hljs-built_in">input</span>(<span class="hljs-string">&#x27;输入问题：&#x27;</span>)<br>    vectors_to_search = [get_text_embedding(query)]<br>    <span class="hljs-comment"># 通过嵌入向量相似度获取相似文本，数量为3个</span><br>    search_params = &#123;<br>        <span class="hljs-string">&quot;metric_type&quot;</span>: <span class="hljs-string">&quot;IP&quot;</span>,<br>        <span class="hljs-string">&quot;params&quot;</span>: &#123;<span class="hljs-string">&quot;nprobe&quot;</span>: <span class="hljs-number">10</span>&#125;,<br>    &#125;<br>    result = hello_milvus.search(vectors_to_search, <span class="hljs-string">&quot;embeddings&quot;</span>, search_params, limit=<span class="hljs-number">3</span>, output_fields=[<span class="hljs-string">&quot;text&quot;</span>])<br>    context = <span class="hljs-string">&#x27;&#x27;</span>.join([_.entity.get(<span class="hljs-string">&#x27;text&#x27;</span>) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> result[<span class="hljs-number">0</span>]])<br><br>    <span class="hljs-comment"># 建立prompt</span><br>    qa_chain_prompt = <span class="hljs-string">f&quot;&quot;&quot;使用以下文本来回答最后的问题。</span><br><span class="hljs-string">    如果你不知道答案，就说你不知道，不要试图编造答案，尽可能保持答案简洁。 </span><br><span class="hljs-string">    文本: <span class="hljs-subst">&#123;context&#125;</span></span><br><span class="hljs-string">    问题: <span class="hljs-subst">&#123;query&#125;</span></span><br><span class="hljs-string">    答案:&quot;&quot;&quot;</span><br>    <span class="hljs-comment"># print(qa_chain_prompt)</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;问题：<span class="hljs-subst">&#123;query&#125;</span>&#x27;</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;回答：<span class="hljs-subst">&#123;get_doc_qa(qa_chain_prompt)&#125;</span>&#x27;</span>)<br><br></code></pre></td></tr></table></figure>
 <p>测试结果如下：</p>
 <blockquote>
-<p>问题：美国什么时候登上月球？
+<p>问题：美国什么时候登上月球？<br>
 回答：美国在20世纪60年代和70年代通过“阿波罗”计划成功登上月球。</p>
 </blockquote>
 <blockquote>
-<p>问题：中国预计在什么登上月球？
+<p>问题：中国预计在什么登上月球？<br>
 回答：中国预计在2025年实现航天员登月。目前，关于中国载人登月工程计划的时间，国内有三种说法：2020年、2025年和2030年。不过，这些时间表都是专家的观点和预测，国家尚未公布一个明确的时间表。</p>
 </blockquote>
 <blockquote>
-<p>问题：嫦娥二号、嫦娥三号的总指挥是谁？
+<p>问题：嫦娥二号、嫦娥三号的总指挥是谁？<br>
 回答：嫦娥二号、嫦娥三号的总指挥是叶培建。</p>
 </blockquote>
 <blockquote>
-<p>问题：神舟十六号载人飞行任务新闻发布会在哪里举行？
+<p>问题：神舟十六号载人飞行任务新闻发布会在哪里举行？<br>
 回答：神舟十六号载人飞行任务新闻发布会在酒泉卫星发射中心举行。</p>
 </blockquote>
 <p>当然，上述的文档问答方案并不是很完善，仅仅使用向量嵌入有时无法召回相似文本，这样就会造成回答错误。</p>
-<p>后续笔者将考虑ES +
-向量加入的结合方式进行召回，同时支持更多类型的文本，不仅限于txt文件。</p>
+<p>后续笔者将考虑ES + 向量加入的结合方式进行召回，同时支持更多类型的文本，不仅限于txt文件。</p>
 <h3 id="总结">总结</h3>
 <p>本文主要介绍了Baichuan-13B-Chat模型使用体验，包括其与GPT系列模型在中文常识性问题上的测试，以及向量嵌入、文档问答等。</p>
 <p>笔者使用下来的初步感受是，Baichuan-13B-Chat模型的问答效果还是不错的！</p>
