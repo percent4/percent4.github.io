@@ -271,7 +271,7 @@
         
         
           <!-- compatible with older versions-->
-          80 分钟
+          81 分钟
         
       </span>
     
@@ -322,21 +322,28 @@
               <div class="markdown-body">
                 
                 <p>本文将会讲述如何实现多标签文本分类。</p>
-<h3 id="什么是多标签分类？">什么是多标签分类？</h3>
+<h3 id="什么是多标签分类">什么是多标签分类？</h3>
 <p>在分类问题中，我们已经接触过二分类和多分类问题了。所谓二（多）分类问题，指的是y值一共有两（多）个类别，每个样本的y值只能属于其中的一个类别。对于多标签问题而言，每个样本的y值可能不仅仅属于一个类别。</p>
 <p>举个简单的例子，我们平时在给新闻贴标签的时候，就有可能把一篇文章分为经济和文化两个类别。因此，多标签问题在我们的日常生活中也是很常见的。</p>
 <p>对于多标签问题，业界还没有很成熟的解决方法，主要是因为标签之间可能会存在复杂的依赖关系，这种依赖关系现阶段还没有成熟的模型来解决。我们在解决多标签问题的时候，一种办法是认为标签之间互相独立，然后把该问题转化为我们熟悉的二（多）分类问题。</p>
-<p>本文以 <a target="_blank" rel="noopener" href="https://aistudio.baidu.com/aistudio/competition/detail/32?isFromCcf=true">2020语言与智能技术竞赛：事件抽取任务</a> 中的数据作为多分类标签的样例数据，借助多标签分类模型来解决。</p>
+<p>本文以 <a
+target="_blank" rel="noopener" href="https://aistudio.baidu.com/aistudio/competition/detail/32?isFromCcf=true">2020语言与智能技术竞赛：事件抽取任务</a>
+中的数据作为多分类标签的样例数据，借助多标签分类模型来解决。</p>
 <p>整个项目的结构如下图所示：</p>
-<p><img src="/img/nlp28_1.png" srcset="/img/loading.gif" lazyload alt="项目结构图"></p>
+<figure>
+<img src="/img/nlp28_1.png" srcset="/img/loading.gif" lazyload alt="项目结构图" />
+<figcaption aria-hidden="true">项目结构图</figcaption>
+</figure>
 <p>首先，让我们来看一下样例数据。</p>
 <h3 id="数据分析">数据分析</h3>
 <p>首先，让我们来看一下样例数据的几个例子：</p>
 <blockquote>
-<p>司法行为-起诉|组织关系-裁员 最近，一位前便利蜂员工就因公司违规裁员，将便利蜂所在的公司虫极科技（北京）有限公司告上法庭。<br>
-组织关系-裁员 思科上海大规模裁员人均可获赔100万官方澄清事实<br>
-组织关系-裁员 日本巨头面临危机，已裁员1000多人，苹果也救不了它！<br>
-组织关系-裁员|组织关系-解散 在硅谷镀金失败的造车新势力们：蔚来裁员、奇点被偷窃、拜腾解散</p>
+<p>司法行为-起诉|组织关系-裁员
+最近，一位前便利蜂员工就因公司违规裁员，将便利蜂所在的公司虫极科技（北京）有限公司告上法庭。
+组织关系-裁员 思科上海大规模裁员人均可获赔100万官方澄清事实
+组织关系-裁员 日本巨头面临危机，已裁员1000多人，苹果也救不了它！
+组织关系-裁员|组织关系-解散
+在硅谷镀金失败的造车新势力们：蔚来裁员、奇点被偷窃、拜腾解散</p>
 </blockquote>
 <p>从上面的例子中我们可以看出，同样的描述文本，有可能会属于多个事件类型。比如上面的<code>在硅谷镀金失败的造车新势力们：蔚来裁员、奇点被偷窃、拜腾解散</code>，该句话中包含了<code>组织关系-裁员</code>和<code>组织关系-解散</code>两个事件类型。</p>
 <p>该数据集中的训练集一共有11958个样本，65个事件类型，我们对该训练集进行简单的数据分析，来看看多事件类型的个数和占比，以及每个事件类型的数量。数据分析的脚本如下：</p>
@@ -346,56 +353,69 @@
 <h3 id="模型训练">模型训练</h3>
 <p>我们利用sklearn模块中的MultiLabelBinarizer进行多标签编码，如果文本所对应的事件类型存在，则将该位置的元素置为1，否则为0。因此，y值为65维的向量，其中1个或多个为1，是该文本（x值）对应一个或多个事件类型。</p>
 <p>我们采用ALBERT对文本进行特征提取，最大文本长度为200，采用的深度学习模型如下：</p>
-<p><img src="/img/nlp28_2.png" srcset="/img/loading.gif" lazyload alt="深度学习模型"></p>
+<figure>
+<img src="/img/nlp28_2.png" srcset="/img/loading.gif" lazyload alt="深度学习模型" />
+<figcaption aria-hidden="true">深度学习模型</figcaption>
+</figure>
 <p>模型训练的脚本（model_trian.py）的代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># author: Jclian91</span><br><span class="hljs-comment"># place: Pudong Shanghai</span><br><span class="hljs-comment"># time: 2020-04-03 18:12</span><br><br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">from</span> sklearn.preprocessing <span class="hljs-keyword">import</span> MultiLabelBinarizer<br><span class="hljs-keyword">from</span> keras.models <span class="hljs-keyword">import</span> Model<br><span class="hljs-keyword">from</span> keras.optimizers <span class="hljs-keyword">import</span> Adam<br><span class="hljs-keyword">from</span> keras.layers <span class="hljs-keyword">import</span> Input, Dense<br><span class="hljs-keyword">from</span> att <span class="hljs-keyword">import</span> Attention<br><span class="hljs-keyword">from</span> keras.layers <span class="hljs-keyword">import</span> GRU, Bidirectional<br><span class="hljs-keyword">from</span> tqdm <span class="hljs-keyword">import</span> tqdm<br><span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt<br><br><span class="hljs-keyword">from</span> albert_zh.extract_feature <span class="hljs-keyword">import</span> BertVector<br><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;./data/multi-classification-train.txt&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> f:<br>    train_content = [_.strip() <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> f.readlines()]<br><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;./data/multi-classification-test.txt&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> f:<br>    test_content = [_.strip() <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> f.readlines()]<br><br><span class="hljs-comment"># 获取训练集合、测试集的事件类型</span><br>movie_genres = []<br><br><span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> train_content+test_content:<br>    genres = line.split(<span class="hljs-string">&quot; &quot;</span>, maxsplit=<span class="hljs-number">1</span>)[<span class="hljs-number">0</span>].split(<span class="hljs-string">&quot;|&quot;</span>)<br>    movie_genres.append(genres)<br><br><span class="hljs-comment"># 利用sklearn中的MultiLabelBinarizer进行多标签编码</span><br>mlb = MultiLabelBinarizer()<br>mlb.fit(movie_genres)<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;一共有%d种事件类型。&quot;</span> % <span class="hljs-built_in">len</span>(mlb.classes_))<br><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;event_type.json&quot;</span>, <span class="hljs-string">&quot;w&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> h:<br>    h.write(json.dumps(mlb.classes_.tolist(), ensure_ascii=<span class="hljs-literal">False</span>, indent=<span class="hljs-number">4</span>))<br><br><span class="hljs-comment"># 对训练集和测试集的数据进行多标签编码</span><br>y_train = []<br>y_test = []<br><br><span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> train_content:<br>    genres = line.split(<span class="hljs-string">&quot; &quot;</span>, maxsplit=<span class="hljs-number">1</span>)[<span class="hljs-number">0</span>].split(<span class="hljs-string">&quot;|&quot;</span>)<br>    y_train.append(mlb.transform([genres])[<span class="hljs-number">0</span>])<br><br><span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> test_content:<br>    genres = line.split(<span class="hljs-string">&quot; &quot;</span>, maxsplit=<span class="hljs-number">1</span>)[<span class="hljs-number">0</span>].split(<span class="hljs-string">&quot;|&quot;</span>)<br>    y_test.append(mlb.transform([genres])[<span class="hljs-number">0</span>])<br><br>y_train = np.array(y_train)<br>y_test = np.array(y_test)<br><br><span class="hljs-built_in">print</span>(y_train.shape)<br><span class="hljs-built_in">print</span>(y_test.shape)<br><br><span class="hljs-comment"># 利用ALBERT对x值（文本）进行编码</span><br>bert_model = BertVector(pooling_strategy=<span class="hljs-string">&quot;NONE&quot;</span>, max_seq_len=<span class="hljs-number">200</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;begin encoding&#x27;</span>)<br>f = <span class="hljs-keyword">lambda</span> text: bert_model.encode([text])[<span class="hljs-string">&quot;encodes&quot;</span>][<span class="hljs-number">0</span>]<br><br>x_train = []<br>x_test = []<br><br>process_bar = tqdm(train_content)<br><br><span class="hljs-keyword">for</span> ch, line <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(process_bar, train_content):<br>    movie_intro = line.split(<span class="hljs-string">&quot; &quot;</span>, maxsplit=<span class="hljs-number">1</span>)[<span class="hljs-number">1</span>]<br>    x_train.append(f(movie_intro))<br><br>process_bar = tqdm(test_content)<br><br><span class="hljs-keyword">for</span> ch, line <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(process_bar, test_content):<br>    movie_intro = line.split(<span class="hljs-string">&quot; &quot;</span>, maxsplit=<span class="hljs-number">1</span>)[<span class="hljs-number">1</span>]<br>    x_test.append(f(movie_intro))<br><br>x_train = np.array(x_train)<br>x_test = np.array(x_test)<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;end encoding&quot;</span>)<br><span class="hljs-built_in">print</span>(x_train.shape)<br><br><br><span class="hljs-comment"># 深度学习模型</span><br><span class="hljs-comment"># 模型结构：ALBERT + 双向GRU + Attention + FC</span><br>inputs = Input(shape=(<span class="hljs-number">200</span>, <span class="hljs-number">312</span>, ), name=<span class="hljs-string">&quot;input&quot;</span>)<br>gru = Bidirectional(GRU(<span class="hljs-number">128</span>, dropout=<span class="hljs-number">0.2</span>, return_sequences=<span class="hljs-literal">True</span>), name=<span class="hljs-string">&quot;bi-gru&quot;</span>)(inputs)<br>attention = Attention(<span class="hljs-number">32</span>, name=<span class="hljs-string">&quot;attention&quot;</span>)(gru)<br>num_class = <span class="hljs-built_in">len</span>(mlb.classes_)<br>output = Dense(num_class, activation=<span class="hljs-string">&#x27;sigmoid&#x27;</span>, name=<span class="hljs-string">&quot;dense&quot;</span>)(attention)<br>model = Model(inputs, output)<br><br><span class="hljs-comment"># 模型可视化</span><br><span class="hljs-comment"># from keras.utils import plot_model</span><br><span class="hljs-comment"># plot_model(model, to_file=&#x27;multi-label-model.png&#x27;, show_shapes=True)</span><br><br>model.<span class="hljs-built_in">compile</span>(loss=<span class="hljs-string">&#x27;binary_crossentropy&#x27;</span>,<br>              optimizer=Adam(),<br>              metrics=[<span class="hljs-string">&#x27;accuracy&#x27;</span>])<br><br>history = model.fit(x_train, y_train, validation_data=(x_test, y_test), batch_size=<span class="hljs-number">128</span>, epochs=<span class="hljs-number">10</span>)<br>model.save(<span class="hljs-string">&#x27;event_type.h5&#x27;</span>)<br><br><br><span class="hljs-comment"># 训练结果可视化</span><br><span class="hljs-comment"># 绘制loss和acc图像</span><br>plt.subplot(<span class="hljs-number">2</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)<br>epochs = <span class="hljs-built_in">len</span>(history.history[<span class="hljs-string">&#x27;loss&#x27;</span>])<br>plt.plot(<span class="hljs-built_in">range</span>(epochs), history.history[<span class="hljs-string">&#x27;loss&#x27;</span>], label=<span class="hljs-string">&#x27;loss&#x27;</span>)<br>plt.plot(<span class="hljs-built_in">range</span>(epochs), history.history[<span class="hljs-string">&#x27;val_loss&#x27;</span>], label=<span class="hljs-string">&#x27;val_loss&#x27;</span>)<br>plt.legend()<br><br>plt.subplot(<span class="hljs-number">2</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>)<br>epochs = <span class="hljs-built_in">len</span>(history.history[<span class="hljs-string">&#x27;accuracy&#x27;</span>])<br>plt.plot(<span class="hljs-built_in">range</span>(epochs), history.history[<span class="hljs-string">&#x27;accuracy&#x27;</span>], label=<span class="hljs-string">&#x27;acc&#x27;</span>)<br>plt.plot(<span class="hljs-built_in">range</span>(epochs), history.history[<span class="hljs-string">&#x27;val_accuracy&#x27;</span>], label=<span class="hljs-string">&#x27;val_acc&#x27;</span>)<br>plt.legend()<br>plt.savefig(<span class="hljs-string">&quot;loss_acc.png&quot;</span>)<br></code></pre></td></tr></table></figure>
 <p>训练过程输出内容如下：</p>
 <figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs less">一共有<span class="hljs-number">65</span>种事件类型。<br>(<span class="hljs-number">11958</span>, <span class="hljs-number">65</span>)<br>(<span class="hljs-number">1498</span>, <span class="hljs-number">65</span>)<br><span class="hljs-selector-tag">I</span>:<span class="hljs-selector-tag">BERT_VEC</span>:<span class="hljs-selector-attr">[graph:opt:128]</span>:<span class="hljs-selector-tag">load</span> <span class="hljs-selector-tag">parameters</span> <span class="hljs-selector-tag">from</span> <span class="hljs-selector-tag">checkpoint</span>...<br><span class="hljs-selector-tag">I</span>:<span class="hljs-selector-tag">BERT_VEC</span>:<span class="hljs-selector-attr">[graph:opt:130]</span>:<span class="hljs-selector-tag">freeze</span>...<br><span class="hljs-selector-tag">I</span>:<span class="hljs-selector-tag">BERT_VEC</span>:<span class="hljs-selector-attr">[graph:opt:133]</span>:<span class="hljs-selector-tag">optimize</span>...<br><span class="hljs-selector-tag">I</span>:<span class="hljs-selector-tag">BERT_VEC</span>:<span class="hljs-selector-attr">[graph:opt:144]</span>:<span class="hljs-selector-tag">write</span> <span class="hljs-selector-tag">graph</span> <span class="hljs-selector-tag">to</span> <span class="hljs-selector-tag">a</span> <span class="hljs-selector-tag">tmp</span> <span class="hljs-selector-tag">file</span>: ./<span class="hljs-selector-tag">tmp_graph11</span><br><span class="hljs-number">100%</span>|██████████| <span class="hljs-number">11958</span>/<span class="hljs-number">11958</span> <span class="hljs-selector-attr">[02:47&lt;00:00, 71.39it/s]</span><br><span class="hljs-number">100%</span>|██████████| <span class="hljs-number">1498</span>/<span class="hljs-number">1498</span> <span class="hljs-selector-attr">[00:20&lt;00:00, 72.54it/s]</span><br><span class="hljs-selector-tag">end</span> <span class="hljs-selector-tag">encoding</span><br>(<span class="hljs-number">11958</span>, <span class="hljs-number">200</span>, <span class="hljs-number">312</span>)<br><span class="hljs-selector-tag">Train</span> <span class="hljs-selector-tag">on</span> <span class="hljs-number">11958</span> <span class="hljs-selector-tag">samples</span>, <span class="hljs-selector-tag">validate</span> <span class="hljs-selector-tag">on</span> <span class="hljs-number">1498</span> <span class="hljs-selector-tag">samples</span><br></code></pre></td></tr></table></figure>
 <p>在最终的epoch上，训练集上的acuuracy为0.9966，测试集上的acuuracy为0.9964。训练结果的loss和acc曲线如下：</p>
-<p><img src="/img/nlp28_3.png" srcset="/img/loading.gif" lazyload alt="模型的训练效果"></p>
+<figure>
+<img src="/img/nlp28_3.png" srcset="/img/loading.gif" lazyload alt="模型的训练效果" />
+<figcaption aria-hidden="true">模型的训练效果</figcaption>
+</figure>
 <p>从上述结果看，多标签分类的模型效果还是相当不错的。</p>
 <h3 id="模型预测">模型预测</h3>
 <p>我们利用下面的模型预测脚本（model_predict.py）对新的测试集数据进行验证，脚本代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># author: Jclian91</span><br><span class="hljs-comment"># place: Pudong Shanghai</span><br><span class="hljs-comment"># time: 2020-04-03 21:50</span><br><br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">from</span> keras.models <span class="hljs-keyword">import</span> load_model<br><br><span class="hljs-keyword">from</span> att <span class="hljs-keyword">import</span> Attention<br><span class="hljs-keyword">from</span> albert_zh.extract_feature <span class="hljs-keyword">import</span> BertVector<br>load_model = load_model(<span class="hljs-string">&quot;event_type.h5&quot;</span>, custom_objects=&#123;<span class="hljs-string">&quot;Attention&quot;</span>: Attention&#125;)<br><br><span class="hljs-comment"># 预测语句</span><br>text = <span class="hljs-string">&quot;北京时间6月7日，中国男足在广州天河体育场与菲律宾进行了一场热身赛，最终国足以2-0击败了对手，里皮也赢得了再度执教国足后的首场比赛胜利！&quot;</span><br>text = text.replace(<span class="hljs-string">&quot;\n&quot;</span>, <span class="hljs-string">&quot;&quot;</span>).replace(<span class="hljs-string">&quot;\r&quot;</span>, <span class="hljs-string">&quot;&quot;</span>).replace(<span class="hljs-string">&quot;\t&quot;</span>, <span class="hljs-string">&quot;&quot;</span>)<br><br>labels = []<br><br>bert_model = BertVector(pooling_strategy=<span class="hljs-string">&quot;NONE&quot;</span>, max_seq_len=<span class="hljs-number">200</span>)<br><br><span class="hljs-comment"># 将句子转换成向量</span><br>vec = bert_model.encode([text])[<span class="hljs-string">&quot;encodes&quot;</span>][<span class="hljs-number">0</span>]<br>x_train = np.array([vec])<br><br><span class="hljs-comment"># 模型预测</span><br>predicted = load_model.predict(x_train)[<span class="hljs-number">0</span>]<br><br>indices = [i <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(predicted)) <span class="hljs-keyword">if</span> predicted[i] &gt; <span class="hljs-number">0.5</span>]<br><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;event_type.json&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> g:<br>    movie_genres = json.loads(g.read())<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;预测语句: %s&quot;</span> % text)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;预测事件类型: %s&quot;</span> % <span class="hljs-string">&quot;|&quot;</span>.join([movie_genres[index] <span class="hljs-keyword">for</span> index <span class="hljs-keyword">in</span> indices]))<br></code></pre></td></tr></table></figure>
 <p>其中的几个样本的预测结果如下：</p>
 <blockquote>
-<p>预测语句: 北京时间6月7日，中国男足在广州天河体育场与菲律宾进行了一场热身赛，最终国足以2-0击败了对手，里皮也赢得了再度执教国足后的首场比赛胜利！<br>
+<p>预测语句:
+北京时间6月7日，中国男足在广州天河体育场与菲律宾进行了一场热身赛，最终国足以2-0击败了对手，里皮也赢得了再度执教国足后的首场比赛胜利！
 预测事件类型: 竞赛行为-胜负</p>
 </blockquote>
 <blockquote>
-<p>预测语句: 巴西亚马孙雨林大火持续多日，引发全球关注。<br>
-预测事件类型: 灾害/意外-起火</p>
+<p>预测语句: 巴西亚马孙雨林大火持续多日，引发全球关注。 预测事件类型:
+灾害/意外-起火</p>
 </blockquote>
 <blockquote>
-<p>预测语句: 19里加大师赛资格赛前两天战报 中国选手8人晋级6人遭淘汰2人弃赛<br>
-预测事件类型: 竞赛行为-晋级</p>
+<p>预测语句: 19里加大师赛资格赛前两天战报
+中国选手8人晋级6人遭淘汰2人弃赛 预测事件类型: 竞赛行为-晋级</p>
 </blockquote>
 <blockquote>
-<p>预测语句: 日本电车卡车相撞，车头部分脱轨并倾斜，现场起火浓烟滚滚<br>
+<p>预测语句: 日本电车卡车相撞，车头部分脱轨并倾斜，现场起火浓烟滚滚
 预测事件类型: 灾害/意外-车祸</p>
 </blockquote>
 <blockquote>
-<p>预测语句: 截止到11日13：30 ，因台风致浙江32人死亡，16人失联。具体如下：永嘉县岩坦镇山早村23死9失联，乐清6死，临安区岛石镇银坑村3死4失联，临海市东塍镇王加山村3失联。<br>
+<p>预测语句: 截止到11日13：30
+，因台风致浙江32人死亡，16人失联。具体如下：永嘉县岩坦镇山早村23死9失联，乐清6死，临安区岛石镇银坑村3死4失联，临海市东塍镇王加山村3失联。
 预测事件类型: 人生-失联|人生-死亡</p>
 </blockquote>
 <blockquote>
-<p>预测语句: 定位B端应用，BeBop发布Quest专属版柔性VR手套<br>
-预测事件类型: 产品行为-发布</p>
+<p>预测语句: 定位B端应用，BeBop发布Quest专属版柔性VR手套 预测事件类型:
+产品行为-发布</p>
 </blockquote>
 <blockquote>
-<p>预测语句: 8月17日。凌晨3点20分左右，济南消防支队领秀城中队接到指挥中心调度命令，济南市中区中海环宇城往南方向发生车祸，有人员被困。<br>
+<p>预测语句:
+8月17日。凌晨3点20分左右，济南消防支队领秀城中队接到指挥中心调度命令，济南市中区中海环宇城往南方向发生车祸，有人员被困。
 预测事件类型: 灾害/意外-车祸</p>
 </blockquote>
 <blockquote>
-<p>预测语句: 注意！济南可能有雷电事故｜英才学院14.9亿被收购｜八里桥蔬菜市场今日拆除，未来将建新的商业综合体<br>
+<p>预测语句:
+注意！济南可能有雷电事故｜英才学院14.9亿被收购｜八里桥蔬菜市场今日拆除，未来将建新的商业综合体
 预测事件类型: 财经/交易-出售/收购</p>
 </blockquote>
 <blockquote>
-<p>预测语句: 昨天18：30，陕西宁强县胡家坝镇向家沟村三组发生山体坍塌，5人被埋。当晚，3人被救出，其中1人在医院抢救无效死亡，2人在送医途中死亡。今天凌晨，另外2人被发现，已无生命迹象。<br>
+<p>预测语句:
+昨天18：30，陕西宁强县胡家坝镇向家沟村三组发生山体坍塌，5人被埋。当晚，3人被救出，其中1人在医院抢救无效死亡，2人在送医途中死亡。今天凌晨，另外2人被发现，已无生命迹象。
 预测事件类型: 人生-死亡|灾害/意外-坍/垮塌</p>
 </blockquote>
 <h3 id="总结">总结</h3>
-<p>本项目已经上传至Github项目，网址为：<a target="_blank" rel="noopener" href="https://github.com/percent4/multi-label-classification-4-event-type">https://github.com/percent4/multi-label-classification-4-event-type</a> 。</p>
+<p>本项目已经上传至Github项目，网址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/multi-label-classification-4-event-type">https://github.com/percent4/multi-label-classification-4-event-type</a>
+。</p>
 <p>后续有机会再给大家介绍更多多标签分类相关的问题，欢迎大家关注~</p>
 
                 
