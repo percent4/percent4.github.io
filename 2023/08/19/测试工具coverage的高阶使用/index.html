@@ -325,8 +325,9 @@
             
               <div class="markdown-body">
                 
-                <p>在文章<a target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/details/123833933">Python之单元测试使用的一点心得</a>中，笔者介绍了自己在使用Python测试工具<code>coverge</code>的一点心得，包括：</p>
-<ol>
+                <p>在文章<a
+target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/details/123833933">Python之单元测试使用的一点心得</a>中，笔者介绍了自己在使用Python测试工具<code>coverge</code>的一点心得，包括：</p>
+<ol type="1">
 <li>使用coverage模块计算代码测试覆盖率</li>
 <li>使用coverage api计算代码测试覆盖率</li>
 <li>coverage配置文件的使用</li>
@@ -334,24 +335,16 @@
 </ol>
 <p>本文在此基础上，将会介绍coverage的高阶使用，包括：</p>
 <ul>
-<li>
-<p>Flask API测试</p>
-</li>
-<li>
-<p>coverage多文件测试</p>
-</li>
-<li>
-<p>coverage的Gitlab CI/CD集成</p>
-</li>
-<li>
-<p>coverage badge生成</p>
-<p>本文中使用coverage的版本均为7.3.0。</p>
-</li>
-<li></li>
+<li><p>Flask API测试</p></li>
+<li><p>coverage多文件测试</p></li>
+<li><p>coverage的Gitlab CI/CD集成</p></li>
+<li><p>coverage badge生成</p>
+<p>本文中使用coverage的版本均为7.3.0。</p></li>
+<li><h3 id="flask-api测试">Flask API测试</h3>
+<p>在unittest测试框架如果对Flask
+API进行测试时使用HTTP请求，那么将无法得到代码覆盖率。</p>
+<p>我们有如下的示例Flask服务：</p></li>
 </ul>
-<h3 id="Flask-API测试">Flask API测试</h3>
-<p>在unittest测试框架如果对Flask API进行测试时使用HTTP请求，那么将无法得到代码覆盖率。</p>
-<p>我们有如下的示例Flask服务：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> flask <span class="hljs-keyword">import</span> Flask<br><br>app = Flask(__name__)<br><br><br><span class="hljs-meta">@app.route(<span class="hljs-params"><span class="hljs-string">&#x27;/&#x27;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">index</span>():<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;Hello index&quot;</span><br><br><br><span class="hljs-meta">@app.route(<span class="hljs-params"><span class="hljs-string">&#x27;/test&#x27;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test</span>():<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;Hello test&quot;</span><br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    app.run(host=<span class="hljs-string">&quot;0.0.0.0&quot;</span>, port=<span class="hljs-number">5000</span>, debug=<span class="hljs-literal">True</span>)<br></code></pre></td></tr></table></figure>
 <p>正确的测试代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> unittest<br><br><span class="hljs-keyword">from</span> flask_app <span class="hljs-keyword">import</span> app<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">AppTestCase</span>(unittest.TestCase):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">setUp</span>(<span class="hljs-params">self</span>):<br>        self.ctx = app.app_context()<br>        self.ctx.push()<br>        self.client = app.test_client()<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">tearDown</span>(<span class="hljs-params">self</span>):<br>        self.ctx.pop()<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">test_case1</span>(<span class="hljs-params">self</span>):<br>        response = self.client.get(<span class="hljs-string">&quot;/&quot;</span>)<br>        self.assertEqual(response.status_code, <span class="hljs-number">200</span>)<br>        self.assertEqual(response.text, <span class="hljs-string">&quot;Hello index&quot;</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">test_case2</span>(<span class="hljs-params">self</span>):<br>        response = self.client.get(<span class="hljs-string">&quot;/test&quot;</span>)<br>        self.assertEqual(response.status_code, <span class="hljs-number">200</span>)<br>        self.assertEqual(response.text, <span class="hljs-string">&quot;Hello test&quot;</span>)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    suite = unittest.TestSuite()<br>    suite.addTest(AppTestCase(<span class="hljs-string">&#x27;test_case1&#x27;</span>))<br>    suite.addTest(AppTestCase(<span class="hljs-string">&#x27;test_case2&#x27;</span>))<br>    run = unittest.TextTestRunner()<br>    run.run(suite)<br></code></pre></td></tr></table></figure>
@@ -369,8 +362,11 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">coverage run test_func_add1.py<br>coverage run --append test_func_add2.py<br>coverage report<br></code></pre></td></tr></table></figure>
 <p>此时代码覆盖率如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">Name          Stmts   Miss  Cover<br>---------------------------------<br>func_add.py       8      0   100%<br>---------------------------------<br>TOTAL             8      0   100%<br></code></pre></td></tr></table></figure>
-<h3 id="coverage的Gitlab-CI-CD集成">coverage的Gitlab CI/CD集成</h3>
-<p>在文章<a target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/details/131258147">Gitlab CI/CD入门（一）Python项目的CI演示</a>中，笔者介绍了Gitlab CI/CD的入门。在此基础上，我们将集成coverage。</p>
+<h3 id="coverage的gitlab-cicd集成">coverage的Gitlab CI/CD集成</h3>
+<p>在文章<a
+target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/details/131258147">Gitlab
+CI/CD入门（一）Python项目的CI演示</a>中，笔者介绍了Gitlab
+CI/CD的入门。在此基础上，我们将集成coverage。</p>
 <p>首先我们的test目录如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">.<br>├── __init__.py<br>├── func_add.py<br>└── test_func_add.py<br></code></pre></td></tr></table></figure>
 <p><code>func_add.py</code>为实现两个变量相加的代码，如前述。<code>test_func_add.py</code>为测试代码，如下：</p>
@@ -378,21 +374,42 @@
 <p>CI/CD依赖<code>.gitlab-ci.yml</code>，配置如下：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">stages:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">build</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">unittest</span><br><br><span class="hljs-attr">build-job:</span><br>  <span class="hljs-attr">stage:</span> <span class="hljs-string">build</span><br>  <span class="hljs-attr">script:</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">echo</span> <span class="hljs-string">`date`</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">echo</span> <span class="hljs-string">&quot;Hello, $GITLAB_USER_LOGIN!&quot;</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">echo</span> <span class="hljs-string">&quot;This job deploys something from the $CI_COMMIT_BRANCH branch.&quot;</span><br><br><span class="hljs-attr">unit_test_job:</span><br>  <span class="hljs-attr">stage:</span> <span class="hljs-string">unittest</span><br>  <span class="hljs-attr">image:</span> <span class="hljs-string">python:3.9-alpine3.17</span><br>  <span class="hljs-attr">script:</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">pip3</span> <span class="hljs-string">install</span> <span class="hljs-string">coverage==7.3.0</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">coverage</span> <span class="hljs-string">run</span> <span class="hljs-string">test/test_func_add.py</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">coverage</span> <span class="hljs-string">report</span><br>  <span class="hljs-attr">coverage:</span> <span class="hljs-string">&#x27;/TOTAL.*\s+(\d+%)$/&#x27;</span><br></code></pre></td></tr></table></figure>
 <p>运行CI/CD，结果如下图：</p>
-<p><img src="/img/coverage1_1.png" srcset="/img/loading.gif" lazyload alt="unittest_job运行结果"></p>
+<figure>
+<img src="/img/coverage1_1.png" srcset="/img/loading.gif" lazyload alt="unittest_job运行结果" />
+<figcaption aria-hidden="true">unittest_job运行结果</figcaption>
+</figure>
 <p>在Gitlab项目中的<code>Settings -&gt; CI/CD -&gt; General pipelines</code>中点击Expand，会显示CI/CD已内置<code>Pipeline status, Coverage report, Latest release</code>，其中<code>Coverage repor</code>如下图：</p>
-<p><img src="/img/coverage1_2.png" srcset="/img/loading.gif" lazyload alt="Coverage report"></p>
-<p>最后我们要在项目中加入coverage badge（徽章），在Gitlab项目中的<code>Settings -&gt; General -&gt; Badge</code>中点击Expand，再点击Add badge，coverage徽章的配置如下：</p>
-<p><img src="/img/coverage1_3.png" srcset="/img/loading.gif" lazyload alt="Add badge"></p>
+<figure>
+<img src="/img/coverage1_2.png" srcset="/img/loading.gif" lazyload alt="Coverage report" />
+<figcaption aria-hidden="true">Coverage report</figcaption>
+</figure>
+<p>最后我们要在项目中加入coverage
+badge（徽章），在Gitlab项目中的<code>Settings -&gt; General -&gt; Badge</code>中点击Expand，再点击Add
+badge，coverage徽章的配置如下：</p>
+<figure>
+<img src="/img/coverage1_3.png" srcset="/img/loading.gif" lazyload alt="Add badge" />
+<figcaption aria-hidden="true">Add badge</figcaption>
+</figure>
 <p>本项目中只有main分支，因此不需要设置变量，实际在使用过程中，需要配置变量如default_branch等。</p>
 <p>以上配置完毕后，项目徽章显示如下：</p>
-<p><img src="/img/coverage1_4.png" srcset="/img/loading.gif" lazyload alt="成功加入徽章！"></p>
-<p>以上配置过程已开源，项目网址为：<a target="_blank" rel="noopener" href="https://gitlab.com/jclian91/gitlab_ci_test">https://gitlab.com/jclian91/gitlab_ci_test</a> 。</p>
+<figure>
+<img src="/img/coverage1_4.png" srcset="/img/loading.gif" lazyload alt="成功加入徽章！" />
+<figcaption aria-hidden="true">成功加入徽章！</figcaption>
+</figure>
+<p>以上配置过程已开源，项目网址为：<a
+target="_blank" rel="noopener" href="https://gitlab.com/jclian91/gitlab_ci_test">https://gitlab.com/jclian91/gitlab_ci_test</a>
+。</p>
 <h3 id="coverage-badge生成">coverage badge生成</h3>
 <p>coverage badge生成方式分为静态和动态。</p>
 <p>动态的话，可使用<code>coverage-badge</code>或者<code>genbadge</code>模块。</p>
-<p>静态的话，可使用网站：<a target="_blank" rel="noopener" href="https://shields.io/badges/static-badge">https://shields.io/badges/static-badge</a> .</p>
+<p>静态的话，可使用网站：<a
+target="_blank" rel="noopener" href="https://shields.io/badges/static-badge">https://shields.io/badges/static-badge</a>
+.</p>
 <p>比如我们生成编程语言的徽章，如下图：</p>
-<p><img src="/img/coverage1_5.png" srcset="/img/loading.gif" lazyload alt="示例徽章生成"></p>
+<figure>
+<img src="/img/coverage1_5.png" srcset="/img/loading.gif" lazyload alt="示例徽章生成" />
+<figcaption aria-hidden="true">示例徽章生成</figcaption>
+</figure>
 <p>之后我们就可以用该网址访问徽章了。</p>
 <h3 id="总结">总结</h3>
 <p>本文介绍了测试工具coverage的高阶使用，希望能对读者有所启发~</p>
