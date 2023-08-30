@@ -322,21 +322,16 @@
               <div class="markdown-body">
                 
                 <p>两周前的周末，笔者决定对人物关系分类进行再次尝试。</p>
-<p>为什么说是再次尝试呢？因为笔者之前已经写过一篇文章<a
-target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/details/104380371">NLP（二十一）人物关系抽取的一次实战</a>，当时的标注数据大约2900条，使用的模型也比较简单，为BERT+Bi-GRU+Attention+FC结构，其中BERT用作特征提取，该模型在原有数据集上的F1为79%。</p>
+<p>为什么说是再次尝试呢？因为笔者之前已经写过一篇文章<a target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/details/104380371">NLP（二十一）人物关系抽取的一次实战</a>，当时的标注数据大约2900条，使用的模型也比较简单，为BERT+Bi-GRU+Attention+FC结构，其中BERT用作特征提取，该模型在原有数据集上的F1为79%。</p>
 <p>经过笔者一年断断续续的努力，现在的标注样本已经达到3900多条。鉴于笔者已做过BERT微调相关工作，当然希望在此数据集上进行再次尝试。</p>
 <p>现有的人物关系数据集大约3900多条，分布如下图：</p>
-<figure>
-<img src="/img/nlp42_1.png" srcset="/img/loading.gif" lazyload alt="人物关系分布图" />
-<figcaption aria-hidden="true">人物关系分布图</figcaption>
-</figure>
+<p><img src="/img/nlp42_1.png" srcset="/img/loading.gif" lazyload alt="人物关系分布图"></p>
 <p>首先，我们只使用BERT分类模型，对输入数据进行格式改造，进行简单地尝试。</p>
 <p>我们以样本<code>亲戚  1837年6月20日，威廉四世辞世，他的侄女维多利亚即位。</code>为例，其中<code>亲戚</code>为人物关系，<code>威廉四世</code>为实体1，<code>维多利亚</code>为实体2，来演示输入的文本格式。下面的部分我们统一使用<code>chinese-RoBERTa-wwm-ext</code>作为预训练模型，数据集分为训练集和测试集，比例为8:2。</p>
-<p>第一种方法，我们与文章<a
-href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%80%EF%BC%89%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E6%8A%BD%E5%8F%96%E7%9A%84%E4%B8%80%E6%AC%A1%E5%AE%9E%E6%88%98/">NLP（二十一）人物关系抽取的一次实战</a>一样，在文本中将实体1替换为同样数量的<code>#</code>，实体2替换为同样数量的<code>#</code>，再将实体1、实体2、文本用<code>$</code>连接，输入格式为：<code>威廉四世$维多利亚$1837年6月20日，####辞世，他的侄女####即位。</code>。使用BERT+Bi-GRU+Attention+FC模型，在测试集上的评估结果如下：</p>
+<p>第一种方法，我们与文章<a href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%80%EF%BC%89%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E6%8A%BD%E5%8F%96%E7%9A%84%E4%B8%80%E6%AC%A1%E5%AE%9E%E6%88%98/">NLP（二十一）人物关系抽取的一次实战</a>一样，在文本中将实体1替换为同样数量的<code>#</code>，实体2替换为同样数量的<code>#</code>，再将实体1、实体2、文本用<code>$</code>连接，输入格式为：<code>威廉四世$维多利亚$1837年6月20日，####辞世，他的侄女####即位。</code>。使用BERT+Bi-GRU+Attention+FC模型，在测试集上的评估结果如下：</p>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>模型名称</th>
 <th>训练1</th>
 <th>训练2</th>
@@ -347,7 +342,7 @@ href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>BiGRU+Attention</td>
 <td>0.7726</td>
 <td>0.7974</td>
@@ -358,11 +353,10 @@ href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8
 </tr>
 </tbody>
 </table>
-<p>第二种方法，输入格式与第一种方法一致。使用文章<a
-href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E4%BA%94%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E5%A4%9A%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1/">NLP（三十五）使用keras-bert实现文本多分类任务</a>中的多分类模型进行训练，在测试集上的评估结果如下：</p>
+<p>第二种方法，输入格式与第一种方法一致。使用文章<a href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E4%BA%94%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E5%A4%9A%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1/">NLP（三十五）使用keras-bert实现文本多分类任务</a>中的多分类模型进行训练，在测试集上的评估结果如下：</p>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>模型名称</th>
 <th>训练1</th>
 <th>训练2</th>
@@ -373,7 +367,7 @@ href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E4%BA
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>Bert_cls</td>
 <td>0.8246</td>
 <td>0.8110</td>
@@ -388,7 +382,7 @@ href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E4%BA
 <p>第三种方法，在文本中将实体用<code>#</code>包围，输入格式为：<code>1837年6月20日，#威廉四世#辞世，他的侄女#维多利亚#即位。</code>使用BERT_cls模型，在测试集上的评估结果如下：</p>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>模型名称</th>
 <th>训练1</th>
 <th>训练2</th>
@@ -399,7 +393,7 @@ href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E4%BA
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>Bert_cls2（实体用#围绕）</td>
 <td>0.8175</td>
 <td>0.8259</td>
@@ -412,27 +406,18 @@ href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E4%BA
 </table>
 <p>可以看到，该输入格式与第二种方法相比，在模型效果上并没有太大的提升。</p>
 <p>也许，是时候尝试新的模型了。</p>
-<p>上周一晚上，笔者无意中看到一篇论文，名称为<a
-target="_blank" rel="noopener" href="https://arxiv.org/pdf/1905.08284.pdf">Enriching Pre-trained
-Language Model with Entity Information for Relation
-Classification</a>，顾名思义为使用实体信息将预训练模型用于关系分类（RC）。其模型结构如下图：</p>
-<figure>
-<img src="/img/nlp42_1.png" srcset="/img/loading.gif" lazyload alt="R-BERT模型结构图" />
-<figcaption aria-hidden="true">R-BERT模型结构图</figcaption>
-</figure>
+<p>上周一晚上，笔者无意中看到一篇论文，名称为<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1905.08284.pdf">Enriching Pre-trained Language Model with Entity Information for Relation Classification</a>，顾名思义为使用实体信息将预训练模型用于关系分类（RC）。其模型结构如下图：</p>
+<p><img src="/img/nlp42_1.png" srcset="/img/loading.gif" lazyload alt="R-BERT模型结构图"></p>
 <p>该模型被称为<code>R-BERT</code>，模型结构在此不多介绍，后面有机会再介绍。在Github上有<code>R-BERT</code>模型的Torch框架实现方式，在<code>Semeval 2010 Task 8 Dataset</code>取得了不错的效果。</p>
 <p>笔者将<code>R-BERT</code>用于人物关系分类数据集中，在测试集上的评估结果如下：</p>
 <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">Model</span>: chinese-roberta-wwm-ext, weighted avgage F1 = <span class="hljs-number">85</span>.<span class="hljs-number">35</span>%<br></code></pre></td></tr></table></figure>
-<p>该项目笔者已上传至Github，网址为：<a
-target="_blank" rel="noopener" href="https://github.com/percent4/R-BERT_for_people_relation_extraction">https://github.com/percent4/R-BERT_for_people_relation_extraction</a>。</p>
+<p>该项目笔者已上传至Github，网址为：<a target="_blank" rel="noopener" href="https://github.com/percent4/R-BERT_for_people_relation_extraction">https://github.com/percent4/R-BERT_for_people_relation_extraction</a>。</p>
 <p>本周，笔者下定决心使用Keras实现<code>R-BERT</code>。第一天，无果。第二天，实现关键Keras层的突破，进行简单模型训练，发现离Torch版本的结果尚有一定差距。第三天，对照Torch版本，不断调整模型，加入Warmup机制，发现终于取得了与Torch版本一样的效果。在测试集上的评估结果如下：</p>
 <figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs crystal"><span class="hljs-comment"># Model: chinese-RoBERTa-wwm-ext, weighted avgage F1 = 85.27%</span><br>              precision    recall  f1-score   support<br><br>     unknown     <span class="hljs-number">0.7930</span>    <span class="hljs-number">0.8612</span>    <span class="hljs-number">0.8257</span>       <span class="hljs-number">209</span><br>         上下级     <span class="hljs-number">0.7188</span>    <span class="hljs-number">0.7419</span>    <span class="hljs-number">0.7302</span>        <span class="hljs-number">31</span><br>          亲戚     <span class="hljs-number">0.8824</span>    <span class="hljs-number">0.6250</span>    <span class="hljs-number">0.7317</span>        <span class="hljs-number">24</span><br>        兄弟姐妹     <span class="hljs-number">0.8378</span>    <span class="hljs-number">0.9118</span>    <span class="hljs-number">0.8732</span>        <span class="hljs-number">34</span><br>          合作     <span class="hljs-number">0.8600</span>    <span class="hljs-number">0.7288</span>    <span class="hljs-number">0.7890</span>        <span class="hljs-number">59</span><br>          同人     <span class="hljs-number">1.0000</span>    <span class="hljs-number">0.9487</span>    <span class="hljs-number">0.9737</span>        <span class="hljs-number">39</span><br>          同学     <span class="hljs-number">0.8800</span>    <span class="hljs-number">0.9167</span>    <span class="hljs-number">0.8980</span>        <span class="hljs-number">24</span><br>          同门     <span class="hljs-number">0.9615</span>    <span class="hljs-number">0.9615</span>    <span class="hljs-number">0.9615</span>        <span class="hljs-number">26</span><br>          夫妻     <span class="hljs-number">0.8333</span>    <span class="hljs-number">0.8861</span>    <span class="hljs-number">0.8589</span>        <span class="hljs-number">79</span><br>          好友     <span class="hljs-number">0.8065</span>    <span class="hljs-number">0.8333</span>    <span class="hljs-number">0.8197</span>        <span class="hljs-number">30</span><br>          师生     <span class="hljs-number">0.8857</span>    <span class="hljs-number">0.8378</span>    <span class="hljs-number">0.8611</span>        <span class="hljs-number">37</span><br>          情侣     <span class="hljs-number">0.9231</span>    <span class="hljs-number">0.7742</span>    <span class="hljs-number">0.8421</span>        <span class="hljs-number">31</span><br>          父母     <span class="hljs-number">0.9062</span>    <span class="hljs-number">0.9062</span>    <span class="hljs-number">0.9062</span>       <span class="hljs-number">128</span><br>          祖孙     <span class="hljs-number">0.9524</span>    <span class="hljs-number">0.8000</span>    <span class="hljs-number">0.8696</span>        <span class="hljs-number">25</span><br><br>    accuracy                         <span class="hljs-number">0.8531</span>       <span class="hljs-number">776</span><br>   <span class="hljs-function"><span class="hljs-keyword">macro</span> <span class="hljs-title">avg</span></span>     <span class="hljs-number">0.8743</span>    <span class="hljs-number">0.8381</span>    <span class="hljs-number">0.8529</span>       <span class="hljs-number">776</span><br>weighted avg     <span class="hljs-number">0.8566</span>    <span class="hljs-number">0.8531</span>    <span class="hljs-number">0.8527</span>       <span class="hljs-number">776</span><br></code></pre></td></tr></table></figure>
-<p>该项目已上传至Github，网址为：<a
-target="_blank" rel="noopener" href="https://github.com/percent4/Keras_R_BERT">https://github.com/percent4/Keras_R_BERT</a>。后面有机会笔者再详细介绍。</p>
+<p>该项目已上传至Github，网址为：<a target="_blank" rel="noopener" href="https://github.com/percent4/Keras_R_BERT">https://github.com/percent4/Keras_R_BERT</a>。后面有机会笔者再详细介绍。</p>
 <p>至此，笔者不仅用Keras实现了R-BERT，并且比最初的BERT+Bi-GRU+Attention+FC模型，在测试集上的F1值提升了6.3%。</p>
 <p>实现模型的过程是痛苦的，笔者一度想放弃，但当模型成功复现后，那种快乐，是简单枯燥的工作中的一抹绚丽的阳光！这也是笔者第一次复现模型，虽然只是深度学习框架不同，但对我来说是极其重要的一步！</p>
-<p>最近又发现一个很不错的关系分类的模型：<code>Mul-BERT</code>，但由于该模型的论文并未公布，Github也没有公开源码，笔者只好按自己的理解，简单地实现了近似<code>Mul-BERT</code>模型，已上传至Github，网址为：<a
-target="_blank" rel="noopener" href="https://github.com/percent4/Keras_quasi_Mul_BERT">https://github.com/percent4/Keras_quasi_Mul_BERT</a>。等论文出来后，再用Keras去复现<code>Mul-BERT</code>模型。</p>
+<p>最近又发现一个很不错的关系分类的模型：<code>Mul-BERT</code>，但由于该模型的论文并未公布，Github也没有公开源码，笔者只好按自己的理解，简单地实现了近似<code>Mul-BERT</code>模型，已上传至Github，网址为：<a target="_blank" rel="noopener" href="https://github.com/percent4/Keras_quasi_Mul_BERT">https://github.com/percent4/Keras_quasi_Mul_BERT</a>。等论文出来后，再用Keras去复现<code>Mul-BERT</code>模型。</p>
 <p>本文到此结束，感谢阅读~</p>
 <p>2021年3月25日于上海浦东，此日阳光明媚~</p>
 
