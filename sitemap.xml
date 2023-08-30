@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://percent4.github.io/about/index.html</loc>
+    <loc>https://percent4.github.io/2023/07/06/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0%E5%86%99%E4%BD%9C%E8%AE%A1%E5%88%92/</loc>
     
     <lastmod>2023-08-30</lastmod>
     
@@ -11,9 +11,9 @@
   </url>
   
   <url>
-    <loc>https://percent4.github.io/2023/07/06/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0%E5%86%99%E4%BD%9C%E8%AE%A1%E5%88%92/</loc>
+    <loc>https://percent4.github.io/about/index.html</loc>
     
-    <lastmod>2023-08-23</lastmod>
+    <lastmod>2023-08-30</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -1019,7 +1019,7 @@
   </url>
   
   <url>
-    <loc>https://percent4.github.io/personal_travel_map/provinces/%E6%B1%9F%E8%8B%8F%E7%9C%81.html</loc>
+    <loc>https://percent4.github.io/personal_travel_map/provinces/%E5%B1%B1%E4%B8%9C%E7%9C%81.html</loc>
     
     <lastmod>2023-07-29</lastmod>
     
@@ -1028,7 +1028,7 @@
   </url>
   
   <url>
-    <loc>https://percent4.github.io/personal_travel_map/provinces/%E5%B1%B1%E4%B8%9C%E7%9C%81.html</loc>
+    <loc>https://percent4.github.io/personal_travel_map/provinces/%E6%B1%9F%E8%8B%8F%E7%9C%81.html</loc>
     
     <lastmod>2023-07-29</lastmod>
     
@@ -1055,7 +1055,7 @@
   </url>
   
   <url>
-    <loc>https://percent4.github.io/personal_travel_map/provinces/%E4%B8%8A%E6%B5%B7%E5%B8%82.html</loc>
+    <loc>https://percent4.github.io/personal_travel_map/provinces/%E5%8C%97%E4%BA%AC%E5%B8%82.html</loc>
     
     <lastmod>2023-07-29</lastmod>
     
@@ -1064,7 +1064,7 @@
   </url>
   
   <url>
-    <loc>https://percent4.github.io/personal_travel_map/provinces/%E5%8C%97%E4%BA%AC%E5%B8%82.html</loc>
+    <loc>https://percent4.github.io/personal_travel_map/provinces/%E4%B8%8A%E6%B5%B7%E5%B8%82.html</loc>
     
     <lastmod>2023-07-29</lastmod>
     
@@ -1178,13 +1178,6 @@
   </url>
   
   <url>
-    <loc>https://percent4.github.io/tags/Keras-bert/</loc>
-    <lastmod>2023-08-30</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://percent4.github.io/tags/Keras/</loc>
     <lastmod>2023-08-30</lastmod>
     <changefreq>weekly</changefreq>
@@ -1192,7 +1185,21 @@
   </url>
   
   <url>
+    <loc>https://percent4.github.io/tags/Keras-bert/</loc>
+    <lastmod>2023-08-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://percent4.github.io/tags/ResNet/</loc>
+    <lastmod>2023-08-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://percent4.github.io/tags/CNN/</loc>
     <lastmod>2023-08-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1220,7 +1227,14 @@
   </url>
   
   <url>
-    <loc>https://percent4.github.io/tags/CNN/</loc>
+    <loc>https://percent4.github.io/tags/%E7%B9%81%E7%AE%80%E4%BD%93%E8%BD%AC%E6%8D%A2/</loc>
+    <lastmod>2023-08-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://percent4.github.io/tags/%E6%8B%BC%E9%9F%B3/</loc>
     <lastmod>2023-08-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1241,7 +1255,7 @@
   </url>
   
   <url>
-    <loc>https://percent4.github.io/tags/CRF/</loc>
+    <loc>https://percent4.github.io/tags/TF-IDF/</loc>
     <lastmod>2023-08-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1255,28 +1269,14 @@
   </url>
   
   <url>
-    <loc>https://percent4.github.io/tags/TF-IDF/</loc>
-    <lastmod>2023-08-30</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://percent4.github.io/tags/%E7%B9%81%E7%AE%80%E4%BD%93%E8%BD%AC%E6%8D%A2/</loc>
-    <lastmod>2023-08-30</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://percent4.github.io/tags/%E6%8B%BC%E9%9F%B3/</loc>
-    <lastmod>2023-08-30</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://percent4.github.io/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</loc>
+    <lastmod>2023-08-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://percent4.github.io/tags/CRF/</loc>
     <lastmod>2023-08-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1311,20 +1311,6 @@
   </url>
   
   <url>
-    <loc>https://percent4.github.io/tags/CRF/</loc>
-    <lastmod>2023-08-30</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://percent4.github.io/tags/%E5%88%86%E8%AF%8D/</loc>
-    <lastmod>2023-08-30</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://percent4.github.io/tags/keras-bert/</loc>
     <lastmod>2023-08-30</lastmod>
     <changefreq>weekly</changefreq>
@@ -1333,6 +1319,20 @@
   
   <url>
     <loc>https://percent4.github.io/tags/%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8/</loc>
+    <lastmod>2023-08-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://percent4.github.io/tags/CRF/</loc>
+    <lastmod>2023-08-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://percent4.github.io/tags/%E5%88%86%E8%AF%8D/</loc>
     <lastmod>2023-08-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1381,14 +1381,14 @@
   </url>
   
   <url>
-    <loc>https://percent4.github.io/tags/%E5%85%B3%E7%B3%BB%E6%8A%BD%E5%8F%96/</loc>
+    <loc>https://percent4.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</loc>
     <lastmod>2023-08-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://percent4.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</loc>
+    <loc>https://percent4.github.io/tags/%E5%85%B3%E7%B3%BB%E6%8A%BD%E5%8F%96/</loc>
     <lastmod>2023-08-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1549,6 +1549,13 @@
   </url>
   
   <url>
+    <loc>https://percent4.github.io/tags/%E6%A0%87%E6%B3%A8%E5%B9%B3%E5%8F%B0/</loc>
+    <lastmod>2023-08-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://percent4.github.io/tags/Kashgari/</loc>
     <lastmod>2023-08-30</lastmod>
     <changefreq>weekly</changefreq>
@@ -1577,13 +1584,6 @@
   </url>
   
   <url>
-    <loc>https://percent4.github.io/tags/%E6%A0%87%E6%B3%A8%E5%B9%B3%E5%8F%B0/</loc>
-    <lastmod>2023-08-30</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://percent4.github.io/tags/%E5%AF%B9%E6%8A%97%E8%AE%AD%E7%BB%83/</loc>
     <lastmod>2023-08-30</lastmod>
     <changefreq>weekly</changefreq>
@@ -1591,14 +1591,14 @@
   </url>
   
   <url>
-    <loc>https://percent4.github.io/tags/TensorBoard/</loc>
+    <loc>https://percent4.github.io/tags/%E5%90%91%E9%87%8F/</loc>
     <lastmod>2023-08-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://percent4.github.io/tags/%E5%90%91%E9%87%8F/</loc>
+    <loc>https://percent4.github.io/tags/TensorBoard/</loc>
     <lastmod>2023-08-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1619,6 +1619,13 @@
   </url>
   
   <url>
+    <loc>https://percent4.github.io/tags/tensorflow/</loc>
+    <lastmod>2023-08-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://percent4.github.io/tags/%E4%B9%A6%E7%B1%8D%E6%91%98%E6%8A%84/</loc>
     <lastmod>2023-08-30</lastmod>
     <changefreq>weekly</changefreq>
@@ -1633,20 +1640,6 @@
   </url>
   
   <url>
-    <loc>https://percent4.github.io/tags/tensorflow/</loc>
-    <lastmod>2023-08-30</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://percent4.github.io/tags/%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1/</loc>
-    <lastmod>2023-08-30</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://percent4.github.io/tags/Github/</loc>
     <lastmod>2023-08-30</lastmod>
     <changefreq>weekly</changefreq>
@@ -1655,6 +1648,13 @@
   
   <url>
     <loc>https://percent4.github.io/tags/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/</loc>
+    <lastmod>2023-08-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://percent4.github.io/tags/%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1/</loc>
     <lastmod>2023-08-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
