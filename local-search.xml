@@ -2603,9 +2603,9 @@
       
       <tag>NLP</tag>
       
-      <tag>NER</tag>
-      
       <tag>CRF++</tag>
+      
+      <tag>NER</tag>
       
     </tags>
     
