@@ -28,8 +28,8 @@
 <meta property="article:modified_time" content="2023-08-06T14:55:18.857Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="NLP">
-<meta property="article:tag" content="CRF++">
 <meta property="article:tag" content="NER">
+<meta property="article:tag" content="CRF++">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://percent4.github.io/img/nlp.jpeg">
   
@@ -272,7 +272,7 @@
         
         
           <!-- compatible with older versions-->
-          86 分钟
+          87 分钟
         
       </span>
     
@@ -322,77 +322,61 @@
             
               <div class="markdown-body">
                 
-                <h3 id="crf与ner简介">CRF与NER简介</h3>
-<p>CRF，英文全称为conditional random field,
-中文名为条件随机场，是给定一组输入随机变量条件下另一组输出随机变量的条件概率分布模型，其特点是假设输出随机变量构成马尔可夫（Markov）随机场。</p>
-<p>较为简单的条件随机场是定义在线性链上的条件随机场，称为线性链条件随机场（linear
-chain conditional random field）.
-线性链条件随机场可以用于序列标注等问题，而本文需要解决的命名实体识别(NER)任务正好可通过序列标注方法解决。这时，在条件概率模型P(Y|X)中，Y是输出变量，表示标记序列（或状态序列），X是输入变量，表示需要标注的观测序列。学习时，利用训练数据
-集通过极大似然估计或正则化的极大似然估计得到条件概率模型p(Y|X)；预测时，对于给定的输入序列x，求出条件概率p(y|x)最大的输出序列y0.</p>
-<p><img src="/img/nlp8_1.jpeg" srcset="/img/loading.gif" lazyload /></p>
-<p>命名实体识别（Named Entity
-Recognition，简称NER）是信息提取、问答系统、句法分析、机器翻译等应用领域的重要基础工具，在自然语言处理技术走向实用化的过程中占有重要地位。一般来说，命名实体识别的任务就是识别出待处理文本中三大类（实体类、时间类和数字类）、七小类（人名、机构名、地名、时间、日期、货币和百分比）命名实体。常见的实现NER的算法如下：</p>
-<p><img src="/img/nlp8_2.jpeg" srcset="/img/loading.gif" lazyload /></p>
-<p>本文不准备详细介绍条件随机场的原理与实现算法，关于具体的原理与实现算法，可以参考《统计学习算法》一书。我们将借助已实现条件随机场的工具——CRF++来实现命名实体识别。关于用深度学习算法来实现命名实体识别，
-可以参考文章：<a
-target="_blank" rel="noopener" href="https://www.jianshu.com/p/ee750877ab6f">NLP入门（五）用深度学习实现命名实体识别（NER）</a>。</p>
-<h3 id="crf">CRF++</h3>
+                <h3 id="CRF与NER简介">CRF与NER简介</h3>
+<p>CRF，英文全称为conditional random field, 中文名为条件随机场，是给定一组输入随机变量条件下另一组输出随机变量的条件概率分布模型，其特点是假设输出随机变量构成马尔可夫（Markov）随机场。</p>
+<p>较为简单的条件随机场是定义在线性链上的条件随机场，称为线性链条件随机场（linear chain conditional random field）. 线性链条件随机场可以用于序列标注等问题，而本文需要解决的命名实体识别(NER)任务正好可通过序列标注方法解决。这时，在条件概率模型P(Y|X)中，Y是输出变量，表示标记序列（或状态序列），X是输入变量，表示需要标注的观测序列。学习时，利用训练数据 集通过极大似然估计或正则化的极大似然估计得到条件概率模型p(Y|X)；预测时，对于给定的输入序列x，求出条件概率p(y|x)最大的输出序列y0.</p>
+<p><img src="/img/nlp8_1.jpeg" srcset="/img/loading.gif" lazyload alt=""></p>
+<p>命名实体识别（Named Entity Recognition，简称NER）是信息提取、问答系统、句法分析、机器翻译等应用领域的重要基础工具，在自然语言处理技术走向实用化的过程中占有重要地位。一般来说，命名实体识别的任务就是识别出待处理文本中三大类（实体类、时间类和数字类）、七小类（人名、机构名、地名、时间、日期、货币和百分比）命名实体。常见的实现NER的算法如下：</p>
+<p><img src="/img/nlp8_2.jpeg" srcset="/img/loading.gif" lazyload alt=""></p>
+<p>本文不准备详细介绍条件随机场的原理与实现算法，关于具体的原理与实现算法，可以参考《统计学习算法》一书。我们将借助已实现条件随机场的工具——CRF++来实现命名实体识别。关于用深度学习算法来实现命名实体识别， 可以参考文章：<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/ee750877ab6f">NLP入门（五）用深度学习实现命名实体识别（NER）</a>。</p>
+<h3 id="CRF">CRF++</h3>
 <h4 id="简介">简介</h4>
-<p>CRF++是著名的条件随机场的开源工具，也是目前综合性能最佳的CRF工具，采用C++语言编写而成。其最重要的功能我认为是采用了特征模板。这样就可以自动生成一系列的特征函数，而不用我们自己生成特征函数，我们要做的就是寻找特征，比如词性等。关于CRF++的特性，可以参考网址：<a
-target="_blank" rel="noopener" href="http://taku910.github.io/crfpp/">http://taku910.github.io/crfpp/</a>
-。</p>
+<p>CRF++是著名的条件随机场的开源工具，也是目前综合性能最佳的CRF工具，采用C++语言编写而成。其最重要的功能我认为是采用了特征模板。这样就可以自动生成一系列的特征函数，而不用我们自己生成特征函数，我们要做的就是寻找特征，比如词性等。关于CRF++的特性，可以参考网址：<a target="_blank" rel="noopener" href="http://taku910.github.io/crfpp/">http://taku910.github.io/crfpp/</a> 。</p>
 <h4 id="安装">安装</h4>
-<p>CRF++的安装可分为Windows环境和Linux环境下的安装。关于Linux环境下的安装，可以参考文章：<a
-target="_blank" rel="noopener" href="https://blog.51cto.com/wutengfei/2095715">CRFPP/CRF++编译安装与部署</a>
-。
-在Windows中CRF++不需要安装，下载解压CRF++0.58文件即可以使用，下载网址为：<a
-target="_blank" rel="noopener" href="https://blog.csdn.net/lilong117194/article/details/81160265">https://blog.csdn.net/lilong117194/article/details/81160265</a>
-。</p>
+<p>CRF++的安装可分为Windows环境和Linux环境下的安装。关于Linux环境下的安装，可以参考文章：<a target="_blank" rel="noopener" href="https://blog.51cto.com/wutengfei/2095715">CRFPP/CRF++编译安装与部署</a> 。 在Windows中CRF++不需要安装，下载解压CRF++0.58文件即可以使用，下载网址为：<a target="_blank" rel="noopener" href="https://blog.csdn.net/lilong117194/article/details/81160265">https://blog.csdn.net/lilong117194/article/details/81160265</a> 。</p>
 <h4 id="使用">使用</h4>
-<h5 id="语料">1. 语料</h5>
+<h5 id="1-语料">1. 语料</h5>
 <p>以我们本次使用的命名实体识别的语料为例，作为CRF++训练的语料（前20行，每一句话以空格隔开。）如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs bash">played VBD O<br>on IN O<br>Monday NNP O<br>( ( O<br>home NN O<br>team NN O<br><span class="hljs-keyword">in</span> IN O<br>CAPS NNP O<br>) ) O<br>: : O<br><br>American NNP B-MISC<br>League NNP I-MISC<br><br>Cleveland NNP B-ORG<br>2 CD O<br>DETROIT NNP B-ORG<br>1 CD O<br><br>BALTIMORE VB B-ORG<br></code></pre></td></tr></table></figure>
-<p>需要注意字与标签之间的分隔符为制表符否则会导致feature_index.cpp(86)
-[max_size == size] inconsistent column size错误。 ##### 2. 模板
-模板是使用CRF++的关键，它能帮助我们自动生成一系列的特征函数，而不用我们自己生成特征函数，而特征函数正是CRF算法的核心概念之一。一个简单的模板文件如下：</p>
+<p>需要注意字与标签之间的分隔符为制表符\t，否则会导致feature_index.cpp(86) [max_size == size] inconsistent column size错误。</p>
+<h5 id="2-模板">2. 模板</h5>
+<p>模板是使用CRF++的关键，它能帮助我们自动生成一系列的特征函数，而不用我们自己生成特征函数，而特征函数正是CRF算法的核心概念之一。一个简单的模板文件如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># Unigram</span><br>U00:%x[-2,0]<br>U01:%x[0,1]<br>U02:%x[0,0]<br>U03:%x[1,0]<br>U04:%x[2,0]<br>U05:%x[-2,0]/%x[-1,0]/%x[0,0]<br>U06:%x[-1,0]/%x[0,0]/%x[1,0]<br>U07:%x[0,0]/%x[1,0]/%x[2,0]<br>U08:%x[-1,0]/%x[0,0]<br>U09:%x[0,0]/%x[1,0]<br> <br><span class="hljs-comment"># Bigram</span><br>B<br></code></pre></td></tr></table></figure>
-<p>在这里，我们需要好好理解下模板文件的规则。T**:%x[#,#]中的T表示模板类型，两个"#"分别表示相对的行偏移与列偏移。一共有两种模板：</p>
+<p>在这里，我们需要好好理解下模板文件的规则。T**:%x[#,#]中的T表示模板类型，两个&quot;#&quot;分别表示相对的行偏移与列偏移。一共有两种模板：</p>
 <ul>
-<li>第一种模板是Unigram template:第一个字符是U，用于描述unigram
-feature的模板。每一行%x[#,#]生成一个CRF中的点(state)函数: f(s, o),
-其中s为t时刻的的标签(output)，o为t时刻的上下文。假设<code>home NN O</code>所在行为<code>CURRENT TOKEN</code>，</li>
+<li>第一种模板是Unigram template:第一个字符是U，用于描述unigram feature的模板。每一行%x[#,#]生成一个CRF中的点(state)函数: f(s, o), 其中s为t时刻的的标签(output)，o为t时刻的上下文。假设<code>home NN O</code>所在行为<code>CURRENT TOKEN</code>，</li>
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">played VBD O<br>on IN O<br>Monday NNP O<br>( ( O<br>home NN O &lt;&lt; <span class="hljs-string">CURRENT TOKEN</span><br><span class="hljs-string">team NN O</span><br><span class="hljs-string">in IN O</span><br><span class="hljs-string">CAPS NNP O</span><br><span class="hljs-string">) ) O</span><br><span class="hljs-string">: : O</span><br></code></pre></td></tr></table></figure>
 <p>那么%x[#,#]的对应规则如下：</p>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>template</th>
 <th>expanded feature</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>%x[0,0]</td>
 <td>home</td>
 </tr>
-<tr class="even">
+<tr>
 <td>%x[0,1]</td>
 <td>NN</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>%x[-1,0]</td>
 <td>(</td>
 </tr>
-<tr class="even">
+<tr>
 <td>%x[-2,1]</td>
 <td>NNP</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>%x[0,0]/%x[0,1]</td>
 <td>home/NN</td>
 </tr>
-<tr class="even">
+<tr>
 <td>ABC%x[0,1]123</td>
 <td>ABCNN123</td>
 </tr>
@@ -401,41 +385,34 @@ feature的模板。每一行%x[#,#]生成一个CRF中的点(state)函数: f(s, o
 <p>以“U01:%x[0,1]”为例，它在该语料中生成的示例函数如下:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">func1 = <span class="hljs-keyword">if</span> (output = O and feature=<span class="hljs-string">&quot;U01:NN&quot;</span>) <span class="hljs-built_in">return</span> 1 <span class="hljs-keyword">else</span> <span class="hljs-built_in">return</span> 0<br>func2 = <span class="hljs-keyword">if</span> (output = O and feature=<span class="hljs-string">&quot;U01:N&quot;</span>) <span class="hljs-built_in">return</span> 1 <span class="hljs-keyword">else</span> <span class="hljs-built_in">return</span> 0<br>func3 = <span class="hljs-keyword">if</span> (output = O and feature=<span class="hljs-string">&quot;U01:NNP&quot;</span>) <span class="hljs-built_in">return</span> 1  <span class="hljs-keyword">else</span> <span class="hljs-built_in">return</span> 0<br>....<br></code></pre></td></tr></table></figure>
 <ul>
-<li>第二种模板是Bigram
-template:第一个字符是B，每一行%x[#,#]生成一个CRFs中的边(Edge)函数:f(s',
-s, o),
-其中s'为t–1时刻的标签。也就是说,Bigram类型与Unigram大致相同,只是还要考虑到t–1时刻的标签。如果只写一个B的话,默认生成f(s',
-s)，这意味着前一个output token和current token将组合成bigram
-features。</li>
+<li>第二种模板是Bigram template:第一个字符是B，每一行%x[#,#]生成一个CRFs中的边(Edge)函数:f(s’, s, o), 其中s’为t–1时刻的标签。也就是说,Bigram类型与Unigram大致相同,只是还要考虑到t–1时刻的标签。如果只写一个B的话,默认生成f(s’, s)，这意味着前一个output token和current token将组合成bigram features。</li>
 </ul>
-<h5 id="训练">3. 训练</h5>
+<h5 id="3-训练">3. 训练</h5>
 <p>CRF++的训练命令一般格式如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">crf_learn  -f 3 -c 4.0 template train.data model -t<br></code></pre></td></tr></table></figure>
 <p>其中，template为模板文件，train.data为训练语料，-t表示可以得到一个model文件和一个model.txt文件，其他可选参数说明如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs bash">-f, –freq=INT使用属性的出现次数不少于INT(默认为1)<br><br>-m, –maxiter=INT设置INT为LBFGS的最大迭代次数 (默认10k)<br><br>-c, –cost=FLOAT    设置FLOAT为代价参数，过大会过度拟合 (默认1.0)<br><br>-e, –eta=FLOAT设置终止标准FLOAT(默认0.0001)<br><br>-C, –convert将文本模式转为二进制模式<br><br>-t, –textmodel为调试建立文本模型文件<br><br>-a, –algorithm=(CRF|MIRA)    选择训练算法，默认为CRF-L2<br><br>-p, –thread=INT线程数(默认1)，利用多个CPU减少训练时间<br><br>-H, –shrinking-size=INT    设置INT为最适宜的跌代变量次数 (默认20)<br><br>-v, –version显示版本号并退出<br><br>-h, –<span class="hljs-built_in">help</span>显示帮助并退出<br></code></pre></td></tr></table></figure>
 <p>在训练过程中，会输出一些信息，其意义如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash">iter：迭代次数。当迭代次数达到maxiter时，迭代终止<br><br>terr：标记错误率<br><br>serr：句子错误率<br><br>obj：当前对象的值。当这个值收敛到一个确定值的时候，训练完成<br><br>diff：与上一个对象值之间的相对差。当此值低于eta时，训练完成<br></code></pre></td></tr></table></figure>
-<h5 id="预测">4. 预测</h5>
+<h5 id="4-预测">4. 预测</h5>
 <p>在训练完模型后，我们可以使用训练好的模型对新数据进行预测，预测命令格式如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">crf_test -m model NER_predict.data &gt; predict.txt<br></code></pre></td></tr></table></figure>
-<p><code>-m model</code>表示使用我们刚刚训练好的model模型，预测的数据文件为NER_predict.data,
-<code>&gt; predict.txt</code>表示将预测后的数据写入到predict.txt中。</p>
-<h3 id="ner实现实例">NER实现实例</h3>
+<p><code>-m model</code>表示使用我们刚刚训练好的model模型，预测的数据文件为NER_predict.data,  <code>&gt; predict.txt</code>表示将预测后的数据写入到predict.txt中。</p>
+<h3 id="NER实现实例">NER实现实例</h3>
 <p>接下来，我们将利用CRF++来实现英文命名实体识别功能。</p>
 <p>本项目实现NER的语料库如下(文件名为train.txt，一共42000行，这里只展示前15行，可以在文章最后的Github地址下载该语料库)：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs bash">played on Monday ( home team <span class="hljs-keyword">in</span> CAPS ) :<br>VBD IN NNP ( NN NN IN NNP ) :<br>O O O O O O O O O O<br>American League<br>NNP NNP<br>B-MISC I-MISC<br>Cleveland 2 DETROIT 1<br>NNP CD NNP CD<br>B-ORG O B-ORG O<br>BALTIMORE 12 Oakland 11 ( 10 innings )<br>VB CD NNP CD ( CD NN )<br>B-ORG O B-ORG O O O O O<br>TORONTO 5 Minnesota 3<br>TO CD NNP CD<br>B-ORG O B-ORG O<br>......<br></code></pre></td></tr></table></figure>
 <p>简单介绍下该语料库的结构：该语料库一共42000行，每三行为一组，其中，第一行为英语句子，第二行为句子中每个单词的词性，第三行为NER系统的标注，共分4个标注类别：PER（人名），LOC（位置），ORG（组织）以及MISC，其中B表示开始，I表示中间，O表示单字词，不计入NER，sO表示特殊单字词。</p>
 <p>首先我们将该语料分为训练集和测试集，比例为9:1，实现的Python代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><br><span class="hljs-comment"># NER预料train.txt所在的路径</span><br><span class="hljs-built_in">dir</span> = <span class="hljs-string">&quot;/Users/Shared/CRF_4_NER/CRF_TEST&quot;</span><br><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;%s/train.txt&quot;</span> % <span class="hljs-built_in">dir</span>, <span class="hljs-string">&quot;r&quot;</span>) <span class="hljs-keyword">as</span> f:<br>    sents = [line.strip() <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> f.readlines()]<br><br><span class="hljs-comment"># 训练集与测试集的比例为9:1</span><br>RATIO = <span class="hljs-number">0.9</span><br>train_num = <span class="hljs-built_in">int</span>((<span class="hljs-built_in">len</span>(sents)//<span class="hljs-number">3</span>)*RATIO)<br><br><span class="hljs-comment"># 将文件分为训练集与测试集</span><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;%s/NER_train.data&quot;</span> % <span class="hljs-built_in">dir</span>, <span class="hljs-string">&quot;w&quot;</span>) <span class="hljs-keyword">as</span> g:<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(train_num):<br>        words = sents[<span class="hljs-number">3</span>*i].split(<span class="hljs-string">&#x27;\t&#x27;</span>)<br>        postags = sents[<span class="hljs-number">3</span>*i+<span class="hljs-number">1</span>].split(<span class="hljs-string">&#x27;\t&#x27;</span>)<br>        tags = sents[<span class="hljs-number">3</span>*i+<span class="hljs-number">2</span>].split(<span class="hljs-string">&#x27;\t&#x27;</span>)<br>        <span class="hljs-keyword">for</span> word, postag, tag <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(words, postags, tags):<br>            g.write(word+<span class="hljs-string">&#x27; &#x27;</span>+postag+<span class="hljs-string">&#x27; &#x27;</span>+tag+<span class="hljs-string">&#x27;\n&#x27;</span>)<br>        g.write(<span class="hljs-string">&#x27;\n&#x27;</span>)<br><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;%s/NER_test.data&quot;</span> % <span class="hljs-built_in">dir</span>, <span class="hljs-string">&quot;w&quot;</span>) <span class="hljs-keyword">as</span> h:<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(train_num+<span class="hljs-number">1</span>, <span class="hljs-built_in">len</span>(sents)//<span class="hljs-number">3</span>):<br>        words = sents[<span class="hljs-number">3</span>*i].split(<span class="hljs-string">&#x27;\t&#x27;</span>)<br>        postags = sents[<span class="hljs-number">3</span>*i+<span class="hljs-number">1</span>].split(<span class="hljs-string">&#x27;\t&#x27;</span>)<br>        tags = sents[<span class="hljs-number">3</span>*i+<span class="hljs-number">2</span>].split(<span class="hljs-string">&#x27;\t&#x27;</span>)<br>        <span class="hljs-keyword">for</span> word, postag, tag <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(words, postags, tags):<br>            h.write(word+<span class="hljs-string">&#x27; &#x27;</span>+postag+<span class="hljs-string">&#x27; &#x27;</span>+tag+<span class="hljs-string">&#x27;\n&#x27;</span>)<br>        h.write(<span class="hljs-string">&#x27;\n&#x27;</span>)<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;OK!&#x27;</span>)<br></code></pre></td></tr></table></figure>
-<p>运行此程序，得到NER_train.data,
-此为训练集数据，NER_test.data，此为测试集数据。NER_train.data的前20行数据如下（以）：</p>
+<p>运行此程序，得到NER_train.data, 此为训练集数据，NER_test.data，此为测试集数据。NER_train.data的前20行数据如下（以\t分隔开来）：</p>
 <figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs mathematica"><span class="hljs-variable">played</span> <span class="hljs-variable">VBD</span> <span class="hljs-built_in">O</span><br><span class="hljs-variable">on</span> <span class="hljs-variable">IN</span> <span class="hljs-built_in">O</span><br><span class="hljs-built_in">Monday</span> <span class="hljs-variable">NNP</span> <span class="hljs-built_in">O</span><br><span class="hljs-punctuation">(</span> <span class="hljs-punctuation">(</span> <span class="hljs-built_in">O</span><br><span class="hljs-variable">home</span> <span class="hljs-variable">NN</span> <span class="hljs-built_in">O</span><br><span class="hljs-variable">team</span> <span class="hljs-variable">NN</span> <span class="hljs-built_in">O</span><br><span class="hljs-variable">in</span> <span class="hljs-variable">IN</span> <span class="hljs-built_in">O</span><br><span class="hljs-variable">CAPS</span> <span class="hljs-variable">NNP</span> <span class="hljs-built_in">O</span><br><span class="hljs-punctuation">)</span> <span class="hljs-punctuation">)</span> <span class="hljs-built_in">O</span><br><span class="hljs-operator">:</span> <span class="hljs-operator">:</span> <span class="hljs-built_in">O</span><br><br><span class="hljs-variable">American</span> <span class="hljs-variable">NNP</span> <span class="hljs-variable">B</span><span class="hljs-operator">-</span><span class="hljs-variable">MISC</span><br><span class="hljs-variable">League</span> <span class="hljs-variable">NNP</span> <span class="hljs-built_in">I</span><span class="hljs-operator">-</span><span class="hljs-variable">MISC</span><br><br><span class="hljs-variable">Cleveland</span> <span class="hljs-variable">NNP</span> <span class="hljs-variable">B</span><span class="hljs-operator">-</span><span class="hljs-variable">ORG</span><br><span class="hljs-number">2</span> <span class="hljs-variable">CD</span> <span class="hljs-built_in">O</span><br><span class="hljs-variable">DETROIT</span> <span class="hljs-variable">NNP</span> <span class="hljs-variable">B</span><span class="hljs-operator">-</span><span class="hljs-variable">ORG</span><br><span class="hljs-number">1</span> <span class="hljs-variable">CD</span> <span class="hljs-built_in">O</span><br><br><span class="hljs-variable">BALTIMORE</span> <span class="hljs-variable">VB</span> <span class="hljs-variable">B</span><span class="hljs-operator">-</span><span class="hljs-variable">ORG</span><br></code></pre></td></tr></table></figure>
 <p>我们使用的模板文件template内容如下：</p>
 <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-comment"># Unigram</span><br><span class="hljs-attribute">U00</span>:%x[-<span class="hljs-number">2</span>,<span class="hljs-number">0</span>]<br><span class="hljs-attribute">U01</span>:%x[-<span class="hljs-number">1</span>,<span class="hljs-number">0</span>]<br><span class="hljs-attribute">U02</span>:%x[<span class="hljs-number">0</span>,<span class="hljs-number">0</span>]<br><span class="hljs-attribute">U03</span>:%x[<span class="hljs-number">1</span>,<span class="hljs-number">0</span>]<br><span class="hljs-attribute">U04</span>:%x[<span class="hljs-number">2</span>,<span class="hljs-number">0</span>]<br><span class="hljs-attribute">U05</span>:%x[-<span class="hljs-number">1</span>,<span class="hljs-number">0</span>]/%x[<span class="hljs-number">0</span>,<span class="hljs-number">0</span>]<br><span class="hljs-attribute">U06</span>:%x[<span class="hljs-number">0</span>,<span class="hljs-number">0</span>]/%x[<span class="hljs-number">1</span>,<span class="hljs-number">0</span>]<br><br><span class="hljs-attribute">U10</span>:%x[-<span class="hljs-number">2</span>,<span class="hljs-number">1</span>]<br><span class="hljs-attribute">U11</span>:%x[-<span class="hljs-number">1</span>,<span class="hljs-number">1</span>]<br><span class="hljs-attribute">U12</span>:%x[<span class="hljs-number">0</span>,<span class="hljs-number">1</span>]<br><span class="hljs-attribute">U13</span>:%x[<span class="hljs-number">1</span>,<span class="hljs-number">1</span>]<br><span class="hljs-attribute">U14</span>:%x[<span class="hljs-number">2</span>,<span class="hljs-number">1</span>]<br><span class="hljs-attribute">U15</span>:%x[-<span class="hljs-number">2</span>,<span class="hljs-number">1</span>]/%x[-<span class="hljs-number">1</span>,<span class="hljs-number">1</span>]<br><span class="hljs-attribute">U16</span>:%x[-<span class="hljs-number">1</span>,<span class="hljs-number">1</span>]/%x[<span class="hljs-number">0</span>,<span class="hljs-number">1</span>]<br><span class="hljs-attribute">U17</span>:%x[<span class="hljs-number">0</span>,<span class="hljs-number">1</span>]/%x[<span class="hljs-number">1</span>,<span class="hljs-number">1</span>]<br><span class="hljs-attribute">U18</span>:%x[<span class="hljs-number">1</span>,<span class="hljs-number">1</span>]/%x[<span class="hljs-number">2</span>,<span class="hljs-number">1</span>]<br><br><span class="hljs-attribute">U20</span>:%x[-<span class="hljs-number">2</span>,<span class="hljs-number">1</span>]/%x[-<span class="hljs-number">1</span>,<span class="hljs-number">1</span>]/%x[<span class="hljs-number">0</span>,<span class="hljs-number">1</span>]<br><span class="hljs-attribute">U21</span>:%x[-<span class="hljs-number">1</span>,<span class="hljs-number">1</span>]/%x[<span class="hljs-number">0</span>,<span class="hljs-number">1</span>]/%x[<span class="hljs-number">1</span>,<span class="hljs-number">1</span>]<br><span class="hljs-attribute">U22</span>:%x[<span class="hljs-number">0</span>,<span class="hljs-number">1</span>]/%x[<span class="hljs-number">1</span>,<span class="hljs-number">1</span>]/%x[<span class="hljs-number">2</span>,<span class="hljs-number">1</span>]<br><br><span class="hljs-comment"># Bigram</span><br><span class="hljs-attribute">B</span><br></code></pre></td></tr></table></figure>
 <p>接着训练该数据，命令如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">crf_learn -c 3.0 template NER_train.data model -t<br></code></pre></td></tr></table></figure>
 <p>运行时的输出信息如下：</p>
-<p><img src="/img/nlp8_3.jpeg" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="/img/nlp8_3.jpeg" srcset="/img/loading.gif" lazyload alt=""></p>
 <p>在笔者的电脑上一共迭代了193次，运行时间为490.32秒，标记错误率为0.00004，句子错误率为0.00056。</p>
 <p>接着，我们需要在测试集上对该模型的预测表现做评估。预测命令如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">crf_test -m model NER_test.data &gt; result.txt<br></code></pre></td></tr></table></figure>
@@ -448,74 +425,70 @@ features。</li>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> nltk<br><br><span class="hljs-built_in">dir</span> = <span class="hljs-string">&quot;/Users/Shared/CRF_4_NER/CRF_TEST&quot;</span><br><br>sentence = <span class="hljs-string">&quot;Venezuelan opposition leader and self-proclaimed interim president Juan Guaidó said Thursday he will return to his country by Monday, and that a dialogue with President Nicolas Maduro won&#x27;t be possible without discussing elections.&quot;</span><br><span class="hljs-comment">#sentence = &quot;Real Madrid&#x27;s season on the brink after 3-0 Barcelona defeat&quot;</span><br><span class="hljs-comment"># sentence = &quot;British artist David Hockney is known as a voracious smoker, but the habit got him into a scrape in Amsterdam on Wednesday.&quot;</span><br><span class="hljs-comment"># sentence = &quot;India is waiting for the release of an pilot who has been in Pakistani custody since he was shot down over Kashmir on Wednesday, a goodwill gesture which could defuse the gravest crisis in the disputed border region in years.&quot;</span><br><span class="hljs-comment"># sentence = &quot;Instead, President Donald Trump&#x27;s second meeting with North Korean despot Kim Jong Un ended in a most uncharacteristic fashion for a showman commander in chief: fizzle.&quot;</span><br><span class="hljs-comment"># sentence = &quot;And in a press conference at the Civic Leadership Academy in Queens, de Blasio said the program is already working.&quot;</span><br><span class="hljs-comment">#sentence = &quot;The United States is a founding member of the United Nations, World Bank, International Monetary Fund.&quot;</span><br><br>default_wt = nltk.word_tokenize <span class="hljs-comment"># 分词</span><br>words = default_wt(sentence)<br><span class="hljs-built_in">print</span>(words)<br>postags = nltk.pos_tag(words)<br><span class="hljs-built_in">print</span>(postags)<br><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;%s/NER_predict.data&quot;</span> % <span class="hljs-built_in">dir</span>, <span class="hljs-string">&#x27;w&#x27;</span>, encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>    <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> postags:<br>        f.write(item[<span class="hljs-number">0</span>]+<span class="hljs-string">&#x27; &#x27;</span>+item[<span class="hljs-number">1</span>]+<span class="hljs-string">&#x27; O\n&#x27;</span>)<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;write successfully!&quot;</span>)<br><br>os.chdir(<span class="hljs-built_in">dir</span>)<br>os.system(<span class="hljs-string">&quot;crf_test -m model NER_predict.data &gt; predict.txt&quot;</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;get predict file!&quot;</span>)<br><br><span class="hljs-comment"># 读取预测文件redict.txt</span><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;%s/predict.txt&quot;</span> % <span class="hljs-built_in">dir</span>, <span class="hljs-string">&#x27;r&#x27;</span>, encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>    sents = [line.strip() <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> f.readlines() <span class="hljs-keyword">if</span> line.strip()]<br><br>word = []<br>predict = []<br><br><span class="hljs-keyword">for</span> sent <span class="hljs-keyword">in</span> sents:<br>    words = sent.split()<br>    word.append(words[<span class="hljs-number">0</span>])<br>    predict.append(words[-<span class="hljs-number">1</span>])<br><br><span class="hljs-comment"># print(word)</span><br><span class="hljs-comment"># print(predict)</span><br><br><span class="hljs-comment"># 去掉NER标注为O的元素</span><br>ner_reg_list = []<br><span class="hljs-keyword">for</span> word, tag <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(word, predict):<br>    <span class="hljs-keyword">if</span> tag != <span class="hljs-string">&#x27;O&#x27;</span>:<br>        ner_reg_list.append((word, tag))<br><br><span class="hljs-comment"># 输出模型的NER识别结果</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;NER识别结果：&quot;</span>)<br><span class="hljs-keyword">if</span> ner_reg_list:<br>    <span class="hljs-keyword">for</span> i, item <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(ner_reg_list):<br>        <span class="hljs-keyword">if</span> item[<span class="hljs-number">1</span>].startswith(<span class="hljs-string">&#x27;B&#x27;</span>):<br>            end = i+<span class="hljs-number">1</span><br>            <span class="hljs-keyword">while</span> end &lt;= <span class="hljs-built_in">len</span>(ner_reg_list)-<span class="hljs-number">1</span> <span class="hljs-keyword">and</span> ner_reg_list[end][<span class="hljs-number">1</span>].startswith(<span class="hljs-string">&#x27;I&#x27;</span>):<br>                end += <span class="hljs-number">1</span><br><br>            ner_type = item[<span class="hljs-number">1</span>].split(<span class="hljs-string">&#x27;-&#x27;</span>)[<span class="hljs-number">1</span>]<br>            ner_type_dict = &#123;<span class="hljs-string">&#x27;PER&#x27;</span>: <span class="hljs-string">&#x27;PERSON: &#x27;</span>,<br>                             <span class="hljs-string">&#x27;LOC&#x27;</span>: <span class="hljs-string">&#x27;LOCATION: &#x27;</span>,<br>                             <span class="hljs-string">&#x27;ORG&#x27;</span>: <span class="hljs-string">&#x27;ORGANIZATION: &#x27;</span>,<br>                             <span class="hljs-string">&#x27;MISC&#x27;</span>: <span class="hljs-string">&#x27;MISC: &#x27;</span><br>                            &#125;<br>            <span class="hljs-built_in">print</span>(ner_type_dict[ner_type], <span class="hljs-string">&#x27; &#x27;</span>.join([item[<span class="hljs-number">0</span>] <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> ner_reg_list[i:end]]))<br></code></pre></td></tr></table></figure>
 <p>识别的结果如下：</p>
 <figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs avrasm"><span class="hljs-symbol">MISC:</span>  Venezuelan<br><span class="hljs-symbol">PERSON:</span>  Juan Guaidó<br><span class="hljs-symbol">PERSON:</span>  Nicolas Maduro<br></code></pre></td></tr></table></figure>
-<p>识别有个地方不准确， Venezuelan应该是LOC，而不是MISC.
-我们再接着测试其它的新数据：</p>
+<p>识别有个地方不准确， Venezuelan应该是LOC，而不是MISC. 我们再接着测试其它的新数据：</p>
 <p>输入语句1：</p>
 <blockquote>
-<p>Real Madrid's season on the brink after 3-0 Barcelona defeat</p>
+<p>Real Madrid’s season on the brink after 3-0 Barcelona defeat</p>
 </blockquote>
 <p>识别效果1：</p>
 <blockquote>
-<p>ORGANIZATION: Real Madrid LOCATION: Barcelona</p>
+<p>ORGANIZATION:  Real Madrid<br>
+LOCATION:  Barcelona</p>
 </blockquote>
 <p>输入语句2：</p>
 <blockquote>
-<p>British artist David Hockney is known as a voracious smoker, but the
-habit got him into a scrape in Amsterdam on Wednesday.</p>
+<p>British artist David Hockney is known as a voracious smoker, but the habit got him into a scrape in Amsterdam on Wednesday.</p>
 </blockquote>
 <p>识别效果2：</p>
 <blockquote>
-<p>MISC: British PERSON: David Hockney LOCATION: Amsterdam</p>
+<p>MISC:  British<br>
+PERSON:  David Hockney<br>
+LOCATION:  Amsterdam</p>
 </blockquote>
 <p>输入语句3：</p>
 <blockquote>
-<p>India is waiting for the release of an pilot who has been in
-Pakistani custody since he was shot down over Kashmir on Wednesday, a
-goodwill gesture which could defuse the gravest crisis in the disputed
-border region in years.</p>
+<p>India is waiting for the release of an pilot who has been in Pakistani custody since he was shot down over Kashmir on Wednesday, a goodwill gesture which could defuse the gravest crisis in the disputed border region in years.</p>
 </blockquote>
 <p>识别效果3：</p>
 <blockquote>
-<p>LOCATION: India LOCATION: Pakistani LOCATION: Kashmir</p>
+<p>LOCATION:  India<br>
+LOCATION:  Pakistani<br>
+LOCATION:  Kashmir</p>
 </blockquote>
 <p>输入语句4：</p>
 <blockquote>
-<p>Instead, President Donald Trump's second meeting with North Korean
-despot Kim Jong Un ended in a most uncharacteristic fashion for a
-showman commander in chief: fizzle.</p>
+<p>Instead, President Donald Trump’s second meeting with North Korean despot Kim Jong Un ended in a most uncharacteristic fashion for a showman commander in chief: fizzle.</p>
 </blockquote>
 <p>识别效果4：</p>
 <blockquote>
-<p>PERSON: Donald Trump PERSON: Kim Jong Un</p>
+<p>PERSON:  Donald Trump<br>
+PERSON:  Kim Jong Un</p>
 </blockquote>
 <p>输入语句5：</p>
 <blockquote>
-<p>And in a press conference at the Civic Leadership Academy in Queens,
-de Blasio said the program is already working.</p>
+<p>And in a press conference at the Civic Leadership Academy in Queens, de Blasio said the program is already working.</p>
 </blockquote>
 <p>识别效果5：</p>
 <blockquote>
-<p>ORGANIZATION: Civic Leadership Academy LOCATION: Queens PERSON: de
-Blasio</p>
+<p>ORGANIZATION:  Civic Leadership Academy<br>
+LOCATION:  Queens<br>
+PERSON:  de Blasio</p>
 </blockquote>
 <p>输入语句6：</p>
 <blockquote>
-<p>The United States is a founding member of the United Nations, World
-Bank, International Monetary Fund.</p>
+<p>The United States is a founding member of the United Nations, World Bank, International Monetary Fund.</p>
 </blockquote>
 <p>识别效果6：</p>
 <blockquote>
-<p>LOCATION: United States ORGANIZATION: United Nations PERSON: World
-Bank ORGANIZATION: International Monetary Fund</p>
+<p>LOCATION:  United States<br>
+ORGANIZATION:  United Nations<br>
+PERSON:  World Bank<br>
+ORGANIZATION:  International Monetary Fund</p>
 </blockquote>
-<p>在这些例子中，有让我们惊喜之处：识别出了人物Donald Trump, Kim Jong
-Un. 但也有些不足指出，如将World
-Bank识别为人物，而不是组织机构。总的来说，识别效果还是让人满意的。</p>
+<p>在这些例子中，有让我们惊喜之处：识别出了人物Donald Trump, Kim Jong Un. 但也有些不足指出，如将World Bank识别为人物，而不是组织机构。总的来说，识别效果还是让人满意的。</p>
 <h3 id="总结">总结</h3>
 <p>最近由于工作繁忙，无暇顾及博客。但转念一想，技术输出也是比较重要的，需要长期坚持下去～</p>
-<p>本项目的Github地址为：<a
-target="_blank" rel="noopener" href="https://github.com/percent4/CRF_4_NER">https://github.com/percent4/CRF_4_NER</a>
-。</p>
+<p>本项目的Github地址为：<a target="_blank" rel="noopener" href="https://github.com/percent4/CRF_4_NER">https://github.com/percent4/CRF_4_NER</a> 。</p>
 <p>五一将至，祝大家假期愉快～</p>
 
                 
@@ -552,9 +525,9 @@ target="_blank" rel="noopener" href="https://github.com/percent4/CRF_4_NER">http
       
         <a href="/tags/NLP/" class="print-no-link">#NLP</a>
       
-        <a href="/tags/CRF/" class="print-no-link">#CRF++</a>
-      
         <a href="/tags/NER/" class="print-no-link">#NER</a>
+      
+        <a href="/tags/CRF/" class="print-no-link">#CRF++</a>
       
     </div>
   

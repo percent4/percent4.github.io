@@ -322,30 +322,26 @@
                 
                 <p>词向量实现在PyTorch中对应于Embedding层，其实现代码的源码函数（PyTorch的版本为2.0）如下：</p>
 <blockquote>
-<p>torch.nn.Embedding(num_embeddings, embedding_dim, padding_idx=None,
-max_norm=None, norm_type=2.0, scale_grad_by_freq=False, sparse=False,
-_weight=None)</p>
+<p>torch.nn.Embedding(num_embeddings, embedding_dim, padding_idx=None, max_norm=None, norm_type=2.0, scale_grad_by_freq=False, sparse=False, _weight=None)</p>
 </blockquote>
-<p>该函数随机会生成了一个向量，可以把它看作一个词向量查询表，其size为[num_embeddings，embedding_dim]
-。其中num_embeddings是查询表的大小，embedding_dim是每个查询向量的维度。</p>
+<p>该函数随机会生成了一个向量，可以把它看作一个词向量查询表，其size为[num_embeddings，embedding_dim] 。其中num_embeddings是查询表的大小，embedding_dim是每个查询向量的维度。</p>
 <p>函数参数解释：</p>
 <ul>
 <li>num_embeddings: int, 查询表的大小</li>
 <li>embedding_dim: int, 每个查询向量的维度</li>
 <li>padding_idx: int, 填充id</li>
-<li>max_norm: float,
-最大范数，每个范数超过max_norm的embedding向量会重新规范化至其范数为max_norm</li>
+<li>max_norm: float, 最大范数，每个范数超过max_norm的embedding向量会重新规范化至其范数为max_norm</li>
 <li>norm_type: float, p范数（p=norm_type），默认值为2</li>
 </ul>
 <p>需要注意的是，查询的下标向量的数据类型必须使Long，即Int64.</p>
 <p>让我们来看几个Embedding层的使用例子。</p>
-<ol type="1">
+<ol>
 <li>例子1：</li>
 </ol>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">import</span> torch.nn <span class="hljs-keyword">as</span> nn<br><br><span class="hljs-comment"># an Embedding module containing 10 tensors of size 3</span><br>embedding = nn.Embedding(<span class="hljs-number">10</span>, <span class="hljs-number">3</span>)<br><span class="hljs-built_in">print</span>(embedding.weight)<br><span class="hljs-comment"># a batch of 2 samples of 4 indices each</span><br><span class="hljs-built_in">input</span> = torch.LongTensor([[<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>], [<span class="hljs-number">4</span>, <span class="hljs-number">3</span>, <span class="hljs-number">2</span>, <span class="hljs-number">9</span>]])<br><span class="hljs-built_in">print</span>(embedding(<span class="hljs-built_in">input</span>))<br></code></pre></td></tr></table></figure>
 <p>输出：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs bash">Parameter containing:<br>tensor([[ 1.9260, -1.3492,  0.3753],<br>        [ 1.2182,  1.8350,  0.7975],<br>        [ 0.1568,  0.9562,  1.1164],<br>        [ 1.4660,  0.8763,  0.1681],<br>        [ 0.4175,  0.4029, -1.3495],<br>        [-0.5182,  0.1465,  0.0280],<br>        [ 0.7748,  0.1848, -0.4229],<br>        [ 0.3740, -0.2761,  1.5017],<br>        [-0.4583,  0.2934,  0.2217],<br>        [-0.1402, -0.5671, -1.7069]], requires_grad=True)<br>tensor([[[ 1.2182,  1.8350,  0.7975],<br>         [ 0.1568,  0.9562,  1.1164],<br>         [ 0.4175,  0.4029, -1.3495],<br>         [-0.5182,  0.1465,  0.0280]],<br><br>        [[ 0.4175,  0.4029, -1.3495],<br>         [ 1.4660,  0.8763,  0.1681],<br>         [ 0.1568,  0.9562,  1.1164],<br>         [-0.1402, -0.5671, -1.7069]]], grad_fn=&lt;EmbeddingBackward&gt;)<br><br>Process finished with <span class="hljs-built_in">exit</span> code 0<br></code></pre></td></tr></table></figure>
-<ol start="2" type="1">
+<ol start="2">
 <li>例子2：</li>
 </ol>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">import</span> torch.nn <span class="hljs-keyword">as</span> nn<br><br><span class="hljs-comment"># Embedding with padding_idx</span><br>embedding = nn.Embedding(<span class="hljs-number">5</span>, <span class="hljs-number">3</span>, padding_idx=<span class="hljs-number">0</span>)<br><span class="hljs-built_in">print</span>(embedding.weight)<br><span class="hljs-built_in">input</span> = torch.LongTensor([[<span class="hljs-number">0</span>, <span class="hljs-number">2</span>, <span class="hljs-number">0</span>, <span class="hljs-number">4</span>]])<br><span class="hljs-built_in">print</span>(embedding(<span class="hljs-built_in">input</span>))<br></code></pre></td></tr></table></figure>
@@ -353,9 +349,8 @@ _weight=None)</p>
 <figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs inform7">Parameter containing:<br>tensor(<span class="hljs-comment">[<span class="hljs-comment">[ 0.0000,  0.0000,  0.0000]</span>,</span><br><span class="hljs-comment">        <span class="hljs-comment">[-1.4159, -1.2288,  0.2698]</span>,</span><br><span class="hljs-comment">        <span class="hljs-comment">[-2.2287, -1.5313,  0.3296]</span>,</span><br><span class="hljs-comment">        <span class="hljs-comment">[-1.0393, -0.3102,  0.2819]</span>,</span><br><span class="hljs-comment">        <span class="hljs-comment">[-0.2162, -0.2060,  0.3289]</span>]</span>, requires_grad=True)<br>tensor(<span class="hljs-comment">[<span class="hljs-comment">[<span class="hljs-comment">[ 0.0000,  0.0000,  0.0000]</span>,</span></span><br><span class="hljs-comment"><span class="hljs-comment">         <span class="hljs-comment">[-2.2287, -1.5313,  0.3296]</span>,</span></span><br><span class="hljs-comment"><span class="hljs-comment">         <span class="hljs-comment">[ 0.0000,  0.0000,  0.0000]</span>,</span></span><br><span class="hljs-comment"><span class="hljs-comment">         <span class="hljs-comment">[-0.2162, -0.2060,  0.3289]</span>]</span>]</span>, grad_fn=&lt;EmbeddingBackward&gt;)<br></code></pre></td></tr></table></figure>
 <p>从中我们可以发现，Embedding层中padding_idx对应的向量为零向量。</p>
 <h3 id="参考文献">参考文献</h3>
-<ol type="1">
-<li>Embedding source code: <a
-target="_blank" rel="noopener" href="https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html">https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html</a></li>
+<ol>
+<li>Embedding source code: <a target="_blank" rel="noopener" href="https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html">https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html</a></li>
 </ol>
 
                 

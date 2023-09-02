@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://percent4.github.io/2023/09/02/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8HuggingFace%E4%B8%AD%E7%9A%84Trainer%E8%BF%9B%E8%A1%8CBERT%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/</loc>
+    <lastmod>2023-09-02</lastmod>
+  </url>
+  <url>
     <loc>https://percent4.github.io/2023/08/30/Gradio%E5%85%A5%E9%97%A8%EF%BC%881%EF%BC%89%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E3%80%81%E8%A1%A8%E6%A0%BC%E3%80%81%E6%96%87%E6%9C%AC%E9%AB%98%E4%BA%AE/</loc>
     <lastmod>2023-08-30</lastmod>
   </url>
