@@ -1,0 +1,1143 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文介绍了量化基本概念，PyTorch模型量化方式，以及对BERT模型训练后进行动态量化后在推理效果和推理性能上的实验。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（六十七）BERT模型训练后动态量化（PTDQ）">
+<meta property="og:url" content="https://percent4.github.io/2023/09/03/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E4%B8%83%EF%BC%89BERT%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%90%8E%E5%8A%A8%E6%80%81%E9%87%8F%E5%8C%96%EF%BC%88PTDQ%EF%BC%89/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文介绍了量化基本概念，PyTorch模型量化方式，以及对BERT模型训练后进行动态量化后在推理效果和推理性能上的实验。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta property="article:published_time" content="2023-09-02T16:02:07.000Z">
+<meta property="article:modified_time" content="2023-09-02T16:04:29.541Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="模型量化">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp.jpeg">
+  
+  
+  
+  <title>NLP（六十七）BERT模型训练后动态量化（PTDQ） - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（六十七）BERT模型训练后动态量化（PTDQ）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-09-03 00:02" pubdate>
+          星期日, 九月 3日 2023, 12:02 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          7.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          61 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（六十七）BERT模型训练后动态量化（PTDQ）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>本文将会介绍BERT模型训练后动态量化（Post Training Dynamic
+Quantization，PTDQ）。</p>
+<h3 id="量化">量化</h3>
+<p>在深度学习中，量化（Quantization）指的是使用更少的bit来存储原本以浮点数存储的tensor，以及使用更少的bit来完成原本以浮点数完成的计算。这么做的好处主要有如下几点：</p>
+<ul>
+<li><p>更少的模型体积，接近4倍的减少</p></li>
+<li><p>可以更快地计算，由于更少的内存访问和更快的int8计算，可以快2~4倍</p>
+<p>PyTorch中的模型参数默认以FP32精度储存。对于量化后的模型，其部分或者全部的tensor操作会使用int类型来计算，而不是使用量化之前的float类型。当然，量化还需要底层硬件支持，x86
+CPU(支持AVX2)、ARM CPU、Google TPU、Nvidia Volta/Turing/Ampere、Qualcomm
+DSP这些主流硬件都对量化提供了支持。</p></li>
+</ul>
+<figure>
+<img src="/img/nlp67_1.png" srcset="/img/loading.gif" lazyload alt="模型量化示例图片" />
+<figcaption aria-hidden="true">模型量化示例图片</figcaption>
+</figure>
+<h3 id="ptdq">PTDQ</h3>
+<p>PyTorch对量化的支持目前有如下三种方式：</p>
+<ul>
+<li>Post Training Dynamic Quantization：模型训练完毕后的动态量化</li>
+<li>Post Training Static Quantization：模型训练完毕后的静态量化</li>
+<li>QAT (Quantization Aware Training)：模型训练中开启量化</li>
+</ul>
+<p><code>本文仅介绍Post Training Dynamic Quantization（PTDQ）</code>。</p>
+<p>对训练后的模型权重执行动态量化，将浮点模型转换为动态量化模型，<code>仅对模型权重进行量化，偏置不会量化</code>。默认情况下，仅对Linear和RNN变体量化
+(因为这些layer的参数量很大，收益更高)。 　　 &gt;
+torch.quantization.quantize_dynamic(model, qconfig_spec=None,
+dtype=torch.qint8, mapping=None, inplace=False)</p>
+<p>参数解释：</p>
+<ul>
+<li>model：模型（默认为FP32）</li>
+<li>qconfig_spec：</li>
+</ul>
+<ol type="1">
+<li>集合：比如： qconfig_spec={nn.LSTM, nn.Linear}
+。列出要量化的神经网络模块。</li>
+<li>字典： qconfig_spec = {nn.Linear: default_dynamic_qconfig, nn.LSTM:
+default_dynamic_qconfig}</li>
+</ol>
+<ul>
+<li>dtype： float16 或 qint8</li>
+<li>mapping：就地执行模型转换，原始模块发生变异</li>
+<li>inplace：将子模块的类型映射到需要替换子模块的相应动态量化版本的类型</li>
+</ul>
+<p>例子：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># 动态量化模型，只量化权重</span><br><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">from</span> torch <span class="hljs-keyword">import</span> nn<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">DemoModel</span>(torch.nn.Module):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-built_in">super</span>(DemoModel, self).__init__()<br>        self.conv = nn.Conv2d(in_channels=<span class="hljs-number">1</span>, out_channels=<span class="hljs-number">1</span>, kernel_size=<span class="hljs-number">1</span>)<br>        self.relu = nn.ReLU()<br>        self.fc = torch.nn.Linear(<span class="hljs-number">2</span>, <span class="hljs-number">2</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">forward</span>(<span class="hljs-params">self, x</span>):<br>        x = self.conv(x)<br>        x = self.relu(x)<br>        x = self.fc(x)<br>        <span class="hljs-keyword">return</span> x<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    model_fp32 = DemoModel()<br>    <span class="hljs-comment"># 创建一个量化的模型实例</span><br>    model_int8 = torch.quantization.quantize_dynamic(model=model_fp32,  <span class="hljs-comment"># 原始模型</span><br>                                                     qconfig_spec=&#123;torch.nn.Linear&#125;,  <span class="hljs-comment"># 要动态量化的算子</span><br>                                                     dtype=torch.qint8)  <span class="hljs-comment"># 将权重量化为：qint8</span><br><br>    <span class="hljs-built_in">print</span>(model_fp32)<br>    <span class="hljs-built_in">print</span>(model_int8)<br><br>    <span class="hljs-comment"># 运行模型</span><br>    input_fp32 = torch.randn(<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">2</span>)<br>    output_fp32 = model_fp32(input_fp32)<br>    <span class="hljs-built_in">print</span>(output_fp32)<br><br>    output_int8 = model_int8(input_fp32)<br>    <span class="hljs-built_in">print</span>(output_int8)<br><br></code></pre></td></tr></table></figure>
+<p>输出结果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs bash">DemoModel(<br>  (conv): Conv2d(1, 1, kernel_size=(1, 1), stride=(1, 1))<br>  (relu): ReLU()<br>  (<span class="hljs-built_in">fc</span>): Linear(in_features=2, out_features=2, bias=True)<br>)<br>DemoModel(<br>  (conv): Conv2d(1, 1, kernel_size=(1, 1), stride=(1, 1))<br>  (relu): ReLU()<br>  (<span class="hljs-built_in">fc</span>): DynamicQuantizedLinear(in_features=2, out_features=2, dtype=torch.qint8, qscheme=torch.per_tensor_affine)<br>)<br>tensor([[[[0.3120, 0.3042],<br>          [0.3120, 0.3042]]]], grad_fn=&lt;AddBackward0&gt;)<br>tensor([[[[0.3120, 0.3042],<br>          [0.3120, 0.3042]]]])<br></code></pre></td></tr></table></figure>
+<h3 id="模型量化策略">模型量化策略</h3>
+<p>当前，由于量化算子的覆盖有限，因此，对于不同的深度学习模型，其量化策略不同，见下表：</p>
+<table>
+
+<thead>
+<tr class="header">
+<th>模型</th>
+<th>量化策略</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>LSTM/RNN</td>
+<td>Dynamic Quantization</td>
+<td>模型吞吐量由权重的计算/内存带宽决定</td>
+</tr>
+<tr class="even">
+<td>BERT/Transformer</td>
+<td>Dynamic Quantization</td>
+<td>模型吞吐量由权重的计算/内存带宽决定</td>
+</tr>
+<tr class="odd">
+<td>CNN</td>
+<td>Static Quantization</td>
+<td>模型吞吐量由激活函数的内存带宽决定</td>
+</tr>
+<tr class="even">
+<td>CNN</td>
+<td>Quantization Aware Training</td>
+<td>模型准确率不能由Static Quantization获取的情况</td>
+</tr>
+</tbody>
+</table>
+<p>下面对BERT模型进行训练后动态量化，分析模型在量化前后，推理效果和推理性能的变化。</p>
+<h3 id="实验">实验</h3>
+<p>我们使用的训练后的模型为中文文本分类模型，其训练过程可以参考文章：<a
+target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/details/132642662">NLP（六十六）使用HuggingFace中的Trainer进行BERT模型微调</a>
+。</p>
+<p>训练后的BERT模型动态量化实验的设置如下：</p>
+<ol type="1">
+<li><p>base model: <a
+target="_blank" rel="noopener" href="https://huggingface.co/bert-base-chinese">bert-base-chinese</a></p></li>
+<li><p>CPU info: x86-64, Intel(R) Core(TM) i5-10210U CPU @
+1.60GHz</p></li>
+<li><p>batch size: 1</p></li>
+<li><p>thread: 1</p>
+<p><strong>具体的实验过程如下</strong>：</p></li>
+</ol>
+<ul>
+<li>加载模型及tokenizer</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoModelForSequenceClassification<br><br>MAX_LENGTH = <span class="hljs-number">128</span><br>device = torch.device(<span class="hljs-string">&quot;cuda:0&quot;</span> <span class="hljs-keyword">if</span> torch.cuda.is_available() <span class="hljs-keyword">else</span> <span class="hljs-string">&quot;cpu&quot;</span>)<br>checkpoint = <span class="hljs-string">f&quot;./sougou_test_trainer_<span class="hljs-subst">&#123;MAX_LENGTH&#125;</span>/checkpoint-96&quot;</span><br>model = AutoModelForSequenceClassification.from_pretrained(checkpoint).to(device)<br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoTokenizer, DataCollatorWithPadding<br><br>tokenizer = AutoTokenizer.from_pretrained(checkpoint)<br></code></pre></td></tr></table></figure>
+<ul>
+<li>测试数据集</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br><br>test_df = pd.read_csv(<span class="hljs-string">&quot;./data/sougou/test.csv&quot;</span>)<br><br>test_df.head()<br></code></pre></td></tr></table></figure>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th>
+</th>
+<th>
+text
+</th>
+<th>
+label
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>
+0
+</th>
+<td>
+届数比赛时间比赛地点参加国家和地区冠军亚军决赛成绩第一届1956-1957英国11美国丹麦6...
+</td>
+<td>
+0
+</td>
+</tr>
+<tr>
+<th>
+1
+</th>
+<td>
+商品属性材质软橡胶带加浮雕工艺+合金彩色队徽吊牌规格162mm数量这一系列产品不限量发行图案...
+</td>
+<td>
+0
+</td>
+</tr>
+<tr>
+<th>
+2
+</th>
+<td>
+今天下午，沈阳金德和长春亚泰队将在五里河相遇。在这两支球队中沈阳籍球员居多，因此这场比赛实际...
+</td>
+<td>
+0
+</td>
+</tr>
+<tr>
+<th>
+3
+</th>
+<td>
+本报讯中国足协准备好了与特鲁西埃谈判的合同文本，也在北京给他预订好了房间，但特鲁西埃爽约了！...
+</td>
+<td>
+0
+</td>
+</tr>
+<tr>
+<th>
+4
+</th>
+<td>
+网友点击发表评论祝贺中国队夺得五连冠搜狐体育讯北京时间5月6日，2006年尤伯杯羽毛球赛在日...
+</td>
+<td>
+0
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>量化前模型的推理时间及评估指标</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">import</span> time<br><br>s_time = time.time()<br>true_labels, pred_labels = [], [] <br><span class="hljs-keyword">for</span> i, row <span class="hljs-keyword">in</span> test_df.iterrows():<br>    row_s_time = time.time()<br>    true_labels.append(row[<span class="hljs-string">&quot;label&quot;</span>])<br>    encoded_text = tokenizer(row[<span class="hljs-string">&#x27;text&#x27;</span>], max_length=MAX_LENGTH, truncation=<span class="hljs-literal">True</span>, padding=<span class="hljs-literal">True</span>, return_tensors=<span class="hljs-string">&#x27;pt&#x27;</span>).to(device)<br>    <span class="hljs-comment"># print(encoded_text)</span><br>    logits = model(**encoded_text)<br>    label_id = np.argmax(logits[<span class="hljs-number">0</span>].detach().cpu().numpy(), axis=<span class="hljs-number">1</span>)[<span class="hljs-number">0</span>]<br>    pred_labels.append(label_id)<br>    <span class="hljs-built_in">print</span>(i, (time.time() - row_s_time)*<span class="hljs-number">1000</span>, label_id)<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;avg time: &quot;</span>, (time.time() - s_time) * <span class="hljs-number">1000</span> / test_df.shape[<span class="hljs-number">0</span>])<br></code></pre></td></tr></table></figure>
+<pre><code class="hljs">0 229.3872833251953 0
+100 362.0314598083496 1
+200 311.16747856140137 2
+300 324.13792610168457 3
+400 406.9099426269531 4
+avg time:  352.44047810332944</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> sklearn.metrics <span class="hljs-keyword">import</span> classification_report<br><br><span class="hljs-built_in">print</span>(classification_report(true_labels, pred_labels, digits=<span class="hljs-number">4</span>))<br></code></pre></td></tr></table></figure>
+<pre><code class="hljs">              precision    recall  f1-score   support
+
+           0     0.9900    1.0000    0.9950        99
+           1     0.9691    0.9495    0.9592        99
+           2     0.9900    1.0000    0.9950        99
+           3     0.9320    0.9697    0.9505        99
+           4     0.9895    0.9495    0.9691        99
+
+    accuracy                         0.9737       495
+   macro avg     0.9741    0.9737    0.9737       495
+weighted avg     0.9741    0.9737    0.9737       495</code></pre>
+<ul>
+<li>设置量化后端</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 模型量化</span><br>cpu_device = torch.device(<span class="hljs-string">&quot;cpu&quot;</span>)<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">torch.backends.quantized.supported_engines<br></code></pre></td></tr></table></figure>
+<pre><code class="hljs">[&#39;none&#39;, &#39;onednn&#39;, &#39;x86&#39;, &#39;fbgemm&#39;]</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">torch.backends.quantized.engine = <span class="hljs-string">&#x27;x86&#x27;</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>量化后模型的推理时间及评估指标</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 8-bit 量化</span><br>quantized_model = torch.quantization.quantize_dynamic(<br>    model, &#123;torch.nn.Linear&#125;, dtype=torch.qint8<br>).to(cpu_device)<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python">q_s_time = time.time()<br>q_true_labels, q_pred_labels = [], [] <br><br><span class="hljs-keyword">for</span> i, row <span class="hljs-keyword">in</span> test_df.iterrows():<br>    row_s_time = time.time()<br>    q_true_labels.append(row[<span class="hljs-string">&quot;label&quot;</span>])<br>    encoded_text = tokenizer(row[<span class="hljs-string">&#x27;text&#x27;</span>], max_length=MAX_LENGTH, truncation=<span class="hljs-literal">True</span>, padding=<span class="hljs-literal">True</span>, return_tensors=<span class="hljs-string">&#x27;pt&#x27;</span>).to(cpu_device)<br>    logits = quantized_model(**encoded_text)<br>    label_id = np.argmax(logits[<span class="hljs-number">0</span>].detach().numpy(), axis=<span class="hljs-number">1</span>)[<span class="hljs-number">0</span>]<br>    q_pred_labels.append(label_id)<br>    <span class="hljs-built_in">print</span>(i, (time.time() - row_s_time) * <span class="hljs-number">1000</span>, label_id)<br>    <br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;avg time: &quot;</span>, (time.time() - q_s_time) * <span class="hljs-number">1000</span> / test_df.shape[<span class="hljs-number">0</span>])<br></code></pre></td></tr></table></figure>
+<pre><code class="hljs">0 195.47462463378906 0
+100 247.33805656433105 1
+200 219.41304206848145 2
+300 206.44831657409668 3
+400 187.4992847442627 4
+avg time:  217.63229466447928</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> sklearn.metrics <span class="hljs-keyword">import</span> classification_report<br><br><span class="hljs-built_in">print</span>(classification_report(q_true_labels, q_pred_labels, digits=<span class="hljs-number">4</span>))<br></code></pre></td></tr></table></figure>
+<pre><code class="hljs">              precision    recall  f1-score   support
+
+           0     0.9900    1.0000    0.9950        99
+           1     0.9688    0.9394    0.9538        99
+           2     0.9900    1.0000    0.9950        99
+           3     0.9320    0.9697    0.9505        99
+           4     0.9896    0.9596    0.9744        99
+
+    accuracy                         0.9737       495
+   macro avg     0.9741    0.9737    0.9737       495
+weighted avg     0.9741    0.9737    0.9737       495</code></pre>
+<ul>
+<li>量化前后模型大小对比</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">print_size_of_model</span>(<span class="hljs-params">model</span>):<br>    torch.save(model.state_dict(), <span class="hljs-string">&quot;temp.p&quot;</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Size (MB): &quot;</span>, os.path.getsize(<span class="hljs-string">&quot;temp.p&quot;</span>)/<span class="hljs-number">1e6</span>)<br>    os.remove(<span class="hljs-string">&quot;temp.p&quot;</span>)<br><br>print_size_of_model(model)<br>print_size_of_model(quantized_model)<br></code></pre></td></tr></table></figure>
+<pre><code class="hljs">Size (MB):  409.155273
+Size (MB):  152.627621</code></pre>
+<p>量化后端（Quantization
+backend）取决于CPU架构，不同计算机的CPU架构不同，因此，默认的动态量化不一定在所有的CPU上都能生效，需根据自己计算机的CPU架构设置好对应的量化后端。另外，不同的量化后端也有些许差异。Linux服务器使用<code>uname -a</code>可查看CPU信息。</p>
+<p>重复上述实验过程，以模型的最大输入长度为变量，取值为128,256,384，每种情况各做3次实验，结果如下：</p>
+<table>
+
+<thead>
+<tr class="header">
+<th>实验</th>
+<th>最大长度</th>
+<th>量化前平均推理时间(ms)</th>
+<th>量化前weighted F1值</th>
+<th>量化前平均推理时间(ms)</th>
+<th>量化前weighted F1值</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>实验1</td>
+<td>384</td>
+<td>1066</td>
+<td>0.9797</td>
+<td>686</td>
+<td>0.9838</td>
+</tr>
+<tr class="even">
+<td>实验2</td>
+<td>384</td>
+<td>1047.6</td>
+<td>0.9899</td>
+<td>738.1</td>
+<td>0.9879</td>
+</tr>
+<tr class="odd">
+<td>实验3</td>
+<td>384</td>
+<td>1020.9</td>
+<td>0.9817</td>
+<td>714.0</td>
+<td>0.9838</td>
+</tr>
+<tr class="even">
+<td>实验1</td>
+<td>256</td>
+<td>668.7</td>
+<td>0.9717</td>
+<td>431.4</td>
+<td>0.9718</td>
+</tr>
+<tr class="odd">
+<td>实验2</td>
+<td>256</td>
+<td>675.1</td>
+<td>0.9717</td>
+<td>449.9</td>
+<td>0.9718</td>
+</tr>
+<tr class="even">
+<td>实验3</td>
+<td>256</td>
+<td>656.0</td>
+<td>0.9717</td>
+<td>446.5</td>
+<td>0.9718</td>
+</tr>
+<tr class="odd">
+<td>实验1</td>
+<td>128</td>
+<td>335.8</td>
+<td>0.9737</td>
+<td>200.5</td>
+<td>0.9737</td>
+</tr>
+<tr class="even">
+<td>实验2</td>
+<td>128</td>
+<td>336.5</td>
+<td>0.9737</td>
+<td>227.2</td>
+<td>0.9737</td>
+</tr>
+<tr class="odd">
+<td>实验3</td>
+<td>128</td>
+<td>352.4</td>
+<td>0.9737</td>
+<td>217.6</td>
+<td>0.9737</td>
+</tr>
+</tbody>
+</table>
+<p>综上所述，对于训练后的BERT模型（文本分类模型）进行动态量化，其结论如下：</p>
+<ul>
+<li><p>模型推理效果：量化前后基本相同，量化后略有下降</p></li>
+<li><p>模型推理时间：量化后平均提速约1.52倍 ### 总结</p>
+<p>本文介绍了量化基本概念，PyTorch模型量化方式，以及对BERT模型训练后进行动态量化后在推理效果和推理性能上的实验。</p>
+<p>本文项目已开源至Github项目：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/dynamic_quantization_on_bert">https://github.com/percent4/dynamic_quantization_on_bert</a>
+。</p>
+<p>本人已开通个人博客网站，网址为：<a
+href="https://percent4.github.io/">https://percent4.github.io/</a>
+，欢迎大家访问~</p></li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%A8%A1%E5%9E%8B%E9%87%8F%E5%8C%96/" class="print-no-link">#模型量化</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（六十七）BERT模型训练后动态量化（PTDQ）</div>
+      <div>https://percent4.github.io/2023/09/03/NLP（六十七）BERT模型训练后动态量化（PTDQ）/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年9月3日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/09/02/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8HuggingFace%E4%B8%AD%E7%9A%84Trainer%E8%BF%9B%E8%A1%8CBERT%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/" title="NLP（六十六）使用HuggingFace中的Trainer进行BERT模型微调">
+                        <span class="hidden-mobile">NLP（六十六）使用HuggingFace中的Trainer进行BERT模型微调</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

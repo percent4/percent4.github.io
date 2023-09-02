@@ -279,7 +279,7 @@
         
         
           <!-- compatible with older versions-->
-          132 分钟
+          131 分钟
         
       </span>
     
@@ -329,24 +329,25 @@
             
               <div class="markdown-body">
                 
-                <h2 id="TensorFlow-Is-Coming-Part-1">TensorFlow Is Coming ( Part 1 )</h2>
+                <h2 id="tensorflow-is-coming-part-1">TensorFlow Is Coming ( Part 1
+)</h2>
 <h3 id="目录">目录</h3>
-<ol>
+<ol type="1">
 <li>TensorFlow简介</li>
 <li>TensorFlow基本概念</li>
 <li>Using TensorFlow</li>
-<li>Optimization &amp; Linear Regression &amp;  Logistic Regression</li>
+<li>Optimization &amp; Linear Regression &amp; Logistic Regression</li>
 </ol>
-<h3 id="1-TensorFlow简介">1. TensorFlow简介</h3>
+<h3 id="tensorflow简介">1. TensorFlow简介</h3>
 <p>TensorFlow由Google的Brain Team创立，于2015年11月9日开源。</p>
-<p>TensorFlow中文社区网站：<a target="_blank" rel="noopener" href="http://www.tensorfly.cn">http://www.tensorfly.cn</a> 。</p>
+<p>TensorFlow中文社区网站：http://www.tensorfly.cn 。</p>
 <p>TensorFlow, 其含义为 Tensor + Flow, 具体说来：</p>
 <ul>
 <li>Tensor（张量）：N维数组</li>
-<li>Flow（流图）：  基于数据流图（Data Flow Graph）的计算</li>
+<li>Flow（流图）： 基于数据流图（Data Flow Graph）的计算</li>
 </ul>
 <p><a target="_blank" rel="noopener" href="http://www.tensorfly.cn/">TensorFlow的特征</a>：</p>
-<ol>
+<ol type="1">
 <li>高度的灵活性</li>
 <li>真正的可移植性（Portability）</li>
 <li>将科研和产品联系在一起</li>
@@ -354,50 +355,53 @@
 <li>多语言支持</li>
 <li>性能最优化</li>
 </ol>
-<p>TensorFlow Python API 在数据结构和基于多维数组的计算与NumPy有许多相似之处，其安装方式：</p>
+<p>TensorFlow Python API
+在数据结构和基于多维数组的计算与NumPy有许多相似之处，其安装方式：</p>
 <figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cmake">pip <span class="hljs-keyword">install</span> tensorflow<br></code></pre></td></tr></table></figure>
-<p>一个简单的例子：“Hello world” with TensorFlow</p>
+<p>一个简单的例子："Hello world" with TensorFlow</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> tensorflow <span class="hljs-keyword">as</span> tf<br><br>h = tf.constant(<span class="hljs-string">&quot;Hello&quot;</span>)<br>w = tf.constant(<span class="hljs-string">&quot; World!&quot;</span>)<br>hw = h + w<br><span class="hljs-keyword">with</span> tf.Session() <span class="hljs-keyword">as</span> sess:<br>    ans = sess.run(hw)<br><span class="hljs-built_in">print</span> (ans)<br></code></pre></td></tr></table></figure>
-<h3 id="2-TensorFlow基本概念">2. TensorFlow基本概念</h3>
+<h3 id="tensorflow基本概念">2. TensorFlow基本概念</h3>
 <p>本节目录：</p>
-<ol>
+<ol type="1">
 <li>Constant</li>
 <li>Tensor</li>
 <li>Computation Graphs</li>
 <li>Variables</li>
 <li>Placeholder Variables</li>
 </ol>
-<h4 id="Constant">Constant</h4>
+<h4 id="constant">Constant</h4>
 <p>TensorFlow中的常量用constant()函数构造。</p>
-<h4 id="Tensor">Tensor</h4>
-<p><img src="/img/tf1_1.png" srcset="/img/loading.gif" lazyload alt=""><br>
-<img src="/img/tf1_2.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<h4 id="tensor">Tensor</h4>
+<p><img src="/img/tf1_1.png" srcset="/img/loading.gif" lazyload /> <img src="/img/tf1_2.png" srcset="/img/loading.gif" lazyload /></p>
 <p>Tensor的创建：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python">a = tf.constant(<span class="hljs-number">2</span>)        <span class="hljs-comment"># 标量</span><br>b = tf.constant([<span class="hljs-number">1</span>,<span class="hljs-number">2</span>])    <span class="hljs-comment"># 一维向量</span><br>c = tf.constant([[<span class="hljs-number">1</span>,<span class="hljs-number">2</span>],<br>                 [<span class="hljs-number">3</span>,<span class="hljs-number">4</span>]])  <span class="hljs-comment"># 二维向量</span><br></code></pre></td></tr></table></figure>
 <p>也可以指定维度（shape）以及数据类型(dtype)。比如：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python">a = tf.constant(np.array([<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>]), shape=(<span class="hljs-number">3</span>,<span class="hljs-number">2</span>),dtype=tf.int64)<br>a = tf.constant(np.array([[<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>],<br>                          [<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>]]),<br>                          shape=(<span class="hljs-number">3</span>,<span class="hljs-number">2</span>),<br>                          dtype=tf.float64)<br></code></pre></td></tr></table></figure>
-<p><img src="/img/tf1_3.png" srcset="/img/loading.gif" lazyload alt="数据类型"></p>
-<h4 id="Computation-Graphs">Computation Graphs</h4>
-<p>Generally, the typical workflow in TensorFlow can be summarized as follows:</p>
+<figure>
+<img src="/img/tf1_3.png" srcset="/img/loading.gif" lazyload alt="数据类型" />
+<figcaption aria-hidden="true">数据类型</figcaption>
+</figure>
+<h4 id="computation-graphs">Computation Graphs</h4>
+<p>Generally, the typical workflow in TensorFlow can be summarized as
+follows:</p>
 <ul>
 <li>Build a computational graph</li>
 <li>Start a new session to evaluate the graph
-<ol>
+<ol type="1">
 <li>Initialize variables</li>
 <li>Execute the operations in the compiled graph</li>
-</ol>
-</li>
+</ol></li>
 </ul>
 <p>例1：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> tensorflow <span class="hljs-keyword">as</span> tf<br><br>a = tf.constant(<span class="hljs-number">5</span>)<br>b = tf.constant(<span class="hljs-number">2</span>)<br>c = tf.constant(<span class="hljs-number">3</span>)<br><br>d = tf.multiply(a,b)<br>e = tf.add(c,b)<br>f = tf.subtract(d,e)<br><br><span class="hljs-keyword">with</span> tf.Session() <span class="hljs-keyword">as</span> sess:<br>    res = sess.run(f)<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;f is %s&#x27;</span>%res)<br></code></pre></td></tr></table></figure>
 <p>输出结果：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">f is 5<br></code></pre></td></tr></table></figure>
 <p>在上述程序中，Computation Graph 示意图如下：</p>
-<p><img src="/img/tf1_4.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="/img/tf1_4.png" srcset="/img/loading.gif" lazyload /></p>
 <p>在TensorBoard中，Computation Graph如下：</p>
-<p><img src="/img/tf1_5.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="/img/tf1_5.png" srcset="/img/loading.gif" lazyload /></p>
 <p>常用的TensorFlow运算函数：</p>
-<p><img src="/img/tf1_6.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="/img/tf1_6.png" srcset="/img/loading.gif" lazyload /></p>
 <p>例2：使用Graph及Session</p>
 <p>未使用Session</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> tensorflow <span class="hljs-keyword">as</span> tf<br><br>g = tf.Graph()<br><span class="hljs-keyword">with</span> g.as_default() <span class="hljs-keyword">as</span> g:<br>    tf_x = tf.constant([[<span class="hljs-number">1.</span>, <span class="hljs-number">2.</span>],<br>                        [<span class="hljs-number">3.</span>, <span class="hljs-number">4.</span>],<br>                        [<span class="hljs-number">5.</span>,<span class="hljs-number">6.</span>]], dtype=tf.float64)<br>    col_sum = tf.reduce_sum(tf_x, axis=<span class="hljs-number">0</span>) <span class="hljs-comment"># 按列求和</span><br><br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;tf_x:\n&#x27;</span>, tf_x)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;col_sum:\n&#x27;</span>, col_sum)<br></code></pre></td></tr></table></figure>
@@ -408,15 +412,28 @@
 <p>输出结果：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">tf_x:<br> [[1. 2.]<br>  [3. 4.]<br>  [5. 6.]]<br>col_sum:<br> [ 9. 12.]<br></code></pre></td></tr></table></figure>
 <p>TensorFlow背后的运行原理图：</p>
-<p><img src="/img/tf1_7.png" srcset="/img/loading.gif" lazyload alt="运行原理图"></p>
+<figure>
+<img src="/img/tf1_7.png" srcset="/img/loading.gif" lazyload alt="运行原理图" />
+<figcaption aria-hidden="true">运行原理图</figcaption>
+</figure>
 <p>为什么要采用Computation Graphs？</p>
 <ul>
-<li>TensorFlow optimizes its computations based on the graph’s connectivity.</li>
-<li>Each graph has its own set of node dependencies.Being able to locate dependencies between units of our model allows us to both distribute computations across available resources and avoid performing redundant computations of irrelevant subsets, resulting in a faster and more efficient way of computing things.</li>
+<li>TensorFlow optimizes its computations based on the graph’s
+connectivity.</li>
+<li>Each graph has its own set of node dependencies.Being able to locate
+dependencies between units of our model allows us to both distribute
+computations across available resources and avoid performing redundant
+computations of irrelevant subsets, resulting in a faster and more
+efficient way of computing things.</li>
 </ul>
-<p><img src="/img/tf1_8.png" srcset="/img/loading.gif" lazyload alt=""></p>
-<h4 id="Variables">Variables</h4>
-<p>Variables are constructs in TensorFlow that allows us to store and update parameters of our models in the current session during training. To define a “variable” tensor, we use TensorFlow’s Variable() constructor.  to execute a computational graph that contains variables, we must initialize all variables in the active session first (using tf.global_variables_initializer()).</p>
+<p><img src="/img/tf1_8.png" srcset="/img/loading.gif" lazyload /></p>
+<h4 id="variables">Variables</h4>
+<p>Variables are constructs in TensorFlow that allows us to store and
+update parameters of our models in the current session during training.
+To define a “variable” tensor, we use TensorFlow’s Variable()
+constructor. to execute a computational graph that contains variables,
+we must initialize all variables in the active session first (using
+tf.global_variables_initializer()).</p>
 <p>例1：使用Variables</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> tensorflow <span class="hljs-keyword">as</span> tf<br><br>g = tf.Graph()<br><span class="hljs-keyword">with</span> g.as_default() <span class="hljs-keyword">as</span> g:<br>    tf_x = tf.Variable([[<span class="hljs-number">1.</span>, <span class="hljs-number">2.</span>],<br>                        [<span class="hljs-number">3.</span>, <span class="hljs-number">4.</span>],<br>                        [<span class="hljs-number">5.</span>, <span class="hljs-number">6.</span>]], dtype=tf.float32)<br>    x = tf.constant(<span class="hljs-number">1.</span>, dtype=tf.float32)<br><br>    <span class="hljs-comment"># add a constant to the matrix:</span><br>    tf_x = tf_x + x<br><br><span class="hljs-keyword">with</span> tf.Session(graph=g) <span class="hljs-keyword">as</span> sess:<br>    sess.run(tf.global_variables_initializer())<br>    result = sess.run(tf_x)<br><br><span class="hljs-built_in">print</span>(result)<br></code></pre></td></tr></table></figure>
 <p>输出结果：</p>
@@ -430,8 +447,12 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> tensorflow <span class="hljs-keyword">as</span> tf<br><br>g = tf.Graph()<br><span class="hljs-keyword">with</span> g.as_default() <span class="hljs-keyword">as</span> g:<br>    tf_x = tf.Variable([[<span class="hljs-number">1.</span>, <span class="hljs-number">2.</span>],<br>                        [<span class="hljs-number">3.</span>, <span class="hljs-number">4.</span>],<br>                        [<span class="hljs-number">5.</span>, <span class="hljs-number">6.</span>]], dtype=tf.float32)<br>    x = tf.constant(<span class="hljs-number">1.</span>, dtype=tf.float32)<br><br>    <span class="hljs-comment"># add a constant to the matrix:</span><br>    update_tf_x = tf.assign(tf_x, tf_x + x)<br><br><span class="hljs-keyword">with</span> tf.Session(graph=g) <span class="hljs-keyword">as</span> sess:<br>    sess.run(tf.global_variables_initializer())<br>    result = sess.run(update_tf_x)<br>    result = sess.run(update_tf_x) <span class="hljs-comment"># 运行两遍</span><br><br><span class="hljs-built_in">print</span>(result)<br></code></pre></td></tr></table></figure>
 <p>此时的输出结果：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">[[3. 4.]<br> [5. 6.]<br> [7. 8.]]<br></code></pre></td></tr></table></figure>
-<h4 id="Placeholder-Variables">Placeholder Variables</h4>
-<p><strong>Placeholder variables</strong> allow us to feed the computational graph with numerical values in an active session at runtime. <strong>Placeholders</strong> have an optional shape argument. If a shape is not fed or is passed as <strong>None</strong>, then the placeholder can be fed with data of any size.</p>
+<h4 id="placeholder-variables">Placeholder Variables</h4>
+<p><strong>Placeholder variables</strong> allow us to feed the
+computational graph with numerical values in an active session at
+runtime. <strong>Placeholders</strong> have an optional shape argument.
+If a shape is not fed or is passed as <strong>None</strong>, then the
+placeholder can be fed with data of any size.</p>
 <p>例：矩阵相乘</p>
 <p>指定行数与列数</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> tensorflow <span class="hljs-keyword">as</span> tf<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><br>g = tf.Graph()<br><span class="hljs-keyword">with</span> g.as_default() <span class="hljs-keyword">as</span> g:<br>    tf_x = tf.placeholder(dtype=tf.float32,shape=(<span class="hljs-number">3</span>, <span class="hljs-number">2</span>))<br><br>    output = tf.matmul(tf_x, tf.transpose(tf_x)) <span class="hljs-comment"># 矩阵乘以它的转置</span><br><br><span class="hljs-keyword">with</span> tf.Session(graph=g) <span class="hljs-keyword">as</span> sess:<br>    sess.run(tf.global_variables_initializer())<br>    <span class="hljs-comment"># 创建3*2矩阵</span><br>    np_ary = np.array([[<span class="hljs-number">3.</span>, <span class="hljs-number">4.</span>],<br>                       [<span class="hljs-number">5.</span>, <span class="hljs-number">6.</span>],<br>                       [<span class="hljs-number">7.</span>, <span class="hljs-number">8.</span>]])<br><br>    <span class="hljs-built_in">print</span>(sess.run(output, &#123;tf_x: np_ary&#125;))<br></code></pre></td></tr></table></figure>
@@ -445,7 +466,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> tensorflow <span class="hljs-keyword">as</span> tf<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><br>g = tf.Graph()<br><span class="hljs-keyword">with</span> g.as_default() <span class="hljs-keyword">as</span> g:<br>    tf_x = tf.placeholder(dtype=tf.float32)<br><br>    output = tf.matmul(tf_x, tf.transpose(tf_x)) <span class="hljs-comment"># 矩阵乘以它的转置</span><br><br><span class="hljs-keyword">with</span> tf.Session(graph=g) <span class="hljs-keyword">as</span> sess:<br>    sess.run(tf.global_variables_initializer())<br>    <span class="hljs-comment"># 创建3*3矩阵</span><br>    np_ary1 = np.array([[<span class="hljs-number">3.</span>, <span class="hljs-number">4.</span>, <span class="hljs-number">5.</span>],<br>                        [<span class="hljs-number">5.</span>, <span class="hljs-number">6.</span>, <span class="hljs-number">7.</span>],<br>                        [<span class="hljs-number">7.</span>, <span class="hljs-number">8.</span>, <span class="hljs-number">9.</span>]])<br><br>    <span class="hljs-built_in">print</span>(sess.run(output, &#123;tf_x: np_ary1&#125;))<br><br>    <span class="hljs-comment"># 创建4*2矩阵</span><br>    np_ary2 = np.array([[<span class="hljs-number">3.</span>, <span class="hljs-number">4.</span>],<br>                        [<span class="hljs-number">5.</span>, <span class="hljs-number">6.</span>],<br>                        [<span class="hljs-number">7.</span>, <span class="hljs-number">8.</span>],<br>                        [<span class="hljs-number">9.</span>,<span class="hljs-number">10.</span>]])<br><br>    <span class="hljs-built_in">print</span>(sess.run(output, &#123;tf_x: np_ary2&#125;))<br></code></pre></td></tr></table></figure>
 <p>输出结果：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">[[ 50.  74.  98.]<br> [ 74. 110. 146.]<br> [ 98. 146. 194.]]<br>[[ 25.  39.  53.  67.]<br> [ 39.  61.  83. 105.]<br> [ 53.  83. 113. 143.]<br> [ 67. 105. 143. 181.]]<br></code></pre></td></tr></table></figure>
-<h4 id="3-Using-TensorFlow">3. Using TensorFlow</h4>
+<h4 id="using-tensorflow">3. Using TensorFlow</h4>
 <p>本节目录:</p>
 <ul>
 <li>Saving and Restoring Models</li>
@@ -454,30 +475,47 @@
 <li>Control Flow</li>
 <li>TensorBoard</li>
 </ul>
-<h5 id="Saving-and-Restoring-Models">Saving and Restoring Models</h5>
+<h5 id="saving-and-restoring-models">Saving and Restoring Models</h5>
 <p>例：</p>
 <p><strong>Saving Models</strong></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> tensorflow <span class="hljs-keyword">as</span> tf<br><br>g = tf.Graph()<br><span class="hljs-keyword">with</span> g.as_default() <span class="hljs-keyword">as</span> g:<br><br>    tf_x = tf.Variable([[<span class="hljs-number">1.</span>, <span class="hljs-number">2.</span>],<br>                        [<span class="hljs-number">3.</span>, <span class="hljs-number">4.</span>],<br>                        [<span class="hljs-number">5.</span>, <span class="hljs-number">6.</span>]], dtype=tf.float32)<br>    x = tf.constant(<span class="hljs-number">1.</span>, dtype=tf.float32)<br><br>    update_tf_x = tf.assign(tf_x, tf_x + x)<br><br>    <span class="hljs-comment"># initialize a Saver, which gets all variables</span><br>    <span class="hljs-comment"># within this computation graph context</span><br>    saver = tf.train.Saver()<br><br><span class="hljs-keyword">with</span> tf.Session(graph=g) <span class="hljs-keyword">as</span> sess:<br>    sess.run(tf.global_variables_initializer())<br>    result = sess.run(update_tf_x)<br><br>    <span class="hljs-comment"># save the model</span><br>    saver.save(sess, save_path=<span class="hljs-string">&#x27;E://flag/my-model.ckpt&#x27;</span>)<br></code></pre></td></tr></table></figure>
 <p>保存的文件：</p>
-<p><img src="/img/tf1_9.png" srcset="/img/loading.gif" lazyload alt="保存的文件"></p>
-<p>The file my-model.ckpt.data-00000-of-00001 saves our main variable values, the .index file keeps track of the data structures, and the .meta file describes the structure of our computational graph that we executed.</p>
+<figure>
+<img src="/img/tf1_9.png" srcset="/img/loading.gif" lazyload alt="保存的文件" />
+<figcaption aria-hidden="true">保存的文件</figcaption>
+</figure>
+<p>The file my-model.ckpt.data-00000-of-00001 saves our main variable
+values, the .index file keeps track of the data structures, and the
+.meta file describes the structure of our computational graph that we
+executed.</p>
 <p><strong>Restoring Models:</strong></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> tensorflow <span class="hljs-keyword">as</span> tf<br><br>g = tf.Graph()<br><span class="hljs-keyword">with</span> g.as_default() <span class="hljs-keyword">as</span> g:<br><br>    tf_x = tf.Variable([[<span class="hljs-number">1.</span>, <span class="hljs-number">2.</span>],<br>                        [<span class="hljs-number">3.</span>, <span class="hljs-number">4.</span>],<br>                        [<span class="hljs-number">5.</span>, <span class="hljs-number">6.</span>]], dtype=tf.float32)<br>    x = tf.constant(<span class="hljs-number">1.</span>, dtype=tf.float32)<br><br>    update_tf_x = tf.assign(tf_x, tf_x + x)<br><br>    <span class="hljs-comment"># initialize a Saver, which gets all variables</span><br>    <span class="hljs-comment"># within this computation graph context</span><br>    saver = tf.train.Saver()<br><br><span class="hljs-keyword">with</span> tf.Session(graph=g) <span class="hljs-keyword">as</span> sess:<br>    saver.restore(sess, save_path=<span class="hljs-string">&#x27;E://flag/my-model.ckpt&#x27;</span>)<br>    result = sess.run(update_tf_x)<br>    <span class="hljs-built_in">print</span>(result)<br></code></pre></td></tr></table></figure>
 <p>运行结果：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">[[3. 4.]<br> [5. 6.]<br> [7. 8.]]<br></code></pre></td></tr></table></figure>
-<h4 id="Naming-TensorFlow-Objects">Naming TensorFlow Objects</h4>
-<p>Each Tensor object also has an identifying name. This name is an intrinsic string name, not to be confused with the name of the variable. As with dtype, we can use the .name attribute to see the name of the object:</p>
+<h4 id="naming-tensorflow-objects">Naming TensorFlow Objects</h4>
+<p>Each Tensor object also has an identifying name. This name is an
+intrinsic string name, not to be confused with the name of the variable.
+As with dtype, we can use the .name attribute to see the name of the
+object:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> tensorflow <span class="hljs-keyword">as</span> tf<br><br>g = tf.Graph()<br><span class="hljs-keyword">with</span> g.as_default() <span class="hljs-keyword">as</span> g:<br>    c1 = tf.constant(<span class="hljs-number">4</span>, dtype=tf.float64, name=<span class="hljs-string">&#x27;c&#x27;</span>)<br>    c2 = tf.constant(<span class="hljs-number">4</span>, dtype=tf.int32, name=<span class="hljs-string">&#x27;c&#x27;</span>)<br><br><span class="hljs-built_in">print</span>(c1.name)<br><span class="hljs-built_in">print</span>(c2.name)<br></code></pre></td></tr></table></figure>
 <p>输出：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">c:0<br>c_1:0<br></code></pre></td></tr></table></figure>
 <p><strong>Name scopes</strong></p>
-<p>Sometimes when dealing with a large, complicated graph, we would like to create some node grouping to make it easier to follow and manage. For that we can hierarchically group nodes together by name. We do so by using tf.name_scope(“prefix”) together with the useful with clause again:</p>
+<p>Sometimes when dealing with a large, complicated graph, we would like
+to create some node grouping to make it easier to follow and manage. For
+that we can hierarchically group nodes together by name. We do so by
+using tf.name_scope("prefix") together with the useful with clause
+again:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> tensorflow <span class="hljs-keyword">as</span> tf<br><br>g = tf.Graph()<br><span class="hljs-keyword">with</span> g.as_default() <span class="hljs-keyword">as</span> g:<br>    c1 = tf.constant(<span class="hljs-number">4</span>, dtype=tf.float64, name=<span class="hljs-string">&#x27;c&#x27;</span>)<br>    <span class="hljs-keyword">with</span> tf.name_scope(<span class="hljs-string">&quot;prefix_name&quot;</span>):<br>        c2 = tf.constant(<span class="hljs-number">4</span>, dtype=tf.int32, name=<span class="hljs-string">&#x27;c&#x27;</span>)<br>        c3 = tf.constant(<span class="hljs-number">4</span>, dtype=tf.float64, name=<span class="hljs-string">&#x27;c&#x27;</span>)<br><br><span class="hljs-built_in">print</span>(c1.name)<br><span class="hljs-built_in">print</span>(c2.name)<br><span class="hljs-built_in">print</span>(c3.name)<br></code></pre></td></tr></table></figure>
 <p>输出：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">c:0<br>prefix_name/c:0<br>prefix_name/c_1:0<br></code></pre></td></tr></table></figure>
-<h4 id="CPU-and-GPU">CPU and GPU</h4>
-<p>All TensorFlow operations in general, can be executed on a <strong>CPU</strong>. If you have a <strong>GPU</strong> version of TensorFlow installed, TensorFlow will automatically execute those operations that have <strong>GPU</strong> support on GPUs and use your machine’s <strong>CPU</strong>, otherwise.</p>
-<h4 id="Control-Flow">Control Flow</h4>
+<h4 id="cpu-and-gpu">CPU and GPU</h4>
+<p>All TensorFlow operations in general, can be executed on a
+<strong>CPU</strong>. If you have a <strong>GPU</strong> version of
+TensorFlow installed, TensorFlow will automatically execute those
+operations that have <strong>GPU</strong> support on GPUs and use your
+machine’s <strong>CPU</strong>, otherwise.</p>
+<h4 id="control-flow">Control Flow</h4>
 <p>例： if-else结构</p>
 <p>简单的if-else语句</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> tensorflow <span class="hljs-keyword">as</span> tf<br><br>addition = <span class="hljs-literal">True</span><br><br>g = tf.Graph()<br><span class="hljs-keyword">with</span> g.as_default() <span class="hljs-keyword">as</span> g:<br>    x = tf.placeholder(dtype=tf.float32, shape=<span class="hljs-literal">None</span>)<br>    <span class="hljs-keyword">if</span> addition:<br>        y = x + <span class="hljs-number">1.</span><br>    <span class="hljs-keyword">else</span>:<br>        y = x - <span class="hljs-number">1.</span><br><br><span class="hljs-keyword">with</span> tf.Session(graph=g) <span class="hljs-keyword">as</span> sess:<br>    result = sess.run(y, feed_dict=&#123;x: <span class="hljs-number">1.</span>&#125;)<br><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Result:\n&#x27;</span>, result)<br></code></pre></td></tr></table></figure>
@@ -487,8 +525,10 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> tensorflow <span class="hljs-keyword">as</span> tf<br><br>g = tf.Graph()<br><span class="hljs-keyword">with</span> g.as_default() <span class="hljs-keyword">as</span> g:<br>    addition = tf.placeholder(dtype=tf.<span class="hljs-built_in">bool</span>, shape=<span class="hljs-literal">None</span>)<br>    x = tf.placeholder(dtype=tf.float32, shape=<span class="hljs-literal">None</span>)<br><br>    y = tf.cond(addition,<br>                true_fn=<span class="hljs-keyword">lambda</span>: tf.add(x, <span class="hljs-number">1.</span>),<br>                false_fn=<span class="hljs-keyword">lambda</span>: tf.subtract(x, <span class="hljs-number">1.</span>))<br><br><span class="hljs-keyword">with</span> tf.Session(graph=g) <span class="hljs-keyword">as</span> sess:<br>    result = sess.run(y, feed_dict=&#123;addition:<span class="hljs-literal">True</span>,x: <span class="hljs-number">1.</span>&#125;)<br><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Result:\n&#x27;</span>, result)<br></code></pre></td></tr></table></figure>
 <p>输出结果：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">Result:<br> 2.0<br></code></pre></td></tr></table></figure>
-<h4 id="TensorBoard">TensorBoard</h4>
-<p>TensorBoard is one of the coolest features of TensorFlow, which provides us with a suite of tools to visualize our computational graphs and operations before and during runtime.</p>
+<h4 id="tensorboard">TensorBoard</h4>
+<p>TensorBoard is one of the coolest features of TensorFlow, which
+provides us with a suite of tools to visualize our computational graphs
+and operations before and during runtime.</p>
 <p>例：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> tensorflow <span class="hljs-keyword">as</span> tf<br><br>g = tf.Graph()<br><span class="hljs-keyword">with</span> g.as_default() <span class="hljs-keyword">as</span> g:<br><br>    tf_x = tf.Variable([[<span class="hljs-number">1.</span>, <span class="hljs-number">2.</span>],<br>                        [<span class="hljs-number">3.</span>, <span class="hljs-number">4.</span>],<br>                        [<span class="hljs-number">5.</span>, <span class="hljs-number">6.</span>]],<br>                        name=<span class="hljs-string">&#x27;tf_x_0&#x27;</span>,<br>                        dtype=tf.float32)<br><br>    tf_y = tf.Variable([[<span class="hljs-number">7.</span>, <span class="hljs-number">8.</span>],<br>                        [<span class="hljs-number">9.</span>, <span class="hljs-number">10.</span>],<br>                        [<span class="hljs-number">11.</span>, <span class="hljs-number">12.</span>]],<br>                        name=<span class="hljs-string">&#x27;tf_y_0&#x27;</span>,<br>                        dtype=tf.float32)<br><br>    output = tf_x + tf_y<br>    output = tf.matmul(tf.transpose(tf_x), output)<br><br><span class="hljs-keyword">with</span> tf.Session(graph=g) <span class="hljs-keyword">as</span> sess:<br>    sess.run(tf.global_variables_initializer())<br><br>    <span class="hljs-comment"># create FileWrite object that writes the logs</span><br>    file_writer = tf.summary.FileWriter(logdir=<span class="hljs-string">&#x27;E://flag/logs/1&#x27;</span>, graph=g)<br>    result = sess.run(output)<br>    <span class="hljs-built_in">print</span>(result)<br></code></pre></td></tr></table></figure>
 <p>输出结果：</p>
@@ -497,11 +537,13 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">tensorboard --logdir E://flag/logs/1<br></code></pre></td></tr></table></figure>
 <p>输出结果：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">C:\Users\HP&gt;tensorboard --logdir E://flag/logs/1<br>TensorBoard 1.10.0 at http://DESKTOP-28K2SLS:6006 (Press CTRL+C to quit)<br></code></pre></td></tr></table></figure>
-<p>在浏览器中输入http://DESKTOP-28K2SLS:6006即可查看Computation Graph，截图如下：</p>
-<p><img src="/img/tf1_10.png" srcset="/img/loading.gif" lazyload alt=""></p>
-<h3 id="4-Optimization-Linear-Regression-Logistic-Regression">4. Optimization &amp; Linear Regression &amp;  Logistic Regression</h3>
+<p>在浏览器中输入http://DESKTOP-28K2SLS:6006即可查看Computation
+Graph，截图如下：</p>
+<p><img src="/img/tf1_10.png" srcset="/img/loading.gif" lazyload /></p>
+<h3 id="optimization-linear-regression-logistic-regression">4.
+Optimization &amp; Linear Regression &amp; Logistic Regression</h3>
 <p><strong>Optimization Steps:</strong></p>
-<ol>
+<ol type="1">
 <li>Defining a model</li>
 <li>Defining loss function</li>
 <li>Optimizer(The gradient descent)</li>
@@ -510,7 +552,7 @@
 <p>Gradient Descent的三种形式：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>描述</th>
 <th>GD</th>
 <th>Minth-Batches GD</th>
@@ -518,31 +560,31 @@
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>单次迭代样本数</td>
 <td>整个训练集</td>
 <td>训练集的子集</td>
 <td>单个样本</td>
 </tr>
-<tr>
+<tr class="even">
 <td>算法复杂度</td>
 <td>高</td>
 <td>一般</td>
 <td>低</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>运行速度</td>
 <td>慢</td>
 <td>较快</td>
 <td>快</td>
 </tr>
-<tr>
+<tr class="even">
 <td>收敛性</td>
 <td>稳定</td>
 <td>较稳定</td>
 <td>不稳定</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>陷入局部最优点的可能性</td>
 <td>大</td>
 <td>较大</td>
@@ -551,22 +593,23 @@
 </tbody>
 </table>
 <p><strong>Linear Regression</strong></p>
-<ol>
+<ol type="1">
 <li>Model</li>
 </ol>
-<p class="katex-block "><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>y</mi><mo>=</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>w</mi><mi>i</mi></msub><msub><mi>x</mi><mi>i</mi></msub><mo>+</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">y = \sum\limits_{i=1}^{n}w_{i}x_{i} + b
-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.9291em;vertical-align:-1.2777em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.6514em;"><span style="top:-1.8723em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.05em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.3em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.2777em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0269em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">b</span></span></span></span></span></p>
-<ol start="2">
+<p><span class="math display">\[y = \sum\limits_{i=1}^{n}w_{i}x_{i} +
+b\]</span></p>
+<ol start="2" type="1">
 <li>Loss function: MSE</li>
 </ol>
-<p class="katex-block "><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>l</mi><mi>o</mi><mi>s</mi><mi>s</mi><mo>=</mo><mfrac><mn>1</mn><mrow><mn>2</mn><mi>m</mi></mrow></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>m</mi></munderover><mo stretchy="false">(</mo><msub><mi>y</mi><mrow><mi>t</mi><mi>r</mi><mi>u</mi><mi>e</mi></mrow></msub><mo>−</mo><mo stretchy="false">(</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>w</mi><mi>i</mi></msub><msub><mi>x</mi><mi>i</mi></msub><mo>+</mo><mi>b</mi><mo stretchy="false">)</mo><msup><mo stretchy="false">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">loss = \frac{1}{2m}\sum\limits_{i=1}^{m}(y_{true} - (\sum\limits_{i=1}^{n}w_{i}x_{i}+b))^{2}
-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">oss</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.9291em;vertical-align:-1.2777em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">2</span><span class="mord mathnormal">m</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.6514em;"><span style="top:-1.8723em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.05em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.3em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">m</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.2777em;"><span></span></span></span></span></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2806em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">t</span><span class="mord mathnormal mtight" style="margin-right:0.02778em;">r</span><span class="mord mathnormal mtight">u</span><span class="mord mathnormal mtight">e</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:2.9291em;vertical-align:-1.2777em;"></span><span class="mopen">(</span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.6514em;"><span style="top:-1.8723em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.05em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.3em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.2777em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0269em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1.1141em;vertical-align:-0.25em;"></span><span class="mord mathnormal">b</span><span class="mclose">)</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8641em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></span></span></p>
-<ol start="3">
+<p><span class="math display">\[loss =
+\frac{1}{2m}\sum\limits_{i=1}^{m}(y_{true} -
+(\sum\limits_{i=1}^{n}w_{i}x_{i}+b))^{2}\]</span></p>
+<ol start="3" type="1">
 <li>The gradient descent optimizer(SGD)</li>
 </ol>
 <p>指定 loss function 和 learning_rate</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python">optimizer = tf.train.GradientDescentOptimizer(learning_rate)<br>train = optimizer.minimize(loss)<br></code></pre></td></tr></table></figure>
-<ol start="4">
+<ol start="4" type="1">
 <li>predict on new sample</li>
 </ol>
 <p>Linear Regression的例子：</p>
@@ -577,33 +620,36 @@
 <p>输出结果：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">用Sklearn计算得到的线性回归系数:<br> w:[0.29638914 0.49420393 0.096624  ]	b:[-0.21690145]<br>用TensorFlow计算得到的线性回归系数:<br>[[array([[0.29638913, 0.49420393, 0.096624  ]], dtype=float32), -0.21690145]]<br></code></pre></td></tr></table></figure>
 <p><strong>Logistic Regression</strong></p>
-<ol>
+<ol type="1">
 <li>Model</li>
 </ol>
-<p class="katex-block "><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>ln</mi><mo>⁡</mo><mrow><mo stretchy="false">(</mo><mfrac><mi>p</mi><mrow><mn>1</mn><mo>−</mo><mi>p</mi></mrow></mfrac><mo stretchy="false">)</mo></mrow><mo>=</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>w</mi><mi>i</mi></msub><msub><mi>x</mi><mi>i</mi></msub><mo>+</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">\ln{(\frac{p}{1-p})} = \sum\limits_{i=1}^{n}w_{i}x_{i} + b
-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.988em;vertical-align:-0.8804em;"></span><span class="mop">ln</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mopen">(</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.1076em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal">p</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">p</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.8804em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose">)</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.9291em;vertical-align:-1.2777em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.6514em;"><span style="top:-1.8723em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.05em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.3em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.2777em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0269em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">b</span></span></span></span></span></p>
-<ol start="2">
+<p><span class="math display">\[\ln{(\frac{p}{1-p})} =
+\sum\limits_{i=1}^{n}w_{i}x_{i} + b\]</span></p>
+<ol start="2" type="1">
 <li>Loss function: Cross Entropy (OR log loss function)</li>
 </ol>
-<p class="katex-block "><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>l</mi><mi>o</mi><mi>s</mi><mi>s</mi><mo>=</mo><mi>H</mi><mo stretchy="false">(</mo><mi>p</mi><mo separator="true">,</mo><mi>q</mi><mo stretchy="false">)</mo><mo>=</mo><munder><mo>∑</mo><mi>x</mi></munder><mi>p</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mi>log</mi><mo>⁡</mo><mrow><mi>q</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></mrow></mrow><annotation encoding="application/x-tex">loss = H(p,q) = \sum\limits_{x} p(x)\log{q(x)}
-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">oss</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span><span class="mopen">(</span><span class="mord mathnormal">p</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">q</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.3em;vertical-align:-1.25em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.05em;"><span style="top:-1.9em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">x</span></span></span></span><span style="top:-3.05em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.25em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">p</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">q</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mclose">)</span></span></span></span></span></span></p>
-<ol start="3">
+<p><span class="math display">\[
+loss = H(p,q) = \sum\limits_{x} p(x)\log{q(x)}
+\]</span></p>
+<ol start="3" type="1">
 <li>The gradient descent optimizer(SGD)</li>
 </ol>
 <p>指定 loss function 和 learning_rate</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python">optimizer = tf.train.GradientDescentOptimizer(learning_rate)<br>train = optimizer.minimize(loss)<br></code></pre></td></tr></table></figure>
-<ol start="4">
+<ol start="4" type="1">
 <li>predict on new samples</li>
 </ol>
 <p>例子：</p>
 <p>样本数据集：</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/percent4/tensorflow_js_learning/blob/master/USA_vote.csv">https://github.com/percent4/tensorflow_js_learning/blob/master/USA_vote.csv</a></p>
+<p>https://github.com/percent4/tensorflow_js_learning/blob/master/USA_vote.csv</p>
 <p>Python代码：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">import</span> tensorflow <span class="hljs-keyword">as</span> tf<br><span class="hljs-keyword">from</span> sklearn.linear_model <span class="hljs-keyword">import</span> LogisticRegression<br><br><span class="hljs-comment">#read data from other places, e.g. csv</span><br><span class="hljs-comment">#drop_list: variables that are not used</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">read_data</span>(<span class="hljs-params">file_path, drop_list=[]</span>):<br>    dataSet = pd.read_csv(file_path,sep=<span class="hljs-string">&#x27;,&#x27;</span>)<br>    <span class="hljs-keyword">for</span> col <span class="hljs-keyword">in</span> drop_list:<br>        dataSet = dataSet.drop(col,axis=<span class="hljs-number">1</span>)<br>    <span class="hljs-keyword">return</span> dataSet<br><br><span class="hljs-comment"># CSV文件存放目录</span><br>path = <span class="hljs-string">&#x27;E://USA_vote.csv&#x27;</span><br><span class="hljs-comment"># 读取CSV文件中的数据</span><br>dataSet = read_data(path)<br><br><span class="hljs-comment"># 利用sklearn中的LogisticRegression模型进行建模</span><br>clf = LogisticRegression(C=<span class="hljs-number">1e9</span>)<br>X, y = dataSet.iloc[:,<span class="hljs-number">0</span>:-<span class="hljs-number">1</span>], dataSet.iloc[:, -<span class="hljs-number">1</span>]<br>clf.fit(X,y)<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Sklearn中的逻辑回归模型计算结果：&#x27;</span>)<br><span class="hljs-built_in">print</span>(clf.coef_)<br><span class="hljs-built_in">print</span>(clf.intercept_)<br><br>y_samples = np.array(y)    <span class="hljs-comment"># 样本中的y标签</span><br>x_samples = np.array(X)    <span class="hljs-comment"># 样本中的x标签</span><br>samples_num, var_num = x_samples.shape<br><br>NUM_STEPS = <span class="hljs-number">20000</span>    <span class="hljs-comment"># 总的训练次数</span><br>g = tf.Graph()<br>wb_ = []<br><br><br><span class="hljs-comment"># tensorflow训练模型</span><br><span class="hljs-keyword">with</span> g.as_default():<br>    x = tf.placeholder(tf.float32, shape=[<span class="hljs-literal">None</span>, var_num])<br>    y_true = tf.placeholder(tf.float32, shape=<span class="hljs-literal">None</span>)<br><br>    <span class="hljs-keyword">with</span> tf.name_scope(<span class="hljs-string">&#x27;inference&#x27;</span>) <span class="hljs-keyword">as</span> scope:<br>        w = tf.Variable([[-<span class="hljs-number">1</span>]*var_num], dtype=tf.float32, name=<span class="hljs-string">&#x27;weights&#x27;</span>)<br>        b = tf.Variable(<span class="hljs-number">0</span>, dtype=tf.float32, name=<span class="hljs-string">&#x27;bias&#x27;</span>)<br>        y_pred = tf.matmul(w, tf.transpose(x)) + b<br><br>    <span class="hljs-keyword">with</span> tf.name_scope(<span class="hljs-string">&#x27;train&#x27;</span>) <span class="hljs-keyword">as</span> scope:<br>        <span class="hljs-comment"># labels: ture output of y, i.e. 0 and 1, logits: the model&#x27;s linear prediction</span><br>        cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(labels=y_true, logits=y_pred)<br>        loss = tf.reduce_mean(cross_entropy)<br><br>        learning_rate = <span class="hljs-number">0.5</span><br>        optimizer = tf.train.GradientDescentOptimizer(learning_rate)<br>        train = optimizer.minimize(loss)<br><br>        <span class="hljs-comment"># Before starting, initialize the variables. We will &#x27;run&#x27; this first.</span><br>        init = tf.global_variables_initializer()<br><br>        <span class="hljs-keyword">with</span> tf.Session() <span class="hljs-keyword">as</span> sess:<br>            sess.run(init)<br><br>            <span class="hljs-keyword">for</span> step <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(NUM_STEPS):<br>                sess.run(train, &#123;x: x_samples, y_true: y_samples&#125;)<br>                <span class="hljs-keyword">if</span> (step % <span class="hljs-number">1000</span> == <span class="hljs-number">0</span>):<br>                    <span class="hljs-comment"># print(step, sess.run([w, b]))</span><br>                    wb_.append(sess.run([w, b]))<br><br>            <span class="hljs-built_in">print</span>(NUM_STEPS, sess.run([w, b]))<br>            sess.close()<br></code></pre></td></tr></table></figure>
 <p>输出结果：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">Sklearn中的逻辑回归模型计算结果：<br>[[ 0.34827234 -1.23053489 -2.74406079  6.85275877 -0.95313362 -0.47709861<br>   1.36435858 -1.85956934 -1.3986284   1.54663297 -3.14095297  0.78882048<br>   0.15680863  0.37217971 -1.44617613  0.59043785]]<br>[-1.56742975]<br>TensorFlow的计算结果：<br>20000 [array([[ 0.3481937 , -1.2305422 , -2.743876  ,  6.8526907 , -0.95355535,<br>        -0.47679362,  1.3641126 , -1.8595191 , -1.3984671 ,  1.5464842 ,<br>        -3.1406438 ,  0.7888262 ,  0.15678449,  0.37208068, -1.4461256 ,<br>         0.5904298 ]], dtype=float32), -1.56729]<br></code></pre></td></tr></table></figure>
-<h3 id="Homework">Homework</h3>
-<p>尝试着用Ridge Regression（岭回归）解决一个线性回归问题，关于Ridge Regression, 可以参考网址：<a target="_blank" rel="noopener" href="https://blog.csdn.net/u012102306/article/details/52988660">https://blog.csdn.net/u012102306/article/details/52988660</a></p>
+<h3 id="homework">Homework</h3>
+<p>尝试着用Ridge Regression（岭回归）解决一个线性回归问题，关于Ridge
+Regression,
+可以参考网址：https://blog.csdn.net/u012102306/article/details/52988660</p>
 
                 
               </div>

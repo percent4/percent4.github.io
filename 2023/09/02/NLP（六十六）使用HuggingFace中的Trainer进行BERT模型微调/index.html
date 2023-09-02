@@ -322,45 +322,30 @@
             
               <div class="markdown-body">
                 
-                <p>以往，我们在使用HuggingFace在训练BERT模型时，代码写得比较复杂，涉及到数据处理、token编码、模型编码、模型训练等步骤，从事NLP领域的人都有这种切身感受。事实上，HugggingFace中提供了<code>datasets</code>模块（数据处理）和Trainer函数，使得我们的模型训练较为方便。关于<code>datasets</code>模块，可参考文章<a href="https://percent4.github.io/2023/07/24/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E4%BA%8C%EF%BC%89HuggingFace%E4%B8%AD%E7%9A%84Datasets%E4%BD%BF%E7%94%A8/">NLP（六十二）HuggingFace中的Datasets使用</a>。</p>
+                <p>以往，我们在使用HuggingFace在训练BERT模型时，代码写得比较复杂，涉及到数据处理、token编码、模型编码、模型训练等步骤，从事NLP领域的人都有这种切身感受。事实上，HugggingFace中提供了<code>datasets</code>模块（数据处理）和Trainer函数，使得我们的模型训练较为方便。关于<code>datasets</code>模块，可参考文章<a
+href="https://percent4.github.io/2023/07/24/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E4%BA%8C%EF%BC%89HuggingFace%E4%B8%AD%E7%9A%84Datasets%E4%BD%BF%E7%94%A8/">NLP（六十二）HuggingFace中的Datasets使用</a>。</p>
 <p>本文将会介绍如何使用HuggingFace中的Trainer对BERT模型微调。</p>
-<h3 id="Trainer">Trainer</h3>
-<p>Trainer是HuggingFace中的模型训练函数，其网址为：<a target="_blank" rel="noopener" href="https://huggingface.co/docs/transformers/main_classes/trainer">https://huggingface.co/docs/transformers/main_classes/trainer</a> 。</p>
+<h3 id="trainer">Trainer</h3>
+<p>Trainer是HuggingFace中的模型训练函数，其网址为：<a
+target="_blank" rel="noopener" href="https://huggingface.co/docs/transformers/main_classes/trainer">https://huggingface.co/docs/transformers/main_classes/trainer</a>
+。</p>
 <p>Trainer的传入参数如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python">model: typing.<span class="hljs-type">Union</span>[transformers.modeling_utils.PreTrainedModel, torch.nn.modules.module.Module] = <span class="hljs-literal">None</span><br>args: TrainingArguments = <span class="hljs-literal">None</span><br>data_collator: typing.<span class="hljs-type">Optional</span>[DataCollator] = <span class="hljs-literal">None</span><br>train_dataset: typing.<span class="hljs-type">Optional</span>[torch.utils.data.dataset.Dataset] = <span class="hljs-literal">None</span><br>eval_dataset: typing.<span class="hljs-type">Union</span>[torch.utils.data.dataset.Dataset, typing.<span class="hljs-type">Dict</span>[<span class="hljs-built_in">str</span>, torch.utils.data.dataset.Dataset], NoneType] = <span class="hljs-literal">None</span><br>tokenizer: typing.<span class="hljs-type">Optional</span>[transformers.tokenization_utils_base.PreTrainedTokenizerBase] = <span class="hljs-literal">None</span><br>model_init: typing.<span class="hljs-type">Union</span>[typing.<span class="hljs-type">Callable</span>[[], transformers.modeling_utils.PreTrainedModel], NoneType] = <span class="hljs-literal">None</span><br>compute_metrics: typing.<span class="hljs-type">Union</span>[typing.<span class="hljs-type">Callable</span>[[transformers.trainer_utils.EvalPrediction], typing.<span class="hljs-type">Dict</span>], NoneType] = <span class="hljs-literal">None</span><br>callbacks: typing.<span class="hljs-type">Optional</span>[typing.<span class="hljs-type">List</span>[transformers.trainer_callback.TrainerCallback]] = <span class="hljs-literal">None</span><br>optimizers: typing.<span class="hljs-type">Tuple</span>[torch.optim.optimizer.Optimizer, torch.optim.lr_scheduler.LambdaLR] = (<span class="hljs-literal">None</span>, <span class="hljs-literal">None</span>)<br>preprocess_logits_for_metrics: typing.<span class="hljs-type">Union</span>[typing.<span class="hljs-type">Callable</span>[[torch.Tensor, torch.Tensor], torch.Tensor], NoneType] = <span class="hljs-literal">None</span> )<br></code></pre></td></tr></table></figure>
 <p>参数解释：</p>
 <ul>
-<li>
-<p><code>model</code>为预训练模型</p>
-</li>
-<li>
-<p><code>args</code>为TrainingArguments（训练参数）类</p>
-</li>
-<li>
-<p><code>data_collator</code>会将数据集中的元素组成一个batch，默认使用default_data_collator()，如果tokenizer没有提供，则使用<code>DataCollatorWithPadding</code></p>
-</li>
-<li>
-<p><code>train_dataset</code>, <code>eval_dataset</code>为训练集，验证集</p>
-</li>
-<li>
-<p><code>tokenizer</code>为模型训练使用的tokenizer</p>
-</li>
-<li>
-<p><code>model_init</code>为模型初始化</p>
-</li>
-<li>
-<p><code>compute_metrics</code>为验证集的评估指标计算函数</p>
-</li>
-<li>
-<p><code>callbacks</code>为训练过程中的callback列表</p>
-</li>
-<li>
-<p><code>optimizers</code>为模型训练中的优化器</p>
-</li>
-<li>
-<p><code>preprocess_logits_for_metrics</code>为模型评估阶段前对logits的预处理</p>
-<p>TrainingArguments为训练参数类，其网址为：<a target="_blank" rel="noopener" href="https://huggingface.co/docs/transformers/main_classes/trainer#transformers.TrainingArguments">https://huggingface.co/docs/transformers/main_classes/trainer#transformers.TrainingArguments</a>，传入参数非常多（transformers版本4.32.1中有98个参数！），我们在这里只介绍几个常见的：</p>
-</li>
+<li><p><code>model</code>为预训练模型</p></li>
+<li><p><code>args</code>为TrainingArguments（训练参数）类</p></li>
+<li><p><code>data_collator</code>会将数据集中的元素组成一个batch，默认使用default_data_collator()，如果tokenizer没有提供，则使用<code>DataCollatorWithPadding</code></p></li>
+<li><p><code>train_dataset</code>,
+<code>eval_dataset</code>为训练集，验证集</p></li>
+<li><p><code>tokenizer</code>为模型训练使用的tokenizer</p></li>
+<li><p><code>model_init</code>为模型初始化</p></li>
+<li><p><code>compute_metrics</code>为验证集的评估指标计算函数</p></li>
+<li><p><code>callbacks</code>为训练过程中的callback列表</p></li>
+<li><p><code>optimizers</code>为模型训练中的优化器</p></li>
+<li><p><code>preprocess_logits_for_metrics</code>为模型评估阶段前对logits的预处理</p>
+<p>TrainingArguments为训练参数类，其网址为：<a
+target="_blank" rel="noopener" href="https://huggingface.co/docs/transformers/main_classes/trainer#transformers.TrainingArguments">https://huggingface.co/docs/transformers/main_classes/trainer#transformers.TrainingArguments</a>，传入参数非常多（transformers版本4.32.1中有98个参数！），我们在这里只介绍几个常见的：</p></li>
 </ul>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python">output_dir: stroverwrite_output_dir: <span class="hljs-built_in">bool</span> = <span class="hljs-literal">False</span><br>evaluation_strategy: typing.<span class="hljs-type">Union</span>[transformers.trainer_utils.IntervalStrategy, <span class="hljs-built_in">str</span>] = <span class="hljs-string">&#x27;no&#x27;</span><br>per_gpu_train_batch_size: typing.<span class="hljs-type">Optional</span>[<span class="hljs-built_in">int</span>] = <span class="hljs-literal">None</span><br>per_gpu_eval_batch_size: typing.<span class="hljs-type">Optional</span>[<span class="hljs-built_in">int</span>] = <span class="hljs-literal">None</span><br>learning_rate: <span class="hljs-built_in">float</span> = <span class="hljs-number">5e-05</span><br>num_train_epochs: <span class="hljs-built_in">float</span> = <span class="hljs-number">3.0</span><br>logging_dir: typing.<span class="hljs-type">Optional</span>[<span class="hljs-built_in">str</span>] = <span class="hljs-literal">None</span><br>logging_strategy: typing.<span class="hljs-type">Union</span>[transformers.trainer_utils.IntervalStrategy, <span class="hljs-built_in">str</span>] = <span class="hljs-string">&#x27;steps&#x27;</span><br>save_strategy: typing.<span class="hljs-type">Union</span>[transformers.trainer_utils.IntervalStrategy, <span class="hljs-built_in">str</span>] = <span class="hljs-string">&#x27;steps&#x27;</span>save_steps: <span class="hljs-built_in">float</span> = <span class="hljs-number">500</span><br>report_to: typing.<span class="hljs-type">Optional</span>[typing.<span class="hljs-type">List</span>[<span class="hljs-built_in">str</span>]] = <span class="hljs-literal">None</span><br></code></pre></td></tr></table></figure>
 <p>参数解释：</p>
@@ -368,148 +353,256 @@
 <li><code>output_dir</code>为模型输出目录</li>
 <li><code>evaluation_strategy</code>为模型评估策略</li>
 </ul>
-<ol>
-<li>“no&quot;: 不做模型评估</li>
-<li>“steps”: 按训练步数（steps）进行评估，需指定步数</li>
-<li>“epoch”: 每个epoch训练完后进行评估</li>
+<ol type="1">
+<li>“no": 不做模型评估</li>
+<li>"steps": 按训练步数（steps）进行评估，需指定步数</li>
+<li>"epoch": 每个epoch训练完后进行评估</li>
 </ol>
 <ul>
-<li>
-<p><code>per_gpu_train_batch_size</code>, <code>per_gpu_eval_batch_size</code>为每个GPU上训练集和测试集的batch size，也有CPU上的对应参数</p>
-</li>
-<li>
-<p><code>learning_rate</code>为学习率</p>
-</li>
-<li>
-<p><code>logging_dir</code>为日志输出目录</p>
-</li>
-<li>
-<p><code>logging_strategy</code>为日志输出策略，同样有no, steps, epoch三种，意义同上</p>
-</li>
-<li>
-<p><code>save_strategy</code>为模型保存策略，同样有no, steps, epoch三种，意义同上</p>
-</li>
-<li>
-<p><code>report_to</code>为模型训练、评估中的重要指标（如loss, accurace）输出之处，可选择azure_ml, clearml, codecarbon, comet_ml, dagshub, flyte, mlflow, neptune, tensorboard, wandb，使用all会输出到所有的地方，使用no则不会输出。</p>
-<p>下面我们使用Trainer进行BERT模型微调，给出英语、中文数据集上文本分类的示例代码。</p>
-</li>
-<li></li>
+<li><p><code>per_gpu_train_batch_size</code>,
+<code>per_gpu_eval_batch_size</code>为每个GPU上训练集和测试集的batch
+size，也有CPU上的对应参数</p></li>
+<li><p><code>learning_rate</code>为学习率</p></li>
+<li><p><code>logging_dir</code>为日志输出目录</p></li>
+<li><p><code>logging_strategy</code>为日志输出策略，同样有no, steps,
+epoch三种，意义同上</p></li>
+<li><p><code>save_strategy</code>为模型保存策略，同样有no, steps,
+epoch三种，意义同上</p></li>
+<li><p><code>report_to</code>为模型训练、评估中的重要指标（如loss,
+accurace）输出之处，可选择azure_ml, clearml, codecarbon, comet_ml,
+dagshub, flyte, mlflow, neptune, tensorboard,
+wandb，使用all会输出到所有的地方，使用no则不会输出。</p>
+<p>下面我们使用Trainer进行BERT模型微调，给出英语、中文数据集上文本分类的示例代码。</p></li>
+<li><h3 id="bert微调">BERT微调</h3>
+<p>使用<code>datasets</code>模块导入imdb数据集（英语影评数据集，常用于文本分类），加载预训练模型<code>bert-base-cased</code>的tokenizer。</p></li>
 </ul>
-<h3 id="BERT微调">BERT微调</h3>
-<p>使用<code>datasets</code>模块导入imdb数据集（英语影评数据集，常用于文本分类），加载预训练模型<code>bert-base-cased</code>的tokenizer。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoTokenizer, DataCollatorWithPadding<br><span class="hljs-keyword">import</span> datasets<br><br>checkpoint = <span class="hljs-string">&#x27;bert-base-cased&#x27;</span><br>tokenizer = AutoTokenizer.from_pretrained(checkpoint)<br>raw_datasets = datasets.load_dataset(<span class="hljs-string">&#x27;imdb&#x27;</span>)<br></code></pre></td></tr></table></figure>
 <p>查看数据集，有train（训练集）、test（测试集）、unsupervised（非监督）三部分，我们这里使用训练集和测试集，各自有25000个样本。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">raw_datasets<br></code></pre></td></tr></table></figure>
 <pre><code class="hljs">DatasetDict(&#123;
     train: Dataset(&#123;
-        features: ['text', 'label'],
+        features: [&#39;text&#39;, &#39;label&#39;],
         num_rows: 25000
     &#125;)
     test: Dataset(&#123;
-        features: ['text', 'label'],
+        features: [&#39;text&#39;, &#39;label&#39;],
         num_rows: 25000
     &#125;)
     unsupervised: Dataset(&#123;
-        features: ['text', 'label'],
+        features: [&#39;text&#39;, &#39;label&#39;],
         num_rows: 50000
     &#125;)
-&#125;)
-</code></pre>
+&#125;)</code></pre>
 <p>创建数据tokenize函数，对文本进行tokenize，最大长度设置为300，同时使用data_collector为DataCollatorWithPadding。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">tokenize_function</span>(<span class="hljs-params">sample</span>):<br>    <span class="hljs-keyword">return</span> tokenizer(sample[<span class="hljs-string">&#x27;text&#x27;</span>], max_length=<span class="hljs-number">300</span>, truncation=<span class="hljs-literal">True</span>)<br>tokenized_datasets = raw_datasets.<span class="hljs-built_in">map</span>(tokenize_function, batched=<span class="hljs-literal">True</span>)<br><br>data_collator = DataCollatorWithPadding(tokenizer=tokenizer)<br></code></pre></td></tr></table></figure>
 <p>加载分类模型，输出类别为2.</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoModelForSequenceClassification<br>model = AutoModelForSequenceClassification.from_pretrained(checkpoint, num_labels=<span class="hljs-number">2</span>)<br></code></pre></td></tr></table></figure>
-<p>设置compute_metrics函数，在评估过程中输出accuracy, f1, precision, recall四个指标。设置训练参数TrainingArguments类，设置Trainer。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> Trainer, TrainingArguments<br><span class="hljs-keyword">from</span> sklearn.metrics <span class="hljs-keyword">import</span> accuracy_score, precision_recall_fscore_support<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">compute_metrics</span>(<span class="hljs-params">pred</span>):<br>    labels = pred.label_ids<br>    preds = pred.predictions.argmax(-<span class="hljs-number">1</span>)<br>    precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average=<span class="hljs-string">&#x27;weighted&#x27;</span>)<br>    acc = accuracy_score(labels, preds)<br>    <span class="hljs-keyword">return</span> &#123;<br>        <span class="hljs-string">&#x27;accuracy&#x27;</span>: acc,<br>        <span class="hljs-string">&#x27;f1&#x27;</span>: f1,<br>        <span class="hljs-string">&#x27;precision&#x27;</span>: precision,<br>        <span class="hljs-string">&#x27;recall&#x27;</span>: recall<br>    &#125;<br><br>training_args = TrainingArguments(output_dir=<span class="hljs-string">&#x27;imdb_test_trainer&#x27;</span>, <span class="hljs-comment"># 指定输出文件夹，没有会自动创建</span><br>                                 evaluation_strategy=<span class="hljs-string">&quot;epoch&quot;</span>,<br>                                 per_device_train_batch_size=<span class="hljs-number">32</span>,<br>                                 per_device_eval_batch_size=<span class="hljs-number">32</span>,<br>                                 learning_rate=<span class="hljs-number">5e-5</span>,<br>                                 num_train_epochs=<span class="hljs-number">3</span>,<br>                                 warmup_ratio=<span class="hljs-number">0.2</span>,<br>                                 logging_dir=<span class="hljs-string">&#x27;./imdb_train_logs&#x27;</span>,<br>                                 logging_strategy=<span class="hljs-string">&quot;epoch&quot;</span>,<br>                                 save_strategy=<span class="hljs-string">&quot;epoch&quot;</span>,<br>                                 report_to=<span class="hljs-string">&quot;tensorboard&quot;</span>) <br><br>trainer = Trainer(<br>    model,<br>    training_args,<br>    train_dataset=tokenized_datasets[<span class="hljs-string">&quot;train&quot;</span>],<br>    eval_dataset=tokenized_datasets[<span class="hljs-string">&quot;test&quot;</span>],<br>    data_collator=data_collator,  <span class="hljs-comment"># 在定义了tokenizer之后，其实这里的data_collator就不用再写了，会自动根据tokenizer创建</span><br>    tokenizer=tokenizer,<br>    compute_metrics=compute_metrics<br>)<br></code></pre></td></tr></table></figure>
+<p>设置compute_metrics函数，在评估过程中输出accuracy, f1, precision,
+recall四个指标。设置训练参数TrainingArguments类，设置Trainer。
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> Trainer, TrainingArguments<br><span class="hljs-keyword">from</span> sklearn.metrics <span class="hljs-keyword">import</span> accuracy_score, precision_recall_fscore_support<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">compute_metrics</span>(<span class="hljs-params">pred</span>):<br>    labels = pred.label_ids<br>    preds = pred.predictions.argmax(-<span class="hljs-number">1</span>)<br>    precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average=<span class="hljs-string">&#x27;weighted&#x27;</span>)<br>    acc = accuracy_score(labels, preds)<br>    <span class="hljs-keyword">return</span> &#123;<br>        <span class="hljs-string">&#x27;accuracy&#x27;</span>: acc,<br>        <span class="hljs-string">&#x27;f1&#x27;</span>: f1,<br>        <span class="hljs-string">&#x27;precision&#x27;</span>: precision,<br>        <span class="hljs-string">&#x27;recall&#x27;</span>: recall<br>    &#125;<br><br>training_args = TrainingArguments(output_dir=<span class="hljs-string">&#x27;imdb_test_trainer&#x27;</span>, <span class="hljs-comment"># 指定输出文件夹，没有会自动创建</span><br>                                 evaluation_strategy=<span class="hljs-string">&quot;epoch&quot;</span>,<br>                                 per_device_train_batch_size=<span class="hljs-number">32</span>,<br>                                 per_device_eval_batch_size=<span class="hljs-number">32</span>,<br>                                 learning_rate=<span class="hljs-number">5e-5</span>,<br>                                 num_train_epochs=<span class="hljs-number">3</span>,<br>                                 warmup_ratio=<span class="hljs-number">0.2</span>,<br>                                 logging_dir=<span class="hljs-string">&#x27;./imdb_train_logs&#x27;</span>,<br>                                 logging_strategy=<span class="hljs-string">&quot;epoch&quot;</span>,<br>                                 save_strategy=<span class="hljs-string">&quot;epoch&quot;</span>,<br>                                 report_to=<span class="hljs-string">&quot;tensorboard&quot;</span>) <br><br>trainer = Trainer(<br>    model,<br>    training_args,<br>    train_dataset=tokenized_datasets[<span class="hljs-string">&quot;train&quot;</span>],<br>    eval_dataset=tokenized_datasets[<span class="hljs-string">&quot;test&quot;</span>],<br>    data_collator=data_collator,  <span class="hljs-comment"># 在定义了tokenizer之后，其实这里的data_collator就不用再写了，会自动根据tokenizer创建</span><br>    tokenizer=tokenizer,<br>    compute_metrics=compute_metrics<br>)<br></code></pre></td></tr></table></figure></p>
 <p>开启模型训练。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">trainer.train()<br></code></pre></td></tr></table></figure>
 <table border="1" class="dataframe">
-  <thead>
- <tr style="text-align: left;">
-      <th>Epoch</th>
-      <th>Training Loss</th>
-      <th>Validation Loss</th>
-      <th>Accuracy</th>
-      <th>F1</th>
-      <th>Precision</th>
-      <th>Recall</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>1</td>
-      <td>0.364300</td>
-      <td>0.223223</td>
-      <td>0.910600</td>
-      <td>0.910509</td>
-      <td>0.912276</td>
-      <td>0.910600</td>
-    </tr>
-    <tr>
-      <td>2</td>
-      <td>0.164800</td>
-      <td>0.204420</td>
-      <td>0.923960</td>
-      <td>0.923941</td>
-      <td>0.924375</td>
-      <td>0.923960</td>
-    </tr>
-    <tr>
-      <td>3</td>
-      <td>0.071000</td>
-      <td>0.241350</td>
-      <td>0.925520</td>
-      <td>0.925510</td>
-      <td>0.925759</td>
-      <td>0.925520</td>
-    </tr>
-  </tbody>
+<thead>
+<tr style="text-align: left;">
+<th>
+Epoch
+</th>
+<th>
+Training Loss
+</th>
+<th>
+Validation Loss
+</th>
+<th>
+Accuracy
+</th>
+<th>
+F1
+</th>
+<th>
+Precision
+</th>
+<th>
+Recall
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+1
+</td>
+<td>
+0.364300
+</td>
+<td>
+0.223223
+</td>
+<td>
+0.910600
+</td>
+<td>
+0.910509
+</td>
+<td>
+0.912276
+</td>
+<td>
+0.910600
+</td>
+</tr>
+<tr>
+<td>
+2
+</td>
+<td>
+0.164800
+</td>
+<td>
+0.204420
+</td>
+<td>
+0.923960
+</td>
+<td>
+0.923941
+</td>
+<td>
+0.924375
+</td>
+<td>
+0.923960
+</td>
+</tr>
+<tr>
+<td>
+3
+</td>
+<td>
+0.071000
+</td>
+<td>
+0.241350
+</td>
+<td>
+0.925520
+</td>
+<td>
+0.925510
+</td>
+<td>
+0.925759
+</td>
+<td>
+0.925520
+</td>
+</tr>
+</tbody>
 </table>
 <p>以上为英语数据集的文本分类模型微调。</p>
-<p>中文数据集使用sougou-mini数据集（训练集4000个样本，测试集495个样本，共5个输出类别），预训练模型采用bert-base-chinese。代码基本与英语数据集差不多，只要修改 预训练模型，数据集加载 和 最大长度为128，输出类别。以下是不同的代码之处：</p>
+<p>中文数据集使用sougou-mini数据集（训练集4000个样本，测试集495个样本，共5个输出类别），预训练模型采用bert-base-chinese。代码基本与英语数据集差不多，只要修改
+预训练模型，数据集加载 和
+最大长度为128，输出类别。以下是不同的代码之处：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoTokenizer, DataCollatorWithPadding<br><span class="hljs-keyword">import</span> datasets<br><br>checkpoint = <span class="hljs-string">&#x27;bert-base-chinese&#x27;</span><br>tokenizer = AutoTokenizer.from_pretrained(checkpoint)<br><br>data_files = &#123;<span class="hljs-string">&quot;train&quot;</span>: <span class="hljs-string">&quot;./data/sougou/train.csv&quot;</span>, <span class="hljs-string">&quot;test&quot;</span>: <span class="hljs-string">&quot;./data/sougou/test.csv&quot;</span>&#125;<br>raw_datasets = datasets.load_dataset(<span class="hljs-string">&quot;csv&quot;</span>, data_files=data_files, delimiter=<span class="hljs-string">&quot;,&quot;</span>)<br>...<br>model = AutoModelForSequenceClassification.from_pretrained(checkpoint, num_labels=<span class="hljs-number">5</span>)<br>...<br></code></pre></td></tr></table></figure>
 <p>输出结果如下：</p>
 <table border="1" class="dataframe">
 <thead>
- <tr>
-      <th>Epoch</th>
-      <th>Training Loss</th>
-      <th>Validation Loss</th>
-      <th>Accuracy</th>
-      <th>F1</th>
-      <th>Precision</th>
-      <th>Recall</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>1</td>
-      <td>0.849200</td>
-      <td>0.115189</td>
-      <td>0.969697</td>
-      <td>0.969449</td>
-      <td>0.970073</td>
-      <td>0.969697</td>
-    </tr>
-    <tr>
-      <td>2</td>
-      <td>0.106900</td>
-      <td>0.093987</td>
-      <td>0.973737</td>
-      <td>0.973770</td>
-      <td>0.975372</td>
-      <td>0.973737</td>
-    </tr>
-    <tr>
-      <td>3</td>
-      <td>0.047800</td>
-      <td>0.078861</td>
-      <td>0.973737</td>
-      <td>0.973740</td>
-      <td>0.974117</td>
-      <td>0.973737</td>
-    </tr>
-  </tbody>
+<tr>
+<th>
+Epoch
+</th>
+<th>
+Training Loss
+</th>
+<th>
+Validation Loss
+</th>
+<th>
+Accuracy
+</th>
+<th>
+F1
+</th>
+<th>
+Precision
+</th>
+<th>
+Recall
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+1
+</td>
+<td>
+0.849200
+</td>
+<td>
+0.115189
+</td>
+<td>
+0.969697
+</td>
+<td>
+0.969449
+</td>
+<td>
+0.970073
+</td>
+<td>
+0.969697
+</td>
+</tr>
+<tr>
+<td>
+2
+</td>
+<td>
+0.106900
+</td>
+<td>
+0.093987
+</td>
+<td>
+0.973737
+</td>
+<td>
+0.973770
+</td>
+<td>
+0.975372
+</td>
+<td>
+0.973737
+</td>
+</tr>
+<tr>
+<td>
+3
+</td>
+<td>
+0.047800
+</td>
+<td>
+0.078861
+</td>
+<td>
+0.973737
+</td>
+<td>
+0.973740
+</td>
+<td>
+0.974117
+</td>
+<td>
+0.973737
+</td>
+</tr>
+</tbody>
 </table>
 <h3 id="模型评估">模型评估</h3>
 <p>在上述模型评估过程中，已经有了模型评估的各项指标。</p>
@@ -522,60 +615,92 @@
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
-<pre><code class="hljs">.dataframe tbody tr th &#123;
-    vertical-align: top;
-&#125;
 
-.dataframe thead th &#123;
-    text-align: right;
-&#125;
-</code></pre>
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
 </style>
 <table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>text</th>
-      <th>label</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>届数比赛时间比赛地点参加国家和地区冠军亚军决赛成绩第一届1956-1957英国11美国丹麦6...</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>商品属性材质软橡胶带加浮雕工艺+合金彩色队徽吊牌规格162mm数量这一系列产品不限量发行图案...</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>今天下午，沈阳金德和长春亚泰队将在五里河相遇。在这两支球队中沈阳籍球员居多，因此这场比赛实际...</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>本报讯中国足协准备好了与特鲁西埃谈判的合同文本，也在北京给他预订好了房间，但特鲁西埃爽约了！...</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>网友点击发表评论祝贺中国队夺得五连冠搜狐体育讯北京时间5月6日，2006年尤伯杯羽毛球赛在日...</td>
-      <td>0</td>
-    </tr>
-  </tbody>
+<thead>
+<tr style="text-align: right;">
+<th>
+</th>
+<th>
+text
+</th>
+<th>
+label
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>
+0
+</th>
+<td>
+届数比赛时间比赛地点参加国家和地区冠军亚军决赛成绩第一届1956-1957英国11美国丹麦6...
+</td>
+<td>
+0
+</td>
+</tr>
+<tr>
+<th>
+1
+</th>
+<td>
+商品属性材质软橡胶带加浮雕工艺+合金彩色队徽吊牌规格162mm数量这一系列产品不限量发行图案...
+</td>
+<td>
+0
+</td>
+</tr>
+<tr>
+<th>
+2
+</th>
+<td>
+今天下午，沈阳金德和长春亚泰队将在五里河相遇。在这两支球队中沈阳籍球员居多，因此这场比赛实际...
+</td>
+<td>
+0
+</td>
+</tr>
+<tr>
+<th>
+3
+</th>
+<td>
+本报讯中国足协准备好了与特鲁西埃谈判的合同文本，也在北京给他预订好了房间，但特鲁西埃爽约了！...
+</td>
+<td>
+0
+</td>
+</tr>
+<tr>
+<th>
+4
+</th>
+<td>
+网友点击发表评论祝贺中国队夺得五连冠搜狐体育讯北京时间5月6日，2006年尤伯杯羽毛球赛在日...
+</td>
+<td>
+0
+</td>
+</tr>
+</tbody>
 </table>
 </div>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">import</span> time<br><br>s_time = time.time()<br>true_labels, pred_labels = [], [] <br><span class="hljs-keyword">for</span> i, row <span class="hljs-keyword">in</span> test_df.iterrows():<br>    row_s_time = time.time()<br>    true_labels.append(row[<span class="hljs-string">&quot;label&quot;</span>])<br>    encoded_text = tokenizer(row[<span class="hljs-string">&#x27;text&#x27;</span>], max_length=MAX_LENGTH, truncation=<span class="hljs-literal">True</span>, padding=<span class="hljs-literal">True</span>, return_tensors=<span class="hljs-string">&#x27;pt&#x27;</span>).to(device)<br>    <span class="hljs-comment"># print(encoded_text)</span><br>    logits = model(**encoded_text)<br>    label_id = np.argmax(logits[<span class="hljs-number">0</span>].detach().cpu().numpy(), axis=<span class="hljs-number">1</span>)[<span class="hljs-number">0</span>]<br>    pred_labels.append(label_id)<br>    <span class="hljs-keyword">if</span> i % <span class="hljs-number">100</span> == <span class="hljs-number">0</span>:<br>    	<span class="hljs-built_in">print</span>(i, (time.time() - row_s_time)*<span class="hljs-number">1000</span>, label_id)<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;avg time: &quot;</span>, (time.time() - s_time) * <span class="hljs-number">1000</span> / test_df.shape[<span class="hljs-number">0</span>])<br></code></pre></td></tr></table></figure>
 <blockquote>
-<p>0 229.3872833251953 0<br>
-100 362.0314598083496 1<br>
-200 311.16747856140137 2<br>
-300 324.13792610168457 3<br>
-400 406.9099426269531 4<br>
-avg time:  352.44047810332944</p>
+<p>0 229.3872833251953 0 100 362.0314598083496 1 200 311.16747856140137
+2 300 324.13792610168457 3 400 406.9099426269531 4 avg time:
+352.44047810332944</p>
 </blockquote>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">true_labels[:<span class="hljs-number">10</span>]<br></code></pre></td></tr></table></figure>
 <blockquote>
@@ -590,8 +715,12 @@ avg time:  352.44047810332944</p>
 <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs apache">              <span class="hljs-attribute">precision</span>    recall  f1-score   support<br><br>           <span class="hljs-attribute">0</span>     <span class="hljs-number">0</span>.<span class="hljs-number">9900</span>    <span class="hljs-number">1</span>.<span class="hljs-number">0000</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9950</span>        <span class="hljs-number">99</span><br>           <span class="hljs-attribute">1</span>     <span class="hljs-number">0</span>.<span class="hljs-number">9691</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9495</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9592</span>        <span class="hljs-number">99</span><br>           <span class="hljs-attribute">2</span>     <span class="hljs-number">0</span>.<span class="hljs-number">9900</span>    <span class="hljs-number">1</span>.<span class="hljs-number">0000</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9950</span>        <span class="hljs-number">99</span><br>           <span class="hljs-attribute">3</span>     <span class="hljs-number">0</span>.<span class="hljs-number">9320</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9697</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9505</span>        <span class="hljs-number">99</span><br>           <span class="hljs-attribute">4</span>     <span class="hljs-number">0</span>.<span class="hljs-number">9895</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9495</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9691</span>        <span class="hljs-number">99</span><br><br>    <span class="hljs-attribute">accuracy</span>                         <span class="hljs-number">0</span>.<span class="hljs-number">9737</span>       <span class="hljs-number">495</span><br>   <span class="hljs-attribute">macro</span> avg     <span class="hljs-number">0</span>.<span class="hljs-number">9741</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9737</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9737</span>       <span class="hljs-number">495</span><br><span class="hljs-attribute">weighted</span> avg     <span class="hljs-number">0</span>.<span class="hljs-number">9741</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9737</span>    <span class="hljs-number">0</span>.<span class="hljs-number">9737</span>       <span class="hljs-number">495</span><br></code></pre></td></tr></table></figure>
 <h3 id="总结">总结</h3>
 <p>本文介绍了如何使用HuggingFace中的Trainer对BERT模型微调。可以看到，使用Trainer进行模型微调，代码较为简洁，且支持功能丰富，是理想的模型训练方式。</p>
-<p>本文项目代码已开源至Github，网址为：<a target="_blank" rel="noopener" href="https://github.com/percent4/PyTorch_Learning/tree/master/huggingface_learning">https://github.com/percent4/PyTorch_Learning/tree/master/huggingface_learning</a> 。</p>
-<p>本人已开通个人博客网站，网址为：<a href="https://percent4.github.io/">https://percent4.github.io/</a> ，欢迎大家访问~</p>
+<p>本文项目代码已开源至Github，网址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/PyTorch_Learning/tree/master/huggingface_learning">https://github.com/percent4/PyTorch_Learning/tree/master/huggingface_learning</a>
+。</p>
+<p>本人已开通个人博客网站，网址为：<a
+href="https://percent4.github.io/">https://percent4.github.io/</a>
+，欢迎大家访问~</p>
 
                 
               </div>
@@ -685,6 +814,12 @@ avg time:  352.44047810332944</p>
                 <div class="post-prevnext my-3">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/2023/09/03/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E4%B8%83%EF%BC%89BERT%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%90%8E%E5%8A%A8%E6%80%81%E9%87%8F%E5%8C%96%EF%BC%88PTDQ%EF%BC%89/" title="NLP（六十七）BERT模型训练后动态量化（PTDQ）">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NLP（六十七）BERT模型训练后动态量化（PTDQ）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">
