@@ -325,19 +325,15 @@
 <p>字符串的<strong>编辑距离</strong>是我们都知道的，事实上，编辑距离的计算，本质上是对列表元素的操作，那么，自然也可以是token列表。本文的想法正是基于此。</p>
 </blockquote>
 <h2 id="字符串的编辑距离">字符串的编辑距离</h2>
-<p>在文章<a
-target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247484130&amp;idx=1&amp;sn=dc34277848f23f6a80077d970eb0af2f&amp;chksm=fcb9bb72cbce3264c9e08f26be4b2d07ddd3d57bc060d8d5819c12fd4d121fbe811674125199&amp;token=385301904&amp;lang=zh_CN#rd">动态规划法算法之编辑距离</a>中，笔者详细介绍了字符串的编辑距离定义及使用动态规划法（Dynamic
-Programming, DP）来解决。</p>
-<p>我们再来看看字符串的编辑距离的定义。什么是两个字符串的<strong>编辑距离（edit
-distance）</strong>？给定字符串s1和s2，以及在s1上的如下操作：</p>
+<p>在文章<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247484130&amp;idx=1&amp;sn=dc34277848f23f6a80077d970eb0af2f&amp;chksm=fcb9bb72cbce3264c9e08f26be4b2d07ddd3d57bc060d8d5819c12fd4d121fbe811674125199&amp;token=385301904&amp;lang=zh_CN#rd">动态规划法算法之编辑距离</a>中，笔者详细介绍了字符串的编辑距离定义及使用动态规划法（Dynamic Programming, DP）来解决。</p>
+<p>我们再来看看字符串的编辑距离的定义。什么是两个字符串的<strong>编辑距离（edit distance）</strong>？给定字符串s1和s2，以及在s1上的如下操作：</p>
 <ul>
 <li><code>插入</code>（Insert）一个字符</li>
 <li><code>移除</code>（Remove）一个字符</li>
 <li><code>替换</code>（Replace）一个字符</li>
 </ul>
 <p>试问最小需要多少次这样的操作才能使得s1转换为s2？</p>
-<p>在leetcode网站中，这是题目中的<a
-target="_blank" rel="noopener" href="https://leetcode.cn/problems/edit-distance/">第72题</a>，难度为hard。</p>
+<p>在leetcode网站中，这是题目中的<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/edit-distance/">第72题</a>，难度为hard。</p>
 <p>笔者当时使用动态规划算法，代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">string_edit_distance</span>(<span class="hljs-params">s1, s2</span>):<br>    n = <span class="hljs-built_in">len</span>(s1)<br>    m = <span class="hljs-built_in">len</span>(s2)<br><br>    <span class="hljs-comment"># 有一个字符串为空串</span><br>    <span class="hljs-keyword">if</span> n * m == <span class="hljs-number">0</span>:<br>        <span class="hljs-keyword">return</span> n + m<br><br>    <span class="hljs-comment"># DP 数组</span><br>    D = [[<span class="hljs-number">0</span>] * (m + <span class="hljs-number">1</span>) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n + <span class="hljs-number">1</span>)]<br><br>    <span class="hljs-comment"># 边界状态初始化</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n + <span class="hljs-number">1</span>):<br>        D[i][<span class="hljs-number">0</span>] = i<br>    <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(m + <span class="hljs-number">1</span>):<br>        D[<span class="hljs-number">0</span>][j] = j<br><br>    <span class="hljs-comment"># 计算所有 DP 值</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, n + <span class="hljs-number">1</span>):<br>        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, m + <span class="hljs-number">1</span>):<br>            left = D[i - <span class="hljs-number">1</span>][j] + <span class="hljs-number">1</span><br>            down = D[i][j - <span class="hljs-number">1</span>] + <span class="hljs-number">1</span><br>            left_down = D[i - <span class="hljs-number">1</span>][j - <span class="hljs-number">1</span>]<br>            <span class="hljs-keyword">if</span> s1[i - <span class="hljs-number">1</span>] != s2[j - <span class="hljs-number">1</span>]:<br>                left_down += <span class="hljs-number">1</span><br>            D[i][j] = <span class="hljs-built_in">min</span>(left, down, left_down)<br><br>    <span class="hljs-keyword">return</span> D[n][m]<br></code></pre></td></tr></table></figure>
 <blockquote>
@@ -355,7 +351,7 @@ target="_blank" rel="noopener" href="https://leetcode.cn/problems/edit-distance/
 <h2 id="总结">总结</h2>
 <p>本文的想法较为简单，是将字符串的<strong>编辑距离</strong>推广至token列表的编辑距离，可以作为一种衡量字符串相似度的指标。</p>
 <p><code>其它想法</code>如下：</p>
-<ol type="1">
+<ol>
 <li>不仅字符串，token可以作为字符串相似度的衡量标准，在文本纠错中，拼音也可作为标准</li>
 <li>edit distance本质上是两个列表的编辑距离</li>
 <li>利用预训练模型进行文本纠错，实质上是对token进行纠错</li>
@@ -363,16 +359,14 @@ target="_blank" rel="noopener" href="https://leetcode.cn/problems/edit-distance/
 </ol>
 <h4 id="推荐阅读">推荐阅读</h4>
 <ul>
-<li><a
-target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247484130&amp;idx=1&amp;sn=dc34277848f23f6a80077d970eb0af2f&amp;chksm=fcb9bb72cbce3264c9e08f26be4b2d07ddd3d57bc060d8d5819c12fd4d121fbe811674125199&amp;token=385301904&amp;lang=zh_CN#rd">动态规划法算法之编辑距离</a></li>
-<li><a
-target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247484135&amp;idx=1&amp;sn=803081aa7940bb81a67e7310a912d4db&amp;chksm=fcb9bb77cbce3261e6a291b432376aad1ae2c93929cb8f6cc711728efda8f651506fd6809db8&amp;token=385301904&amp;lang=zh_CN#rd">单词纠错</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247484130&amp;idx=1&amp;sn=dc34277848f23f6a80077d970eb0af2f&amp;chksm=fcb9bb72cbce3264c9e08f26be4b2d07ddd3d57bc060d8d5819c12fd4d121fbe811674125199&amp;token=385301904&amp;lang=zh_CN#rd">动态规划法算法之编辑距离</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247484135&amp;idx=1&amp;sn=803081aa7940bb81a67e7310a912d4db&amp;chksm=fcb9bb77cbce3261e6a291b432376aad1ae2c93929cb8f6cc711728efda8f651506fd6809db8&amp;token=385301904&amp;lang=zh_CN#rd">单词纠错</a></li>
 </ul>
-<hr />
+<hr>
 <p>欢迎关注我的公众号<strong>NLP奇幻之旅</strong>，原创技术文章第一时间推送。</p>
-<p><img src="https://img-blog.csdnimg.cn/img_convert/8562f60caee45918bf34261bba008c77.jpeg" srcset="/img/loading.gif" lazyload style="width:100px;"></p>
+<img src="https://img-blog.csdnimg.cn/img_convert/8562f60caee45918bf34261bba008c77.jpeg" srcset="/img/loading.gif" lazyload style="width:100px;">
 <p>欢迎关注我的公众号“<strong>自然语言处理奇幻之旅</strong>”，笔者正在努力构建自己的技术社区。</p>
-<p><img src="https://img-blog.csdnimg.cn/img_convert/6a816b105c18ca778a6a0b6cbb0879fc.jpeg" srcset="/img/loading.gif" lazyload style="width:100px;"></p>
+<img src="https://img-blog.csdnimg.cn/img_convert/6a816b105c18ca778a6a0b6cbb0879fc.jpeg" srcset="/img/loading.gif" lazyload style="width:100px;">
 
                 
               </div>

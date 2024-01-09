@@ -326,37 +326,22 @@
                 <h3 id="任务介绍">任务介绍</h3>
 <p>人物关系分类指的是对文本中的两个人物，在特定的关系列表中，判断他们之间的人物关系。以样本<code>亲戚 1837年6月20日，威廉四世辞世，他的侄女维多利亚即位。</code>为例，其中<code>亲戚</code>为人物关系，<code>威廉四世</code>为实体1，<code>维多利亚</code>为实体2。</p>
 <p>笔者自己利用业余时间标注的样本数据有3881条，分布如下图：</p>
-<figure>
-<img src="/img/nlp42_1.png" srcset="/img/loading.gif" lazyload alt="人物关系分布图" />
-<figcaption aria-hidden="true">人物关系分布图</figcaption>
-</figure>
+<p><img src="/img/nlp42_1.png" srcset="/img/loading.gif" lazyload alt="人物关系分布图"></p>
 <p>对上述数据集进行划分，训练集与测试集的比例为8:2，其中训练集3105条，测试集776条。</p>
-<p>在文章<a
-href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%80%EF%BC%89%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E6%8A%BD%E5%8F%96%E7%9A%84%E4%B8%80%E6%AC%A1%E5%AE%9E%E6%88%98/">NLP（二十一）人物关系抽取的一次实战</a>中，当时的标注数据为2900多条，使用BERT向量提取+BiGRU+Attention模型，取得的平均F1值为78.97%.</p>
-<p>在文章<a
-href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%BA%8C%EF%BC%89%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E5%88%86%E7%B1%BB%E7%9A%84%E5%86%8D%E6%AC%A1%E5%B0%9D%E8%AF%95/">NLP（四十二）人物关系分类的再次尝试</a>中，借助BERT微调（当作分类任务），取得的平均F1值为82.69%.</p>
-<p>在文章<a
-href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%BA%94%EF%BC%89R-BERT%E5%9C%A8%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E5%88%86%E7%B1%BB%E4%B8%8A%E7%9A%84%E5%B0%9D%E8%AF%95%E5%8F%8AKeras%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/">NLP（四十五）R-BERT在人物关系分类上的尝试及Keras代码复现</a>中，借助专用于关系分类任务的R-BERT模型，在Chinese
-Roberta模型上取得的F1值为85.35%.</p>
-<p>在本文中，将尝试使用大模型（Large Language Model,
-LLM）中的中文模型代表Baichuan-7b,
-对人物关系分类任务进行微调，看看它的表现。</p>
+<p>在文章<a href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%80%EF%BC%89%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E6%8A%BD%E5%8F%96%E7%9A%84%E4%B8%80%E6%AC%A1%E5%AE%9E%E6%88%98/">NLP（二十一）人物关系抽取的一次实战</a>中，当时的标注数据为2900多条，使用BERT向量提取+BiGRU+Attention模型，取得的平均F1值为78.97%.</p>
+<p>在文章<a href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%BA%8C%EF%BC%89%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E5%88%86%E7%B1%BB%E7%9A%84%E5%86%8D%E6%AC%A1%E5%B0%9D%E8%AF%95/">NLP（四十二）人物关系分类的再次尝试</a>中，借助BERT微调（当作分类任务），取得的平均F1值为82.69%.</p>
+<p>在文章<a href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%BA%94%EF%BC%89R-BERT%E5%9C%A8%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E5%88%86%E7%B1%BB%E4%B8%8A%E7%9A%84%E5%B0%9D%E8%AF%95%E5%8F%8AKeras%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/">NLP（四十五）R-BERT在人物关系分类上的尝试及Keras代码复现</a>中，借助专用于关系分类任务的R-BERT模型，在Chinese Roberta模型上取得的F1值为85.35%.</p>
+<p>在本文中，将尝试使用大模型（Large Language Model, LLM）中的中文模型代表Baichuan-7b, 对人物关系分类任务进行微调，看看它的表现。</p>
 <h3 id="好的提示">好的提示</h3>
 <p>在开始模型微调之前，我们需要一个好的提示（Prompt），我们借助GPT-4：</p>
-<figure>
-<img src="/img/nlp63_1.png" srcset="/img/loading.gif" lazyload alt="GPT-4给出的关于关系分类的Prompt" />
-<figcaption
-aria-hidden="true">GPT-4给出的关于关系分类的Prompt</figcaption>
-</figure>
+<p><img src="/img/nlp63_1.png" srcset="/img/loading.gif" lazyload alt="GPT-4给出的关于关系分类的Prompt"></p>
 <p>别小看了Prompt的威力，笔者在使用微调模型过程中，发现自己写的Prompt与GPT-4给出的Prompt，在训练结果F1值上可能相差3-4%。可见Prompt工程的重要性！</p>
 <h3 id="模型微调">模型微调</h3>
 <p>我们使用上述Prompt，加工数据集（当作多轮对话任务），格式如下：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;conversation_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;category&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;relation classification&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;conversation&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>    <span class="hljs-punctuation">&#123;</span><br>      <span class="hljs-attr">&quot;human&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;给定以下标签：[&#x27;不确定&#x27;, &#x27;夫妻&#x27;, &#x27;父母&#x27;, &#x27;兄弟姐妹&#x27;, &#x27;上下级&#x27;, &#x27;师生&#x27;, &#x27;好友&#x27;, &#x27;同学&#x27;, &#x27;合作&#x27;, &#x27;同一个人&#x27;, &#x27;情侣&#x27;, &#x27;祖孙&#x27;, &#x27;同门&#x27;, &#x27;亲戚&#x27;]，请在以下句子中分析并分类实体之间的关系：&#x27;与李源澄论戴东原书&#x27;在这个句子中，戴东原和李源澄之间的关系应该属于哪个标签？&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;assistant&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;不知道&quot;</span><br>    <span class="hljs-punctuation">&#125;</span><br>  <span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
-<p>使用Firefly框架进行模型微调，访问网址为：<a
-target="_blank" rel="noopener" href="https://github.com/yangjianxin1/Firefly">https://github.com/yangjianxin1/Firefly</a>.本文基于Baichuan-7b为基座模型，采用QLora方式训练，训练参数如下：</p>
+<p>使用Firefly框架进行模型微调，访问网址为：<a target="_blank" rel="noopener" href="https://github.com/yangjianxin1/Firefly">https://github.com/yangjianxin1/Firefly</a>.本文基于Baichuan-7b为基座模型，采用QLora方式训练，训练参数如下：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;output_dir&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;output/firefly-baichuan-7b-people&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;model_name_or_path&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;/home/test/baichun_7b&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;train_file&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;./data/train.jsonl&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;num_train_epochs&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">5</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;per_device_train_batch_size&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">8</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;gradient_accumulation_steps&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;learning_rate&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2e-4</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;max_seq_length&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">256</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;logging_steps&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">100</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;save_steps&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">100</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;save_total_limit&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;lr_scheduler_type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;constant_with_warmup&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;warmup_steps&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">100</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;lora_rank&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">64</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;lora_alpha&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">16</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;lora_dropout&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.05</span><span class="hljs-punctuation">,</span><br><br>    <span class="hljs-attr">&quot;gradient_checkpointing&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;disable_tqdm&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;optim&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;paged_adamw_32bit&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;seed&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">42</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;fp16&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;report_to&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;tensorboard&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;dataloader_num_workers&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;save_strategy&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;steps&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;weight_decay&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;max_grad_norm&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.3</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;remove_unused_columns&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
-<p>使用命令行<code>torchrun --nproc_per_node=2 train_qlora.py --train_args_file train_args/qlora/baichuan-7b-sft-qlora.json</code>进行训练，训练时间大约20分钟，最终的train
-loss为0.0273。</p>
+<p>使用命令行<code>torchrun --nproc_per_node=2 train_qlora.py --train_args_file train_args/qlora/baichuan-7b-sft-qlora.json</code>进行训练，训练时间大约20分钟，最终的train loss为0.0273。</p>
 <p>在Firefly框架中设置好merge_lora.py中的模型文件路径，将adapter的权重与Baichuan-7b模型合并，合并得到新文件<code>firefly-baichuan-7b-people-merge</code>。</p>
 <p>在Firefly框架，仿造script/chat/single_chat.py文件，将其改写成API调用方式的文件single_chat_server.py，代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @place: Pudong, Shanghai</span><br><span class="hljs-comment"># @file: single_chat_server.py</span><br><span class="hljs-comment"># @time: 2023/7/25 22:27</span><br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoModelForCausalLM, AutoTokenizer<br><span class="hljs-keyword">import</span> torch<br><span class="hljs-comment"># 单轮对话web服务</span><br><span class="hljs-keyword">from</span> flask <span class="hljs-keyword">import</span> Flask, request, jsonify<br><br>app = Flask(<span class="hljs-string">&quot;single_chat_server&quot;</span>)<br><br><br><span class="hljs-meta">@app.route(<span class="hljs-params"><span class="hljs-string">&#x27;/people_rel_cls&#x27;</span>, methods=[<span class="hljs-string">&#x27;POST&#x27;</span>]</span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">predict</span>():<br>    req_dict = request.json<br>    text, people1, people2 = req_dict[<span class="hljs-string">&quot;text&quot;</span>], req_dict[<span class="hljs-string">&quot;people1&quot;</span>], req_dict[<span class="hljs-string">&quot;people2&quot;</span>]<br>    text = text.strip()<br>    content = <span class="hljs-string">f&quot;给定以下标签：[&#x27;不确定&#x27;, &#x27;夫妻&#x27;, &#x27;父母&#x27;, &#x27;兄弟姐妹&#x27;, &#x27;上下级&#x27;, &#x27;师生&#x27;, &#x27;好友&#x27;, &#x27;同学&#x27;, &quot;</span> \<br>              <span class="hljs-string">f&quot;&#x27;合作&#x27;, &#x27;同一个人&#x27;, &#x27;情侣&#x27;, &#x27;祖孙&#x27;, &#x27;同门&#x27;, &#x27;亲戚&#x27;]，&quot;</span> \<br>              <span class="hljs-string">f&quot;请在以下句子中分析并分类实体之间的关系：&#x27;<span class="hljs-subst">&#123;text&#125;</span>&#x27;&quot;</span> \<br>              <span class="hljs-string">f&quot;在这个句子中，<span class="hljs-subst">&#123;people1&#125;</span>和<span class="hljs-subst">&#123;people2&#125;</span>之间的关系应该属于哪个标签？&quot;</span><br>    <span class="hljs-built_in">print</span>(content)<br>    input_ids = tokenizer(content, return_tensors=<span class="hljs-string">&quot;pt&quot;</span>, add_special_tokens=<span class="hljs-literal">False</span>).input_ids.to(device)<br>    <span class="hljs-keyword">with</span> torch.no_grad():<br>        outputs = model.generate(<br>            input_ids=input_ids, max_new_tokens=max_new_tokens, do_sample=<span class="hljs-literal">True</span>,<br>            top_p=top_p, temperature=temperature, repetition_penalty=repetition_penalty,<br>            eos_token_id=tokenizer.eos_token_id<br>        )<br>    outputs = outputs.tolist()[<span class="hljs-number">0</span>][<span class="hljs-built_in">len</span>(input_ids[<span class="hljs-number">0</span>]):]<br>    response = tokenizer.decode(outputs)<br>    <span class="hljs-built_in">print</span>(outputs, response)<br>    response = response.strip().replace(text, <span class="hljs-string">&quot;&quot;</span>).replace(<span class="hljs-string">&#x27;&lt;/s&gt;&#x27;</span>, <span class="hljs-string">&quot;&quot;</span>).replace(<span class="hljs-string">&#x27;&lt;s&gt;&#x27;</span>, <span class="hljs-string">&quot;&quot;</span>).strip()<br>    <span class="hljs-keyword">return</span> jsonify(&#123;<span class="hljs-string">&quot;result&quot;</span>: response&#125;)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    model_name = <span class="hljs-string">&quot;/home/test/Firefly/script/checkpoint/firefly-baichuan-7b-people-merge&quot;</span><br>    max_new_tokens = <span class="hljs-number">5</span><br>    top_p = <span class="hljs-number">0.9</span><br>    temperature = <span class="hljs-number">0.01</span><br>    repetition_penalty = <span class="hljs-number">1.0</span><br>    device = <span class="hljs-string">&#x27;cuda:0&#x27;</span><br>    input_pattern = <span class="hljs-string">&#x27;&lt;s&gt;&#123;&#125;&lt;/s&gt;&#x27;</span><br>    model = AutoModelForCausalLM.from_pretrained(<br>        model_name,<br>        trust_remote_code=<span class="hljs-literal">True</span>,<br>        low_cpu_mem_usage=<span class="hljs-literal">True</span>,<br>        torch_dtype=torch.float16,<br>    ).to(device).<span class="hljs-built_in">eval</span>()<br>    tokenizer = AutoTokenizer.from_pretrained(<br>        model_name,<br>        trust_remote_code=<span class="hljs-literal">True</span>,<br>        <span class="hljs-comment"># llama不支持fast</span><br>        use_fast=<span class="hljs-literal">False</span> <span class="hljs-keyword">if</span> model.config.model_type == <span class="hljs-string">&#x27;llama&#x27;</span> <span class="hljs-keyword">else</span> <span class="hljs-literal">True</span><br>    )<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;model loaded!&quot;</span>)<br>    app.run(host=<span class="hljs-string">&quot;0.0.0.0&quot;</span>, port=<span class="hljs-number">5000</span>, threaded=<span class="hljs-literal">True</span>)<br></code></pre></td></tr></table></figure>
@@ -364,9 +349,8 @@ loss为0.0273。</p>
 <h3 id="结果比对">结果比对</h3>
 <p>不同模型（包括BERT时代前后的模型方法）的评估结果（均为当时模型的SOTA结果或接近SOTA结果）如下：</p>
 <table>
-
 <thead>
-<tr class="header">
+<tr>
 <th>模型方法</th>
 <th>基座模型</th>
 <th>F1值</th>
@@ -374,37 +358,37 @@ loss为0.0273。</p>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>BERT向量提取+BiGRU+Attention</td>
 <td>BiGRU+Attention</td>
 <td>78.97%</td>
 <td>BERT模型作为特征提取处理</td>
 </tr>
-<tr class="even">
+<tr>
 <td>BERT cls finetuning</td>
 <td>BERT</td>
 <td>82.69%</td>
 <td>当作文本分类任务处理</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>R-BERT</td>
 <td>chinese-roberta-wwm-ext</td>
 <td>85.35%</td>
 <td>BERT时代的关系分类模型代表</td>
 </tr>
-<tr class="even">
+<tr>
 <td>R-BERT</td>
 <td>chinese-roberta-wwm-ext-large</td>
 <td>87.22%</td>
 <td>BERT时代的关系分类模型代表</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>QLora</td>
 <td>Baichuan-7b</td>
 <td>88.25%</td>
 <td>其它参数上文给出，epoch=5</td>
 </tr>
-<tr class="even">
+<tr>
 <td>QLora</td>
 <td>Baichuan-7b</td>
 <td>89.15%</td>
@@ -416,33 +400,29 @@ loss为0.0273。</p>
 <p>在大模型时代中，大模型突破了以前NLP任务的范畴，走向了更加通用化，从上述结果中，我们也不难发现，大模型（Baichuan-7b）在传统的NLP任务（如笔者自己的人物关系数据集）上取得了更好的结果，达到了新的SOTA，这是符合我们的认知的。</p>
 <p>但在笔者模型微调过程中，也发现了不少的问题或有待于进一步验证的地方，记录如下：</p>
 <ul>
-<li><p>Baichuan-7b模型取得了SOTA结果，但同样的训练框架和训练参数，Baichuan-13B-Base模型却表现惨淡，甚至很差</p></li>
-<li><p>不同的Prompt对于训练结果的影响，比如笔者自己写的Prompt和GPT-4写的Prompt对于最终结果差距较大，相差3-4%</p></li>
-<li><p>相同的模型，采用full, lora,
-qlora三种形式进行SFT，训练结果会有何不同</p>
-<p>后续笔者将尝试使用不同的训练框架进行Baichuan-13B-Base的微调。</p></li>
+<li>
+<p>Baichuan-7b模型取得了SOTA结果，但同样的训练框架和训练参数，Baichuan-13B-Base模型却表现惨淡，甚至很差</p>
+</li>
+<li>
+<p>不同的Prompt对于训练结果的影响，比如笔者自己写的Prompt和GPT-4写的Prompt对于最终结果差距较大，相差3-4%</p>
+</li>
+<li>
+<p>相同的模型，采用full, lora, qlora三种形式进行SFT，训练结果会有何不同</p>
+<p>后续笔者将尝试使用不同的训练框架进行Baichuan-13B-Base的微调。</p>
+</li>
 </ul>
 <h3 id="总结分享">总结分享</h3>
 <p>本文主要介绍如何使用Baichuan-7b模型微调人物关系分类任务，并比BERT时代的模型取得了进步，达到了新的SOTA.</p>
 <p>本文的想法很朴素，主要是想测试下LLM在传统NLP人物上的表现，也是对于笔者自己的人物关系数据集的一次效果提升，这也是笔者一直在关注和构建的数据集。这一次，大模型再一次让我震惊！</p>
-<p>本文使用的人物关系数据集已开源至HuggingFace Datasets, 网址为: <a
-target="_blank" rel="noopener" href="https://huggingface.co/datasets/jclian91/people_relation_classification">https://huggingface.co/datasets/jclian91/people_relation_classification</a>
-.</p>
-<p>本人的个人博客网址为：<a
-href="https://percent4.github.io/">https://percent4.github.io/</a>
-,欢迎大家关注~</p>
+<p>本文使用的人物关系数据集已开源至HuggingFace Datasets, 网址为: <a target="_blank" rel="noopener" href="https://huggingface.co/datasets/jclian91/people_relation_classification">https://huggingface.co/datasets/jclian91/people_relation_classification</a> .</p>
+<p>本人的个人博客网址为：<a href="https://percent4.github.io/">https://percent4.github.io/</a> ,欢迎大家关注~</p>
 <h3 id="参考文献">参考文献</h3>
-<ol type="1">
-<li>NLP（二十一）人物关系抽取的一次实战: <a
-href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%80%EF%BC%89%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E6%8A%BD%E5%8F%96%E7%9A%84%E4%B8%80%E6%AC%A1%E5%AE%9E%E6%88%98/">https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%80%EF%BC%89%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E6%8A%BD%E5%8F%96%E7%9A%84%E4%B8%80%E6%AC%A1%E5%AE%9E%E6%88%98/</a></li>
-<li>NLP（四十二）人物关系分类的再次尝试: <a
-href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%BA%8C%EF%BC%89%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E5%88%86%E7%B1%BB%E7%9A%84%E5%86%8D%E6%AC%A1%E5%B0%9D%E8%AF%95/">https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%BA%8C%EF%BC%89%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E5%88%86%E7%B1%BB%E7%9A%84%E5%86%8D%E6%AC%A1%E5%B0%9D%E8%AF%95/</a></li>
-<li>NLP（四十五）R-BERT在人物关系分类上的尝试及Keras代码复现: <a
-href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%BA%94%EF%BC%89R-BERT%E5%9C%A8%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E5%88%86%E7%B1%BB%E4%B8%8A%E7%9A%84%E5%B0%9D%E8%AF%95%E5%8F%8AKeras%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/">https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%BA%94%EF%BC%89R-BERT%E5%9C%A8%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E5%88%86%E7%B1%BB%E4%B8%8A%E7%9A%84%E5%B0%9D%E8%AF%95%E5%8F%8AKeras%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/</a></li>
-<li>微调百川Baichuan-13B保姆式教程，手把手教你训练百亿大模型: <a
-target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ZBY6kbogHjbCQvZBzNEqag">https://mp.weixin.qq.com/s/ZBY6kbogHjbCQvZBzNEqag</a></li>
-<li>HuggingFace Dataset people_relation_classification: <a
-target="_blank" rel="noopener" href="https://huggingface.co/datasets/jclian91/people_relation_classification">https://huggingface.co/datasets/jclian91/people_relation_classification</a></li>
+<ol>
+<li>NLP（二十一）人物关系抽取的一次实战: <a href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%80%EF%BC%89%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E6%8A%BD%E5%8F%96%E7%9A%84%E4%B8%80%E6%AC%A1%E5%AE%9E%E6%88%98/">https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%80%EF%BC%89%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E6%8A%BD%E5%8F%96%E7%9A%84%E4%B8%80%E6%AC%A1%E5%AE%9E%E6%88%98/</a></li>
+<li>NLP（四十二）人物关系分类的再次尝试: <a href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%BA%8C%EF%BC%89%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E5%88%86%E7%B1%BB%E7%9A%84%E5%86%8D%E6%AC%A1%E5%B0%9D%E8%AF%95/">https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%BA%8C%EF%BC%89%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E5%88%86%E7%B1%BB%E7%9A%84%E5%86%8D%E6%AC%A1%E5%B0%9D%E8%AF%95/</a></li>
+<li>NLP（四十五）R-BERT在人物关系分类上的尝试及Keras代码复现: <a href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%BA%94%EF%BC%89R-BERT%E5%9C%A8%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E5%88%86%E7%B1%BB%E4%B8%8A%E7%9A%84%E5%B0%9D%E8%AF%95%E5%8F%8AKeras%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/">https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%BA%94%EF%BC%89R-BERT%E5%9C%A8%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E5%88%86%E7%B1%BB%E4%B8%8A%E7%9A%84%E5%B0%9D%E8%AF%95%E5%8F%8AKeras%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/</a></li>
+<li>微调百川Baichuan-13B保姆式教程，手把手教你训练百亿大模型: <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ZBY6kbogHjbCQvZBzNEqag">https://mp.weixin.qq.com/s/ZBY6kbogHjbCQvZBzNEqag</a></li>
+<li>HuggingFace Dataset people_relation_classification: <a target="_blank" rel="noopener" href="https://huggingface.co/datasets/jclian91/people_relation_classification">https://huggingface.co/datasets/jclian91/people_relation_classification</a></li>
 </ol>
 
                 

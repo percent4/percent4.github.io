@@ -259,7 +259,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          3k 字
+          3.2k 字
         
       </span>
     
@@ -271,7 +271,7 @@
         
         
           <!-- compatible with older versions-->
-          26 分钟
+          27 分钟
         
       </span>
     
@@ -321,56 +321,42 @@
             
               <div class="markdown-body">
                 
-                <p>初次听说对抗训练是在一次实体识别比赛的赛后分享中，当时的一些概念，比如Focal
-Loss、对抗训练、模型融合、数据增强等都让我感到新奇，之后笔者自己也做了很多这方面的尝试。本文将分享笔者对于对抗训练（FGM）的一次尝试。</p>
-<h3 id="什么是对抗训练">什么是对抗训练？</h3>
-<p>提到“对抗”，相信大多数人的第一反应都是CV中的对抗生成网络
-(GAN)，殊不知，其实对抗也可以作为一种防御机制，并且经过简单的修改，便能用在NLP任务上，提高模型的泛化能力。GAN之父Ian
-Goodfellow在15年的ICLR论文《Explaining and Harnessing Adversarial
-Examples》中第一次提出了对抗训练这个概念，简而言之，就是在原始输入样本<code>x</code>上加一个扰动<code>radv</code>，得到对抗样本后，用其进行训练。这在CV领域比较好理解，部分图片本身就是自带噪声的，比如手抖、光线不佳等，这就是天然的对抗样本，它们在模型训练的时候就是负样本，这些样本的加入能提升模型的鲁棒性。比如下面的经典例子：</p>
-<figure>
-<img src="/img/nlp46_1.png" srcset="/img/loading.gif" lazyload alt="对抗训练的经典例子" />
-<figcaption aria-hidden="true">对抗训练的经典例子</figcaption>
-</figure>
+                <p>初次听说对抗训练是在一次实体识别比赛的赛后分享中，当时的一些概念，比如Focal Loss、对抗训练、模型融合、数据增强等都让我感到新奇，之后笔者自己也做了很多这方面的尝试。本文将分享笔者对于对抗训练（FGM）的一次尝试。</p>
+<h3 id="什么是对抗训练？">什么是对抗训练？</h3>
+<p>提到“对抗”，相信大多数人的第一反应都是CV中的对抗生成网络 (GAN)，殊不知，其实对抗也可以作为一种防御机制，并且经过简单的修改，便能用在NLP任务上，提高模型的泛化能力。GAN之父Ian Goodfellow在15年的ICLR论文《Explaining and Harnessing Adversarial Examples》中第一次提出了对抗训练这个概念，简而言之，就是在原始输入样本<code>x</code>上加一个扰动<code>radv</code>，得到对抗样本后，用其进行训练。这在CV领域比较好理解，部分图片本身就是自带噪声的，比如手抖、光线不佳等，这就是天然的对抗样本，它们在模型训练的时候就是负样本，这些样本的加入能提升模型的鲁棒性。比如下面的经典例子：</p>
+<p><img src="/img/nlp46_1.png" srcset="/img/loading.gif" lazyload alt="对抗训练的经典例子"></p>
 <p>从上面的例子中，我们可以看到一张置信度为55.7%的panda图片在加入了很小的随机扰动后，模型竟然识别为了gibbon。</p>
 <p>对抗训练的一般原理可以用下面的最大最小化公式来体现：</p>
-<figure>
-<img src="/img/nlp46_2.png" srcset="/img/loading.gif" lazyload alt="最大最小化公式" />
-<figcaption aria-hidden="true">最大最小化公式</figcaption>
-</figure>
+<p><img src="/img/nlp46_2.png" srcset="/img/loading.gif" lazyload alt="最大最小化公式"></p>
 <p>其中D代表训练集，x代表输入，y代表标签，θ是模型参数，L(x,y;θ)是单个样本的loss，Δx是对抗扰动，Ω是扰动空间。Ω是扰动空间，Δx是对抗扰动，一般扰动空间都比较小，避免对原来样本的破坏。在训练集合D，选择合适的对抗扰动来使得当个样本的loss达到最大，同时，外层（<code>E(x,y)</code>）就是对神经网络的模型参数θ进行优化，使其最小化。这颇有一点攻与守的味道，有了随机扰动的加入，样本的loss要尽可能大，而训练的模型loss要尽可能小，从而使得模型有了更强的鲁棒性，避免样本的小扰动就造成模型推理的结果偏差。</p>
-<h3 id="fgm">FGM</h3>
-<p>FGM（Fast Gradient Method）是对抗学习的一种实现方式，可以与FGSM（Fast
-Gradient Sign
-Method）一起谈论。对于随机扰动Δx，FGM与FGSM的实现公式如下：</p>
-<p><span class="math display">\[FGSM: \Delta{x}=\epsilon\cdot Sign(g) \\
-FGM: \Delta{x}=\epsilon\cdot (g/||g||_{2}) \\
-其中Sign为数学函数，||g||_{2}为g的L_{2}范数，
-g=\nabla_{x}L(x;y;\theta).\]</span></p>
+<h3 id="FGM">FGM</h3>
+<p>FGM（Fast Gradient Method）是对抗学习的一种实现方式，可以与FGSM（Fast Gradient Sign Method）一起谈论。对于随机扰动Δx，FGM与FGSM的实现公式如下：</p>
+<p class="katex-block "><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>F</mi><mi>G</mi><mi>S</mi><mi>M</mi><mo>:</mo><mi mathvariant="normal">Δ</mi><mi>x</mi><mo>=</mo><mi>ϵ</mi><mo>⋅</mo><mi>S</mi><mi>i</mi><mi>g</mi><mi>n</mi><mo stretchy="false">(</mo><mi>g</mi><mo stretchy="false">)</mo><mspace linebreak="newline"></mspace><mi>F</mi><mi>G</mi><mi>M</mi><mo>:</mo><mi mathvariant="normal">Δ</mi><mi>x</mi><mo>=</mo><mi>ϵ</mi><mo>⋅</mo><mo stretchy="false">(</mo><mi>g</mi><mi mathvariant="normal">/</mi><mi mathvariant="normal">∣</mi><mi mathvariant="normal">∣</mi><mi>g</mi><mi mathvariant="normal">∣</mi><msub><mi mathvariant="normal">∣</mi><mn>2</mn></msub><mo stretchy="false">)</mo><mspace linebreak="newline"></mspace><mtext>其中</mtext><mi>S</mi><mi>i</mi><mi>g</mi><mi>n</mi><mtext>为数学函数，</mtext><mi mathvariant="normal">∣</mi><mi mathvariant="normal">∣</mi><mi>g</mi><mi mathvariant="normal">∣</mi><msub><mi mathvariant="normal">∣</mi><mn>2</mn></msub><mtext>为</mtext><mi>g</mi><mtext>的</mtext><msub><mi>L</mi><mn>2</mn></msub><mtext>范数，</mtext><mi>g</mi><mo>=</mo><msub><mi mathvariant="normal">∇</mi><mi>x</mi></msub><mi>L</mi><mo stretchy="false">(</mo><mi>x</mi><mo separator="true">;</mo><mi>y</mi><mo separator="true">;</mo><mi>θ</mi><mo stretchy="false">)</mo><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">FGSM: \Delta{x}=\epsilon\cdot Sign(g) \\ FGM: \Delta{x}=\epsilon\cdot (g/||g||_{2}) \\ 其中Sign为数学函数，||g||_{2}为g的L_{2}范数， g=\nabla_{x}L(x;y;\theta).
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">FGSM</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">Δ</span><span class="mord"><span class="mord mathnormal">x</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.4445em;"></span><span class="mord mathnormal">ϵ</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">n</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mclose">)</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">FGM</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">Δ</span><span class="mord"><span class="mord mathnormal">x</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.4445em;"></span><span class="mord mathnormal">ϵ</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord">/∣∣</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord">∣</span><span class="mord"><span class="mord">∣</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord cjk_fallback">其中</span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">n</span><span class="mord cjk_fallback">为数学函数，</span><span class="mord">∣∣</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord">∣</span><span class="mord"><span class="mord">∣</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord cjk_fallback">为</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord cjk_fallback">的</span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord cjk_fallback">范数，</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord">∇</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">x</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathnormal">L</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mpunct">;</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mpunct">;</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">θ</span><span class="mclose">)</span><span class="mord">.</span></span></span></span></span></p>
 <p>从上面的公式上可以看出，其增大样本loss的办法是使得样本x在梯度方向变大。</p>
-<p>CV领域中，上面的FGM公式比较容易实现，因为图片的向量表示我们可以认为是连续的实数，而在NLP中，一般字或词的表示为One-hot向量，不好直接进行样本扰动。一种简单的想法是在word
-Embedding向量的时候进行扰动。Embedding层的输出是直接取自于Embedding参数矩阵的，因此我们可以直接对Embedding参数矩阵进行扰动。这样得到的对抗样本的多样性会少一些（因为不同样本的同一个token共用了相同的扰动），但仍然能起到正则化的作用，而且这样实现起来容易得多。</p>
-<p>我们不必自己动手去实现上述的FGM，苏建林在bert4keras工具中已经实现了FGM的脚本，可以参考：<a
-target="_blank" rel="noopener" href="https://github.com/bojone/keras_adversarial_training">https://github.com/bojone/keras_adversarial_training</a>，这是Keras框架下的实现。而瓦特兰蒂斯在博客<a
-target="_blank" rel="noopener" href="https://fyubang.com/2019/10/15/adversarial-train/">【炼丹技巧】功守道：NLP中的对抗训练
-+
-PyTorch实现</a>中给出了Torch框架下的FGM实现。两者使用起来都非常方便。</p>
+<p>CV领域中，上面的FGM公式比较容易实现，因为图片的向量表示我们可以认为是连续的实数，而在NLP中，一般字或词的表示为One-hot向量，不好直接进行样本扰动。一种简单的想法是在word Embedding向量的时候进行扰动。Embedding层的输出是直接取自于Embedding参数矩阵的，因此我们可以直接对Embedding参数矩阵进行扰动。这样得到的对抗样本的多样性会少一些（因为不同样本的同一个token共用了相同的扰动），但仍然能起到正则化的作用，而且这样实现起来容易得多。</p>
+<p>我们不必自己动手去实现上述的FGM，苏建林在bert4keras工具中已经实现了FGM的脚本，可以参考：<a target="_blank" rel="noopener" href="https://github.com/bojone/keras_adversarial_training">https://github.com/bojone/keras_adversarial_training</a>，这是Keras框架下的实现。而瓦特兰蒂斯在博客<a target="_blank" rel="noopener" href="https://fyubang.com/2019/10/15/adversarial-train/">【炼丹技巧】功守道：NLP中的对抗训练 + PyTorch实现</a>中给出了Torch框架下的FGM实现。两者使用起来都非常方便。</p>
 <p>下面将介绍笔者使用FGM在keras-bert模块中的实验。</p>
 <h3 id="实验结果">实验结果</h3>
 <p>笔者使用keras-bert模块实现了命名实体识别、文本多分类、文本多标签分类任务，如下：</p>
 <ul>
-<li><p><a
-href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a></p></li>
-<li><p><a
-href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E4%BA%94%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E5%A4%9A%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1/">NLP（三十五）使用keras-bert实现文本多分类任务</a></p></li>
-<li><p><a
-href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E5%A4%9A%E6%A0%87%E7%AD%BE%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1/">NLP（三十六）使用keras-bert实现文本多标签分类任务</a></p>
-<p>我们将对比在同样的模型参数下，相同数据集在使用FGM前后的模型评估指标的对比：</p></li>
-<li><p>人民日报实体识别任务（评估指标为micro avg f1-score）</p></li>
+<li>
+<p><a href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a></p>
+</li>
+<li>
+<p><a href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E4%BA%94%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E5%A4%9A%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1/">NLP（三十五）使用keras-bert实现文本多分类任务</a></p>
+</li>
+<li>
+<p><a href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E5%A4%9A%E6%A0%87%E7%AD%BE%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1/">NLP（三十六）使用keras-bert实现文本多标签分类任务</a></p>
+<p>我们将对比在同样的模型参数下，相同数据集在使用FGM前后的模型评估指标的对比：</p>
+</li>
+<li>
+<p>人民日报实体识别任务（评估指标为micro avg f1-score）</p>
+</li>
 </ul>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>-</th>
 <th>训练1</th>
 <th>训练2</th>
@@ -379,14 +365,14 @@ href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%85
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>使用FGM前</td>
 <td>0.9276</td>
 <td>0.9217</td>
 <td>0.9252</td>
 <td>0.9248</td>
 </tr>
-<tr class="even">
+<tr>
 <td>使用FGM后</td>
 <td>0.9287</td>
 <td>0.9273</td>
@@ -400,7 +386,7 @@ href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%85
 </ul>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>-</th>
 <th>训练1</th>
 <th>训练2</th>
@@ -409,14 +395,14 @@ href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%85
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>使用FGM前</td>
 <td>0.8926</td>
 <td>0.8934</td>
 <td>0.8820</td>
 <td>0.8893</td>
 </tr>
-<tr class="even">
+<tr>
 <td>使用FGM后</td>
 <td>0.9037</td>
 <td>0.8798</td>
@@ -430,7 +416,7 @@ href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%85
 </ul>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>-</th>
 <th>训练1</th>
 <th>训练2</th>
@@ -439,14 +425,14 @@ href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%85
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>使用FGM前</td>
 <td>0.9778</td>
 <td>0.9697</td>
 <td>0.9657</td>
 <td>0.9711</td>
 </tr>
-<tr class="even">
+<tr>
 <td>使用FGM后</td>
 <td>0.9778</td>
 <td>0.9838</td>
@@ -460,7 +446,7 @@ href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%85
 </ul>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>-</th>
 <th>训练1</th>
 <th>训练2</th>
@@ -469,14 +455,14 @@ href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%85
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>使用FGM前</td>
 <td>0.9524</td>
 <td>0.9621</td>
 <td>0.9685</td>
 <td>0.961</td>
 </tr>
-<tr class="even">
+<tr>
 <td>使用FGM后</td>
 <td>0.9689</td>
 <td>0.9723</td>
@@ -490,7 +476,7 @@ href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%85
 </ul>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>-</th>
 <th>训练1</th>
 <th>训练2</th>
@@ -499,14 +485,14 @@ href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%85
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>使用FGM前</td>
 <td>0.8985</td>
 <td>-</td>
 <td>-</td>
 <td>-</td>
 </tr>
-<tr class="even">
+<tr>
 <td>使用FGM后</td>
 <td>0.9159</td>
 <td>0.9192</td>
@@ -517,33 +503,32 @@ href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%85
 </table>
 <p>以上对比结果已经上传至Github，网址如下：</p>
 <ul>
-<li><p>命名实体识别：<a
-target="_blank" rel="noopener" href="https://github.com/percent4/keras_bert_sequence_labeling">https://github.com/percent4/keras_bert_sequence_labeling</a></p></li>
-<li><p>文本多分类：<a
-target="_blank" rel="noopener" href="https://github.com/percent4/keras_bert_text_classification">https://github.com/percent4/keras_bert_text_classification</a></p></li>
-<li><p>文本多标签文本：<a
-target="_blank" rel="noopener" href="https://github.com/percent4/keras_bert_multi_label_cls">https://github.com/percent4/keras_bert_multi_label_cls</a></p>
-<p>总结经验为：</p></li>
+<li>
+<p>命名实体识别：<a target="_blank" rel="noopener" href="https://github.com/percent4/keras_bert_sequence_labeling">https://github.com/percent4/keras_bert_sequence_labeling</a></p>
+</li>
+<li>
+<p>文本多分类：<a target="_blank" rel="noopener" href="https://github.com/percent4/keras_bert_text_classification">https://github.com/percent4/keras_bert_text_classification</a></p>
+</li>
+<li>
+<p>文本多标签文本：<a target="_blank" rel="noopener" href="https://github.com/percent4/keras_bert_multi_label_cls">https://github.com/percent4/keras_bert_multi_label_cls</a></p>
+<p>总结经验为：</p>
+</li>
 </ul>
-<ol type="1">
+<ol>
 <li>对抗训练FGM在很多NLP任务中可以有效提升模型效果，但代价是训练时间变长，一般是原来的1.5~2倍。</li>
 <li>FGM一般在小样本数据集上的提升效果较为明显。</li>
 <li>FGM并不一定总是能提升模型效果，比如笔者使用R-BERT在人物关系分类数据集上，使用FGM的效果反而变差了。</li>
 </ol>
 <h3 id="总结">总结</h3>
 <p>本文主要介绍了对抗训练的概念，以及FGM实现方式和它在不同NLP任务上的模型效果对比。</p>
-<p>最近笔者在使用keras bert实现多项选择阅读理解任务，但keras
-bert比较吃显存，而且模型结构写起来比较麻烦且效果有点儿出入。而用PyTorch实现的transformers模块，使用方便而且效果也好，不得不说，Torch真香！这并不是说Keras不行，而是Torch确实使用起来很方便。这只是我现在的体会，不必过于较真。</p>
+<p>最近笔者在使用keras bert实现多项选择阅读理解任务，但keras bert比较吃显存，而且模型结构写起来比较麻烦且效果有点儿出入。而用PyTorch实现的transformers模块，使用方便而且效果也好，不得不说，Torch真香！这并不是说Keras不行，而是Torch确实使用起来很方便。这只是我现在的体会，不必过于较真。</p>
 <p>感谢大家阅读~</p>
 <p>2021年4月14日深夜于上海浦东，此日上海天色阴沉~</p>
 <h3 id="参考文献">参考文献</h3>
-<ol type="1">
-<li>对抗训练浅谈：意义、方法和思考（附Keras实现）: <a
-target="_blank" rel="noopener" href="https://spaces.ac.cn/archives/7234">https://spaces.ac.cn/archives/7234</a></li>
-<li>【炼丹技巧】功守道：NLP中的对抗训练 + PyTorch实现: <a
-target="_blank" rel="noopener" href="https://fyubang.com/2019/10/15/adversarial-train/">https://fyubang.com/2019/10/15/adversarial-train/</a></li>
-<li>论文阅读：对抗训练（adversarial training）: <a
-target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/104040055">https://zhuanlan.zhihu.com/p/104040055</a></li>
+<ol>
+<li>对抗训练浅谈：意义、方法和思考（附Keras实现）: <a target="_blank" rel="noopener" href="https://spaces.ac.cn/archives/7234">https://spaces.ac.cn/archives/7234</a></li>
+<li>【炼丹技巧】功守道：NLP中的对抗训练 + PyTorch实现: <a target="_blank" rel="noopener" href="https://fyubang.com/2019/10/15/adversarial-train/">https://fyubang.com/2019/10/15/adversarial-train/</a></li>
+<li>论文阅读：对抗训练（adversarial training）: <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/104040055">https://zhuanlan.zhihu.com/p/104040055</a></li>
 </ol>
 
                 

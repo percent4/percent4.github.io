@@ -30,8 +30,8 @@
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="keras-bert">
 <meta property="article:tag" content="序列标注">
-<meta property="article:tag" content="ALBERT">
 <meta property="article:tag" content="文本分类">
+<meta property="article:tag" content="ALBERT">
 <meta property="article:tag" content="多标签分类">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://percent4.github.io/img/nlp.jpeg">
@@ -325,28 +325,14 @@
             
               <div class="markdown-body">
                 
-                <p>在系列文章<a
-href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a>、<a
-href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E4%BA%94%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E5%A4%9A%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1/">NLP（三十五）使用keras-bert实现文本多分类任务</a>、<a
-href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E5%A4%9A%E6%A0%87%E7%AD%BE%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1/">NLP（三十六）使用keras-bert实现文本多标签分类任务</a>中，笔者介绍了如何使用keras-bert模块来调用BERT等模型来实现文本分类、文本多标签分类、序列标注任务。</p>
-<p>在系列文章<a
-href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%BA%8C%EF%BC%89%E5%88%A9%E7%94%A8ALBERT%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E4%BA%8C%E5%88%86%E7%B1%BB/">NLP（二十二）利用ALBERT实现文本二分类</a>、<a
-href="https://percent4.github.io/2023/07/09/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%BA%94%EF%BC%89%E5%AE%9E%E7%8E%B0ALBERT-Bi-LSTM-CRF%E6%A8%A1%E5%9E%8B/">NLP（二十五）实现ALBERT+Bi-LSTM+CRF模型</a>、<a
-href="https://percent4.github.io/2023/07/09/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E5%85%AB%EF%BC%89%E5%A4%9A%E6%A0%87%E7%AD%BE%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/">NLP（二十八）多标签文本分类</a>中，笔者将ALBERT模型作为特征向量提取工具，实现了文本分类、文本多标签分类、序列标注任务。</p>
+                <p>在系列文章<a href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a>、<a href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E4%BA%94%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E5%A4%9A%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1/">NLP（三十五）使用keras-bert实现文本多分类任务</a>、<a href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E5%A4%9A%E6%A0%87%E7%AD%BE%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1/">NLP（三十六）使用keras-bert实现文本多标签分类任务</a>中，笔者介绍了如何使用keras-bert模块来调用BERT等模型来实现文本分类、文本多标签分类、序列标注任务。</p>
+<p>在系列文章<a href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%BA%8C%EF%BC%89%E5%88%A9%E7%94%A8ALBERT%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E4%BA%8C%E5%88%86%E7%B1%BB/">NLP（二十二）利用ALBERT实现文本二分类</a>、<a href="https://percent4.github.io/2023/07/09/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%BA%94%EF%BC%89%E5%AE%9E%E7%8E%B0ALBERT-Bi-LSTM-CRF%E6%A8%A1%E5%9E%8B/">NLP（二十五）实现ALBERT+Bi-LSTM+CRF模型</a>、<a href="https://percent4.github.io/2023/07/09/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E5%85%AB%EF%BC%89%E5%A4%9A%E6%A0%87%E7%AD%BE%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/">NLP（二十八）多标签文本分类</a>中，笔者将ALBERT模型作为特征向量提取工具，实现了文本分类、文本多标签分类、序列标注任务。</p>
 <p>本文将会介绍如何使用keras-bert调用ALBERT模型实现文本分类、文本多标签分类、序列标注任务，其模型效果比单纯将ALBERT模型作为特征向量提取工具的效果肯定来得好。</p>
-<p>使用keras-bert调用ALBERT模型实现文本多分类任务的Github项目网址：<a
-target="_blank" rel="noopener" href="https://github.com/percent4/keras_albert_text_classification">https://github.com/percent4/keras_albert_text_classification</a>
-。</p>
-<p>使用keras-bert调用ALBERT模型实现文本多标签分类任务的Github项目网址：<a
-target="_blank" rel="noopener" href="https://github.com/percent4/keras_albert_multi_label_cls">https://github.com/percent4/keras_albert_multi_label_cls</a>
-。</p>
-<p>使用keras-bert调用ALBERT模型实现序列标注任务的Github项目网址：<a
-target="_blank" rel="noopener" href="https://github.com/percent4/keras_albert_sequence_labeling">https://github.com/percent4/keras_albert_sequence_labeling</a>
-。</p>
-<h3
-id="如何使用keras-bert调用albert模型">如何使用keras-bert调用ALBERT模型</h3>
-<p>keras-bert模块的设计之初是为了支持BERT系列模型，它并不支持ALBERT模型。但在开源世界Github中有个项目名为<code>keras_albert_model</code>，其网址为：<a
-target="_blank" rel="noopener" href="https://github.com/TinkerMob/keras_albert_model">https://github.com/TinkerMob/keras_albert_model</a>，利用这个项目，我们可以做到让keras-bert支持ALBERT模型。</p>
+<p>使用keras-bert调用ALBERT模型实现文本多分类任务的Github项目网址：<a target="_blank" rel="noopener" href="https://github.com/percent4/keras_albert_text_classification">https://github.com/percent4/keras_albert_text_classification</a> 。</p>
+<p>使用keras-bert调用ALBERT模型实现文本多标签分类任务的Github项目网址：<a target="_blank" rel="noopener" href="https://github.com/percent4/keras_albert_multi_label_cls">https://github.com/percent4/keras_albert_multi_label_cls</a> 。</p>
+<p>使用keras-bert调用ALBERT模型实现序列标注任务的Github项目网址：<a target="_blank" rel="noopener" href="https://github.com/percent4/keras_albert_sequence_labeling">https://github.com/percent4/keras_albert_sequence_labeling</a> 。</p>
+<h3 id="如何使用keras-bert调用ALBERT模型">如何使用keras-bert调用ALBERT模型</h3>
+<p>keras-bert模块的设计之初是为了支持BERT系列模型，它并不支持ALBERT模型。但在开源世界Github中有个项目名为<code>keras_albert_model</code>，其网址为：<a target="_blank" rel="noopener" href="https://github.com/TinkerMob/keras_albert_model">https://github.com/TinkerMob/keras_albert_model</a>，利用这个项目，我们可以做到让keras-bert支持ALBERT模型。</p>
 <p>下载该项目中的albert.py脚本，我们使用如下示例代码来调用ALBERT-tiny模型，代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> albert <span class="hljs-keyword">import</span> load_brightmart_albert_zh_checkpoint<br><br>model = load_brightmart_albert_zh_checkpoint(<span class="hljs-string">&#x27;albert_xlarge_zh_183k&#x27;</span>, training=<span class="hljs-literal">False</span>)<br>model.summary()<br></code></pre></td></tr></table></figure>
 <p>输出的albert-tiny模型结构如下：</p>
@@ -354,8 +340,7 @@ target="_blank" rel="noopener" href="https://github.com/TinkerMob/keras_albert_m
 <p>有了它，我们可以在keras-bert模块中轻松愉快地调用ALBERT模型了。以下为keras-bert调用ALBERT模型，实现文本多分类、文本多标签分类以及序列标注任务，其代码与之前的keras-bert调用BERT模型的代码大体一致，只不过在加载预训练模型的时候需要<code>keras_albert_model</code>项目的帮助。</p>
 <p>以下将不再给出具体的项目代码，而只是给出keras-bert在调用ALBERT模型时，在不同NLP任务的表现，即模型评估效果。</p>
 <h3 id="文本多分类">文本多分类</h3>
-<p>使用Keras和ALBERT实现文本多分类任务，其中对ALBERT进行微调。数据集为sougou小分类数据集。模型参数为batch_size
-= 8, maxlen = 300, epoch=3。</p>
+<p>使用Keras和ALBERT实现文本多分类任务，其中对ALBERT进行微调。数据集为sougou小分类数据集。模型参数为batch_size = 8, maxlen = 300, epoch=3。</p>
 <ul>
 <li>albert-tiny的模型评估结果</li>
 </ul>
@@ -369,9 +354,7 @@ target="_blank" rel="noopener" href="https://github.com/TinkerMob/keras_albert_m
 </ul>
 <figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs crystal">              precision    recall  f1-score   support<br><br>          体育     <span class="hljs-number">0.9898</span>    <span class="hljs-number">0.9798</span>    <span class="hljs-number">0.9848</span>        <span class="hljs-number">99</span><br>          健康     <span class="hljs-number">0.9412</span>    <span class="hljs-number">0.9697</span>    <span class="hljs-number">0.9552</span>        <span class="hljs-number">99</span><br>          军事     <span class="hljs-number">0.9706</span>    <span class="hljs-number">1.0000</span>    <span class="hljs-number">0.9851</span>        <span class="hljs-number">99</span><br>          教育     <span class="hljs-number">0.9300</span>    <span class="hljs-number">0.9394</span>    <span class="hljs-number">0.9347</span>        <span class="hljs-number">99</span><br>          汽车     <span class="hljs-number">0.9892</span>    <span class="hljs-number">0.9293</span>    <span class="hljs-number">0.9583</span>        <span class="hljs-number">99</span><br><br>    accuracy                         <span class="hljs-number">0.9636</span>       <span class="hljs-number">495</span><br>   <span class="hljs-function"><span class="hljs-keyword">macro</span> <span class="hljs-title">avg</span></span>     <span class="hljs-number">0.9642</span>    <span class="hljs-number">0.9636</span>    <span class="hljs-number">0.9636</span>       <span class="hljs-number">495</span><br>weighted avg     <span class="hljs-number">0.9642</span>    <span class="hljs-number">0.9636</span>    <span class="hljs-number">0.9636</span>       <span class="hljs-number">495</span><br></code></pre></td></tr></table></figure>
 <h3 id="文本多标签">文本多标签</h3>
-<p>使用采用Keras和ALBERT实现文本多标签分类任务,其中对ALBERT进行微调。以2020语言与智能技术竞赛：事件抽取任务
-中的数据作为多分类标签的样例数据，借助多标签分类模型来解决。模型参数为batch_size
-= 16, maxlen = 256, epoch=10。</p>
+<p>使用采用Keras和ALBERT实现文本多标签分类任务,其中对ALBERT进行微调。以2020语言与智能技术竞赛：事件抽取任务 中的数据作为多分类标签的样例数据，借助多标签分类模型来解决。模型参数为batch_size = 16, maxlen = 256, epoch=10。</p>
 <ul>
 <li>albert-tiny的模型评估结果</li>
 </ul>
@@ -415,34 +398,33 @@ target="_blank" rel="noopener" href="https://github.com/TinkerMob/keras_albert_m
 <p>模型参数：MAX_SEQ_LEN=128, BATCH_SIZE=32, EPOCH=10</p>
 <p>运行model_evaluate.py,模型评估结果如下：</p>
 <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs apache">              <span class="hljs-attribute">precision</span>    recall  f1-score   support<br><br>        <span class="hljs-attribute">name</span>     <span class="hljs-number">0</span>.<span class="hljs-number">8419</span>    <span class="hljs-number">0</span>.<span class="hljs-number">8381</span>    <span class="hljs-number">0</span>.<span class="hljs-number">8400</span>       <span class="hljs-number">451</span><br>     <span class="hljs-attribute">company</span>     <span class="hljs-number">0</span>.<span class="hljs-number">7161</span>    <span class="hljs-number">0</span>.<span class="hljs-number">7650</span>    <span class="hljs-number">0</span>.<span class="hljs-number">7398</span>       <span class="hljs-number">366</span><br>    <span class="hljs-attribute">position</span>     <span class="hljs-number">0</span>.<span class="hljs-number">7205</span>    <span class="hljs-number">0</span>.<span class="hljs-number">7459</span>    <span class="hljs-number">0</span>.<span class="hljs-number">7329</span>       <span class="hljs-number">425</span><br>     <span class="hljs-attribute">address</span>     <span class="hljs-number">0</span>.<span class="hljs-number">5473</span>    <span class="hljs-number">0</span>.<span class="hljs-number">5879</span>    <span class="hljs-number">0</span>.<span class="hljs-number">5669</span>       <span class="hljs-number">364</span><br>        <span class="hljs-attribute">game</span>     <span class="hljs-number">0</span>.<span class="hljs-number">7033</span>    <span class="hljs-number">0</span>.<span class="hljs-number">8258</span>    <span class="hljs-number">0</span>.<span class="hljs-number">7596</span>       <span class="hljs-number">287</span><br>        <span class="hljs-attribute">book</span>     <span class="hljs-number">0</span>.<span class="hljs-number">7931</span>    <span class="hljs-number">0</span>.<span class="hljs-number">7566</span>    <span class="hljs-number">0</span>.<span class="hljs-number">7744</span>       <span class="hljs-number">152</span><br>       <span class="hljs-attribute">scene</span>     <span class="hljs-number">0</span>.<span class="hljs-number">6243</span>    <span class="hljs-number">0</span>.<span class="hljs-number">5930</span>    <span class="hljs-number">0</span>.<span class="hljs-number">6082</span>       <span class="hljs-number">199</span><br><span class="hljs-attribute">organization</span>     <span class="hljs-number">0</span>.<span class="hljs-number">6711</span>    <span class="hljs-number">0</span>.<span class="hljs-number">7297</span>    <span class="hljs-number">0</span>.<span class="hljs-number">6992</span>       <span class="hljs-number">344</span><br>       <span class="hljs-attribute">movie</span>     <span class="hljs-number">0</span>.<span class="hljs-number">7051</span>    <span class="hljs-number">0</span>.<span class="hljs-number">7333</span>    <span class="hljs-number">0</span>.<span class="hljs-number">7190</span>       <span class="hljs-number">150</span><br>  <span class="hljs-attribute">government</span>     <span class="hljs-number">0</span>.<span class="hljs-number">7567</span>    <span class="hljs-number">0</span>.<span class="hljs-number">8156</span>    <span class="hljs-number">0</span>.<span class="hljs-number">7850</span>       <span class="hljs-number">244</span><br><br>   <span class="hljs-attribute">micro</span> avg     <span class="hljs-number">0</span>.<span class="hljs-number">7078</span>    <span class="hljs-number">0</span>.<span class="hljs-number">7441</span>    <span class="hljs-number">0</span>.<span class="hljs-number">7255</span>      <span class="hljs-number">2982</span><br>   <span class="hljs-attribute">macro</span> avg     <span class="hljs-number">0</span>.<span class="hljs-number">7093</span>    <span class="hljs-number">0</span>.<span class="hljs-number">7441</span>    <span class="hljs-number">0</span>.<span class="hljs-number">7257</span>      <span class="hljs-number">2982</span><br></code></pre></td></tr></table></figure>
-<h3
-id="不同版本albert模型与bert模型的参数对比">不同版本ALBERT模型与BERT模型的参数对比</h3>
+<h3 id="不同版本ALBERT模型与BERT模型的参数对比">不同版本ALBERT模型与BERT模型的参数对比</h3>
 <p>以文本多分类任务为例，我们的数据集为sougou小分类数据集，文本最大长度为300，不同版本ALBERT模型与BERT模型的参数为：</p>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>model name</th>
 <th>Total params</th>
 <th>Trainable params</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>albert_tiny</td>
 <td>4,079,061</td>
 <td>4,079,061</td>
 </tr>
-<tr class="even">
+<tr>
 <td>albert_base_zh_additional_36k_steps</td>
 <td>10,290,693</td>
 <td>10,290,693</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>albert_xlarge_zh_183k</td>
 <td>54,391,813</td>
 <td>54,391,813</td>
 </tr>
-<tr class="even">
+<tr>
 <td>chinese_L-12_H-768_A-12</td>
 <td>101,680,901</td>
 <td>101,680,901</td>
@@ -493,9 +475,9 @@ id="不同版本albert模型与bert模型的参数对比">不同版本ALBERT模�
       
         <a href="/tags/%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8/" class="print-no-link">#序列标注</a>
       
-        <a href="/tags/ALBERT/" class="print-no-link">#ALBERT</a>
-      
         <a href="/tags/%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/" class="print-no-link">#文本分类</a>
+      
+        <a href="/tags/ALBERT/" class="print-no-link">#ALBERT</a>
       
         <a href="/tags/%E5%A4%9A%E6%A0%87%E7%AD%BE%E5%88%86%E7%B1%BB/" class="print-no-link">#多标签分类</a>
       
