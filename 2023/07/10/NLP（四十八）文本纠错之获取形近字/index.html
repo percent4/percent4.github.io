@@ -23,14 +23,14 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文将会介绍文本纠错之获取形近字。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta property="og:image" content="https://percent4.github.io/img/nlp48_1.png">
 <meta property="article:published_time" content="2023-07-10T09:32:54.000Z">
-<meta property="article:modified_time" content="2023-08-06T14:55:18.869Z">
+<meta property="article:modified_time" content="2024-01-10T15:53:14.041Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="文本纠错">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp48_1.png">
   
   
   
@@ -325,7 +325,7 @@
 <p>笔者最近在从事文本纠错的相关工作，颇有收获，因此记录于此。</p>
 <p>文本纠错很大一部分工作在于纠正同音字、形近字，所谓形近字，是指字形相近的汉字。本文将介绍如何获取形近字。</p>
 <p>获取形近字的算法如下：</p>
-<ol>
+<ol type="1">
 <li>获取汉字库，将所有汉字转化为黑白图片；</li>
 <li>获取每个汉字的向量表示（即将图片转化为向量）；</li>
 <li>计算两个汉字的向量的余弦相似度，得到它们的字形相似度。</li>
@@ -335,17 +335,22 @@
 <p>我们从网上得到3500个汉字的txt文件（<code>all_3500_chars.txt</code>），通过pygame将汉字转化为100*100的黑白图片，Python程序如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> pygame<br><br>pygame.init()<br><span class="hljs-comment"># 获取3500个汉字</span><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;all_3500_chars.txt&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> f:<br>    chars = f.read().strip()<br><br><span class="hljs-comment"># 通过pygame将汉字转化为黑白图片</span><br><span class="hljs-keyword">for</span> char <span class="hljs-keyword">in</span> chars:<br>    font = pygame.font.Font(<span class="hljs-string">&quot;C://Windows/Fonts/simkai.ttf&quot;</span>, <span class="hljs-number">100</span>)<br>    rtext = font.render(char, <span class="hljs-literal">True</span>, (<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>), (<span class="hljs-number">255</span>, <span class="hljs-number">255</span>, <span class="hljs-number">255</span>))<br>    pygame.image.save(rtext, <span class="hljs-string">&quot;&#123;&#125;.png&quot;</span>.<span class="hljs-built_in">format</span>(char))<br></code></pre></td></tr></table></figure>
 <p>前10个汉字为<code>一乙二十丁厂七卜人入</code>,其对应的黑白图片如下：</p>
-<p><img src="/img/nlp48_1.png" srcset="/img/loading.gif" lazyload alt="前10个汉字图片"></p>
+<figure>
+<img src="/img/nlp48_1.png" srcset="/img/loading.gif" lazyload alt="前10个汉字图片" />
+<figcaption aria-hidden="true">前10个汉字图片</figcaption>
+</figure>
 <p>接着我们获取每个汉字的向量表示，并将这两个向量的余弦相似度作为对应汉字的余弦相似度，Python程序如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># get_similiar_char.py</span><br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">import</span> cv2<br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> operator <span class="hljs-keyword">import</span> itemgetter<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">read_img_2_list</span>(<span class="hljs-params">img_path</span>):<br>    <span class="hljs-comment"># 读取图片</span><br>    img = cv2.imdecode(np.fromfile(img_path, dtype=np.uint8), -<span class="hljs-number">1</span>)<br>    <span class="hljs-comment"># 把图片转换为灰度模式</span><br>    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY).reshape(-<span class="hljs-number">1</span>, <span class="hljs-number">1</span>)<br>    <span class="hljs-keyword">return</span> [_[<span class="hljs-number">0</span>] <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> img.tolist()]<br><br><br><span class="hljs-comment"># 获取所有汉字的向量表示，以dict储存</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_all_char_vectors</span>():<br>    image_paths = [_ <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> os.listdir(<span class="hljs-string">&quot;.&quot;</span>) <span class="hljs-keyword">if</span> _.endswith(<span class="hljs-string">&quot;png&quot;</span>)]<br>    img_vector_dict = &#123;&#125;<br>    <span class="hljs-keyword">for</span> image_path <span class="hljs-keyword">in</span> image_paths:<br>        img_vector_dict[image_path[<span class="hljs-number">0</span>]] = read_img_2_list(img_path=image_path)<br><br>    <span class="hljs-keyword">return</span> img_vector_dict<br><br><br><span class="hljs-comment"># 计算两个向量之间的余弦相似度</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">cosine_similarity</span>(<span class="hljs-params">vector1, vector2</span>):<br>    dot_product = <span class="hljs-number">0.0</span><br>    normA = <span class="hljs-number">0.0</span><br>    normB = <span class="hljs-number">0.0</span><br>    <span class="hljs-keyword">for</span> a, b <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(vector1, vector2):<br>        dot_product += a * b<br>        normA += a ** <span class="hljs-number">2</span><br>        normB += b ** <span class="hljs-number">2</span><br>    <span class="hljs-keyword">if</span> normA == <span class="hljs-number">0.0</span> <span class="hljs-keyword">or</span> normB == <span class="hljs-number">0.0</span>:<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span><br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-keyword">return</span> dot_product / ((normA**<span class="hljs-number">0.5</span>)*(normB**<span class="hljs-number">0.5</span>))<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    img_vector_dict = get_all_char_vectors()<br><br>    <span class="hljs-comment"># 获取最接近的汉字</span><br>    similarity_dict = &#123;&#125;<br>    <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>        match_char = <span class="hljs-built_in">input</span>(<span class="hljs-string">&quot;输入汉字: &quot;</span>)<br>        match_vector = img_vector_dict[match_char]<br>        <span class="hljs-keyword">for</span> char, vector <span class="hljs-keyword">in</span> img_vector_dict.items():<br>            cosine_similar = cosine_similarity(match_vector, vector)<br>            similarity_dict[char] = cosine_similar<br>        <span class="hljs-comment"># 按相似度排序，取前10个</span><br>        sorted_similarity = <span class="hljs-built_in">sorted</span>(similarity_dict.items(), key=itemgetter(<span class="hljs-number">1</span>), reverse=<span class="hljs-literal">True</span>)<br>        <span class="hljs-built_in">print</span>([(char, <span class="hljs-built_in">round</span>(similarity, <span class="hljs-number">4</span>))<span class="hljs-keyword">for</span> char, similarity <span class="hljs-keyword">in</span> sorted_similarity[:<span class="hljs-number">10</span>]])<br></code></pre></td></tr></table></figure>
 <p>我们尝试着输入<code>国、填、博</code>这三个字，得到的相近字形的汉字如下：</p>
 <blockquote>
-<p>输入汉字: 国<br>
-[(‘国’, 1.0), (‘固’, 0.9493), (‘团’, 0.9432), (‘困’, 0.9405), (‘因’, 0.9369), (‘围’, 0.9357), (‘门’, 0.9334), (‘园’, 0.9326), (‘同’, 0.929), (‘圆’, 0.9261)]<br>
-输入汉字: 填<br>
-[(‘填’, 1.0), (‘慎’, 0.9522), (‘坞’, 0.9238), (‘培’, 0.9149), (‘坎’, 0.9133), (‘块’, 0.9101), (‘币’, 0.9092), (‘镇’, 0.9077), (‘埠’, 0.9074), (‘了’, 0.9044)]<br>
-输入汉字: 博<br>
-[(‘博’, 1.0), (‘傅’, 0.9306), (‘协’, 0.9115), (‘搏’, 0.907), (‘惰’, 0.9046), (‘膊’, 0.9029), (‘愕’, 0.9019), (‘侯’, 0.8999), (‘悴’, 0.8997), (‘怜’, 0.8989)]</p>
+<p>输入汉字: 国 [('国', 1.0), ('固', 0.9493), ('团', 0.9432), ('困',
+0.9405), ('因', 0.9369), ('围', 0.9357), ('门', 0.9334), ('园', 0.9326),
+('同', 0.929), ('圆', 0.9261)] 输入汉字: 填 [('填', 1.0), ('慎',
+0.9522), ('坞', 0.9238), ('培', 0.9149), ('坎', 0.9133), ('块', 0.9101),
+('币', 0.9092), ('镇', 0.9077), ('埠', 0.9074), ('了', 0.9044)]
+输入汉字: 博 [('博', 1.0), ('傅', 0.9306), ('协', 0.9115), ('搏',
+0.907), ('惰', 0.9046), ('膊', 0.9029), ('愕', 0.9019), ('侯', 0.8999),
+('悴', 0.8997), ('怜', 0.8989)]</p>
 </blockquote>
 <h3 id="opencv读取文件名为汉字的图片">opencv读取文件名为汉字的图片</h3>
 <p>在使用opencv读物文件名为汉字的图片时，读取的图片内容为None，我们以<code>一.png</code>为例，演示程序如下：</p>

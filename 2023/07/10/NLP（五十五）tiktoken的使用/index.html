@@ -23,14 +23,15 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文将会介绍tiktoken的使用。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta property="og:image" content="https://percent4.github.io/img/nlp55_1.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp55_2.png">
 <meta property="article:published_time" content="2023-07-10T09:59:38.000Z">
-<meta property="article:modified_time" content="2023-08-06T14:55:18.973Z">
+<meta property="article:modified_time" content="2024-01-10T15:53:14.020Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="tiktoken">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp55_1.png">
   
   
   
@@ -259,7 +260,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          5.7k 字
+          5.8k 字
         
       </span>
     
@@ -271,7 +272,7 @@
         
         
           <!-- compatible with older versions-->
-          48 分钟
+          49 分钟
         
       </span>
     
@@ -321,31 +322,44 @@
             
               <div class="markdown-body">
                 
-                <p><code>tiktoken</code>是OpenAI于近期开源的Python第三方模块，该模块主要实现了tokenizer的BPE（Byte pair encoding）算法，并对运行性能做了极大的优化。本文将介绍tiktoken模块的使用。</p>
+                <p><code>tiktoken</code>是OpenAI于近期开源的Python第三方模块，该模块主要实现了tokenizer的BPE（Byte
+pair
+encoding）算法，并对运行性能做了极大的优化。本文将介绍tiktoken模块的使用。</p>
 <h3 id="tiktoken简介">tiktoken简介</h3>
-<p><code>BPE(Byte pair encoding)</code>算法是NLP中常见的tokenizer方式，关于其介绍和实现原理，读者可参考<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/86965595">深入理解NLP Subword算法：BPE、WordPiece、ULM</a>。</p>
-<p><code>tiktoken</code>已开源至Github，访问网址为：<a target="_blank" rel="noopener" href="https://github.com/openai/tiktoken">https://github.com/openai/tiktoken</a>，tiktoken会比其它开源的tokenizer库运行快3-6倍，以下是它与hugging face的tokenizer库的性能比较：</p>
-<p><img src="/img/nlp55_1.png" srcset="/img/loading.gif" lazyload alt="不同线程数下tiktoken与hugging face的性能比较"></p>
-<p>以上结果是使用GPT-2 tokenizer在1G文本上进行的性能测试，使用的<code>GPT2TokenizerFast</code>来源于<code>tokenizers==0.13.2</code>, <code>transformers==4.24.0</code> , <code>tiktoken==0.2.0</code>。</p>
+<p><code>BPE(Byte pair encoding)</code>算法是NLP中常见的tokenizer方式，关于其介绍和实现原理，读者可参考<a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/86965595">深入理解NLP
+Subword算法：BPE、WordPiece、ULM</a>。</p>
+<p><code>tiktoken</code>已开源至Github，访问网址为：<a
+target="_blank" rel="noopener" href="https://github.com/openai/tiktoken">https://github.com/openai/tiktoken</a>，tiktoken会比其它开源的tokenizer库运行快3-6倍，以下是它与hugging
+face的tokenizer库的性能比较：</p>
+<figure>
+<img src="/img/nlp55_1.png" srcset="/img/loading.gif" lazyload
+alt="不同线程数下tiktoken与hugging face的性能比较" />
+<figcaption aria-hidden="true">不同线程数下tiktoken与hugging
+face的性能比较</figcaption>
+</figure>
+<p>以上结果是使用GPT-2
+tokenizer在1G文本上进行的性能测试，使用的<code>GPT2TokenizerFast</code>来源于<code>tokenizers==0.13.2</code>,
+<code>transformers==4.24.0</code> , <code>tiktoken==0.2.0</code>。</p>
 <h3 id="简单使用">简单使用</h3>
 <p><code>tiktoken</code>的Encodings（编码方式）用于展示文本是如何被转化为token的。不同的模型使用不同类型的编码方式。<code>tiktoken</code>支持如下三种OpenAI模型的编码方式：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>编码方式</th>
 <th>OpenAI模型</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>cl100k_base</td>
 <td>gpt-4, gpt-3.5-turbo, text-embedding-ada-002</td>
 </tr>
-<tr>
+<tr class="even">
 <td>p50k_base</td>
 <td>Codex模型，如 text-davinci-002, text-davinci-003</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>r50k_base (或gpt2)</td>
 <td>GPT-3模型，如davinci</td>
 </tr>
@@ -356,21 +370,30 @@
 <p>输出结果为：</p>
 <figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs lisp">&lt;Encoding &#x27;cl100k_base&#x27;&gt;<br></code></pre></td></tr></table></figure>
 <p>注意，<code>p50k_base</code>与<code>r50k_base</code>基本类似，在非代码应用中，它们通常会给出相同的token。</p>
-<p><code>cl100k_base</code>中的100k代码该编码方式中的词汇表数量大约为100k，词汇表文件为cl100k_base_vocab.json，下载网址为：<a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/weikang-wang/ChatGPT-Vocabulary/main/cl100k_base_vocab.json">https://raw.githubusercontent.com/weikang-wang/ChatGPT-Vocabulary/main/cl100k_base_vocab.json</a>，词汇数量为100256，如此庞大的词汇数量使得OpenAI模型在多种语言上都有不俗的表现。</p>
+<p><code>cl100k_base</code>中的100k代码该编码方式中的词汇表数量大约为100k，词汇表文件为cl100k_base_vocab.json，下载网址为：<a
+target="_blank" rel="noopener" href="https://raw.githubusercontent.com/weikang-wang/ChatGPT-Vocabulary/main/cl100k_base_vocab.json">https://raw.githubusercontent.com/weikang-wang/ChatGPT-Vocabulary/main/cl100k_base_vocab.json</a>，词汇数量为100256，如此庞大的词汇数量使得OpenAI模型在多种语言上都有不俗的表现。</p>
 <h3 id="编码与解码">编码与解码</h3>
 <p>编码（encode）是指将文本映射为token的数字列表，解码（decode）是指将token的数字列表转化为文本。参看以下的Python代码实现：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> tiktoken<br><br><span class="hljs-comment"># simple test</span><br>enc = tiktoken.get_encoding(<span class="hljs-string">&quot;cl100k_base&quot;</span>)<br><span class="hljs-built_in">print</span>(enc.encode(<span class="hljs-string">&quot;hello world&quot;</span>) == [<span class="hljs-number">15339</span>, <span class="hljs-number">1917</span>])<br><span class="hljs-built_in">print</span>(enc.decode([<span class="hljs-number">15339</span>, <span class="hljs-number">1917</span>]) == <span class="hljs-string">&quot;hello world&quot;</span>)<br><span class="hljs-built_in">print</span>(enc.encode(<span class="hljs-string">&quot;hello &lt;|endoftext|&gt;&quot;</span>, allowed_special=<span class="hljs-string">&quot;all&quot;</span>) == [<span class="hljs-number">15339</span>, <span class="hljs-number">220</span>, <span class="hljs-number">100257</span>])<br><br><span class="hljs-comment"># encode</span><br>tokens = enc.encode(<span class="hljs-string">&quot;tiktoken is great!&quot;</span>)<br><span class="hljs-built_in">print</span>(tokens)<br><span class="hljs-built_in">print</span>(<span class="hljs-built_in">len</span>(tokens))<br><br><span class="hljs-comment"># decode</span><br><span class="hljs-built_in">print</span>(enc.decode([<span class="hljs-number">83</span>, <span class="hljs-number">1609</span>, <span class="hljs-number">5963</span>, <span class="hljs-number">374</span>, <span class="hljs-number">2294</span>, <span class="hljs-number">0</span>]))<br><br><span class="hljs-comment"># chinese encode</span><br>tokens = enc.encode(<span class="hljs-string">&quot;大模型是什么？&quot;</span>)<br><span class="hljs-built_in">print</span>(tokens)<br><span class="hljs-built_in">print</span>(<span class="hljs-built_in">len</span>(tokens))<br><br><span class="hljs-comment"># chinese decode</span><br><span class="hljs-built_in">print</span>(enc.decode([<span class="hljs-number">27384</span>, <span class="hljs-number">54872</span>, <span class="hljs-number">25287</span>, <span class="hljs-number">21043</span>, <span class="hljs-number">6271</span>, <span class="hljs-number">222</span>, <span class="hljs-number">82696</span>, <span class="hljs-number">11571</span>]))<br></code></pre></td></tr></table></figure>
 <p>输出结果如下：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-literal">True</span><br><span class="hljs-literal">True</span><br><span class="hljs-literal">True</span><br>[<span class="hljs-number">83</span>, <span class="hljs-number">1609</span>, <span class="hljs-number">5963</span>, <span class="hljs-number">374</span>, <span class="hljs-number">2294</span>, <span class="hljs-number">0</span>]<br><span class="hljs-number">6</span><br><span class="hljs-string">tiktoken</span> <span class="hljs-string">is</span> <span class="hljs-string">great!</span><br>[<span class="hljs-number">27384</span>, <span class="hljs-number">54872</span>, <span class="hljs-number">25287</span>, <span class="hljs-number">21043</span>, <span class="hljs-number">6271</span>, <span class="hljs-number">222</span>, <span class="hljs-number">82696</span>, <span class="hljs-number">11571</span>]<br><span class="hljs-number">8</span><br><span class="hljs-string">大模型是什么？</span><br></code></pre></td></tr></table></figure>
 <h3 id="计算token数量">计算token数量</h3>
-<p>OpenAI模型中token数量较为关键，毕竟，OpenAI接口调用的收费方式是按照token数量来的。关于OpenAI接口调用的收费方式，可以参考网站：<a target="_blank" rel="noopener" href="https://openai.com/pricing">https://openai.com/pricing</a>。</p>
+<p>OpenAI模型中token数量较为关键，毕竟，OpenAI接口调用的收费方式是按照token数量来的。关于OpenAI接口调用的收费方式，可以参考网站：<a
+target="_blank" rel="noopener" href="https://openai.com/pricing">https://openai.com/pricing</a>。</p>
 <p>下面是用<code>tiktoken</code>来计算token数量的Python代码：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> tiktoken<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">num_tokens_from_string</span>(<span class="hljs-params">string: <span class="hljs-built_in">str</span>, encoding_name: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">int</span>:<br>    <span class="hljs-comment"># Returns the number of tokens in a text string.</span><br>    encoding = tiktoken.get_encoding(encoding_name)<br>    num_tokens = <span class="hljs-built_in">len</span>(encoding.encode(string))<br>    <span class="hljs-keyword">return</span> num_tokens<br><br><br><span class="hljs-built_in">print</span>(num_tokens_from_string(<span class="hljs-string">&#x27;tiktoken is great!&#x27;</span>, <span class="hljs-string">&#x27;cl100k_base&#x27;</span>))<br><span class="hljs-built_in">print</span>(num_tokens_from_string(<span class="hljs-string">&#x27;大模型是什么？&#x27;</span>, <span class="hljs-string">&#x27;cl100k_base&#x27;</span>))<br></code></pre></td></tr></table></figure>
 <p>输出结果为：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs">6<br>8<br></code></pre></td></tr></table></figure>
-<p>在hugging face网站上，已经有人实现了tiktoken的token数量计算，访问网站为：<a target="_blank" rel="noopener" href="https://huggingface.co/spaces/JacobLinCool/tiktoken-calculator">https://huggingface.co/spaces/JacobLinCool/tiktoken-calculator</a> ，页面如下：</p>
-<p><img src="/img/nlp55_2.png" srcset="/img/loading.gif" lazyload alt="tiktoken的token数量计算"></p>
-<p>在对话补全（chat completion）场景中计算token数量，以模型<code>gpt-3.5-turbo</code>为例，实现Python代码如下：</p>
+<p>在hugging
+face网站上，已经有人实现了tiktoken的token数量计算，访问网站为：<a
+target="_blank" rel="noopener" href="https://huggingface.co/spaces/JacobLinCool/tiktoken-calculator">https://huggingface.co/spaces/JacobLinCool/tiktoken-calculator</a>
+，页面如下：</p>
+<figure>
+<img src="/img/nlp55_2.png" srcset="/img/loading.gif" lazyload alt="tiktoken的token数量计算" />
+<figcaption aria-hidden="true">tiktoken的token数量计算</figcaption>
+</figure>
+<p>在对话补全（chat
+completion）场景中计算token数量，以模型<code>gpt-3.5-turbo</code>为例，实现Python代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> tiktoken<br><span class="hljs-keyword">import</span> openai<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">num_tokens_from_messages</span>(<span class="hljs-params">messages</span>):<br>    <span class="hljs-comment"># Returns the number of tokens used by a list of messages.</span><br>    encoding = tiktoken.encoding_for_model(<span class="hljs-string">&quot;gpt-3.5-turbo&quot;</span>)<br>    tokens_per_message = <span class="hljs-number">4</span>  <span class="hljs-comment"># every message follows &lt;|start|&gt;&#123;role/name&#125;\n&#123;content&#125;&lt;|end|&gt;\n</span><br>    tokens_per_name = -<span class="hljs-number">1</span>  <span class="hljs-comment"># if there&#x27;s a name, the role is omitted</span><br>    num_tokens = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> message <span class="hljs-keyword">in</span> messages:<br>        num_tokens += tokens_per_message<br>        <span class="hljs-keyword">for</span> key, value <span class="hljs-keyword">in</span> message.items():<br>            num_tokens += <span class="hljs-built_in">len</span>(encoding.encode(value))<br>            <span class="hljs-keyword">if</span> key == <span class="hljs-string">&quot;name&quot;</span>:<br>                num_tokens += tokens_per_name<br>    num_tokens += <span class="hljs-number">3</span>  <span class="hljs-comment"># every reply is primed with &lt;|start|&gt;assistant&lt;|message|&gt;</span><br>    <span class="hljs-keyword">return</span> num_tokens<br><br>example_messages = [<br>    &#123;<br>        <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;system&quot;</span>,<br>        <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;You are a helpful, pattern-following assistant that translates corporate jargon into plain English.&quot;</span>,<br>    &#125;,<br>    &#123;<br>        <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;system&quot;</span>,<br>        <span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;example_user&quot;</span>,<br>        <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;New synergies will help drive top-line growth.&quot;</span>,<br>    &#125;,<br>    &#123;<br>        <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;system&quot;</span>,<br>        <span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;example_assistant&quot;</span>,<br>        <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;Things working well together will increase revenue.&quot;</span>,<br>    &#125;,<br>    &#123;<br>        <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;system&quot;</span>,<br>        <span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;example_user&quot;</span>,<br>        <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;Let&#x27;s circle back when we have more bandwidth to touch base on opportunities for increased leverage.&quot;</span>,<br>    &#125;,<br>    &#123;<br>        <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;system&quot;</span>,<br>        <span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;example_assistant&quot;</span>,<br>        <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;Let&#x27;s talk later when we&#x27;re less busy about how to do better.&quot;</span>,<br>    &#125;,<br>    &#123;<br>        <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>,<br>        <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;This late pivot means we don&#x27;t have time to boil the ocean for the client deliverable.&quot;</span>,<br>    &#125;,<br>]<br><br><br><span class="hljs-comment"># example token count from the function defined above</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;num_tokens_from_messages(example_messages)&#125;</span> prompt tokens counted by num_tokens_from_messages().&quot;</span>)<br><span class="hljs-comment"># example token count from the OpenAI API</span><br>openai.api_key = <span class="hljs-string">&quot;&quot;</span><br>response = openai.ChatCompletion.create(<br>    model=<span class="hljs-string">&quot;gpt-3.5-turbo&quot;</span>,<br>    messages=example_messages,<br>    temperature=<span class="hljs-number">0</span>,<br>    max_tokens=<span class="hljs-number">1</span><br>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;<span class="hljs-subst">&#123;response[<span class="hljs-string">&quot;usage&quot;</span>][<span class="hljs-string">&quot;prompt_tokens&quot;</span>]&#125;</span> prompt tokens counted by the OpenAI API.&#x27;</span>)<br></code></pre></td></tr></table></figure>
 <p>输出结果如下：</p>
 <figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">127 </span>prompt tokens counted by num_tokens_from_messages().<br><span class="hljs-symbol">127 </span>prompt tokens counted by the OpenAI API.<br></code></pre></td></tr></table></figure>
@@ -378,11 +401,15 @@
 <h3 id="总结">总结</h3>
 <p>本文介绍了<code>tiktoken</code>模型和它的简单使用，以及token数量计算方式。</p>
 <h3 id="参考文献">参考文献</h3>
-<ol>
-<li>深入理解NLP Subword算法：BPE、WordPiece、ULM: <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/86965595">https://zhuanlan.zhihu.com/p/86965595</a></li>
-<li>tiktoken的Github网址：<a target="_blank" rel="noopener" href="https://github.com/openai/tiktoken">https://github.com/openai/tiktoken</a></li>
-<li>tiktoken-calculator: <a target="_blank" rel="noopener" href="https://huggingface.co/spaces/JacobLinCool/tiktoken-calculator">https://huggingface.co/spaces/JacobLinCool/tiktoken-calculator</a></li>
-<li>How_to_count_tokens_with_tiktoken.ipynb: <a target="_blank" rel="noopener" href="https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb">https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb</a></li>
+<ol type="1">
+<li>深入理解NLP Subword算法：BPE、WordPiece、ULM: <a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/86965595">https://zhuanlan.zhihu.com/p/86965595</a></li>
+<li>tiktoken的Github网址：<a
+target="_blank" rel="noopener" href="https://github.com/openai/tiktoken">https://github.com/openai/tiktoken</a></li>
+<li>tiktoken-calculator: <a
+target="_blank" rel="noopener" href="https://huggingface.co/spaces/JacobLinCool/tiktoken-calculator">https://huggingface.co/spaces/JacobLinCool/tiktoken-calculator</a></li>
+<li>How_to_count_tokens_with_tiktoken.ipynb: <a
+target="_blank" rel="noopener" href="https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb">https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb</a></li>
 </ol>
 
                 

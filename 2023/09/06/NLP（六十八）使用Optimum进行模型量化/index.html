@@ -23,15 +23,16 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文介绍了如何使用HuggingFace的&#96;Optimum&#96;，来对微调后的BERT模型进行量化（Quantization），在&#96;optimum.onnxruntime&#96;模块中，平均推理时间提速约1.8倍。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta property="og:image" content="https://percent4.github.io/img/nlp68_1.png">
+<meta property="og:image" content="https://percent4.github.io/img/weixin_gzh.png">
 <meta property="article:published_time" content="2023-09-06T15:39:33.000Z">
-<meta property="article:modified_time" content="2023-09-06T15:45:34.319Z">
+<meta property="article:modified_time" content="2024-01-10T15:53:13.999Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="BERT">
 <meta property="article:tag" content="模型量化">
 <meta property="article:tag" content="Optimum">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp68_1.png">
   
   
   
@@ -323,53 +324,63 @@
               <div class="markdown-body">
                 
                 <p>本文将会介绍如何使用HuggingFace的<code>Optimum</code>，来对微调后的BERT模型进行量化（Quantization）。</p>
-<p>在文章<a href="https://percent4.github.io/2023/09/03/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E4%B8%83%EF%BC%89BERT%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%90%8E%E5%8A%A8%E6%80%81%E9%87%8F%E5%8C%96%EF%BC%88PTDQ%EF%BC%89/">NLP（六十七）BERT模型训练后动态量化（PTDQ）</a>中，我们使用PyTorch自带的PTDQ（Post Training Dynamic Quantization）量化策略对微调后的BERT模型进行量化，取得了模型推理性能的提升（大约1.5倍）。本文将尝试使用<code>Optimum</code>量化工具。</p>
-<h3 id="Optimum介绍">Optimum介绍</h3>
-<p><code>Optimum</code> 是 <code>Transformers</code> 的扩展，它提供了一组性能优化工具，可以在目标硬件上以最高效率训练和运行模型。</p>
+<p>在文章<a
+href="https://percent4.github.io/2023/09/03/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E4%B8%83%EF%BC%89BERT%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%90%8E%E5%8A%A8%E6%80%81%E9%87%8F%E5%8C%96%EF%BC%88PTDQ%EF%BC%89/">NLP（六十七）BERT模型训练后动态量化（PTDQ）</a>中，我们使用PyTorch自带的PTDQ（Post
+Training Dynamic
+Quantization）量化策略对微调后的BERT模型进行量化，取得了模型推理性能的提升（大约1.5倍）。本文将尝试使用<code>Optimum</code>量化工具。</p>
+<h3 id="optimum介绍">Optimum介绍</h3>
+<p><code>Optimum</code> 是 <code>Transformers</code>
+的扩展，它提供了一组性能优化工具，可以在目标硬件上以最高效率训练和运行模型。</p>
 <p><code>Optimum</code>针对不同的硬件，提供了不同的优化方案，如下表：</p>
 <table>
+
 <thead>
-<tr>
+<tr class="header">
 <th>硬件</th>
 <th>安装命令</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>ONNX runtime</td>
 <td>python -m pip install optimum[onnxruntime]</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Intel Neural Compressor (INC)</td>
 <td>python -m pip install optimum[neural-compressor]</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Intel OpenVINO</td>
 <td>python -m pip install optimum[openvino,nncf]</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Graphcore IPU</td>
 <td>python -m pip install optimum[graphcore]</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Habana Gaudi Processor (HPU)</td>
 <td>python -m pip install optimum[habana]</td>
 </tr>
-<tr>
+<tr class="even">
 <td>GPU</td>
 <td>python -m pip install optimum[onnxruntime-gpu]</td>
 </tr>
 </tbody>
 </table>
-<p>本文将会介绍基于ONNX的模型量化技术。ONNX（英语：Open Neural Network Exchange）是一种针对机器学习所设计的开放式的文件格式，用于存储训练好的模型。它使得不同的人工智能框架（如Pytorch、MXNet）可以采用相同格式存储模型数据并交互。</p>
+<p>本文将会介绍基于ONNX的模型量化技术。ONNX（英语：Open Neural Network
+Exchange）是一种针对机器学习所设计的开放式的文件格式，用于存储训练好的模型。它使得不同的人工智能框架（如Pytorch、MXNet）可以采用相同格式存储模型数据并交互。</p>
 <h3 id="模型量化">模型量化</h3>
-<p>我们使用的微调后的BERT模型采用文章<a href="https://percent4.github.io/2023/09/02/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8HuggingFace%E4%B8%AD%E7%9A%84Trainer%E8%BF%9B%E8%A1%8CBERT%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/">https://percent4.github.io/2023/09/02/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8HuggingFace%E4%B8%AD%E7%9A%84Trainer%E8%BF%9B%E8%A1%8CBERT%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/</a>中给出的文本分类模型。</p>
+<p>我们使用的微调后的BERT模型采用文章<a
+href="https://percent4.github.io/2023/09/02/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8HuggingFace%E4%B8%AD%E7%9A%84Trainer%E8%BF%9B%E8%A1%8CBERT%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/">https://percent4.github.io/2023/09/02/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8HuggingFace%E4%B8%AD%E7%9A%84Trainer%E8%BF%9B%E8%A1%8CBERT%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/</a>中给出的文本分类模型。</p>
 <p>首先，我们先加载PyTorch中的设备（CPU）。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># load device</span><br><span class="hljs-keyword">import</span> torch<br><br>device = torch.device(<span class="hljs-string">&quot;cpu&quot;</span>)<br></code></pre></td></tr></table></figure>
 <p>接着，我们使用<code>optimum.onnxruntime</code>模块加载模型和tokenizer，并将模型保存为onnx格式。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> optimum.onnxruntime <span class="hljs-keyword">import</span> ORTModelForSequenceClassification<br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoTokenizer<br><span class="hljs-keyword">import</span> torch<br><br>model_id = <span class="hljs-string">&quot;./sougou_test_trainer_256/checkpoint-96&quot;</span><br>onnx_path = <span class="hljs-string">&quot;./sougou_test_trainer_256/onnx_256&quot;</span><br><br><span class="hljs-comment"># load vanilla transformers and convert to onnx</span><br>model = ORTModelForSequenceClassification.from_pretrained(model_id, from_transformers=<span class="hljs-literal">True</span>)<br>tokenizer = AutoTokenizer.from_pretrained(model_id)<br><br><span class="hljs-comment"># save onnx checkpoint and tokenizer</span><br>model.save_pretrained(onnx_path)<br>tokenizer.save_pretrained(onnx_path)<br></code></pre></td></tr></table></figure>
 <p>此时，会多出onnx_256文件夹，保存模型为model.onnx。</p>
-<p><img src="/img/nlp68_1.png" srcset="/img/loading.gif" lazyload alt="保存为onnx模型"></p>
+<figure>
+<img src="/img/nlp68_1.png" srcset="/img/loading.gif" lazyload alt="保存为onnx模型" />
+<figcaption aria-hidden="true">保存为onnx模型</figcaption>
+</figure>
 <p>输出结果为：</p>
 <figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs scheme">(<span class="hljs-symbol">&#x27;./sougou_test_trainer_256/onnx_256</span>\\tokenizer_config.json&#x27;,<br> <span class="hljs-symbol">&#x27;./sougou_test_trainer_256/onnx_256</span>\\special_tokens_map.json&#x27;,<br> <span class="hljs-symbol">&#x27;./sougou_test_trainer_256/onnx_256</span>\\vocab.txt&#x27;,<br> <span class="hljs-symbol">&#x27;./sougou_test_trainer_256/onnx_256</span>\\added_tokens.json&#x27;,<br> <span class="hljs-symbol">&#x27;./sougou_test_trainer_256/onnx_256</span>\\tokenizer.json&#x27;)<br></code></pre></td></tr></table></figure>
 <p>使用<code>transfomers</code>中的pipeline对模型进行快速推理。</p>
@@ -403,7 +414,7 @@
 <p>重复上述代码，将模型替换为量化前ONNX模型（model.onnx），优化后ONNX模型（model_oprimized.onnx），量化后ONNX模型（model_optimized_quantized.onnx），进行推理时间（单位：ms）统计和推理指标评估，结果见下表：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>模型</th>
 <th>平均推理时间</th>
 <th>P95推理时间</th>
@@ -411,19 +422,19 @@
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>量化前ONNX模型</td>
 <td>501.1</td>
 <td>623.9</td>
 <td>0.9717</td>
 </tr>
-<tr>
+<tr class="even">
 <td>优化后ONNX模型</td>
 <td>484.6</td>
 <td>629.6</td>
 <td>0.9717</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>量化后ONNX模型</td>
 <td>361.5</td>
 <td>426.9</td>
@@ -431,25 +442,37 @@
 </tr>
 </tbody>
 </table>
-<p>对比文章<a href="https://percent4.github.io/2023/09/03/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E4%B8%83%EF%BC%89BERT%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%90%8E%E5%8A%A8%E6%80%81%E9%87%8F%E5%8C%96%EF%BC%88PTDQ%EF%BC%89/">NLP（六十七）BERT模型训练后动态量化（PTDQ）</a>中的推理结果，原始模型的平均推理时间为666.6ms，weighted F1值为0.9717，我们有如下结论：</p>
+<p>对比文章<a
+href="https://percent4.github.io/2023/09/03/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E4%B8%83%EF%BC%89BERT%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%90%8E%E5%8A%A8%E6%80%81%E9%87%8F%E5%8C%96%EF%BC%88PTDQ%EF%BC%89/">NLP（六十七）BERT模型训练后动态量化（PTDQ）</a>中的推理结果，原始模型的平均推理时间为666.6ms，weighted
+F1值为0.9717，我们有如下结论：</p>
 <ul>
-<li>ONNX模型不影响推理效果，但在平均推理时间上提速约1.33倍</li>
-<li>优化ONNX模型不影响推理效果，但在平均推理时间上提速约1.38倍</li>
-<li>量化后的ONNX模型影响推理效果，一般会略有下降，本次实验结果为提升，但在平均推理时间上提速约1.84倍，由于PyTorch的PTDQ（模型训练后动态量化）</li>
-<li></li>
-</ul>
-<h3 id="总结">总结</h3>
+<li><p>ONNX模型不影响推理效果，但在平均推理时间上提速约1.33倍</p></li>
+<li><p>优化ONNX模型不影响推理效果，但在平均推理时间上提速约1.38倍</p></li>
+<li><p>量化后的ONNX模型影响推理效果，一般会略有下降，本次实验结果为提升，但在平均推理时间上提速约1.84倍，由于PyTorch的PTDQ（模型训练后动态量化）</p></li>
+<li><h3 id="总结">总结</h3>
 <p>本文介绍了如何使用HuggingFace的<code>Optimum</code>，来对微调后的BERT模型进行量化（Quantization），在<code>optimum.onnxruntime</code>模块中，平均推理时间提速约1.8倍。</p>
-<p>本文已开源至Github，网址为：<a target="_blank" rel="noopener" href="https://github.com/percent4/dynamic_quantization_on_bert">https://github.com/percent4/dynamic_quantization_on_bert</a> 。</p>
-<p>本文已开通个人博客，欢迎大家访问：<a href="https://percent4.github.io/">https://percent4.github.io/</a> 。</p>
-<p>欢迎你关注我的微信公众号，每周我都会在这里更新文章。</p>
-<p><img src="/img/weixin_gzh.png" srcset="/img/loading.gif" lazyload alt="个人微信公众号"></p>
+<p>本文已开源至Github，网址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/dynamic_quantization_on_bert">https://github.com/percent4/dynamic_quantization_on_bert</a>
+。</p>
+<p>本文已开通个人博客，欢迎大家访问：<a
+href="https://percent4.github.io/">https://percent4.github.io/</a>
+。</p>
+<p>欢迎你关注我的微信公众号，每周我都会在这里更新文章。</p></li>
+</ul>
+<figure>
+<img src="/img/weixin_gzh.png" srcset="/img/loading.gif" lazyload alt="个人微信公众号" />
+<figcaption aria-hidden="true">个人微信公众号</figcaption>
+</figure>
 <h3 id="参考文献">参考文献</h3>
-<ol>
-<li>NLP（六十六）使用HuggingFace中的Trainer进行BERT模型微调：<a href="https://percent4.github.io/2023/09/02/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8HuggingFace%E4%B8%AD%E7%9A%84Trainer%E8%BF%9B%E8%A1%8CBERT%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/">https://percent4.github.io/2023/09/02/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8HuggingFace%E4%B8%AD%E7%9A%84Trainer%E8%BF%9B%E8%A1%8CBERT%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/</a></li>
-<li>NLP（六十七）BERT模型训练后动态量化（PTDQ）：<a href="https://percent4.github.io/2023/09/03/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E4%B8%83%EF%BC%89BERT%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%90%8E%E5%8A%A8%E6%80%81%E9%87%8F%E5%8C%96%EF%BC%88PTDQ%EF%BC%89/">https://percent4.github.io/2023/09/03/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E4%B8%83%EF%BC%89BERT%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%90%8E%E5%8A%A8%E6%80%81%E9%87%8F%E5%8C%96%EF%BC%88PTDQ%EF%BC%89/</a></li>
-<li>Optimum: <a target="_blank" rel="noopener" href="https://huggingface.co/docs/optimum/index">https://huggingface.co/docs/optimum/index</a></li>
-<li>Optimizing Transformers with Hugging Face Optimum: <a target="_blank" rel="noopener" href="https://www.philschmid.de/optimizing-transformers-with-optimum">https://www.philschmid.de/optimizing-transformers-with-optimum</a></li>
+<ol type="1">
+<li>NLP（六十六）使用HuggingFace中的Trainer进行BERT模型微调：<a
+href="https://percent4.github.io/2023/09/02/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8HuggingFace%E4%B8%AD%E7%9A%84Trainer%E8%BF%9B%E8%A1%8CBERT%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/">https://percent4.github.io/2023/09/02/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8HuggingFace%E4%B8%AD%E7%9A%84Trainer%E8%BF%9B%E8%A1%8CBERT%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/</a></li>
+<li>NLP（六十七）BERT模型训练后动态量化（PTDQ）：<a
+href="https://percent4.github.io/2023/09/03/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E4%B8%83%EF%BC%89BERT%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%90%8E%E5%8A%A8%E6%80%81%E9%87%8F%E5%8C%96%EF%BC%88PTDQ%EF%BC%89/">https://percent4.github.io/2023/09/03/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E4%B8%83%EF%BC%89BERT%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%90%8E%E5%8A%A8%E6%80%81%E9%87%8F%E5%8C%96%EF%BC%88PTDQ%EF%BC%89/</a></li>
+<li>Optimum: <a
+target="_blank" rel="noopener" href="https://huggingface.co/docs/optimum/index">https://huggingface.co/docs/optimum/index</a></li>
+<li>Optimizing Transformers with Hugging Face Optimum: <a
+target="_blank" rel="noopener" href="https://www.philschmid.de/optimizing-transformers-with-optimum">https://www.philschmid.de/optimizing-transformers-with-optimum</a></li>
 </ol>
 
                 

@@ -23,14 +23,21 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文将会介绍在开放领域的三元组抽取的一次尝试。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta property="og:image" content="https://percent4.github.io/img/nlp27_1.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp27_2.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp27_3.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp27_4.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp27_5.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp27_6.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp27_7.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp27_8.png">
 <meta property="article:published_time" content="2023-07-09T03:27:33.000Z">
-<meta property="article:modified_time" content="2023-08-06T14:55:18.961Z">
+<meta property="article:modified_time" content="2024-01-10T15:53:14.081Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="关系抽取">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp27_1.png">
   
   
   
@@ -259,7 +266,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          3.7k 字
+          3.8k 字
         
       </span>
     
@@ -321,87 +328,116 @@
             
               <div class="markdown-body">
                 
-                <p>当我写下这篇文章的时候，我的内心是激动的，这是因为，自从去年6月份写了文章<a href="https://percent4.github.io/2023/07/08/%E5%88%A9%E7%94%A8%E5%85%B3%E7%B3%BB%E6%8A%BD%E5%8F%96%E6%9E%84%E5%BB%BA%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95/">利用关系抽取构建知识图谱的一次尝试</a> 后，我就一直在试图寻找一种在开放领域能够进行三元组抽取的办法，也有很多读者问过我这方面的问题，今天，笔者将给出答复，虽然不是正确答案（现在也没有正确答案），但至少，我写下了自己的答案。</p>
+                <p>当我写下这篇文章的时候，我的内心是激动的，这是因为，自从去年6月份写了文章<a
+href="https://percent4.github.io/2023/07/08/%E5%88%A9%E7%94%A8%E5%85%B3%E7%B3%BB%E6%8A%BD%E5%8F%96%E6%9E%84%E5%BB%BA%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95/">利用关系抽取构建知识图谱的一次尝试</a>
+后，我就一直在试图寻找一种在开放领域能够进行三元组抽取的办法，也有很多读者问过我这方面的问题，今天，笔者将给出答复，虽然不是正确答案（现在也没有正确答案），但至少，我写下了自己的答案。</p>
 <p>离我想出这个抽取系统虽然才过去不久，但我的心情，已经由开始的激动狂喜，转化为后来的平淡，直到现在的不满。事实证明，开放领域的三元组抽取实在太难，以笔者个人的努力和智商，实在没法给出完美的答案，所以，文章的题目是尝试，仅仅作为尝试，并不能解决好这个问题。但，我还是想写些什么，希望能够对笔者有一点点启发，同时，也是对自己近半年的探寻做一个总结。</p>
-<p>关于三元组抽取的基本介绍和常用办法，笔者之前已经在不少文章中描述过，这里不再过多介绍，有兴趣的读者可以参考文章<a href="https://percent4.github.io/2023/07/08/%E5%88%A9%E7%94%A8%E5%85%B3%E7%B3%BB%E6%8A%BD%E5%8F%96%E6%9E%84%E5%BB%BA%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95/">利用关系抽取构建知识图谱的一次尝试</a> 和 <a href="https://percent4.github.io/2023/07/09/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E5%85%AD%EF%BC%89%E9%99%90%E5%AE%9A%E9%A2%86%E5%9F%9F%E7%9A%84%E4%B8%89%E5%85%83%E7%BB%84%E6%8A%BD%E5%8F%96%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95/">NLP（二十六）限定领域的三元组抽取的一次尝试</a>  。本文将会介绍笔者在开放领域做三元组抽取的一次尝试。</p>
+<p>关于三元组抽取的基本介绍和常用办法，笔者之前已经在不少文章中描述过，这里不再过多介绍，有兴趣的读者可以参考文章<a
+href="https://percent4.github.io/2023/07/08/%E5%88%A9%E7%94%A8%E5%85%B3%E7%B3%BB%E6%8A%BD%E5%8F%96%E6%9E%84%E5%BB%BA%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95/">利用关系抽取构建知识图谱的一次尝试</a>
+和 <a
+href="https://percent4.github.io/2023/07/09/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E5%85%AD%EF%BC%89%E9%99%90%E5%AE%9A%E9%A2%86%E5%9F%9F%E7%9A%84%E4%B8%89%E5%85%83%E7%BB%84%E6%8A%BD%E5%8F%96%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95/">NLP（二十六）限定领域的三元组抽取的一次尝试</a>
+。本文将会介绍笔者在开放领域做三元组抽取的一次尝试。</p>
 <p>本项目已经开源至Github，文章最后会给出相应的网址。本项目的项目结构如下：</p>
-<p><img src="/img/nlp27_1.png" srcset="/img/loading.gif" lazyload alt="项目结构"></p>
+<figure>
+<img src="/img/nlp27_1.png" srcset="/img/loading.gif" lazyload alt="项目结构" />
+<figcaption aria-hidden="true">项目结构</figcaption>
+</figure>
 <p>本项目一共分为四部分，主要模块介绍如下：</p>
 <ul>
-<li>
-<p>extract_example: 利用训练好的模型对基本小说和新闻进行三元组抽取，形成知识图谱例子；</p>
-</li>
-<li>
-<p>sequence_labeling：训练标注，对标注的实体数据进行序列标注算法训练；</p>
-</li>
-<li>
-<p>spo_tagging_platform：标注平台，标注subject，predicate和object以及三元组是否有效；</p>
-</li>
-<li>
-<p>text_classification：文本分类，用于判别抽取的三元组是否有效。</p>
-<p>本项目的抽取系统流程图如下：</p>
-</li>
+<li><p>extract_example:
+利用训练好的模型对基本小说和新闻进行三元组抽取，形成知识图谱例子；</p></li>
+<li><p>sequence_labeling：训练标注，对标注的实体数据进行序列标注算法训练；</p></li>
+<li><p>spo_tagging_platform：标注平台，标注subject，predicate和object以及三元组是否有效；</p></li>
+<li><p>text_classification：文本分类，用于判别抽取的三元组是否有效。</p>
+<p>本项目的抽取系统流程图如下：</p></li>
 </ul>
-<p><img src="/img/nlp27_2.png" srcset="/img/loading.gif" lazyload alt="抽取系统流程图"></p>
+<figure>
+<img src="/img/nlp27_2.png" srcset="/img/loading.gif" lazyload alt="抽取系统流程图" />
+<figcaption aria-hidden="true">抽取系统流程图</figcaption>
+</figure>
 <p>接下来笔者将逐一介绍。</p>
 <h3 id="标注平台">标注平台</h3>
 <p>笔者用tornado搭建了简易的标注平台，在标注页面中，标注人员需要输入标注的句子（句子级别的抽取）以及subject，predicate，object，点击“显示SPO”，将有效的三元组标注为1，无效的三元组标注为0。之所以采取这种标注方法，是因为我们可以在句子中标注subject，predicate，object，这些标注的实体就会形成可能的三元组组合，再利用0，1来标注这种三元组是否有效，这样就能做到在开放领域进行三元组抽取。</p>
 <p>一个简单的标注例子如下：</p>
-<p><img src="/img/nlp27_3.png" srcset="/img/loading.gif" lazyload alt="标注例子"></p>
+<figure>
+<img src="/img/nlp27_3.png" srcset="/img/loading.gif" lazyload alt="标注例子" />
+<figcaption aria-hidden="true">标注例子</figcaption>
+</figure>
 <p>再对以上的标注结果做一些说明，我们的标注是以句子为单位，进行句子级别的标注，不同要素在标注的时候加#区分，标注了两个subject，1个predicate（共用）和2个object，其中predidate是这些subject和object公用的，所以只需要标注一次。这样，点击“显示SPO”，一共会显示4个三元组，s，p，o用#隔开，0，1表示是否是有效三元组，默认为0。</p>
 <p>笔者利用空余时间，一共标注了3200多个样本，对于序列标注来说，就是3200多个样本，对于文本分类来说，就是9000多个样本了。</p>
 <h3 id="序列标注">序列标注</h3>
 <p>对于上述的标注例子，会形成如下的标注序列：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs bash">美	B-SUBJ<br>国	I-SUBJ<br>疾	I-SUBJ<br>控	I-SUBJ<br>中	I-SUBJ<br>心	I-SUBJ<br>主	B-PRED<br>任	I-PRED<br>雷	B-OBJ<br>德	I-OBJ<br>菲	I-OBJ<br>尔	I-OBJ<br>德	I-OBJ<br>（	O<br>左	O<br>圈	O<br>）	O<br>和	O<br>美	B-SUBJ<br>国	I-SUBJ<br>国	I-SUBJ<br>立	I-SUBJ<br>卫	I-SUBJ<br>生	I-SUBJ<br>研	I-SUBJ<br>究	I-SUBJ<br>院	I-SUBJ<br>过	I-SUBJ<br>敏	I-SUBJ<br>和	I-SUBJ<br>传	I-SUBJ<br>染	I-SUBJ<br>病	I-SUBJ<br>研	I-SUBJ<br>究	I-SUBJ<br>所	I-SUBJ<br>主	B-PRED<br>任	I-PRED<br>福	B-OBJ<br>西	I-OBJ<br>（	O<br>右	O<br>圈	O<br>）	O<br></code></pre></td></tr></table></figure>
-<p>将数据集分为训练集和测试集，比例为8：2.采用经典的深度学习模型ALBERT+Bi-LSTM+CRF进行实体识别，设置最大文本长度为128，训练100个epoch。关于该模型的介绍，可以参考文章<a target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/details/104826655">NLP（二十五）实现ALBERT+Bi-LSTM+CRF模型</a> 。</p>
+<p>将数据集分为训练集和测试集，比例为8：2.采用经典的深度学习模型ALBERT+Bi-LSTM+CRF进行实体识别，设置最大文本长度为128，训练100个epoch。关于该模型的介绍，可以参考文章<a
+target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/details/104826655">NLP（二十五）实现ALBERT+Bi-LSTM+CRF模型</a>
+。</p>
 <p>在测试集上的训练结果如下：</p>
 <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">accuracy</span>:  <span class="hljs-number">93</span>.<span class="hljs-number">69</span>%; precision:  <span class="hljs-number">76</span>.<span class="hljs-number">26</span>%; recall:  <span class="hljs-number">82</span>.<span class="hljs-number">33</span>%; FB1:  <span class="hljs-number">79</span>.<span class="hljs-number">18</span><br><span class="hljs-attribute">OBJ</span>: precision:  <span class="hljs-number">80</span>.<span class="hljs-number">47</span>%; recall:  <span class="hljs-number">88</span>.<span class="hljs-number">81</span>%; FB1:  <span class="hljs-number">84</span>.<span class="hljs-number">44</span>  <span class="hljs-number">927</span><br><span class="hljs-attribute">PRED</span>: precision:  <span class="hljs-number">76</span>.<span class="hljs-number">89</span>%; recall:  <span class="hljs-number">83</span>.<span class="hljs-number">69</span>%; FB1:  <span class="hljs-number">80</span>.<span class="hljs-number">14</span>  <span class="hljs-number">1021</span><br><span class="hljs-attribute">SUBJ</span>: precision:  <span class="hljs-number">71</span>.<span class="hljs-number">72</span>%; recall:  <span class="hljs-number">75</span>.<span class="hljs-number">32</span>%; FB1:  <span class="hljs-number">73</span>.<span class="hljs-number">48</span>  <span class="hljs-number">983</span><br></code></pre></td></tr></table></figure>
 <p>在测试集上的总体F1值接近80%。</p>
 <h3 id="文本分类">文本分类</h3>
 <p>关于文本分类，需要多做一些说明。</p>
 <p>虽然本文的题目是关于在开发领域的三元组抽取的尝试，但实际我在标注的时候，还是更多地标注人物头衔，人物关系，公司与人的关系，影视剧主演、导演信息等。形成的有效的文本分类的样本为9000多个，一共有关系1365个，数量最多的前20个关系如下图：</p>
-<p><img src="/img/nlp27_4.png" srcset="/img/loading.gif" lazyload alt="数量最多的20个关系"></p>
+<figure>
+<img src="/img/nlp27_4.png" srcset="/img/loading.gif" lazyload alt="数量最多的20个关系" />
+<figcaption aria-hidden="true">数量最多的20个关系</figcaption>
+</figure>
 <p>以上述的标注数据为例，形成的标注数据如下：</p>
 <figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs clean">美国疾控中心#主任#雷德菲尔德#<span class="hljs-number">1</span>#美国疾控中心主任雷德菲尔德（左圈）和美国国立卫生研究院过敏和传染病研究所主任福西（右圈）<br>美国疾控中心#主任#福西#<span class="hljs-number">0</span>#美国疾控中心主任雷德菲尔德（左圈）和美国国立卫生研究院过敏和传染病研究所主任福西（右圈）<br>美国国立卫生研究院过敏和传染病研究所#主任#雷德菲尔德#<span class="hljs-number">0</span>#美国疾控中心主任雷德菲尔德（左圈）和美国国立卫生研究院过敏和传染病研究所主任福西（右圈）<br>美国国立卫生研究院过敏和传染病研究所#主任#福西#<span class="hljs-number">1</span>#美国疾控中心主任雷德菲尔德（左圈）和美国国立卫生研究院过敏和传染病研究所主任福西（右圈）<br></code></pre></td></tr></table></figure>
 <p>在实际模型训练的时候，会将原文中的subject用S*len(subject)代替，predicate用P，object用O。</p>
-<p>将数据集分为训练集和测试集，比例为8：2。采用经典的深度学习模型ALBERT+Bi-GRU+ATT+FC，设置文本的最大长度为为128，训练30个epoch，采用early stopping机制，训练过程的loss和acc图像如下：</p>
-<p><img src="/img/nlp27_5.png" srcset="/img/loading.gif" lazyload alt="训练过程的loss和acc图像"></p>
+<p>将数据集分为训练集和测试集，比例为8：2。采用经典的深度学习模型ALBERT+Bi-GRU+ATT+FC，设置文本的最大长度为为128，训练30个epoch，采用early
+stopping机制，训练过程的loss和acc图像如下：</p>
+<figure>
+<img src="/img/nlp27_5.png" srcset="/img/loading.gif" lazyload alt="训练过程的loss和acc图像" />
+<figcaption aria-hidden="true">训练过程的loss和acc图像</figcaption>
+</figure>
 <p>最终在测试集上的accuracy约为96%。</p>
 <h3 id="新数据进行三元组抽取">新数据进行三元组抽取</h3>
 <p>上述的模型训练完毕后，我们就可以将其封装成HTTP服务。对于新输入的句子，我们先利用序列标注模型预测出其中的subject，predicate和object，组合成三元组与句子的拼接，输入到文本分类模型，判别该三元组是否有效，0为无效，1为有效。</p>
 <p>从网上找几个例子，预测的结果如下：</p>
-<p><img src="/img/nlp27_6.png" srcset="/img/loading.gif" lazyload alt="例子1"></p>
-<p><img src="/img/nlp27_7.png" srcset="/img/loading.gif" lazyload alt="例子2"></p>
-<p><img src="/img/nlp27_8.png" srcset="/img/loading.gif" lazyload alt="例子3"></p>
-<p><code>extract_example</code>目录中为抽取的效果，包括几本小说和一些新闻上的效果，关于这方面的演示，可以参考另一个项目：<a target="_blank" rel="noopener" href="https://github.com/percent4/knowledge_graph_demo">https://github.com/percent4/knowledge_graph_demo</a> 。也可以参考文章<a href="https://percent4.github.io/2023/07/09/%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1%E6%9E%84%E5%BB%BA%E4%B8%BE%E4%BE%8B/">知识图谱构建举例</a> 中给出的几个知识图谱的建构的例子。</p>
+<figure>
+<img src="/img/nlp27_6.png" srcset="/img/loading.gif" lazyload alt="例子1" />
+<figcaption aria-hidden="true">例子1</figcaption>
+</figure>
+<figure>
+<img src="/img/nlp27_7.png" srcset="/img/loading.gif" lazyload alt="例子2" />
+<figcaption aria-hidden="true">例子2</figcaption>
+</figure>
+<figure>
+<img src="/img/nlp27_8.png" srcset="/img/loading.gif" lazyload alt="例子3" />
+<figcaption aria-hidden="true">例子3</figcaption>
+</figure>
+<p><code>extract_example</code>目录中为抽取的效果，包括几本小说和一些新闻上的效果，关于这方面的演示，可以参考另一个项目：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/knowledge_graph_demo">https://github.com/percent4/knowledge_graph_demo</a>
+。也可以参考文章<a
+href="https://percent4.github.io/2023/07/09/%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1%E6%9E%84%E5%BB%BA%E4%B8%BE%E4%BE%8B/">知识图谱构建举例</a>
+中给出的几个知识图谱的建构的例子。</p>
 <h3 id="总结">总结</h3>
 <p>本文写的过程较为简单，也没有代码，这是因为笔者在之前的文章中做了大量的铺垫，主要是集中在模型方面。况且，这个项目比较大，也不适合在这里详细讲述，笔者只在这里给出思路和大概的处理流程，具体的实现代码可以参考下方的Github地址。</p>
 <p>在实际的抽取过程中，一些句子也存在抽取出大量无用的三元组的情况，导致召回率高，这是因为本项目针对的是开放领域的三元组抽取，因此效果比不会有想象中的那么好，提升抽取效果的办法如下：</p>
 <ul>
-<li>
-<p>增加数据标注量，目前序列标注算法的样本仅3200多个；</p>
-</li>
-<li>
-<p>模型方面：现在是pipeline形式，各自的效果还行，但总体上不如Joint形式好；</p>
-</li>
-<li>
-<p>对于自己想抽的其他三元组的情形，建议增加这方面的标注；</p>
-</li>
-<li>
-<p>文本预测耗时长（该问题已经解决）。</p>
+<li><p>增加数据标注量，目前序列标注算法的样本仅3200多个；</p></li>
+<li><p>模型方面：现在是pipeline形式，各自的效果还行，但总体上不如Joint形式好；</p></li>
+<li><p>对于自己想抽的其他三元组的情形，建议增加这方面的标注；</p></li>
+<li><p>文本预测耗时长（该问题已经解决）。</p>
 <p>本项目作为笔者在开放领域的三元组抽取的一次尝试，在此之前关于这方面的文章或者项目还很少，因此可以说是探索阶段。</p>
-<p>源码和数据已经在Github项目中给出，网址为 <a target="_blank" rel="noopener" href="https://github.com/percent4/spo_extract_platform">https://github.com/percent4/spo_extract_platform</a> 。</p>
-<p>本人的微信公众号为<code>NLP奇幻之旅</code>，欢迎关注~</p>
-</li>
+<p>源码和数据已经在Github项目中给出，网址为 <a
+target="_blank" rel="noopener" href="https://github.com/percent4/spo_extract_platform">https://github.com/percent4/spo_extract_platform</a>
+。</p>
+<p>本人的微信公众号为<code>NLP奇幻之旅</code>，欢迎关注~</p></li>
 </ul>
 <h3 id="参考文献">参考文献</h3>
-<ol>
-<li>利用关系抽取构建知识图谱的一次尝试： <a target="_blank" rel="noopener" href="https://www.cnblogs.com/jclian91/p/11107323.html">https://www.cnblogs.com/jclian91/p/11107323.html</a></li>
-<li>NLP（二十六）限定领域的三元组抽取的一次尝试： <a target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/details/104874488">https://blog.csdn.net/jclian91/article/details/104874488</a></li>
-<li>NLP（二十五）实现ALBERT+Bi-LSTM+CRF模型： <a target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/details/104826655">https://blog.csdn.net/jclian91/article/details/104826655</a></li>
-<li>知识图谱构建举例： <a target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/details/104685424">https://blog.csdn.net/jclian91/article/details/104685424</a></li>
-<li>NLP（二十一）人物关系抽取的一次实战：<a target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/details/104380371">https://blog.csdn.net/jclian91/article/details/104380371</a></li>
-<li>《知识图谱 方法、实践与应用》  王昊奋、漆桂林、陈华钧著，中国工信出版集团、电子工业出版社出版。</li>
+<ol type="1">
+<li>利用关系抽取构建知识图谱的一次尝试：
+https://www.cnblogs.com/jclian91/p/11107323.html</li>
+<li>NLP（二十六）限定领域的三元组抽取的一次尝试：
+https://blog.csdn.net/jclian91/article/details/104874488</li>
+<li>NLP（二十五）实现ALBERT+Bi-LSTM+CRF模型：
+https://blog.csdn.net/jclian91/article/details/104826655</li>
+<li>知识图谱构建举例：
+https://blog.csdn.net/jclian91/article/details/104685424</li>
+<li>NLP（二十一）人物关系抽取的一次实战：https://blog.csdn.net/jclian91/article/details/104380371</li>
+<li>《知识图谱 方法、实践与应用》
+王昊奋、漆桂林、陈华钧著，中国工信出版集团、电子工业出版社出版。</li>
 </ol>
 
                 

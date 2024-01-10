@@ -1,0 +1,918 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍如何在大模型中对文本补充（Text Completion）进行动态提示（Dynamic Prompting）。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（七十七）文本补全中的动态提示（Dynamic-Prompting）">
+<meta property="og:url" content="https://percent4.github.io/2024/01/10/NLP%EF%BC%88%E4%B8%83%E5%8D%81%E4%B8%83%EF%BC%89%E6%96%87%E6%9C%AC%E8%A1%A5%E5%85%A8%E4%B8%AD%E7%9A%84%E5%8A%A8%E6%80%81%E6%8F%90%E7%A4%BA%EF%BC%88Dynamic-Prompting%EF%BC%89/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍如何在大模型中对文本补充（Text Completion）进行动态提示（Dynamic Prompting）。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+<meta property="article:published_time" content="2024-01-10T15:46:18.000Z">
+<meta property="article:modified_time" content="2024-01-10T15:47:07.396Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="LLM">
+<meta property="article:tag" content="Dynamic Few Shot">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+  
+  
+  
+  <title>NLP（七十七）文本补全中的动态提示（Dynamic-Prompting） - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（七十七）文本补全中的动态提示（Dynamic-Prompting）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-01-10 23:46" pubdate>
+          星期三, 一月 10日 2024, 11:46 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          13k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          109 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（七十七）文本补全中的动态提示（Dynamic-Prompting）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍如何在大模型中对文本补充（Text
+Completion）进行动态提示（Dynamic Prompting）。</p>
+</blockquote>
+<p>本文以文本分类任务为例，样例数据集为<code>TREC</code>，使用大模型的文本补全进行类别预测，分别在Zero-Shot,
+Few-Shot, Dynamic
+Few-Shot场景下进行测试，验证动态提示对于提升模型表现的有效性。</p>
+<h2 id="数据集">数据集</h2>
+<p>Text REtrieval Conference (<a
+target="_blank" rel="noopener" href="https://huggingface.co/datasets/trec">TREC</a>) Question
+Classification数据集包含训练集中的约5500个标记问题和测试集中的另外 500
+个问题。</p>
+<p>该数据集有 6 个粗类标签和 50 个精细类标签。
+每个句子的平均长度为10，词汇量为8700。6 个粗类标签为<strong>ABBR, ENTY,
+DESC, HUM, LOC, NUM</strong>.</p>
+<p>该数据集从四个来源收集：USC发布的4,500个英语问题（Hovy et al.,
+2001）、针对少数稀有类别的大约500个手动构建的问题、894个 TREC 8 和 TREC
+9 问题，以及来自 TREC 10 的500个问题作为测试集。
+这些问题是手动标记的。</p>
+<p>该数据集的HuggingFace网址为: <a
+target="_blank" rel="noopener" href="https://huggingface.co/datasets/trec">https://huggingface.co/datasets/trec</a>，使用<code>datasets</code>模块加载代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> openai<br><span class="hljs-keyword">from</span> datasets <span class="hljs-keyword">import</span> load_dataset<br><span class="hljs-keyword">from</span> sklearn.metrics <span class="hljs-keyword">import</span> classification_report<br><br>dataset = load_dataset(<span class="hljs-string">&quot;trec&quot;</span>)<br><br>dataset<br></code></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs json">DatasetDict(<span class="hljs-punctuation">&#123;</span><br>    train<span class="hljs-punctuation">:</span> Dataset(<span class="hljs-punctuation">&#123;</span><br>        features<span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>&#x27;text&#x27;<span class="hljs-punctuation">,</span> &#x27;coarse_label&#x27;<span class="hljs-punctuation">,</span> &#x27;fine_label&#x27;<span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>        num_rows<span class="hljs-punctuation">:</span> <span class="hljs-number">5452</span><br>    <span class="hljs-punctuation">&#125;</span>)<br>    test<span class="hljs-punctuation">:</span> Dataset(<span class="hljs-punctuation">&#123;</span><br>        features<span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>&#x27;text&#x27;<span class="hljs-punctuation">,</span> &#x27;coarse_label&#x27;<span class="hljs-punctuation">,</span> &#x27;fine_label&#x27;<span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>        num_rows<span class="hljs-punctuation">:</span> <span class="hljs-number">500</span><br>    <span class="hljs-punctuation">&#125;</span>)<br><span class="hljs-punctuation">&#125;</span>)<br></code></pre></td></tr></table></figure>
+<p>其中test数据集的第一条数据为：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span>&#x27;text&#x27;<span class="hljs-punctuation">:</span> &#x27;How far is it from Denver to Aspen ?&#x27;<span class="hljs-punctuation">,</span><br> &#x27;coarse_label&#x27;<span class="hljs-punctuation">:</span> <span class="hljs-number">5</span><span class="hljs-punctuation">,</span><br> &#x27;fine_label&#x27;<span class="hljs-punctuation">:</span> <span class="hljs-number">40</span><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<p>对数据进行预处理，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># name of the text and label column</span><br>label_type = <span class="hljs-string">&#x27;coarse_label&#x27;</span><br>text_key = <span class="hljs-string">&quot;text&quot;</span><br><span class="hljs-comment"># create mapping of ids2class and class2id</span><br>id2class = <span class="hljs-built_in">dict</span>((i, label) <span class="hljs-keyword">for</span> i, label <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(dataset[<span class="hljs-string">&#x27;train&#x27;</span>].features[label_type].names))<br>class2id = <span class="hljs-built_in">dict</span>((label, i) <span class="hljs-keyword">for</span> i, label <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(dataset[<span class="hljs-string">&#x27;train&#x27;</span>].features[label_type].names))<br><span class="hljs-comment"># create a dictionary with classes as key and containing all the training examples within that class</span><br>class2TrainDataset = <span class="hljs-built_in">dict</span>((label, []) <span class="hljs-keyword">for</span> label <span class="hljs-keyword">in</span> dataset[<span class="hljs-string">&#x27;train&#x27;</span>].features[label_type].names)<br><span class="hljs-keyword">for</span> example <span class="hljs-keyword">in</span> dataset[<span class="hljs-string">&#x27;train&#x27;</span>]:<br>    label = id2class[example[label_type]]<br>    class2TrainDataset[label].append(example[text_key])<br></code></pre></td></tr></table></figure>
+<p>其中，id2class和class2id分别为id与类别对应表、类型与id对应表，class2TrainDataset为每个类别中的训练数据集。</p>
+<h2 id="zero-shot">Zero-Shot</h2>
+<p>构建Zero-Shot的prompt，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># a prompt for asking LLM to perform a task</span><br>task_prompt = <span class="hljs-string">&quot;As a Question Answering agent, your goal is to categorize questions into different semantic classes that impose constraints on potential answers, so that they can be utilized in later stages of the question answering process.\nFollowing are the semantic classes: [&quot;</span><br>task_prompt += <span class="hljs-string">&quot;, &quot;</span>.join([label <span class="hljs-keyword">for</span> label <span class="hljs-keyword">in</span> class2TrainDataset]) + <span class="hljs-string">&quot;]&quot;</span><br><span class="hljs-comment"># a prompt for asking LLM to generate the output for current task</span><br>query_prompt = <span class="hljs-string">&quot;\nClassify the following question into one of the above classes. Please answer in a single word.\nquestion: &quot;</span><br>answer_prompt = <span class="hljs-string">&quot;\noutput: &quot;</span><br></code></pre></td></tr></table></figure>
+<p>那么，test数据集的第一条的Zero-Shot prompt为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python">zeroshot_prompt = task_prompt +  query_prompt + dataset[<span class="hljs-string">&#x27;test&#x27;</span>][<span class="hljs-number">0</span>][text_key] + answer_prompt<br><span class="hljs-meta">&gt;&gt;&gt; </span>zeroshot_prompt<br><br>As a Question Answering agent, your goal <span class="hljs-keyword">is</span> to categorize questions into different semantic classes that impose constraints on potential answers, so that they can be utilized <span class="hljs-keyword">in</span> later stages of the question answering process.<br>Following are the semantic classes: [ABBR, ENTY, DESC, HUM, LOC, NUM]<br>Classify the following question into one of the above classes. Please answer <span class="hljs-keyword">in</span> a single word.<br>question: How far <span class="hljs-keyword">is</span> it <span class="hljs-keyword">from</span> Denver to Aspen ?<br>output:<br></code></pre></td></tr></table></figure>
+<p>调用openai的大模型进行回复，调用函数代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><code class="hljs python">openai.api_key = <span class="hljs-string">&quot;sk-xxx&quot;</span><br>model_name = <span class="hljs-string">&quot;gpt-3.5-turbo-instruct&quot;</span><br><br><span class="hljs-keyword">import</span> tiktoken<br>enc = tiktoken.encoding_for_model(model_name)<br>log_bias_dict = &#123;&#125;<br><span class="hljs-keyword">for</span> label <span class="hljs-keyword">in</span> dataset[<span class="hljs-string">&#x27;train&#x27;</span>].features[<span class="hljs-string">&quot;coarse_label&quot;</span>].names:<br>    <span class="hljs-keyword">for</span> token_id <span class="hljs-keyword">in</span> enc.encode(label):<br>      log_bias_dict[token_id] = <span class="hljs-number">5</span><br>      <br><span class="hljs-comment"># Text completion using GPT</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">trim_text</span>(<span class="hljs-params">text</span>):<br>    <span class="hljs-keyword">return</span> text.strip().strip(<span class="hljs-string">&#x27;\n&#x27;</span>).strip(<span class="hljs-string">&#x27;\\n&#x27;</span>)<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">generate_using_gpt</span>(<span class="hljs-params">prompt</span>):<br>    generated_sentence = <span class="hljs-string">&quot;&quot;</span><br>    <span class="hljs-keyword">try</span>:<br>        <span class="hljs-comment"># Create a completion for the provided prompt and parameters</span><br>        response = openai.Completion.create(<br>            model=model_name,<br>            prompt=prompt, <br>            max_tokens=<span class="hljs-number">3</span>,<br>            temperature=<span class="hljs-number">0</span>,<br>            top_p=<span class="hljs-number">1</span>,<br>            stop=<span class="hljs-literal">None</span>,<br>            frequency_penalty=<span class="hljs-number">0</span>,<br>            presence_penalty=<span class="hljs-number">0.0</span>,<br>            logit_bias=log_bias_dict<br>        )<br>        <br>        choices = response.get(<span class="hljs-string">&quot;choices&quot;</span>, <span class="hljs-string">&quot;&quot;</span>)<br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(choices) == <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> <span class="hljs-string">&quot;text&quot;</span> <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> choices[<span class="hljs-number">0</span>]:<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Text not generated properly&quot;</span>)<br>        generated_sentence = choices[<span class="hljs-number">0</span>][<span class="hljs-string">&#x27;text&#x27;</span>].lstrip(<span class="hljs-string">&#x27;\\n&#x27;</span>).rstrip(<span class="hljs-string">&#x27;\\n&#x27;</span>).lstrip(<span class="hljs-string">&#x27;\n\n&#x27;</span>).rstrip(<span class="hljs-string">&#x27;\n\n&#x27;</span>).lstrip(<span class="hljs-string">&#x27;\n&#x27;</span>).rstrip(<span class="hljs-string">&#x27;\n&#x27;</span>)<br>        <br>    <span class="hljs-keyword">except</span> openai.error.APIError <span class="hljs-keyword">as</span> e:<br>        <span class="hljs-comment"># Handle API error here, e.g. retry or log</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;OpenAI API returned an API Error: <span class="hljs-subst">&#123;e&#125;</span>&quot;</span>)<br><br>    <span class="hljs-keyword">except</span> openai.error.AuthenticationError <span class="hljs-keyword">as</span> e:<br>        <span class="hljs-comment"># Handle Authentication error here, e.g. invalid API key</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;OpenAI API returned an Authentication Error: <span class="hljs-subst">&#123;e&#125;</span>&quot;</span>)<br><br>    <span class="hljs-keyword">except</span> openai.error.APIConnectionError <span class="hljs-keyword">as</span> e:<br>        <span class="hljs-comment"># Handle connection error here</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Failed to connect to OpenAI API: <span class="hljs-subst">&#123;e&#125;</span>&quot;</span>)<br><br>    <span class="hljs-keyword">except</span> openai.error.InvalidRequestError <span class="hljs-keyword">as</span> e:<br>        <span class="hljs-comment"># Handle connection error here</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Invalid Request Error: <span class="hljs-subst">&#123;e&#125;</span>&quot;</span>)<br>        <br>    <span class="hljs-keyword">except</span> openai.error.RateLimitError <span class="hljs-keyword">as</span> e:<br>        <span class="hljs-comment"># Handle rate limit error</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;OpenAI API request exceeded rate limit: <span class="hljs-subst">&#123;e&#125;</span>&quot;</span>)<br><br>    <span class="hljs-keyword">except</span> openai.error.ServiceUnavailableError <span class="hljs-keyword">as</span> e:<br>        <span class="hljs-comment"># Handle Service Unavailable error</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Service Unavailable: <span class="hljs-subst">&#123;e&#125;</span>&quot;</span>)<br><br>    <span class="hljs-keyword">except</span> openai.error.Timeout <span class="hljs-keyword">as</span> e:<br>        <span class="hljs-comment"># Handle request timeout</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Request timed out: <span class="hljs-subst">&#123;e&#125;</span>&quot;</span>)<br>    <span class="hljs-keyword">return</span> generated_sentence<br></code></pre></td></tr></table></figure>
+<p>使用模型为<code>gpt-3.5-turbo-instruct</code>,
+max_tokens为3。为了保证输出token为数据集中的粗类类别，使用tiktoken得到这些粗类类别的token
+id，采用logit_bias对这些token id的输出进行加强。</p>
+<p>对test数据集第一条数据进行测试：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">&gt;&gt;&gt; </span>generate_using_gpt(zeroshot_prompt)<br><br><span class="hljs-string">&#x27;LOC&#x27;</span><br></code></pre></td></tr></table></figure>
+<p>对全量test数据集使用Zero-Shot Prompt，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># prompt without any examples from the training dataset</span><br>labels = []<br>predictions = []<br><span class="hljs-keyword">for</span> example <span class="hljs-keyword">in</span> dataset[<span class="hljs-string">&#x27;test&#x27;</span>]:<br>    zeroshot_prompt = task_prompt +  query_prompt + example[text_key] + answer_prompt<br>    pred = generate_using_gpt(zeroshot_prompt)<br>    pred=trim_text(pred)<br>    labels.append(example[label_type])<br>    <span class="hljs-keyword">if</span> pred <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> class2id:<br>        predictions.append(-<span class="hljs-number">1</span>)<br>    <span class="hljs-keyword">else</span>:<br>        predictions.append(class2id[pred])<br>        <br>report = classification_report(labels, predictions, digits=<span class="hljs-number">4</span>) <br></code></pre></td></tr></table></figure>
+<p>评估结果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash">              precision    recall  f1-score   support<br><br>           0     0.6364    0.7778    0.7000         9<br>           1     0.4432    0.4149    0.4286        94<br>           2     0.7154    0.6377    0.6743       138<br>           3     0.9455    0.8000    0.8667        65<br>           4     0.8222    0.9136    0.8655        81<br>           5     0.8195    0.9646    0.8862       113<br><br>    accuracy                         0.7380       500<br>   macro avg     0.7304    0.7514    0.7369       500<br>weighted avg     0.7336    0.7380    0.7324       500<br></code></pre></td></tr></table></figure>
+<p>weighted avg F1值为<code>0.7324</code>.</p>
+<h2 id="few-shot">Few-Shot</h2>
+<p>接下来，使用Few-Shot对prompt进行加强，方法为从每个类别的train数据集中提取第一条样本作为Few-Shot，即<code>In-Context Learning</code>(ICL),代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># function to selection few examples in each of the classes from the training dataset</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">generateFewshotPrompt</span>(<span class="hljs-params">class2TrainDataset, N=<span class="hljs-number">3</span></span>):<br>    fewshot_prompt = <span class="hljs-string">&quot;\nFollowing are some examples.&quot;</span><br>    <span class="hljs-keyword">for</span> label <span class="hljs-keyword">in</span> class2TrainDataset:<br>        <span class="hljs-keyword">for</span> example <span class="hljs-keyword">in</span> class2TrainDataset[label][:N]:<br>            fewshot_prompt += <span class="hljs-string">&quot;\nquestion: &quot;</span> + example<br>            fewshot_prompt += <span class="hljs-string">&quot;\noutput: &quot;</span> + label<br>    <span class="hljs-keyword">return</span> fewshot_prompt<br>    <br><span class="hljs-comment"># prompt with one example in each of the classes</span><br>fewshot_examples = generateFewshotPrompt(class2TrainDataset, N=<span class="hljs-number">1</span>)<br>fewshot_prompt = task_prompt +  fewshot_examples + query_prompt + dataset[<span class="hljs-string">&#x27;test&#x27;</span>][<span class="hljs-number">0</span>][text_key] + answer_prompt<br><span class="hljs-meta">&gt;&gt;&gt; </span>fewshot_prompt<br></code></pre></td></tr></table></figure>
+<p>test数据集的第一条数据的Few-Shot prompt如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs bash">As a Question Answering agent, your goal is to categorize questions into different semantic classes that impose constraints on potential answers, so that they can be utilized <span class="hljs-keyword">in</span> later stages of the question answering process.<br>Following are the semantic classes: [ABBR, ENTY, DESC, HUM, LOC, NUM]<br>Following are some examples.<br>question: What is the full form of .com ?<br>output: ABBR<br>question: What films featured the character Popeye Doyle ?<br>output: ENTY<br>question: How did serfdom develop <span class="hljs-keyword">in</span> and <span class="hljs-keyword">then</span> leave Russia ?<br>output: DESC<br>question: What contemptible scoundrel stole the cork from my lunch ?<br>output: HUM<br>question: What sprawling U.S. state boasts the most airports ?<br>output: LOC<br>question: When was Ozzy Osbourne born ?<br>output: NUM<br>Classify the following question into one of the above classes. Please answer <span class="hljs-keyword">in</span> a single word.<br>question: How far is it from Denver to Aspen ?<br>output:<br></code></pre></td></tr></table></figure>
+<p>基于Few-Shot prompt，对全量test数据集进行评估，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># prompt is created by adding one example in each of the classes </span><br>labels = []<br>predictions = []<br><span class="hljs-keyword">for</span> example <span class="hljs-keyword">in</span> dataset[<span class="hljs-string">&#x27;test&#x27;</span>]:<br>    fewshot_prompt = task_prompt + fewshot_examples + query_prompt + example[text_key] + answer_prompt<br>    pred = generate_using_gpt(fewshot_prompt)<br>    pred=trim_text(pred)<br>    labels.append(example[label_type])<br>    <span class="hljs-keyword">if</span> pred <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> class2id:<br>        predictions.append(-<span class="hljs-number">1</span>)<br>    <span class="hljs-keyword">else</span>:<br>        predictions.append(class2id[pred])<br>        <br>report = classification_report(labels, predictions, digits=<span class="hljs-number">4</span>)<br></code></pre></td></tr></table></figure>
+<p>评估结果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash">              precision    recall  f1-score   support<br><br>           0     0.8182    1.0000    0.9000         9<br>           1     0.5217    0.5106    0.5161        94<br>           2     0.7727    0.7391    0.7556       138<br>           3     1.0000    0.8462    0.9167        65<br>           4     0.8021    0.9506    0.8701        81<br>           5     0.9474    0.9558    0.9515       113<br><br>    accuracy                         0.7980       500<br>   macro avg     0.8103    0.8337    0.8183       500<br>weighted avg     0.8001    0.7980    0.7969       500<br></code></pre></td></tr></table></figure>
+<p>此时，weighted avg F1值为<code>0.7969</code>.</p>
+<h2 id="dynamic-few-shot">Dynamic Few-Shot</h2>
+<p>上面Few-Shot prompt的效果已经比Zero-Shot
+prompt好很多了，还有提升空间吗？</p>
+<p>对于Few-Shot的样本，我们是否可以进行选择，使得评估样本与Few-Shot样本接可能相近。基于此，我们想到了Dynamic
+Few-Shot，在每次评估测试样本时，在训练集的每个类别中选择与其语义相似度最高的k（本文取k=1）个样本。</p>
+<p>考虑到文本的语义相似度，我们需要一个语义相似度计算的基础模型，一般为文本嵌入（Text
+Embedding）模型，本文选择<code>all-mpnet-base-v2</code>，使用<code>sentence_transformers</code>进行文本嵌入。代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> sentence_transformers <span class="hljs-keyword">import</span> SentenceTransformer, util<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">from</span> torch <span class="hljs-keyword">import</span> cuda<br>device = <span class="hljs-string">&#x27;cuda&#x27;</span> <span class="hljs-keyword">if</span> cuda.is_available() <span class="hljs-keyword">else</span> <span class="hljs-string">&#x27;cpu&#x27;</span><br><br><span class="hljs-comment"># loading Sentence Transformer based model</span><br>model = SentenceTransformer(<span class="hljs-string">&#x27;all-mpnet-base-v2&#x27;</span>, device=device)<br><br><span class="hljs-comment"># extract embeddings for a set of examples</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">ExtractEmbeddings</span>(<span class="hljs-params">examples</span>):<br>    embedding_ls = []<br>    <span class="hljs-keyword">for</span> example <span class="hljs-keyword">in</span> examples:<br>        embedding = model.encode(example)     <br>        embedding_ls.append(embedding)<br>    <span class="hljs-keyword">return</span> embedding_ls<br><br><span class="hljs-comment"># extract embeddings for all the training examples</span><br>class2TrainDatasetWithEmbedding = &#123;&#125;<br><span class="hljs-keyword">for</span> label <span class="hljs-keyword">in</span> class2TrainDataset:<br>    embeddings = ExtractEmbeddings(class2TrainDataset[label])<br>    class2TrainDatasetWithEmbedding[label] = [class2TrainDataset[label], embeddings]<br></code></pre></td></tr></table></figure>
+<p>在上述代码中，我们使用<code>sentence_transformers</code>加载<code>all-mpnet-base-v2</code>模型，并对每个类别的训练集数据进行文本嵌入，获取它们的词向量，储存在内存中。</p>
+<p>接着，针对每条评估测试样本，选择每个类别中与其语义相似度最高的1条样本，形成Dynamic
+Few-Shot prompt，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># extract similar queries for a given input text from each of the classes</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">getSimilarExamples</span>(<span class="hljs-params">input_text, dataset, dataset_embedding</span>):<br>    input_embedding = model.encode(input_text)<br>    sim_score = util.dot_score(input_embedding, dataset_embedding)[<span class="hljs-number">0</span>]<br>    topN_ids = np.argsort(-sim_score)<br>    <span class="hljs-keyword">return</span> [dataset[i] <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> topN_ids]<br>    <br><span class="hljs-keyword">def</span> <span class="hljs-title function_">getClasswiseSimilarExamples</span>(<span class="hljs-params">input_text, class2TrainDatasetWithEmbedding</span>):<br>    classwiseSimilarExamples = &#123;&#125;<br>    <span class="hljs-keyword">for</span> label <span class="hljs-keyword">in</span> class2TrainDataset:<br>        similarExamples = getSimilarExamples(input_text, class2TrainDatasetWithEmbedding[label][<span class="hljs-number">0</span>], class2TrainDatasetWithEmbedding[label][<span class="hljs-number">1</span>])<br>        classwiseSimilarExamples[label] = similarExamples<br>    <span class="hljs-keyword">return</span> classwiseSimilarExamples<br>    <br><span class="hljs-comment"># generate a prompt with similar examples in each of the classes</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">generateDynamicPrompt</span>(<span class="hljs-params">input_text, class2TrainDatasetWithEmbedding, N=<span class="hljs-number">3</span></span>):<br>    classwiseSimilarExamples = getClasswiseSimilarExamples(input_text, class2TrainDatasetWithEmbedding)<br>    dynamic_prompt = <span class="hljs-string">&quot;\nFollowing are some examples.&quot;</span><br>    <span class="hljs-keyword">for</span> label <span class="hljs-keyword">in</span> classwiseSimilarExamples:<br>        <span class="hljs-keyword">for</span> example <span class="hljs-keyword">in</span> classwiseSimilarExamples[label][:N]:<br>            dynamic_prompt += <span class="hljs-string">&quot;\nquestion: &quot;</span> + example<br>            dynamic_prompt += <span class="hljs-string">&quot;\noutput: &quot;</span> + label<br>    <span class="hljs-keyword">return</span> dynamic_prompt<br>    <br><span class="hljs-comment"># dynamic prompt with one similar example in each of the classes</span><br>fewshot_examples = generateDynamicPrompt(dataset[<span class="hljs-string">&#x27;test&#x27;</span>][<span class="hljs-number">0</span>][text_key], class2TrainDatasetWithEmbedding, N=<span class="hljs-number">1</span>)<br>dynamic_prompt = task_prompt + fewshot_examples + query_prompt + dataset[<span class="hljs-string">&#x27;test&#x27;</span>][<span class="hljs-number">0</span>][text_key] + answer_prompt<br><span class="hljs-meta">&gt;&gt;&gt; </span>dynamic_prompt<br></code></pre></td></tr></table></figure>
+<p>此时，test数据集中的第一条样本的Dynamic Few-Shot prompt为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs bash">As a Question Answering agent, your goal is to categorize questions into different semantic classes that impose constraints on potential answers, so that they can be utilized <span class="hljs-keyword">in</span> later stages of the question answering process.<br>Following are the semantic classes: [ABBR, ENTY, DESC, HUM, LOC, NUM]<br>Following are some examples.<br>question: What <span class="hljs-keyword">do</span> the letters D.C. stand <span class="hljs-keyword">for</span> <span class="hljs-keyword">in</span> Washington , D.C. ?<br>output: ABBR<br>question: What race is 1 , 137 miles long ?<br>output: ENTY<br>question: Why is the mile 528 feet ?<br>output: DESC<br>question: Who lives at 39 Stone Canyon Way ?<br>output: HUM<br>question: What Colorado city owns its own glacier ?<br>output: LOC<br>question: How high is the city of Denver ?<br>output: NUM<br>Classify the following question into one of the above classes. Please answer <span class="hljs-keyword">in</span> a single word.<br>question: How far is it from Denver to Aspen ?<br>output:<br></code></pre></td></tr></table></figure>
+<p>可以看到此时的Dynamic Few-Shot prompt中的样本明显比Few-Shot
+prompt中的样本更好。</p>
+<p>此时，再对全量test数据集进行评估，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python">labels = []<br>predictions = []<br><span class="hljs-keyword">for</span> example <span class="hljs-keyword">in</span> dataset[<span class="hljs-string">&#x27;test&#x27;</span>]:<br>    fewshot_examples = generateDynamicPrompt(example[text_key], class2TrainDatasetWithEmbedding, N=<span class="hljs-number">1</span>)<br>    dynamic_prompt = task_prompt + fewshot_examples + query_prompt + example[text_key] + answer_prompt<br>    pred = generate_using_gpt(dynamic_prompt)<br>    pred=trim_text(pred)<br>    labels.append(example[label_type])<br>    <span class="hljs-keyword">if</span> pred <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> class2id:<br>        predictions.append(-<span class="hljs-number">1</span>)<br>    <span class="hljs-keyword">else</span>:<br>        predictions.append(class2id[pred])<br>        <br>report = classification_report(labels, predictions, digits=<span class="hljs-number">4</span>) <br></code></pre></td></tr></table></figure>
+<p>评估结果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash">              precision    recall  f1-score   support<br><br>           0     1.0000    0.7778    0.8750         9<br>           1     0.7083    0.7234    0.7158        94<br>           2     0.8615    0.8116    0.8358       138<br>           3     0.9508    0.8923    0.9206        65<br>           4     0.8824    0.9259    0.9036        81<br>           5     0.8926    0.9558    0.9231       113<br><br>    accuracy                         0.8560       500<br>   macro avg     0.8826    0.8478    0.8623       500<br>weighted avg     0.8572    0.8560    0.8557       500<br></code></pre></td></tr></table></figure>
+<p>最终得到的weighted avg F1值为<code>0.8557</code>.</p>
+<h2 id="总结">总结</h2>
+<p>对上述的内容进行总结，我们使用<code>gpt-3.5-turbo-instruct</code>对<code>TREC</code>的中test数据集，分别就Zero-Shot,
+Few-Shot, Dynamic Few-Shot情形进行评估，得到的评估指标为：</p>
+<table>
+<thead>
+<tr class="header">
+<th>prompt</th>
+<th>weighted avg F1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Zero-Shot</td>
+<td>0.7324</td>
+</tr>
+<tr class="even">
+<td>Few-Shot</td>
+<td>0.7969</td>
+</tr>
+<tr class="odd">
+<td>Dynamic Few-Shot</td>
+<td>0.8557</td>
+</tr>
+</tbody>
+</table>
+<p>显然，Dynamic Few-Shot prompt的效果是最好的，比Zero-Shot
+prompt的指标高了12%多，而这还是没有对模型进行任何微调的结果！</p>
+<p>在平时工作中，我们也可以尝试使用Dynamic Few-Shot prompt。</p>
+<h2 id="参考文献">参考文献</h2>
+<ol type="1">
+<li>Basic_Samples/Completions/completions_with_dynamic_prompt.ipynb: <a
+target="_blank" rel="noopener" href="https://github.com/Azure-Samples/openai/blob/main/Basic_Samples/Completions/completions_with_dynamic_prompt.ipynb">https://github.com/Azure-Samples/openai/blob/main/Basic_Samples/Completions/completions_with_dynamic_prompt.ipynb</a></li>
+<li>TREC dataset: <a
+target="_blank" rel="noopener" href="https://huggingface.co/datasets/trec">https://huggingface.co/datasets/trec</a></li>
+</ol>
+<p>欢迎关注我的公众号<strong>NLP奇幻之旅</strong>，原创技术文章第一时间推送。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/LLM/" class="print-no-link">#LLM</a>
+      
+        <a href="/tags/Dynamic-Few-Shot/" class="print-no-link">#Dynamic Few Shot</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（七十七）文本补全中的动态提示（Dynamic-Prompting）</div>
+      <div>https://percent4.github.io/2024/01/10/NLP（七十七）文本补全中的动态提示（Dynamic-Prompting）/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年1月10日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/01/10/VSCODE%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%EF%BC%881%EF%BC%89%E8%BF%9E%E6%8E%A5%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%BC%80%E5%8F%91%E5%8F%8A%E4%BD%BF%E7%94%A8Jupyter/" title="VSCODE使用技巧（1）连接远程服务器开发及使用Jupyter">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">VSCODE使用技巧（1）连接远程服务器开发及使用Jupyter</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/01/10/NLP%EF%BC%88%E4%B8%83%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%AE%8C%E6%88%90%E5%A1%AB%E5%AD%97%E6%B8%B8%E6%88%8F/" title="NLP（七十六）使用大模型完成填字游戏">
+                        <span class="hidden-mobile">NLP（七十六）使用大模型完成填字游戏</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

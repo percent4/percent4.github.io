@@ -23,15 +23,18 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文将会介绍如何使用keras-bert实现序列标注任务。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta property="og:image" content="https://percent4.github.io/img/nlp34_1.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp34_2.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp34_3.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp34_4.png">
 <meta property="article:published_time" content="2023-07-10T01:56:27.000Z">
-<meta property="article:modified_time" content="2023-08-06T14:55:18.935Z">
+<meta property="article:modified_time" content="2024-01-10T15:53:14.065Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="keras-bert">
 <meta property="article:tag" content="序列标注">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp34_1.png">
   
   
   
@@ -272,7 +275,7 @@
         
         
           <!-- compatible with older versions-->
-          161 分钟
+          162 分钟
         
       </span>
     
@@ -327,7 +330,10 @@
 <p>本文将介绍如何keras-bert实现序列标注任务。</p>
 <h3 id="项目结构">项目结构</h3>
 <p>本项目结构如下：</p>
-<p><img src="/img/nlp34_1.png" srcset="/img/loading.gif" lazyload alt="项目结构"></p>
+<figure>
+<img src="/img/nlp34_1.png" srcset="/img/loading.gif" lazyload alt="项目结构" />
+<figcaption aria-hidden="true">项目结构</figcaption>
+</figure>
 <p>所使用的Python第三方模块如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">keras_bert==0.83.0<br>Keras==2.2.4<br>seqeval==0.0.10<br>keras_contrib==2.0.8<br>matplotlib==3.3.1<br>numpy==1.16.4<br>Flask==1.1.2<br></code></pre></td></tr></table></figure>
 <h3 id="代码分析">代码分析</h3>
@@ -345,10 +351,13 @@
 <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs markdown"><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span>__<br><span class="hljs-section">Layer (type)                    Output Shape         Param #     Connected to                     </span><br><span class="hljs-section">==================================================================================================</span><br>input<span class="hljs-emphasis">_3 (InputLayer)            (None, None)         0                                            </span><br><span class="hljs-emphasis"><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span>_</span>_<br>input<span class="hljs-emphasis">_4 (InputLayer)            (None, None)         0                                            </span><br><span class="hljs-emphasis"><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span>_</span>_<br>model<span class="hljs-emphasis">_5 (Model)                 multiple             101382144   input_</span>3[<span class="hljs-string">0</span>][<span class="hljs-symbol">0</span>]                    <br><span class="hljs-code">                                                                 input_4[0][0]                    </span><br><span class="hljs-code">__________________________________________________________________________________________________</span><br><span class="hljs-code">bidirectional_2 (Bidirectional) (None, None, 200)    695200      model_5[1][0]                    </span><br><span class="hljs-code">__________________________________________________________________________________________________</span><br><span class="hljs-code">crf_2 (CRF)                     (None, None, 7)      1470        bidirectional_2[0][0]            </span><br><span class="hljs-code">==================================================================================================</span><br><span class="hljs-code">Total params: 102,078,814</span><br><span class="hljs-code">Trainable params: 102,078,814</span><br><span class="hljs-code">Non-trainable params: 0</span><br></code></pre></td></tr></table></figure>
 <h3 id="数据集介绍">数据集介绍</h3>
 <p>本文将会对三个实体识别的数据集进行测试，以下是三个数据集的简单介绍。</p>
-<ol>
-<li>人民日报命名实体识别数据集（example.train 28046条数据和example.test 4636条数据），共3种标签：地点（LOC）, 人名（PER）, 组织机构（ORG）</li>
-<li>时间识别数据集（time.train 1700条数据和time.test 300条数据），共1种标签：TIME</li>
-<li>CLUENER细粒度实体识别数据集（cluener.train 10748条数据和cluener.test 1343条数据），共10种标签：地址（address），书名（book），公司（company），游戏（game），政府（goverment），电影（movie），姓名（name），组织机构（organization），职位（position），景点（scene）</li>
+<ol type="1">
+<li>人民日报命名实体识别数据集（example.train 28046条数据和example.test
+4636条数据），共3种标签：地点（LOC）, 人名（PER）, 组织机构（ORG）</li>
+<li>时间识别数据集（time.train 1700条数据和time.test
+300条数据），共1种标签：TIME</li>
+<li>CLUENER细粒度实体识别数据集（cluener.train 10748条数据和cluener.test
+1343条数据），共10种标签：地址（address），书名（book），公司（company），游戏（game），政府（goverment），电影（movie），姓名（name），组织机构（organization），职位（position），景点（scene）</li>
 </ol>
 <h3 id="模型训练">模型训练</h3>
 <p>模型训练的脚本model_train.py的代码如下：</p>
@@ -357,13 +366,22 @@
 <p>分别对上述三个数据集进行模型训练，结果汇总如下：</p>
 <h4 id="人民日报命名实体识别数据集">人民日报命名实体识别数据集</h4>
 <p>模型参数：MAX_SEQ_LEN=128, BATCH_SIZE=32, EPOCH=10</p>
-<p><img src="/img/nlp34_2.png" srcset="/img/loading.gif" lazyload alt="loss和acc图"></p>
+<figure>
+<img src="/img/nlp34_2.png" srcset="/img/loading.gif" lazyload alt="loss和acc图" />
+<figcaption aria-hidden="true">loss和acc图</figcaption>
+</figure>
 <h4 id="时间识别数据集">时间识别数据集</h4>
 <p>模型参数：MAX_SEQ_LEN=256, BATCH_SIZE=8, EPOCH=10</p>
-<p><img src="/img/nlp34_3.png" srcset="/img/loading.gif" lazyload alt="loss和acc图"></p>
-<h4 id="CLUENER细粒度实体识别数据集">CLUENER细粒度实体识别数据集</h4>
+<figure>
+<img src="/img/nlp34_3.png" srcset="/img/loading.gif" lazyload alt="loss和acc图" />
+<figcaption aria-hidden="true">loss和acc图</figcaption>
+</figure>
+<h4 id="cluener细粒度实体识别数据集">CLUENER细粒度实体识别数据集</h4>
 <p>模型参数：MAX_SEQ_LEN=128, BATCH_SIZE=32, EPOCH=10</p>
-<p><img src="/img/nlp34_4.png" srcset="/img/loading.gif" lazyload alt="loss和acc图"></p>
+<figure>
+<img src="/img/nlp34_4.png" srcset="/img/loading.gif" lazyload alt="loss和acc图" />
+<figcaption aria-hidden="true">loss和acc图</figcaption>
+</figure>
 <h3 id="模型评估">模型评估</h3>
 <p>模型评估脚本model_evaluate.py脚本的代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># 利用seqeval模块对序列标注的结果进行评估</span><br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">from</span> keras.models <span class="hljs-keyword">import</span> load_model<br><span class="hljs-keyword">from</span> keras_bert <span class="hljs-keyword">import</span> get_custom_objects<br><span class="hljs-keyword">from</span> keras_contrib.layers <span class="hljs-keyword">import</span> CRF<br><span class="hljs-keyword">from</span> keras_contrib.losses <span class="hljs-keyword">import</span> crf_loss<br><span class="hljs-keyword">from</span> keras_contrib.metrics <span class="hljs-keyword">import</span> crf_accuracy<br><span class="hljs-keyword">from</span> seqeval.metrics <span class="hljs-keyword">import</span> classification_report<br><br><span class="hljs-keyword">from</span> load_data <span class="hljs-keyword">import</span> read_data<br><span class="hljs-keyword">from</span> util <span class="hljs-keyword">import</span> event_type, test_file_path<br><span class="hljs-keyword">from</span> model_train <span class="hljs-keyword">import</span> PreProcessInputData, id_label_dict<br><br>custom_objects = get_custom_objects()<br><span class="hljs-keyword">for</span> key, value <span class="hljs-keyword">in</span> &#123;<span class="hljs-string">&#x27;CRF&#x27;</span>: CRF, <span class="hljs-string">&#x27;crf_loss&#x27;</span>: crf_loss, <span class="hljs-string">&#x27;crf_accuracy&#x27;</span>: crf_accuracy&#125;.items():<br>    custom_objects[key] = value<br>model = load_model(<span class="hljs-string">&quot;%s_ner.h5&quot;</span> % event_type, custom_objects=custom_objects)<br><br><br><span class="hljs-comment"># 对单句话进行预测</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">predict_single_sentence</span>(<span class="hljs-params">text</span>):<br>    <span class="hljs-comment"># 测试句子</span><br>    word_labels, seq_types = PreProcessInputData([text])<br>    <span class="hljs-comment"># 模型预测</span><br>    predicted = model.predict([word_labels, seq_types])<br>    y = np.argmax(predicted[<span class="hljs-number">0</span>], axis=<span class="hljs-number">1</span>)<br>    predict_tag = [id_label_dict[_] <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> y]<br>    <span class="hljs-keyword">return</span> predict_tag[<span class="hljs-number">1</span>:-<span class="hljs-number">1</span>]<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    <span class="hljs-comment"># 读取测试集数据</span><br>    input_test, result_test = read_data(test_file_path)<br>    <span class="hljs-keyword">for</span> sent, tag <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(input_test[:<span class="hljs-number">10</span>], result_test[:<span class="hljs-number">10</span>]):<br>        <span class="hljs-built_in">print</span>(sent, tag)<br><br>    <span class="hljs-comment"># 测试集</span><br>    i = <span class="hljs-number">1</span><br>    true_tag_list = []<br>    pred_tag_list = []<br>    <span class="hljs-keyword">for</span> test_text, true_tag <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(input_test, result_test):<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Predict %d samples&quot;</span> % i)<br>        pred_tag = predict_single_sentence(text=test_text)<br>        true_tag_list.append(true_tag)<br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(true_tag) &lt;= <span class="hljs-built_in">len</span>(pred_tag):<br>            pred_tag_list.append(pred_tag[:<span class="hljs-built_in">len</span>(true_tag)])<br>        <span class="hljs-keyword">else</span>:<br>            pred_tag_list.append(pred_tag+[<span class="hljs-string">&quot;O&quot;</span>]*(<span class="hljs-built_in">len</span>(true_tag)-<span class="hljs-built_in">len</span>(pred_tag)))<br>        i += <span class="hljs-number">1</span><br><br>    <span class="hljs-built_in">print</span>(classification_report(true_tag_list, pred_tag_list, digits=<span class="hljs-number">4</span>))<br></code></pre></td></tr></table></figure>
@@ -404,7 +422,9 @@
 <figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs prolog">&#123;<span class="hljs-string">&#x27;entities&#x27;</span>: [&#123;<span class="hljs-string">&#x27;end&#x27;</span>: <span class="hljs-number">19</span>, <span class="hljs-string">&#x27;start&#x27;</span>: <span class="hljs-number">14</span>, <span class="hljs-string">&#x27;type&#x27;</span>: <span class="hljs-string">&#x27;address&#x27;</span>, <span class="hljs-string">&#x27;word&#x27;</span>: <span class="hljs-string">&#x27;茶店子东街&#x27;</span>&#125;],<br> <span class="hljs-string">&#x27;string&#x27;</span>: <span class="hljs-string">&#x27;去年11月30日，李先生来到茶店子东街一家银行取钱，准备购买家具。输入密码后，&#x27;</span>&#125;<br></code></pre></td></tr></table></figure>
 <figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs prolog">&#123;<span class="hljs-string">&#x27;entities&#x27;</span>: [&#123;<span class="hljs-string">&#x27;end&#x27;</span>: <span class="hljs-number">3</span>, <span class="hljs-string">&#x27;start&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;type&#x27;</span>: <span class="hljs-string">&#x27;name&#x27;</span>, <span class="hljs-string">&#x27;word&#x27;</span>: <span class="hljs-string">&#x27;罗伯茨&#x27;</span>&#125;,<br>              &#123;<span class="hljs-string">&#x27;end&#x27;</span>: <span class="hljs-number">10</span>, <span class="hljs-string">&#x27;start&#x27;</span>: <span class="hljs-number">4</span>, <span class="hljs-string">&#x27;type&#x27;</span>: <span class="hljs-string">&#x27;movie&#x27;</span>, <span class="hljs-string">&#x27;word&#x27;</span>: <span class="hljs-string">&#x27;《逃跑新娘》&#x27;</span>&#125;,<br>              &#123;<span class="hljs-string">&#x27;end&#x27;</span>: <span class="hljs-number">23</span>, <span class="hljs-string">&#x27;start&#x27;</span>: <span class="hljs-number">16</span>, <span class="hljs-string">&#x27;type&#x27;</span>: <span class="hljs-string">&#x27;movie&#x27;</span>, <span class="hljs-string">&#x27;word&#x27;</span>: <span class="hljs-string">&#x27;《理发师佐翰》&#x27;</span>&#125;,<br>              &#123;<span class="hljs-string">&#x27;end&#x27;</span>: <span class="hljs-number">38</span>, <span class="hljs-string">&#x27;start&#x27;</span>: <span class="hljs-number">32</span>, <span class="hljs-string">&#x27;type&#x27;</span>: <span class="hljs-string">&#x27;name&#x27;</span>, <span class="hljs-string">&#x27;word&#x27;</span>: <span class="hljs-string">&#x27;亚当·桑德勒&#x27;</span>&#125;],<br> <span class="hljs-string">&#x27;string&#x27;</span>: <span class="hljs-string">&#x27;罗伯茨的《逃跑新娘》不相伯仲；而《理发师佐翰》让近年来顺风顺水的亚当·桑德勒首尝冲过1亿＄&#x27;</span>&#125;<br></code></pre></td></tr></table></figure>
 <h3 id="总结">总结</h3>
-<p>本项目已经开源，Github地址为：<a target="_blank" rel="noopener" href="https://github.com/percent4/keras_bert_sequence_labeling">https://github.com/percent4/keras_bert_sequence_labeling</a> 。</p>
+<p>本项目已经开源，Github地址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/keras_bert_sequence_labeling">https://github.com/percent4/keras_bert_sequence_labeling</a>
+。</p>
 <p>后续将会继续介绍如何使用keras-bert实现文本多分类和文本多标签分类，欢迎大家关注~</p>
 <p>最后，还想感谢一下所有致力于开源项目的同仁们，感谢你们的努力，感谢你们的付出，感谢你们的铺路。</p>
 <p>2020年12月26日于上海浦东</p>

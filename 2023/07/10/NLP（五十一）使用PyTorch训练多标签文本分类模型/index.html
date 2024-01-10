@@ -23,15 +23,15 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文将会介绍如何使用PyTorch训练多标签文本分类模型。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta property="og:image" content="https://percent4.github.io/img/nlp51_1.png">
 <meta property="article:published_time" content="2023-07-10T09:43:15.000Z">
-<meta property="article:modified_time" content="2023-08-06T14:55:18.921Z">
+<meta property="article:modified_time" content="2024-01-10T15:53:13.995Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="多标签分类">
 <meta property="article:tag" content="PyTorch">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://percent4.github.io/img/nlp.jpeg">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp51_1.png">
   
   
   
@@ -325,16 +325,31 @@
                 <p>本文将介绍如何使用PyTorch训练多标签文本分类模型。</p>
 <p>所谓多标签文本分类，指的是文本可能会属于多个类别，而不是单个类别。与文本多分类的区别在于，文本多分类模型往往有多个类别，但文本至属于其中一个类别；而多标签文本分类也会有多个类别，但文本会属于其中多个类别。</p>
 <h3 id="数据集">数据集</h3>
-<p>本文演示的数据集为英语论文数据集，参考网址为：<a target="_blank" rel="noopener" href="https://datahack.analyticsvidhya.com/contest/janatahack-independence-day-2020-ml-hackathon">https://datahack.analyticsvidhya.com/contest/janatahack-independence-day-2020-ml-hackathon</a>，数据下载需翻墙，读者也可参看后续给出的项目Github。该论文数据集实际上是比赛数据，供选手尝试模型。本文所采用的数据集为英语，至于中文，其原理是一致的，稍微做调整即可。</p>
-<p>该数据集给出论文的标题（TITLE）和摘要（ABSTRACT），来预测论文属于哪个主题。该数据集共有20972个训练样本，有六个主题，分别为：Computer Science, Physics, Mathematics, Statistics, Quantitative Biology, Quantitative Finance。在此给出一个样例数据：</p>
+<p>本文演示的数据集为英语论文数据集，参考网址为：<a
+target="_blank" rel="noopener" href="https://datahack.analyticsvidhya.com/contest/janatahack-independence-day-2020-ml-hackathon">https://datahack.analyticsvidhya.com/contest/janatahack-independence-day-2020-ml-hackathon</a>，数据下载需翻墙，读者也可参看后续给出的项目Github。该论文数据集实际上是比赛数据，供选手尝试模型。本文所采用的数据集为英语，至于中文，其原理是一致的，稍微做调整即可。</p>
+<p>该数据集给出论文的标题（TITLE）和摘要（ABSTRACT），来预测论文属于哪个主题。该数据集共有20972个训练样本，有六个主题，分别为：Computer
+Science, Physics, Mathematics, Statistics, Quantitative Biology,
+Quantitative Finance。在此给出一个样例数据：</p>
 <blockquote>
-<p>TITLE : Many-Body Localization: Stability and Instability<br>
-ABSTRACT: Rare regions with weak disorder (Griffiths regions) have the potential to spoil localization. We describe a non-perturbative construction of local integrals of motion (LIOMs) for a weakly interacting spin chain in one dimension, under a physically reasonable assumption on the statistics of eigenvalues. We discuss ideas about the situation in higher dimensions, where one can no longer ensure that interactions involving the Griffiths regions are much smaller than the typical energy-level spacing for such regions. We argue that ergodicity is restored in dimension d &gt; 1, although equilibration should be extremely slow, similar to the dynamics of glasses.<br>
-TOPICS: Physics, Mathematics</p>
+<p>TITLE : Many-Body Localization: Stability and Instability ABSTRACT:
+Rare regions with weak disorder (Griffiths regions) have the potential
+to spoil localization. We describe a non-perturbative construction of
+local integrals of motion (LIOMs) for a weakly interacting spin chain in
+one dimension, under a physically reasonable assumption on the
+statistics of eigenvalues. We discuss ideas about the situation in
+higher dimensions, where one can no longer ensure that interactions
+involving the Griffiths regions are much smaller than the typical
+energy-level spacing for such regions. We argue that ergodicity is
+restored in dimension d &gt; 1, although equilibration should be
+extremely slow, similar to the dynamics of glasses. TOPICS: Physics,
+Mathematics</p>
 </blockquote>
 <h3 id="模型结构">模型结构</h3>
 <p>本文给出的多标签文本分类模型使用预训练模型（BERT），下游网络结构较为简单，算是比较中庸但简单好用的模型方案，模型结构图如下：</p>
-<p><img src="/img/nlp51_1.png" srcset="/img/loading.gif" lazyload alt="多标签文本分类结构图"></p>
+<figure>
+<img src="/img/nlp51_1.png" srcset="/img/loading.gif" lazyload alt="多标签文本分类结构图" />
+<figcaption aria-hidden="true">多标签文本分类结构图</figcaption>
+</figure>
 <p>该模型使用PyTorch的transformers模块来实现，代码如下:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 模型类</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">BERTClass</span>(torch.nn.Module):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-built_in">super</span>(BERTClass, self).__init__()<br>        self.l1 = transformers.BertModel.from_pretrained(MODEL_NAME_OR_PATH)<br>        self.l2 = torch.nn.Dropout(<span class="hljs-number">0.2</span>)<br>        self.l3 = torch.nn.Linear(HIDDEN_LAYER_SIZE, <span class="hljs-number">6</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">forward</span>(<span class="hljs-params">self, ids, mask, token_type_ids</span>):<br>        _, output_1 = self.l1(ids, attention_mask=mask, token_type_ids=token_type_ids)<br>        output_2 = self.l2(output_1)<br>        output = self.l3(output_2)<br>        <span class="hljs-keyword">return</span> output<br></code></pre></td></tr></table></figure>
 <p>使用损失函数为<code>torch.nn.BCEWithLogitsLoss</code>，因而不需要在output层后加上sigmoid激活函数。</p>
@@ -344,7 +359,7 @@ TOPICS: Physics, Mathematics</p>
 <p>笔者分别尝试使用<code>bert-base-uncased</code>和<code>bert-large-uncased</code>训练模型，并在测试数据上进行预测，在比赛官网上进行提交，结果如下表：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>模型</th>
 <th>max length</th>
 <th>batch size</th>
@@ -353,14 +368,14 @@ TOPICS: Physics, Mathematics</p>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>bert-base-uncased</td>
 <td>128</td>
 <td>32</td>
 <td>0.8320</td>
 <td>107</td>
 </tr>
-<tr>
+<tr class="even">
 <td>bert-large-uncased</td>
 <td>128</td>
 <td>16</td>
@@ -371,12 +386,14 @@ TOPICS: Physics, Mathematics</p>
 </table>
 <p>看过一个rank为17的方案，其采用的是多个预训练模型训练后的集成，后接网络与笔者一致。</p>
 <h3 id="总结">总结</h3>
-<p>本项目已经开源，其Github网址为:<a target="_blank" rel="noopener" href="https://github.com/percent4/pytorch_english_mltc">https://github.com/percent4/pytorch_english_mltc</a>。后续将尝试该模型在中文多标签文本分类数据集上的效果，感谢大家阅读~</p>
+<p>本项目已经开源，其Github网址为:<a
+target="_blank" rel="noopener" href="https://github.com/percent4/pytorch_english_mltc">https://github.com/percent4/pytorch_english_mltc</a>。后续将尝试该模型在中文多标签文本分类数据集上的效果，感谢大家阅读~</p>
 <h3 id="参考网址">参考网址</h3>
-<ol>
-<li><a target="_blank" rel="noopener" href="https://jovian.ai/kyawkhaung/1-titles-only-for-medium">https://jovian.ai/kyawkhaung/1-titles-only-for-medium</a></li>
-<li><a target="_blank" rel="noopener" href="https://datahack.analyticsvidhya.com/contest/janatahack-independence-day-2020-ml-hackathon">https://datahack.analyticsvidhya.com/contest/janatahack-independence-day-2020-ml-hackathon</a></li>
-<li>Fine-tuned BERT Model for Multi-Label Tweets Classification: <a target="_blank" rel="noopener" href="https://trec.nist.gov/pubs/trec28/papers/DICE_UPB.IS.pdf">https://trec.nist.gov/pubs/trec28/papers/DICE_UPB.IS.pdf</a></li>
+<ol type="1">
+<li>https://jovian.ai/kyawkhaung/1-titles-only-for-medium</li>
+<li>https://datahack.analyticsvidhya.com/contest/janatahack-independence-day-2020-ml-hackathon</li>
+<li>Fine-tuned BERT Model for Multi-Label Tweets Classification:
+https://trec.nist.gov/pubs/trec28/papers/DICE_UPB.IS.pdf</li>
 </ol>
 
                 
