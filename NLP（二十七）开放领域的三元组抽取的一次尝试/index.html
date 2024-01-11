@@ -1,0 +1,921 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍在开放领域的三元组抽取的一次尝试。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（二十七）开放领域的三元组抽取的一次尝试">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%83%EF%BC%89%E5%BC%80%E6%94%BE%E9%A2%86%E5%9F%9F%E7%9A%84%E4%B8%89%E5%85%83%E7%BB%84%E6%8A%BD%E5%8F%96%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍在开放领域的三元组抽取的一次尝试。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://percent4.github.io/img/nlp27_1.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp27_2.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp27_3.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp27_4.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp27_5.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp27_6.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp27_7.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp27_8.png">
+<meta property="article:published_time" content="2023-07-09T03:27:33.000Z">
+<meta property="article:modified_time" content="2024-01-10T15:53:14.081Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="关系抽取">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp27_1.png">
+  
+  
+  
+  <title>NLP（二十七）开放领域的三元组抽取的一次尝试 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（二十七）开放领域的三元组抽取的一次尝试"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-09 11:27" pubdate>
+          星期日, 七月 9日 2023, 11:27 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          3.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          32 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（二十七）开放领域的三元组抽取的一次尝试</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>当我写下这篇文章的时候，我的内心是激动的，这是因为，自从去年6月份写了文章<a
+href="https://percent4.github.io/2023/07/08/%E5%88%A9%E7%94%A8%E5%85%B3%E7%B3%BB%E6%8A%BD%E5%8F%96%E6%9E%84%E5%BB%BA%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95/">利用关系抽取构建知识图谱的一次尝试</a>
+后，我就一直在试图寻找一种在开放领域能够进行三元组抽取的办法，也有很多读者问过我这方面的问题，今天，笔者将给出答复，虽然不是正确答案（现在也没有正确答案），但至少，我写下了自己的答案。</p>
+<p>离我想出这个抽取系统虽然才过去不久，但我的心情，已经由开始的激动狂喜，转化为后来的平淡，直到现在的不满。事实证明，开放领域的三元组抽取实在太难，以笔者个人的努力和智商，实在没法给出完美的答案，所以，文章的题目是尝试，仅仅作为尝试，并不能解决好这个问题。但，我还是想写些什么，希望能够对笔者有一点点启发，同时，也是对自己近半年的探寻做一个总结。</p>
+<p>关于三元组抽取的基本介绍和常用办法，笔者之前已经在不少文章中描述过，这里不再过多介绍，有兴趣的读者可以参考文章<a
+href="https://percent4.github.io/2023/07/08/%E5%88%A9%E7%94%A8%E5%85%B3%E7%B3%BB%E6%8A%BD%E5%8F%96%E6%9E%84%E5%BB%BA%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95/">利用关系抽取构建知识图谱的一次尝试</a>
+和 <a
+href="https://percent4.github.io/2023/07/09/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E5%85%AD%EF%BC%89%E9%99%90%E5%AE%9A%E9%A2%86%E5%9F%9F%E7%9A%84%E4%B8%89%E5%85%83%E7%BB%84%E6%8A%BD%E5%8F%96%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95/">NLP（二十六）限定领域的三元组抽取的一次尝试</a>
+。本文将会介绍笔者在开放领域做三元组抽取的一次尝试。</p>
+<p>本项目已经开源至Github，文章最后会给出相应的网址。本项目的项目结构如下：</p>
+<figure>
+<img src="/img/nlp27_1.png" srcset="/img/loading.gif" lazyload alt="项目结构" />
+<figcaption aria-hidden="true">项目结构</figcaption>
+</figure>
+<p>本项目一共分为四部分，主要模块介绍如下：</p>
+<ul>
+<li><p>extract_example:
+利用训练好的模型对基本小说和新闻进行三元组抽取，形成知识图谱例子；</p></li>
+<li><p>sequence_labeling：训练标注，对标注的实体数据进行序列标注算法训练；</p></li>
+<li><p>spo_tagging_platform：标注平台，标注subject，predicate和object以及三元组是否有效；</p></li>
+<li><p>text_classification：文本分类，用于判别抽取的三元组是否有效。</p>
+<p>本项目的抽取系统流程图如下：</p></li>
+</ul>
+<figure>
+<img src="/img/nlp27_2.png" srcset="/img/loading.gif" lazyload alt="抽取系统流程图" />
+<figcaption aria-hidden="true">抽取系统流程图</figcaption>
+</figure>
+<p>接下来笔者将逐一介绍。</p>
+<h3 id="标注平台">标注平台</h3>
+<p>笔者用tornado搭建了简易的标注平台，在标注页面中，标注人员需要输入标注的句子（句子级别的抽取）以及subject，predicate，object，点击“显示SPO”，将有效的三元组标注为1，无效的三元组标注为0。之所以采取这种标注方法，是因为我们可以在句子中标注subject，predicate，object，这些标注的实体就会形成可能的三元组组合，再利用0，1来标注这种三元组是否有效，这样就能做到在开放领域进行三元组抽取。</p>
+<p>一个简单的标注例子如下：</p>
+<figure>
+<img src="/img/nlp27_3.png" srcset="/img/loading.gif" lazyload alt="标注例子" />
+<figcaption aria-hidden="true">标注例子</figcaption>
+</figure>
+<p>再对以上的标注结果做一些说明，我们的标注是以句子为单位，进行句子级别的标注，不同要素在标注的时候加#区分，标注了两个subject，1个predicate（共用）和2个object，其中predidate是这些subject和object公用的，所以只需要标注一次。这样，点击“显示SPO”，一共会显示4个三元组，s，p，o用#隔开，0，1表示是否是有效三元组，默认为0。</p>
+<p>笔者利用空余时间，一共标注了3200多个样本，对于序列标注来说，就是3200多个样本，对于文本分类来说，就是9000多个样本了。</p>
+<h3 id="序列标注">序列标注</h3>
+<p>对于上述的标注例子，会形成如下的标注序列：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs bash">美	B-SUBJ<br>国	I-SUBJ<br>疾	I-SUBJ<br>控	I-SUBJ<br>中	I-SUBJ<br>心	I-SUBJ<br>主	B-PRED<br>任	I-PRED<br>雷	B-OBJ<br>德	I-OBJ<br>菲	I-OBJ<br>尔	I-OBJ<br>德	I-OBJ<br>（	O<br>左	O<br>圈	O<br>）	O<br>和	O<br>美	B-SUBJ<br>国	I-SUBJ<br>国	I-SUBJ<br>立	I-SUBJ<br>卫	I-SUBJ<br>生	I-SUBJ<br>研	I-SUBJ<br>究	I-SUBJ<br>院	I-SUBJ<br>过	I-SUBJ<br>敏	I-SUBJ<br>和	I-SUBJ<br>传	I-SUBJ<br>染	I-SUBJ<br>病	I-SUBJ<br>研	I-SUBJ<br>究	I-SUBJ<br>所	I-SUBJ<br>主	B-PRED<br>任	I-PRED<br>福	B-OBJ<br>西	I-OBJ<br>（	O<br>右	O<br>圈	O<br>）	O<br></code></pre></td></tr></table></figure>
+<p>将数据集分为训练集和测试集，比例为8：2.采用经典的深度学习模型ALBERT+Bi-LSTM+CRF进行实体识别，设置最大文本长度为128，训练100个epoch。关于该模型的介绍，可以参考文章<a
+target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/details/104826655">NLP（二十五）实现ALBERT+Bi-LSTM+CRF模型</a>
+。</p>
+<p>在测试集上的训练结果如下：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">accuracy</span>:  <span class="hljs-number">93</span>.<span class="hljs-number">69</span>%; precision:  <span class="hljs-number">76</span>.<span class="hljs-number">26</span>%; recall:  <span class="hljs-number">82</span>.<span class="hljs-number">33</span>%; FB1:  <span class="hljs-number">79</span>.<span class="hljs-number">18</span><br><span class="hljs-attribute">OBJ</span>: precision:  <span class="hljs-number">80</span>.<span class="hljs-number">47</span>%; recall:  <span class="hljs-number">88</span>.<span class="hljs-number">81</span>%; FB1:  <span class="hljs-number">84</span>.<span class="hljs-number">44</span>  <span class="hljs-number">927</span><br><span class="hljs-attribute">PRED</span>: precision:  <span class="hljs-number">76</span>.<span class="hljs-number">89</span>%; recall:  <span class="hljs-number">83</span>.<span class="hljs-number">69</span>%; FB1:  <span class="hljs-number">80</span>.<span class="hljs-number">14</span>  <span class="hljs-number">1021</span><br><span class="hljs-attribute">SUBJ</span>: precision:  <span class="hljs-number">71</span>.<span class="hljs-number">72</span>%; recall:  <span class="hljs-number">75</span>.<span class="hljs-number">32</span>%; FB1:  <span class="hljs-number">73</span>.<span class="hljs-number">48</span>  <span class="hljs-number">983</span><br></code></pre></td></tr></table></figure>
+<p>在测试集上的总体F1值接近80%。</p>
+<h3 id="文本分类">文本分类</h3>
+<p>关于文本分类，需要多做一些说明。</p>
+<p>虽然本文的题目是关于在开发领域的三元组抽取的尝试，但实际我在标注的时候，还是更多地标注人物头衔，人物关系，公司与人的关系，影视剧主演、导演信息等。形成的有效的文本分类的样本为9000多个，一共有关系1365个，数量最多的前20个关系如下图：</p>
+<figure>
+<img src="/img/nlp27_4.png" srcset="/img/loading.gif" lazyload alt="数量最多的20个关系" />
+<figcaption aria-hidden="true">数量最多的20个关系</figcaption>
+</figure>
+<p>以上述的标注数据为例，形成的标注数据如下：</p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs clean">美国疾控中心#主任#雷德菲尔德#<span class="hljs-number">1</span>#美国疾控中心主任雷德菲尔德（左圈）和美国国立卫生研究院过敏和传染病研究所主任福西（右圈）<br>美国疾控中心#主任#福西#<span class="hljs-number">0</span>#美国疾控中心主任雷德菲尔德（左圈）和美国国立卫生研究院过敏和传染病研究所主任福西（右圈）<br>美国国立卫生研究院过敏和传染病研究所#主任#雷德菲尔德#<span class="hljs-number">0</span>#美国疾控中心主任雷德菲尔德（左圈）和美国国立卫生研究院过敏和传染病研究所主任福西（右圈）<br>美国国立卫生研究院过敏和传染病研究所#主任#福西#<span class="hljs-number">1</span>#美国疾控中心主任雷德菲尔德（左圈）和美国国立卫生研究院过敏和传染病研究所主任福西（右圈）<br></code></pre></td></tr></table></figure>
+<p>在实际模型训练的时候，会将原文中的subject用S*len(subject)代替，predicate用P，object用O。</p>
+<p>将数据集分为训练集和测试集，比例为8：2。采用经典的深度学习模型ALBERT+Bi-GRU+ATT+FC，设置文本的最大长度为为128，训练30个epoch，采用early
+stopping机制，训练过程的loss和acc图像如下：</p>
+<figure>
+<img src="/img/nlp27_5.png" srcset="/img/loading.gif" lazyload alt="训练过程的loss和acc图像" />
+<figcaption aria-hidden="true">训练过程的loss和acc图像</figcaption>
+</figure>
+<p>最终在测试集上的accuracy约为96%。</p>
+<h3 id="新数据进行三元组抽取">新数据进行三元组抽取</h3>
+<p>上述的模型训练完毕后，我们就可以将其封装成HTTP服务。对于新输入的句子，我们先利用序列标注模型预测出其中的subject，predicate和object，组合成三元组与句子的拼接，输入到文本分类模型，判别该三元组是否有效，0为无效，1为有效。</p>
+<p>从网上找几个例子，预测的结果如下：</p>
+<figure>
+<img src="/img/nlp27_6.png" srcset="/img/loading.gif" lazyload alt="例子1" />
+<figcaption aria-hidden="true">例子1</figcaption>
+</figure>
+<figure>
+<img src="/img/nlp27_7.png" srcset="/img/loading.gif" lazyload alt="例子2" />
+<figcaption aria-hidden="true">例子2</figcaption>
+</figure>
+<figure>
+<img src="/img/nlp27_8.png" srcset="/img/loading.gif" lazyload alt="例子3" />
+<figcaption aria-hidden="true">例子3</figcaption>
+</figure>
+<p><code>extract_example</code>目录中为抽取的效果，包括几本小说和一些新闻上的效果，关于这方面的演示，可以参考另一个项目：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/knowledge_graph_demo">https://github.com/percent4/knowledge_graph_demo</a>
+。也可以参考文章<a
+href="https://percent4.github.io/2023/07/09/%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1%E6%9E%84%E5%BB%BA%E4%B8%BE%E4%BE%8B/">知识图谱构建举例</a>
+中给出的几个知识图谱的建构的例子。</p>
+<h3 id="总结">总结</h3>
+<p>本文写的过程较为简单，也没有代码，这是因为笔者在之前的文章中做了大量的铺垫，主要是集中在模型方面。况且，这个项目比较大，也不适合在这里详细讲述，笔者只在这里给出思路和大概的处理流程，具体的实现代码可以参考下方的Github地址。</p>
+<p>在实际的抽取过程中，一些句子也存在抽取出大量无用的三元组的情况，导致召回率高，这是因为本项目针对的是开放领域的三元组抽取，因此效果比不会有想象中的那么好，提升抽取效果的办法如下：</p>
+<ul>
+<li><p>增加数据标注量，目前序列标注算法的样本仅3200多个；</p></li>
+<li><p>模型方面：现在是pipeline形式，各自的效果还行，但总体上不如Joint形式好；</p></li>
+<li><p>对于自己想抽的其他三元组的情形，建议增加这方面的标注；</p></li>
+<li><p>文本预测耗时长（该问题已经解决）。</p>
+<p>本项目作为笔者在开放领域的三元组抽取的一次尝试，在此之前关于这方面的文章或者项目还很少，因此可以说是探索阶段。</p>
+<p>源码和数据已经在Github项目中给出，网址为 <a
+target="_blank" rel="noopener" href="https://github.com/percent4/spo_extract_platform">https://github.com/percent4/spo_extract_platform</a>
+。</p>
+<p>本人的微信公众号为<code>NLP奇幻之旅</code>，欢迎关注~</p></li>
+</ul>
+<h3 id="参考文献">参考文献</h3>
+<ol type="1">
+<li>利用关系抽取构建知识图谱的一次尝试：
+https://www.cnblogs.com/jclian91/p/11107323.html</li>
+<li>NLP（二十六）限定领域的三元组抽取的一次尝试：
+https://blog.csdn.net/jclian91/article/details/104874488</li>
+<li>NLP（二十五）实现ALBERT+Bi-LSTM+CRF模型：
+https://blog.csdn.net/jclian91/article/details/104826655</li>
+<li>知识图谱构建举例：
+https://blog.csdn.net/jclian91/article/details/104685424</li>
+<li>NLP（二十一）人物关系抽取的一次实战：https://blog.csdn.net/jclian91/article/details/104380371</li>
+<li>《知识图谱 方法、实践与应用》
+王昊奋、漆桂林、陈华钧著，中国工信出版集团、电子工业出版社出版。</li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/NLP/" class="print-no-link">#NLP</a>
+      
+        <a href="/tags/%E5%85%B3%E7%B3%BB%E6%8A%BD%E5%8F%96/" class="print-no-link">#关系抽取</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（二十七）开放领域的三元组抽取的一次尝试</div>
+      <div>https://percent4.github.io/NLP（二十七）开放领域的三元组抽取的一次尝试/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月9日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E5%85%AB%EF%BC%89%E5%A4%9A%E6%A0%87%E7%AD%BE%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/" title="NLP（二十八）多标签文本分类">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NLP（二十八）多标签文本分类</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E5%85%AD%EF%BC%89%E9%99%90%E5%AE%9A%E9%A2%86%E5%9F%9F%E7%9A%84%E4%B8%89%E5%85%83%E7%BB%84%E6%8A%BD%E5%8F%96%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95/" title="NLP（二十六）限定领域的三元组抽取的一次尝试">
+                        <span class="hidden-mobile">NLP（二十六）限定领域的三元组抽取的一次尝试</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,851 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍如何利用CRF实现中文分词。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（三十三）利用CRF实现中文分词">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E4%B8%89%EF%BC%89%E5%88%A9%E7%94%A8CRF%E5%AE%9E%E7%8E%B0%E4%B8%AD%E6%96%87%E5%88%86%E8%AF%8D/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍如何利用CRF实现中文分词。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://percent4.github.io/img/nlp33_1.png">
+<meta property="article:published_time" content="2023-07-10T01:51:47.000Z">
+<meta property="article:modified_time" content="2024-01-10T15:53:14.030Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="CRF">
+<meta property="article:tag" content="分词">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp33_1.png">
+  
+  
+  
+  <title>NLP（三十三）利用CRF实现中文分词 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（三十三）利用CRF实现中文分词"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-10 09:51" pubdate>
+          星期一, 七月 10日 2023, 9:51 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          6.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          54 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（三十三）利用CRF实现中文分词</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>本文将会讲述如何利用CRF模型来实现中文分词。</p>
+<p>所谓中文分词，就是将连续的中文汉字序列按照一定的规范重新组合成词序列的过程。关于CRF模型的介绍以及CRF实现工具CRF++的使用方法，读者可以参考文章<a
+href="https://percent4.github.io/2023/07/08/NLP%E5%85%A5%E9%97%A8%EF%BC%88%E5%85%AB%EF%BC%89%E4%BD%BF%E7%94%A8CRF-%E5%AE%9E%E7%8E%B0%E5%91%BD%E5%90%8D%E5%AE%9E%E4%BD%93%E8%AF%86%E5%88%AB-NER/">NLP入门（八）使用CRF++实现命名实体识别(NER)</a>
+。</p>
+<p>以下将详细讲述如何使用CRF++来实现中文分词。</p>
+<h3 id="语料选择">语料选择</h3>
+<p>中分分词的语料，这里选择人民日报分词语料和微软中文分词语料，语料的下载方式可以参看文章最后给出的Github地址。</p>
+<p>我们将语料加工成CRF++支持的格式，以句子<code>迈向充满希望的新世纪——一九九八年新年讲话（附图片１张）</code>为例，我们加工后的结果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs bash">迈	n	B-Char<br>向	n	I-Char<br>充	n	B-Char<br>满	n	I-Char<br>希	n	B-Char<br>望	n	I-Char<br>的	n	B-Char<br>新	n	B-Char<br>世	n	B-Char<br>纪	n	I-Char<br>—	n	B-Char<br>—	n	I-Char<br>一	n	B-Char<br>九	n	I-Char<br>九	n	I-Char<br>八	n	I-Char<br>年	n	I-Char<br>新	n	B-Char<br>年	n	I-Char<br>讲	n	B-Char<br>话	n	I-Char<br>（	n	B-Char<br>附	n	B-Char<br>图	n	B-Char<br>片	n	I-Char<br>１	n	B-Char<br>张	n	B-Char<br>）	n	B-Char<br></code></pre></td></tr></table></figure>
+<p>这里需要稍作说明，即我们的标签体系采用最简单的<code>BI</code>体系，将词语的开头用<code>B-Char</code>标签表示，词语的中间和结尾用<code>I-Char</code>表示。</p>
+<p>语料总共约10w多个样本，我们将数据集分为训练集（train.txt）和测试集（predict.txt），比例为9:1。</p>
+<h3 id="模型训练">模型训练</h3>
+<p>我们对训练集进行训练，训练的CRF++的模板与文章<a
+href="https://percent4.github.io/2023/07/08/NLP%E5%85%A5%E9%97%A8%EF%BC%88%E5%85%AB%EF%BC%89%E4%BD%BF%E7%94%A8CRF-%E5%AE%9E%E7%8E%B0%E5%91%BD%E5%90%8D%E5%AE%9E%E4%BD%93%E8%AF%86%E5%88%AB-NER/">NLP入门（八）使用CRF++实现命名实体识别(NER)</a>中一样。训练的命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">crf_learn  -f 3 -c 4.0 template train.data model -t<br></code></pre></td></tr></table></figure>
+<p>训练后的过程如下： <img src="/img/nlp33_1.png" srcset="/img/loading.gif" lazyload
+alt="CRF模型训练过程" /></p>
+<h3 id="模型评估">模型评估</h3>
+<p>下面我们将借助序列评估模块<code>seqeval</code>对分词模型的预测能力进行评估。</p>
+<p>我们先用以下命令生成模型预测文件（<code>crf_pred.txt</code>）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">crf_test -m model predict.txt &gt; crf_pred.txt<br></code></pre></td></tr></table></figure>
+<p>接着，我们使用如下脚本进行模型评估：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> seqeval.metrics <span class="hljs-keyword">import</span> f1_score<br><span class="hljs-keyword">from</span> seqeval.metrics <span class="hljs-keyword">import</span> precision_score<br><span class="hljs-keyword">from</span> seqeval.metrics <span class="hljs-keyword">import</span> accuracy_score<br><span class="hljs-keyword">from</span> seqeval.metrics <span class="hljs-keyword">import</span> recall_score<br><span class="hljs-keyword">from</span> seqeval.metrics <span class="hljs-keyword">import</span> classification_report<br><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;crf_pred.txt&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> f:<br>    content = [_.strip() <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> f.readlines()]<br><br>y_pred = []<br>y_true = []<br><span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> content:<br>    <span class="hljs-keyword">if</span> line:<br>        y_pred.append(line.split(<span class="hljs-string">&quot;\t&quot;</span>)[-<span class="hljs-number">1</span>])<br>        y_true.append(line.split(<span class="hljs-string">&quot;\t&quot;</span>)[-<span class="hljs-number">2</span>])<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;accuary: &quot;</span>, accuracy_score(y_true, y_pred))<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;p: &quot;</span>, precision_score(y_true, y_pred))<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;r: &quot;</span>, recall_score(y_true, y_pred))<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;f1: &quot;</span>, f1_score(y_true, y_pred))<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;classification report: &quot;</span>)<br><span class="hljs-built_in">print</span>(classification_report(y_true, y_pred))<br></code></pre></td></tr></table></figure>
+<p>模型评估的结果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs bash">accuary:  0.96405717503858<br>p:  0.9184067155248071<br>r:  0.9206969935013926<br>f1:  0.9195504284452864<br>classification report: <br>           precision    recall  f1-score   support<br><br>     Char       0.92      0.92      0.92    350075<br><br>micro avg       0.92      0.92      0.92    350075<br>macro avg       0.92      0.92      0.92    350075<br></code></pre></td></tr></table></figure>
+<p>可以发现，Char字段的F1值92%，相当不错的结果。</p>
+<h3 id="模型预测">模型预测</h3>
+<p>接下来，我们利用上面训练好的CRF模型，对新的句子进行预测，看看其在新句子上的分词能力。</p>
+<p>我们的预测脚本如下： <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> os<br>text = <span class="hljs-string">&quot;上海野生动物园群熊伤人事件救援画面曝光&quot;</span><br><br><span class="hljs-comment"># 生成待预测的文本</span><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;predict.data&quot;</span>, <span class="hljs-string">&quot;w&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> g:<br>    <span class="hljs-keyword">for</span> char <span class="hljs-keyword">in</span> text:<br>        g.write(<span class="hljs-string">&quot;%s\tn\tB-Char\n&quot;</span> % char)<br><br><span class="hljs-comment"># 利用CRF模型，调用命令行进行预测</span><br>os.system(<span class="hljs-string">&quot;crf_test -m model predict.data &gt; predict_new.txt&quot;</span>)<br><br><span class="hljs-comment"># 处理预测后的进行，并将其加工成中文分词后的结果</span><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;predict_new.txt&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> f:<br>    content = [_.strip() <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> f.readlines()]<br><br>predict_tags = []<br><span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> content:<br>    predict_tags.append(line.split(<span class="hljs-string">&quot;\t&quot;</span>)[-<span class="hljs-number">1</span>])<br><br>words = []<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(predict_tags)):<br>    word = <span class="hljs-string">&quot;&quot;</span><br>    <span class="hljs-keyword">if</span> predict_tags[i] == <span class="hljs-string">&quot;B-Char&quot;</span>:<br>        word += text[i]<br>        j = i + <span class="hljs-number">1</span><br>        <span class="hljs-keyword">while</span> j &lt; <span class="hljs-built_in">len</span>(text) <span class="hljs-keyword">and</span> predict_tags[j] == <span class="hljs-string">&quot;I-Char&quot;</span>:<br>            word += text[j]<br>            j += <span class="hljs-number">1</span><br><br>    <span class="hljs-keyword">if</span> word:<br>        words.append(word)<br><br><span class="hljs-comment"># 输出预测结果</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;原句:%s&quot;</span> % text)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;分词结果:%s&quot;</span> % (<span class="hljs-string">&quot;/&quot;</span>.join(words)))<br></code></pre></td></tr></table></figure></p>
+<p>我们从新闻中选择10个句子，对其进行分词，结果如下：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs awk">原句:上海野生动物园群熊伤人事件救援画面曝光<br>分词结果:上海<span class="hljs-regexp">/野生动物园/</span>群<span class="hljs-regexp">/熊/</span>伤<span class="hljs-regexp">/人/</span>事件<span class="hljs-regexp">/救援/</span>画面/曝光<br><br>原句:浙江正筹划疫苗接种工作，当地相关部门：仍仅限于紧急接种小部分人群<br>分词结果:浙江<span class="hljs-regexp">/正/</span>筹划<span class="hljs-regexp">/疫苗/</span>接种<span class="hljs-regexp">/工作/</span>，<span class="hljs-regexp">/当地/</span>相关<span class="hljs-regexp">/部门/</span>：<span class="hljs-regexp">/仍/</span>仅<span class="hljs-regexp">/限于/</span>紧急<span class="hljs-regexp">/接种/</span>小部分/人群<br><br>原句:亚阿停火<span class="hljs-number">4</span>分钟又开炮？在法亚美尼亚人抗议 阿塞拜疆使馆前举旗<br>分词结果:亚阿<span class="hljs-regexp">/停火/</span><span class="hljs-number">4</span><span class="hljs-regexp">/分钟/</span>又<span class="hljs-regexp">/开炮/</span>？<span class="hljs-regexp">/在/</span>法<span class="hljs-regexp">/亚美尼亚/</span>人<span class="hljs-regexp">/抗议/</span>阿塞拜疆<span class="hljs-regexp">/使馆/</span>前/举旗<br><br>原句:土耳其被曝秘密试射俄制S400防空导弹 美方高层放出狠话<br>分词结果:土耳其<span class="hljs-regexp">/被/</span>曝<span class="hljs-regexp">/秘密/</span>试<span class="hljs-regexp">/射/</span>俄<span class="hljs-regexp">/制/</span>S<span class="hljs-regexp">/4/</span><span class="hljs-number">0</span><span class="hljs-regexp">/0/</span>防空<span class="hljs-regexp">/导弹/</span>美<span class="hljs-regexp">/方/</span>高层<span class="hljs-regexp">/放/</span>出/狠话<br><br>原句:国家税务总局稽查局副局长林枫接受纪律审查和监察调查<br>分词结果:国家税务总局<span class="hljs-regexp">/稽查局/</span>副<span class="hljs-regexp">/局长/</span>林<span class="hljs-regexp">/枫/</span>接受<span class="hljs-regexp">/纪律/</span>审查<span class="hljs-regexp">/和/</span>监察/调查<br><br>原句:科技助力产业兴 澜沧旧貌换新颜<br>分词结果:科技<span class="hljs-regexp">/助力/</span>产业<span class="hljs-regexp">/兴/</span>澜沧<span class="hljs-regexp">/旧貌/</span>换/新颜<br><br>原句:羊毛党不过是流量<br>分词结果:羊毛<span class="hljs-regexp">/党/</span>不过是/流量<br><br>原句:广西龙胜金秋梯田美如画<br>分词结果:广西<span class="hljs-regexp">/龙/</span>胜<span class="hljs-regexp">/金秋/</span>梯田<span class="hljs-regexp">/美/</span>如/画<br><br>原句:早在上映第四天，《姜子牙》累计票房就已经高达<span class="hljs-number">10.36</span>亿，后来单日票房一路下跌，最低时跌至<span class="hljs-number">500</span>万左右，是同档期对手《我和我的家乡》的五分之一，甚至还不及小成本电影《一点就到家》，位列国庆档新片倒数第二。用“断崖式下跌”来形容这部国漫新作的单日票房走向毫不为过。<br>分词结果:早<span class="hljs-regexp">/在/</span>上映<span class="hljs-regexp">/第四天/</span>，<span class="hljs-regexp">/《/</span>姜子牙<span class="hljs-regexp">/》/</span>累计<span class="hljs-regexp">/票房/</span>就<span class="hljs-regexp">/已经/</span>高<span class="hljs-regexp">/达/</span><span class="hljs-number">10</span><span class="hljs-regexp">/./</span><span class="hljs-number">3</span><span class="hljs-regexp">/6亿/</span>，<span class="hljs-regexp">/后来/</span>单<span class="hljs-regexp">/日/</span>票房<span class="hljs-regexp">/一路/</span>下跌<span class="hljs-regexp">/，/</span>最低<span class="hljs-regexp">/时/</span>跌<span class="hljs-regexp">/至/</span><span class="hljs-number">5</span><span class="hljs-regexp">/0/</span><span class="hljs-number">0</span>万<span class="hljs-regexp">/左右/</span>，<span class="hljs-regexp">/是/</span>同<span class="hljs-regexp">/档期/</span>对手<span class="hljs-regexp">/《/</span>我<span class="hljs-regexp">/和/</span>我<span class="hljs-regexp">/的/</span>家乡<span class="hljs-regexp">/》/</span>的<span class="hljs-regexp">/五分之一/</span>，<span class="hljs-regexp">/甚至/</span>还<span class="hljs-regexp">/不及/</span>小<span class="hljs-regexp">/成本/</span>电影<span class="hljs-regexp">/《/</span>一点<span class="hljs-regexp">/就/</span>到<span class="hljs-regexp">/家/</span>》<span class="hljs-regexp">/，/</span>位<span class="hljs-regexp">/列国庆档/</span>新<span class="hljs-regexp">/片/</span>倒数<span class="hljs-regexp">/第二/</span>。<span class="hljs-regexp">/用/</span>“<span class="hljs-regexp">/断崖式/</span>下跌<span class="hljs-regexp">/”/</span>来<span class="hljs-regexp">/形容/</span>这<span class="hljs-regexp">/部/</span>国<span class="hljs-regexp">/漫/</span>新作<span class="hljs-regexp">/的/</span>单<span class="hljs-regexp">/日/</span>票房<span class="hljs-regexp">/走向/</span>毫不<span class="hljs-regexp">/为/</span>过/。<br><br>原句:<span class="hljs-number">15</span>日，莘庄工业区新时代文明实践的“大本营”——坐落于颛盛路<span class="hljs-number">745</span>号的莘庄工业区新时代文明实践分中心正式落成。<br>分词结果:<span class="hljs-number">1</span><span class="hljs-regexp">/5日/</span>，莘庄<span class="hljs-regexp">/工业区/</span>新时代<span class="hljs-regexp">/文明/</span>实践<span class="hljs-regexp">/的/</span>“<span class="hljs-regexp">/大本营/</span>”<span class="hljs-regexp">/——/</span>坐落<span class="hljs-regexp">/于/</span>颛盛<span class="hljs-regexp">/路/</span><span class="hljs-number">7</span><span class="hljs-regexp">/4/</span><span class="hljs-number">5</span>号<span class="hljs-regexp">/的莘庄/</span>工业区<span class="hljs-regexp">/新时代/</span>文明<span class="hljs-regexp">/实践/</span>分<span class="hljs-regexp">/中心/</span>正式<span class="hljs-regexp">/落成/</span>。<br></code></pre></td></tr></table></figure>
+<h3 id="添加用户词典">添加用户词典</h3>
+<p>从上面的结果可以看出，CRF模型实现的中文分词模型效果确实不错，但也存在着一些词语没有被切分正确的情况，比如伤人、S400、林枫、羊毛党、龙胜、国庆档、颛盛路、745号等词。</p>
+<p>笔者将会模仿结巴分词等模块，实现用户词典功能。</p>
+<p>假设我们的用户词典文件为<code>user_dict.txt</code>，加上用户词典后的预测脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> os<br>text = <span class="hljs-string">&quot;上海野生动物园群熊伤人事件救援画面曝光&quot;</span><br><br><span class="hljs-comment"># 生成待预测的文本</span><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;predict.data&quot;</span>, <span class="hljs-string">&quot;w&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> g:<br>    <span class="hljs-keyword">for</span> char <span class="hljs-keyword">in</span> text:<br>        g.write(<span class="hljs-string">&quot;%s\tn\tB-Char\n&quot;</span> % char)<br><br><span class="hljs-comment"># 利用CRF模型，调用命令行进行预测</span><br>os.system(<span class="hljs-string">&quot;crf_test -m model predict.data &gt; predict_new.txt&quot;</span>)<br><br><span class="hljs-comment"># 处理预测后的进行，并将其加工成中文分词后的结果</span><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;predict_new.txt&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> f:<br>    content = [_.strip() <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> f.readlines()]<br><br>predict_tags = []<br><span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> content:<br>    predict_tags.append(line.split(<span class="hljs-string">&quot;\t&quot;</span>)[-<span class="hljs-number">1</span>])<br><br><span class="hljs-comment"># 通过修改预测标签实现用户词典功能</span><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;user_dict.txt&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> h:<br>    user_words = [_.strip() <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> h.readlines()]<br><br><span class="hljs-keyword">for</span> word <span class="hljs-keyword">in</span> user_words:<br>    t = <span class="hljs-built_in">len</span>(word)<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(text)-t):<br>        <span class="hljs-keyword">if</span> text[i:i+t] == word:<br>            predict_tags[i] = <span class="hljs-string">&quot;B-Char&quot;</span><br>            <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(i+<span class="hljs-number">1</span>, i+t):<br>                predict_tags[j] = <span class="hljs-string">&quot;I-Char&quot;</span><br>            <span class="hljs-keyword">if</span> i+t+<span class="hljs-number">1</span> &lt; <span class="hljs-built_in">len</span>(text):<br>                predict_tags[i+t+<span class="hljs-number">1</span>] = <span class="hljs-string">&quot;I-Char&quot;</span><br><br><span class="hljs-comment"># 对预测标签进行后处理，得到中文分词后的结果</span><br>words = []<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(predict_tags)):<br>    word = <span class="hljs-string">&quot;&quot;</span><br>    <span class="hljs-keyword">if</span> predict_tags[i] == <span class="hljs-string">&quot;B-Char&quot;</span>:<br>        word += text[i]<br>        j = i + <span class="hljs-number">1</span><br>        <span class="hljs-keyword">while</span> j &lt; <span class="hljs-built_in">len</span>(text) <span class="hljs-keyword">and</span> predict_tags[j] == <span class="hljs-string">&quot;I-Char&quot;</span>:<br>            word += text[j]<br>            j += <span class="hljs-number">1</span><br><br>    <span class="hljs-keyword">if</span> word:<br>        words.append(word)<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;原句:%s&quot;</span> % text)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;分词结果:%s&quot;</span> % (<span class="hljs-string">&quot;/&quot;</span>.join(words)))<br></code></pre></td></tr></table></figure>
+<p>添加用户词典后，中文分词的结果如下：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs awk">原句:上海野生动物园群熊伤人事件救援画面曝光<br>分词结果:上海<span class="hljs-regexp">/野生动物园/</span>群<span class="hljs-regexp">/熊/</span>伤人<span class="hljs-regexp">/事件/</span>救援<span class="hljs-regexp">/画面/</span>曝光<br><br>原句:土耳其被曝秘密试射俄制S400防空导弹 美方高层放出狠话<br>分词结果:土耳其<span class="hljs-regexp">/被/</span>曝<span class="hljs-regexp">/秘密/</span>试<span class="hljs-regexp">/射/</span>俄<span class="hljs-regexp">/制/</span>S400<span class="hljs-regexp">/防空/</span>导弹<span class="hljs-regexp">/美/</span>方<span class="hljs-regexp">/高层/</span>放<span class="hljs-regexp">/出/</span>狠话<br> <br>原句:国家税务总局稽查局副局长林枫接受纪律审查和监察调查<br>分词结果:国家税务总局<span class="hljs-regexp">/稽查局/</span>副<span class="hljs-regexp">/局长/</span>林枫<span class="hljs-regexp">/接受/</span>纪律<span class="hljs-regexp">/审查/</span>和<span class="hljs-regexp">/监察/</span>调查<br><br>原句:羊毛党不过是流量<br>分词结果:羊毛党<span class="hljs-regexp">/不过是/</span>流量<br><br>原句:广西龙胜金秋梯田美如画<br>分词结果:广西<span class="hljs-regexp">/龙胜/</span>金秋<span class="hljs-regexp">/梯田/</span>美<span class="hljs-regexp">/如/</span>画<br><br>原句:早在上映第四天，《姜子牙》累计票房就已经高达<span class="hljs-number">10.36</span>亿，后来单日票房一路下跌，最低时跌至<span class="hljs-number">500</span>万左右，是同档期对手《我和我的家乡》的五分之一，甚至还不及小成本电影《一点就到家》，位列国庆档新片倒数第二。用“断崖式下跌”来形容这部国漫新作的单日票房走向毫不为过。<br>分词结果:早<span class="hljs-regexp">/在/</span>上映<span class="hljs-regexp">/第四天/</span>，<span class="hljs-regexp">/《/</span>姜子牙<span class="hljs-regexp">/》/</span>累计<span class="hljs-regexp">/票房/</span>就<span class="hljs-regexp">/已经/</span>高<span class="hljs-regexp">/达/</span><span class="hljs-number">10</span><span class="hljs-regexp">/./</span><span class="hljs-number">3</span><span class="hljs-regexp">/6亿/</span>，<span class="hljs-regexp">/后来/</span>单<span class="hljs-regexp">/日/</span>票房<span class="hljs-regexp">/一路/</span>下跌<span class="hljs-regexp">/，/</span>最低<span class="hljs-regexp">/时/</span>跌<span class="hljs-regexp">/至/</span><span class="hljs-number">5</span><span class="hljs-regexp">/0/</span><span class="hljs-number">0</span>万<span class="hljs-regexp">/左右/</span>，<span class="hljs-regexp">/是/</span>同<span class="hljs-regexp">/档期/</span>对手<span class="hljs-regexp">/《/</span>我<span class="hljs-regexp">/和/</span>我<span class="hljs-regexp">/的/</span>家乡<span class="hljs-regexp">/》/</span>的<span class="hljs-regexp">/五分之一/</span>，<span class="hljs-regexp">/甚至/</span>还<span class="hljs-regexp">/不及/</span>小<span class="hljs-regexp">/成本/</span>电影<span class="hljs-regexp">/《/</span>一点<span class="hljs-regexp">/就/</span>到<span class="hljs-regexp">/家/</span>》<span class="hljs-regexp">/，/</span>位<span class="hljs-regexp">/列/</span>国庆档<span class="hljs-regexp">/新片/</span>倒数<span class="hljs-regexp">/第二/</span>。<span class="hljs-regexp">/用/</span>“<span class="hljs-regexp">/断崖式/</span>下跌<span class="hljs-regexp">/”/</span>来<span class="hljs-regexp">/形容/</span>这<span class="hljs-regexp">/部/</span>国<span class="hljs-regexp">/漫/</span>新作<span class="hljs-regexp">/的/</span>单<span class="hljs-regexp">/日/</span>票房<span class="hljs-regexp">/走向/</span>毫不<span class="hljs-regexp">/为/</span>过/。<br> <br>原句:<span class="hljs-number">15</span>日，莘庄工业区新时代文明实践的“大本营”——坐落于颛盛路<span class="hljs-number">745</span>号的莘庄工业区新时代文明实践分中心正式落成。<br>分词结果:<span class="hljs-number">1</span><span class="hljs-regexp">/5日/</span>，莘庄<span class="hljs-regexp">/工业区/</span>新时代<span class="hljs-regexp">/文明/</span>实践<span class="hljs-regexp">/的/</span>“<span class="hljs-regexp">/大本营/</span>”<span class="hljs-regexp">/——/</span>坐落<span class="hljs-regexp">/于/</span>颛盛路<span class="hljs-regexp">/745号/</span>的莘庄<span class="hljs-regexp">/工业区/</span>新时代<span class="hljs-regexp">/文明/</span>实践<span class="hljs-regexp">/分/</span>中心<span class="hljs-regexp">/正式/</span>落成/。<br></code></pre></td></tr></table></figure>
+<p>可以看到，用户词典功能也已经生效了。</p>
+<h3 id="总结">总结</h3>
+<p>本次分享利用CRF实现了中文分词这个最基本的NLP任务。</p>
+<p>本文对应的Github地址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/CRF-Chinese-Word-Segment">https://github.com/percent4/CRF-Chinese-Word-Segment</a>
+。</p>
+<p>感谢大家的阅读~</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/NLP/" class="print-no-link">#NLP</a>
+      
+        <a href="/tags/CRF/" class="print-no-link">#CRF</a>
+      
+        <a href="/tags/%E5%88%86%E8%AF%8D/" class="print-no-link">#分词</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（三十三）利用CRF实现中文分词</div>
+      <div>https://percent4.github.io/NLP（三十三）利用CRF实现中文分词/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月10日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/" title="NLP（三十四）使用keras-bert实现序列标注任务">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NLP（三十四）使用keras-bert实现序列标注任务</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E4%BA%8C%EF%BC%89%E5%88%A9%E7%94%A8doccano%E8%BF%9B%E8%A1%8C%E6%96%87%E6%A1%A3%E6%A0%87%E6%B3%A8/" title="NLP（三十二）利用doccano进行文档标注">
+                        <span class="hidden-mobile">NLP（三十二）利用doccano进行文档标注</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

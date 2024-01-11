@@ -1,0 +1,923 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将详细介绍RAG框架中的两种Rerank模型的评估实验：bge-reranker和Cohere Rerank。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（八十三）RAG框架中的Rerank算法评估">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E5%85%AB%E5%8D%81%E4%B8%89%EF%BC%89RAG%E6%A1%86%E6%9E%B6%E4%B8%AD%E7%9A%84Rerank%E7%AE%97%E6%B3%95%E8%AF%84%E4%BC%B0/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将详细介绍RAG框架中的两种Rerank模型的评估实验：bge-reranker和Cohere Rerank。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2023/12/29/vsuXBtbLdaVDS39.png">
+<meta property="article:published_time" content="2024-01-11T04:57:27.000Z">
+<meta property="article:modified_time" content="2024-01-11T04:58:00.038Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="RAG">
+<meta property="article:tag" content="Rerank">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2023/12/29/vsuXBtbLdaVDS39.png">
+  
+  
+  
+  <title>NLP（八十三）RAG框架中的Rerank算法评估 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（八十三）RAG框架中的Rerank算法评估"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-01-11 12:57" pubdate>
+          星期四, 一月 11日 2024, 12:57 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          3.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          30 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（八十三）RAG框架中的Rerank算法评估</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将详细介绍RAG框架中的两种Rerank模型的评估实验：bge-reranker和Cohere
+Rerank。</p>
+</blockquote>
+<p>在文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486199&amp;idx=1&amp;sn=f24175b05bdf5bc6dd42efed4d5acae8&amp;chksm=fcb9b367cbce3a711fabd1a56bb5b9d803aba2f42964b4e1f9a4dc6e2174f0952ddb9e1d4c55&amp;token=1977141018&amp;lang=zh_CN#rd">NLP（八十二）RAG框架中的Retrieve算法评估</a>中，我们在评估Retrieve算法的时候，发现在Ensemble
+Search阶段之后加入Rerank算法能有效提升检索效果，其中top_3的Hit
+Rate指标增加约4%。</p>
+<p>因此，本文将深入Rerank算法对比，主要对比bge-reranker和Cohere
+Rerank两种算法，分析它们对于提升检索效果的作用。</p>
+<h2 id="为什么需要重排序">为什么需要重排序？</h2>
+<p><strong>混合检索</strong>通过融合多种检索技术的优势，能够提升检索的召回效果。然而，这种方法在应用不同的检索模式时，必须对结果进行整合和标准化处理。标准化是指将数据调整到一致的标准范围或格式，以便于更有效地进行比较、分析和处理。在完成这些步骤后，这些数据将整合并提供给大型模型进行处理。为了实现这一过程，我们需要引入一个评分系统，即<code>重排序模型（Rerank Model）</code>，它有助于进一步优化和精炼检索结果。</p>
+<p><code>Rerank模型</code>通过对候选文档列表进行重新排序，以提高其与用户查询语义的匹配度，从而优化排序结果。该模型的核心在于评估用户问题与每个候选文档之间的关联程度，并基于这种相关性给文档排序，使得与用户问题更为相关的文档排在更前的位置。这种模型的实现通常涉及计算相关性分数，然后按照这些分数从高到低排列文档。市场上已有一些流行的重排序模型，例如
+<strong>Cohere rerank</strong>、<strong>bge-reranker</strong>
+等，它们在不同的应用场景中表现出了优异的性能。</p>
+<p><img
+src="https://txt.cohere.com/content/images/size/w1000/2023/04/data-src-image-3ce99123-fc91-4952-bc61-fcf36b810e18.png" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="bge-reranker模型">BGE-Reranker模型</h2>
+<p><strong>Cohere
+Rerank</strong>模型目前闭源，对外提供API，普通账号提供免费使用额度，生产环境最好使用付费服务，因此，本文不再过多介绍，关于这块的文章可参考其官网博客：<a
+target="_blank" rel="noopener" href="https://txt.cohere.com/rerank/">https://txt.cohere.com/rerank/</a>
+.</p>
+<p><strong>bge-reranker</strong>是<code>BAAI</code>（北京智源人工智能研究院）发布的系列模型之一，包括Embedding、Rerank系列模型等。<code>bge-reranker</code>模型在HuggingFace上开源，有<code>base</code>、<code>large</code>两个版本模型。</p>
+<p>借助<code>FlagEmbedding</code>，我们以BAAI/bge-reranker-base模型为例，使用FastAPI封装成HTTP服务，Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># !/usr/bin/env python</span><br><span class="hljs-comment"># encoding: utf-8</span><br><span class="hljs-keyword">import</span> uvicorn<br><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI<br><span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel<br><span class="hljs-keyword">from</span> operator <span class="hljs-keyword">import</span> itemgetter<br><span class="hljs-keyword">from</span> FlagEmbedding <span class="hljs-keyword">import</span> FlagReranker<br><br><br>app = FastAPI()<br><br>reranker = FlagReranker(<span class="hljs-string">&#x27;/data_2/models/bge-reranker-base/models--BAAI--bge-reranker-base/blobs&#x27;</span>, use_fp16=<span class="hljs-literal">True</span>)<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">QuerySuite</span>(<span class="hljs-title class_ inherited__">BaseModel</span>):<br>    query: <span class="hljs-built_in">str</span><br>    passages: <span class="hljs-built_in">list</span>[<span class="hljs-built_in">str</span>]<br>    top_k: <span class="hljs-built_in">int</span> = <span class="hljs-number">1</span><br><br><br><span class="hljs-meta">@ app.post(<span class="hljs-params"><span class="hljs-string">&#x27;/bge_base_rerank&#x27;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">rerank</span>(<span class="hljs-params">query_suite: QuerySuite</span>):<br>    scores = reranker.compute_score([[query_suite.query, passage] <span class="hljs-keyword">for</span> passage <span class="hljs-keyword">in</span> query_suite.passages])<br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(scores, <span class="hljs-built_in">list</span>):<br>        similarity_dict = &#123;passage: scores[i] <span class="hljs-keyword">for</span> i, passage <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(query_suite.passages)&#125;<br>    <span class="hljs-keyword">else</span>:<br>        similarity_dict = &#123;passage: scores <span class="hljs-keyword">for</span> i, passage <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(query_suite.passages)&#125;<br>    sorted_similarity_dict = <span class="hljs-built_in">sorted</span>(similarity_dict.items(), key=itemgetter(<span class="hljs-number">1</span>), reverse=<span class="hljs-literal">True</span>)<br>    result = &#123;&#125;<br>    <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(query_suite.top_k):<br>        result[sorted_similarity_dict[j][<span class="hljs-number">0</span>]] = sorted_similarity_dict[j][<span class="hljs-number">1</span>]<br>    <span class="hljs-keyword">return</span> result<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    uvicorn.run(app, host=<span class="hljs-string">&#x27;0.0.0.0&#x27;</span>, port=<span class="hljs-number">50072</span>)<br></code></pre></td></tr></table></figure>
+<p>计算"上海天气"与"北京美食"、"上海气候"的Rerank相关性分数，请求如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl --location <span class="hljs-string">&#x27;http://localhost:50072/bge_base_rerank&#x27;</span> \<br>--header <span class="hljs-string">&#x27;Content-Type: application/json&#x27;</span> \<br>--data <span class="hljs-string">&#x27;&#123;</span><br><span class="hljs-string">    &quot;query&quot;: &quot;上海天气&quot;,</span><br><span class="hljs-string">    &quot;passages&quot;: [&quot;北京美食&quot;, &quot;上海气候&quot;],</span><br><span class="hljs-string">    &quot;top_k&quot;: 2</span><br><span class="hljs-string">&#125;&#x27;</span><br></code></pre></td></tr></table></figure>
+<p>输出如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;上海气候&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">6.24609375</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;北京美食&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">-7.29296875</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<h2 id="评估实验">评估实验</h2>
+<p>我们使用<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486199&amp;idx=1&amp;sn=f24175b05bdf5bc6dd42efed4d5acae8&amp;chksm=fcb9b367cbce3a711fabd1a56bb5b9d803aba2f42964b4e1f9a4dc6e2174f0952ddb9e1d4c55&amp;token=1977141018&amp;lang=zh_CN#rd">NLP（八十二）RAG框架中的Retrieve算法评估</a>中的数据集和评估代码，在ensemble
+search阶段之后加入BGE-Reranker服务API调用。</p>
+<p>其中，<code>bge-reranker-base</code>的评估结果如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>retrievers</th>
+<th>hit_rate</th>
+<th>mrr</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ensemble_bge_base_rerank_top_1_eval</td>
+<td>0.8255</td>
+<td>0.8255</td>
+</tr>
+<tr class="even">
+<td>ensemble_bge_base_rerank_top_2_eval</td>
+<td>0.8785</td>
+<td>0.8489</td>
+</tr>
+<tr class="odd">
+<td>ensemble_bge_base_rerank_top_3_eval</td>
+<td>0.9346</td>
+<td>0.8686</td>
+</tr>
+<tr class="even">
+<td>ensemble_bge_base_rerank_top_4_eval</td>
+<td>0.947</td>
+<td>0.872</td>
+</tr>
+<tr class="odd">
+<td>ensemble_bge_base_rerank_top_5_eval</td>
+<td>0.9564</td>
+<td>0.8693</td>
+</tr>
+</tbody>
+</table>
+<p><code>bge-reranker-large</code>的评估结果如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>retrievers</th>
+<th>hit_rate</th>
+<th>mrr</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ensemble_bge_large_rerank_top_1_eval</td>
+<td>0.8224</td>
+<td>0.8224</td>
+</tr>
+<tr class="even">
+<td>ensemble_bge_large_rerank_top_2_eval</td>
+<td>0.8847</td>
+<td>0.8364</td>
+</tr>
+<tr class="odd">
+<td>ensemble_bge_large_rerank_top_3_eval</td>
+<td>0.9377</td>
+<td>0.8572</td>
+</tr>
+<tr class="even">
+<td>ensemble_bge_large_rerank_top_4_eval</td>
+<td>0.9502</td>
+<td>0.8564</td>
+</tr>
+<tr class="odd">
+<td>ensemble_bge_large_rerank_top_5_eval</td>
+<td>0.9626</td>
+<td>0.8537</td>
+</tr>
+</tbody>
+</table>
+<p>以Ensemble Search为baseline，分别对三种Rerank模型进行Hit
+Rate指标统计，柱状图如下：</p>
+<figure>
+<img src="https://s2.loli.net/2023/12/29/vsuXBtbLdaVDS39.png" srcset="/img/loading.gif" lazyload
+alt="不同Rerank模型的Hit Rate" />
+<figcaption aria-hidden="true">不同Rerank模型的Hit Rate</figcaption>
+</figure>
+<p>从上述的统计图中可以得到如下结论：</p>
+<ul>
+<li>在Ensemble Search阶段后加入Rerank模型会有检索效果提升</li>
+<li>就检索效果而言，Rerank模型的结果为：Cohere &gt; bge-rerank-large
+&gt; bge-rerank-base，但效果相差不大</li>
+</ul>
+<h2 id="总结">总结</h2>
+<p>本文详细介绍了RAG框架中的两种Rerank模型的评估实验：bge-reranker和Cohere
+Rerank，算是在之前Retrieve算法评估实验上的延续工作，后续将会有更多工作持续更新。</p>
+<p>本文的所有过程及指标结果已开源至Github，网址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/embedding_rerank_retrieval">https://github.com/percent4/embedding_rerank_retrieval</a>
+.</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/RAG/" class="print-no-link">#RAG</a>
+      
+        <a href="/tags/Rerank/" class="print-no-link">#Rerank</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（八十三）RAG框架中的Rerank算法评估</div>
+      <div>https://percent4.github.io/NLP（八十三）RAG框架中的Rerank算法评估/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年1月11日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E5%85%AB%E5%8D%81%E4%BA%8C%EF%BC%89RAG%E6%A1%86%E6%9E%B6%E4%B8%AD%E7%9A%84Retrieve%E7%AE%97%E6%B3%95%E8%AF%84%E4%BC%B0/" title="NLP（八十二）RAG框架中的Retrieve算法评估">
+                        <span class="hidden-mobile">NLP（八十二）RAG框架中的Retrieve算法评估</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

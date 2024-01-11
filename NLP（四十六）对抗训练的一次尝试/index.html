@@ -1,0 +1,1028 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍对抗训练。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（四十六）对抗训练的一次尝试">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E5%85%AD%EF%BC%89%E5%AF%B9%E6%8A%97%E8%AE%AD%E7%BB%83%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍对抗训练。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://percent4.github.io/img/nlp46_1.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp46_2.png">
+<meta property="article:published_time" content="2023-07-10T09:21:33.000Z">
+<meta property="article:modified_time" content="2024-01-10T15:53:14.048Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="对抗训练">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp46_1.png">
+  
+  
+  
+  <title>NLP（四十六）对抗训练的一次尝试 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（四十六）对抗训练的一次尝试"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-10 17:21" pubdate>
+          星期一, 七月 10日 2023, 5:21 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          26 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（四十六）对抗训练的一次尝试</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>初次听说对抗训练是在一次实体识别比赛的赛后分享中，当时的一些概念，比如Focal
+Loss、对抗训练、模型融合、数据增强等都让我感到新奇，之后笔者自己也做了很多这方面的尝试。本文将分享笔者对于对抗训练（FGM）的一次尝试。</p>
+<h3 id="什么是对抗训练">什么是对抗训练？</h3>
+<p>提到“对抗”，相信大多数人的第一反应都是CV中的对抗生成网络
+(GAN)，殊不知，其实对抗也可以作为一种防御机制，并且经过简单的修改，便能用在NLP任务上，提高模型的泛化能力。GAN之父Ian
+Goodfellow在15年的ICLR论文《Explaining and Harnessing Adversarial
+Examples》中第一次提出了对抗训练这个概念，简而言之，就是在原始输入样本<code>x</code>上加一个扰动<code>radv</code>，得到对抗样本后，用其进行训练。这在CV领域比较好理解，部分图片本身就是自带噪声的，比如手抖、光线不佳等，这就是天然的对抗样本，它们在模型训练的时候就是负样本，这些样本的加入能提升模型的鲁棒性。比如下面的经典例子：</p>
+<figure>
+<img src="/img/nlp46_1.png" srcset="/img/loading.gif" lazyload alt="对抗训练的经典例子" />
+<figcaption aria-hidden="true">对抗训练的经典例子</figcaption>
+</figure>
+<p>从上面的例子中，我们可以看到一张置信度为55.7%的panda图片在加入了很小的随机扰动后，模型竟然识别为了gibbon。</p>
+<p>对抗训练的一般原理可以用下面的最大最小化公式来体现：</p>
+<figure>
+<img src="/img/nlp46_2.png" srcset="/img/loading.gif" lazyload alt="最大最小化公式" />
+<figcaption aria-hidden="true">最大最小化公式</figcaption>
+</figure>
+<p>其中D代表训练集，x代表输入，y代表标签，θ是模型参数，L(x,y;θ)是单个样本的loss，Δx是对抗扰动，Ω是扰动空间。Ω是扰动空间，Δx是对抗扰动，一般扰动空间都比较小，避免对原来样本的破坏。在训练集合D，选择合适的对抗扰动来使得当个样本的loss达到最大，同时，外层（<code>E(x,y)</code>）就是对神经网络的模型参数θ进行优化，使其最小化。这颇有一点攻与守的味道，有了随机扰动的加入，样本的loss要尽可能大，而训练的模型loss要尽可能小，从而使得模型有了更强的鲁棒性，避免样本的小扰动就造成模型推理的结果偏差。</p>
+<h3 id="fgm">FGM</h3>
+<p>FGM（Fast Gradient Method）是对抗学习的一种实现方式，可以与FGSM（Fast
+Gradient Sign
+Method）一起谈论。对于随机扰动Δx，FGM与FGSM的实现公式如下：</p>
+<p><span class="math display">\[FGSM: \Delta{x}=\epsilon\cdot Sign(g) \\
+FGM: \Delta{x}=\epsilon\cdot (g/||g||_{2}) \\
+其中Sign为数学函数，||g||_{2}为g的L_{2}范数，
+g=\nabla_{x}L(x;y;\theta).\]</span></p>
+<p>从上面的公式上可以看出，其增大样本loss的办法是使得样本x在梯度方向变大。</p>
+<p>CV领域中，上面的FGM公式比较容易实现，因为图片的向量表示我们可以认为是连续的实数，而在NLP中，一般字或词的表示为One-hot向量，不好直接进行样本扰动。一种简单的想法是在word
+Embedding向量的时候进行扰动。Embedding层的输出是直接取自于Embedding参数矩阵的，因此我们可以直接对Embedding参数矩阵进行扰动。这样得到的对抗样本的多样性会少一些（因为不同样本的同一个token共用了相同的扰动），但仍然能起到正则化的作用，而且这样实现起来容易得多。</p>
+<p>我们不必自己动手去实现上述的FGM，苏建林在bert4keras工具中已经实现了FGM的脚本，可以参考：<a
+target="_blank" rel="noopener" href="https://github.com/bojone/keras_adversarial_training">https://github.com/bojone/keras_adversarial_training</a>，这是Keras框架下的实现。而瓦特兰蒂斯在博客<a
+target="_blank" rel="noopener" href="https://fyubang.com/2019/10/15/adversarial-train/">【炼丹技巧】功守道：NLP中的对抗训练
++
+PyTorch实现</a>中给出了Torch框架下的FGM实现。两者使用起来都非常方便。</p>
+<p>下面将介绍笔者使用FGM在keras-bert模块中的实验。</p>
+<h3 id="实验结果">实验结果</h3>
+<p>笔者使用keras-bert模块实现了命名实体识别、文本多分类、文本多标签分类任务，如下：</p>
+<ul>
+<li><p><a
+href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a></p></li>
+<li><p><a
+href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E4%BA%94%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E5%A4%9A%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1/">NLP（三十五）使用keras-bert实现文本多分类任务</a></p></li>
+<li><p><a
+href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E5%A4%9A%E6%A0%87%E7%AD%BE%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1/">NLP（三十六）使用keras-bert实现文本多标签分类任务</a></p>
+<p>我们将对比在同样的模型参数下，相同数据集在使用FGM前后的模型评估指标的对比：</p></li>
+<li><p>人民日报实体识别任务（评估指标为micro avg f1-score）</p></li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>-</th>
+<th>训练1</th>
+<th>训练2</th>
+<th>训练3</th>
+<th>avg</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>使用FGM前</td>
+<td>0.9276</td>
+<td>0.9217</td>
+<td>0.9252</td>
+<td>0.9248</td>
+</tr>
+<tr class="even">
+<td>使用FGM后</td>
+<td>0.9287</td>
+<td>0.9273</td>
+<td>0.9294</td>
+<td>0.9285</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>时间识别任务（评估指标为micro avg f1-score）</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>-</th>
+<th>训练1</th>
+<th>训练2</th>
+<th>训练3</th>
+<th>avg</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>使用FGM前</td>
+<td>0.8926</td>
+<td>0.8934</td>
+<td>0.8820</td>
+<td>0.8893</td>
+</tr>
+<tr class="even">
+<td>使用FGM后</td>
+<td>0.9037</td>
+<td>0.8798</td>
+<td>0.8911</td>
+<td>0.8915</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>搜狗数据集文本多分类模型（评估指标为micro avg f1-score）</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>-</th>
+<th>训练1</th>
+<th>训练2</th>
+<th>训练3</th>
+<th>avg</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>使用FGM前</td>
+<td>0.9778</td>
+<td>0.9697</td>
+<td>0.9657</td>
+<td>0.9711</td>
+</tr>
+<tr class="even">
+<td>使用FGM后</td>
+<td>0.9778</td>
+<td>0.9838</td>
+<td>0.9838</td>
+<td>0.9818</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>THUCNews数据集文本多分类模型（评估指标为micro avg f1-score）</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>-</th>
+<th>训练1</th>
+<th>训练2</th>
+<th>训练3</th>
+<th>avg</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>使用FGM前</td>
+<td>0.9524</td>
+<td>0.9621</td>
+<td>0.9685</td>
+<td>0.961</td>
+</tr>
+<tr class="even">
+<td>使用FGM后</td>
+<td>0.9689</td>
+<td>0.9723</td>
+<td>0.9712</td>
+<td>0.9708</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>事件类型文本多标签模型（评估指标为accuracy）</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>-</th>
+<th>训练1</th>
+<th>训练2</th>
+<th>训练3</th>
+<th>avg</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>使用FGM前</td>
+<td>0.8985</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr class="even">
+<td>使用FGM后</td>
+<td>0.9159</td>
+<td>0.9192</td>
+<td>0.9186</td>
+<td>0.9179</td>
+</tr>
+</tbody>
+</table>
+<p>以上对比结果已经上传至Github，网址如下：</p>
+<ul>
+<li><p>命名实体识别：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/keras_bert_sequence_labeling">https://github.com/percent4/keras_bert_sequence_labeling</a></p></li>
+<li><p>文本多分类：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/keras_bert_text_classification">https://github.com/percent4/keras_bert_text_classification</a></p></li>
+<li><p>文本多标签文本：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/keras_bert_multi_label_cls">https://github.com/percent4/keras_bert_multi_label_cls</a></p>
+<p>总结经验为：</p></li>
+</ul>
+<ol type="1">
+<li>对抗训练FGM在很多NLP任务中可以有效提升模型效果，但代价是训练时间变长，一般是原来的1.5~2倍。</li>
+<li>FGM一般在小样本数据集上的提升效果较为明显。</li>
+<li>FGM并不一定总是能提升模型效果，比如笔者使用R-BERT在人物关系分类数据集上，使用FGM的效果反而变差了。</li>
+</ol>
+<h3 id="总结">总结</h3>
+<p>本文主要介绍了对抗训练的概念，以及FGM实现方式和它在不同NLP任务上的模型效果对比。</p>
+<p>最近笔者在使用keras bert实现多项选择阅读理解任务，但keras
+bert比较吃显存，而且模型结构写起来比较麻烦且效果有点儿出入。而用PyTorch实现的transformers模块，使用方便而且效果也好，不得不说，Torch真香！这并不是说Keras不行，而是Torch确实使用起来很方便。这只是我现在的体会，不必过于较真。</p>
+<p>感谢大家阅读~</p>
+<p>2021年4月14日深夜于上海浦东，此日上海天色阴沉~</p>
+<h3 id="参考文献">参考文献</h3>
+<ol type="1">
+<li>对抗训练浅谈：意义、方法和思考（附Keras实现）: <a
+target="_blank" rel="noopener" href="https://spaces.ac.cn/archives/7234">https://spaces.ac.cn/archives/7234</a></li>
+<li>【炼丹技巧】功守道：NLP中的对抗训练 + PyTorch实现: <a
+target="_blank" rel="noopener" href="https://fyubang.com/2019/10/15/adversarial-train/">https://fyubang.com/2019/10/15/adversarial-train/</a></li>
+<li>论文阅读：对抗训练（adversarial training）: <a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/104040055">https://zhuanlan.zhihu.com/p/104040055</a></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/NLP/" class="print-no-link">#NLP</a>
+      
+        <a href="/tags/%E5%AF%B9%E6%8A%97%E8%AE%AD%E7%BB%83/" class="print-no-link">#对抗训练</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（四十六）对抗训练的一次尝试</div>
+      <div>https://percent4.github.io/NLP（四十六）对抗训练的一次尝试/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月10日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%B8%83%EF%BC%89%E5%B8%B8%E8%A7%81%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0/" title="NLP（四十七）常见的损失函数">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NLP（四十七）常见的损失函数</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%BA%94%EF%BC%89R-BERT%E5%9C%A8%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E5%88%86%E7%B1%BB%E4%B8%8A%E7%9A%84%E5%B0%9D%E8%AF%95%E5%8F%8AKeras%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/" title="NLP（四十五）R-BERT在人物关系分类上的尝试及Keras代码复现">
+                        <span class="hidden-mobile">NLP（四十五）R-BERT在人物关系分类上的尝试及Keras代码复现</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

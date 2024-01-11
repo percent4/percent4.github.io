@@ -1,0 +1,866 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文主要介绍如何使用ELK工具，将MySQL中的数据同步至ElasticSearch.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ELK学习笔记（二）数据同步">
+<meta property="og:url" content="https://percent4.github.io/ELK%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文主要介绍如何使用ELK工具，将MySQL中的数据同步至ElasticSearch.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2023/12/24/l5aZyinuXv2mbdR.jpg">
+<meta property="og:image" content="https://s2.loli.net/2023/12/24/VCjx71aSscR5enK.png">
+<meta property="og:image" content="https://s2.loli.net/2023/12/24/k5rGuSHB39sOjtz.png">
+<meta property="article:published_time" content="2024-01-11T04:54:44.000Z">
+<meta property="article:modified_time" content="2024-01-11T04:55:12.918Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="ELK">
+<meta property="article:tag" content="数据同步">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2023/12/24/l5aZyinuXv2mbdR.jpg">
+  
+  
+  
+  <title>ELK学习笔记（二）数据同步 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="ELK学习笔记（二）数据同步"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-01-11 12:54" pubdate>
+          星期四, 一月 11日 2024, 12:54 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          76 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">ELK学习笔记（二）数据同步</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文主要介绍如何使用ELK工具，将MySQL中的数据同步至ElasticSearch.</p>
+</blockquote>
+<p>本文主要分为以下三个部分：</p>
+<ul>
+<li>环境准备：包括启动MySQL与ELK，在MySQL与ES中分别创建对应的表格，开发Python脚本用于往MySQL中创建表格、批量插入数据</li>
+<li>全量数据同步：将MySQL表中数据全量同步至ES</li>
+<li>增量数据同步：将MySQL表中数据增量同步至ES</li>
+</ul>
+<figure>
+<img src="https://s2.loli.net/2023/12/24/l5aZyinuXv2mbdR.jpg" srcset="/img/loading.gif" lazyload
+alt="ELK实现数据同步" />
+<figcaption aria-hidden="true">ELK实现数据同步</figcaption>
+</figure>
+<h2 id="环境准备">环境准备</h2>
+<p>使用docker-compose启动mysql, docker-compose.yml如下:</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs yml"><span class="hljs-attr">version:</span> <span class="hljs-string">&#x27;3&#x27;</span><br><br><span class="hljs-attr">services:</span><br>  <span class="hljs-attr">mysql8.0:</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">mysql:8.0</span><br>    <span class="hljs-attr">container_name:</span> <span class="hljs-string">mysql8.0</span><br>    <span class="hljs-attr">restart:</span> <span class="hljs-string">always</span><br>    <span class="hljs-attr">environment:</span><br>      <span class="hljs-attr">TZ:</span> <span class="hljs-string">Asia/Shanghai</span><br>      <span class="hljs-attr">MYSQL_ROOT_PASSWORD:</span> <span class="hljs-string">root</span><br>      <span class="hljs-attr">MYSQL_DATABASE:</span> <span class="hljs-string">orm_test</span><br>    <span class="hljs-attr">ports:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-number">3306</span><span class="hljs-string">:3306</span><br>    <span class="hljs-attr">volumes:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">./mysql/data/:/var/lib/mysql/</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">./mysql/conf/:/etc/mysql/conf.d/</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">./mysql/init/:/docker-entrypoint-initdb.d/</span><br>    <span class="hljs-attr">command:</span><br>      <span class="hljs-comment"># 将mysql8.0默认密码策略 修改为 原先 策略 (mysql8.0对其默认策略做了更改 会导致密码无法匹配)</span><br>      <span class="hljs-string">--default-authentication-plugin=mysql_native_password</span><br>      <span class="hljs-string">--character-set-server=utf8mb4</span><br>      <span class="hljs-string">--collation-server=utf8mb4_general_ci</span><br>      <span class="hljs-string">--explicit_defaults_for_timestamp=true</span><br></code></pre></td></tr></table></figure>
+<p>使用Python中的sqlalchemy + pymysql往MySQL中创建users表格，如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @place: Pudong, Shanghai</span><br><span class="hljs-comment"># @file: mysql_create_table.py</span><br><span class="hljs-comment"># @time: 2023/12/23 23:29</span><br><span class="hljs-keyword">from</span> sqlalchemy.dialects.mysql <span class="hljs-keyword">import</span> INTEGER, VARCHAR, DATETIME<br><span class="hljs-keyword">from</span> sqlalchemy <span class="hljs-keyword">import</span> Column<br><span class="hljs-keyword">from</span> sqlalchemy <span class="hljs-keyword">import</span> create_engine<br><span class="hljs-keyword">from</span> sqlalchemy.ext.declarative <span class="hljs-keyword">import</span> declarative_base<br>Base = declarative_base()<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Users</span>(<span class="hljs-title class_ inherited__">Base</span>):<br>    __tablename__ = <span class="hljs-string">&#x27;users&#x27;</span><br><br>    <span class="hljs-built_in">id</span> = Column(INTEGER, primary_key=<span class="hljs-literal">True</span>)<br>    name = Column(VARCHAR(<span class="hljs-number">256</span>), nullable=<span class="hljs-literal">False</span>)<br>    age = Column(INTEGER)<br>    place = Column(VARCHAR(<span class="hljs-number">256</span>), nullable=<span class="hljs-literal">False</span>)<br>    insert_time = Column(DATETIME)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, <span class="hljs-built_in">id</span>, name, age, place, insert_time</span>):<br>        self.<span class="hljs-built_in">id</span> = <span class="hljs-built_in">id</span><br>        self.name = name<br>        self.age = age<br>        self.place = place<br>        self.insert_time = insert_time<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">init_db</span>():<br>    engine = create_engine(<br>        <span class="hljs-string">&quot;mysql+pymysql://root:root@localhost:3306/orm_test&quot;</span>,<br>        echo=<span class="hljs-literal">True</span><br>    )<br>    Base.metadata.create_all(engine)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Create table successfully!&#x27;</span>)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    init_db()<br><br></code></pre></td></tr></table></figure>
+<p>users表结构如下：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs gherkin">+-------------+--------------+------+-----+---------+----------------+<br>|<span class="hljs-string"> Field       </span>|<span class="hljs-string"> Type         </span>|<span class="hljs-string"> Null </span>|<span class="hljs-string"> Key </span>|<span class="hljs-string"> Default </span>|<span class="hljs-string"> Extra          </span>|<br>+-------------+--------------+------+-----+---------+----------------+<br>|<span class="hljs-string"> id          </span>|<span class="hljs-string"> int          </span>|<span class="hljs-string"> NO   </span>|<span class="hljs-string"> PRI </span>|<span class="hljs-string"> NULL    </span>|<span class="hljs-string"> auto_increment </span>|<br>|<span class="hljs-string"> name        </span>|<span class="hljs-string"> varchar(256) </span>|<span class="hljs-string"> NO   </span>|<span class="hljs-string">     </span>|<span class="hljs-string"> NULL    </span>|<span class="hljs-string">                </span>|<br>|<span class="hljs-string"> age         </span>|<span class="hljs-string"> int          </span>|<span class="hljs-string"> YES  </span>|<span class="hljs-string">     </span>|<span class="hljs-string"> NULL    </span>|<span class="hljs-string">                </span>|<br>|<span class="hljs-string"> place       </span>|<span class="hljs-string"> varchar(256) </span>|<span class="hljs-string"> NO   </span>|<span class="hljs-string">     </span>|<span class="hljs-string"> NULL    </span>|<span class="hljs-string">                </span>|<br>|<span class="hljs-string"> insert_time </span>|<span class="hljs-string"> datetime     </span>|<span class="hljs-string"> YES  </span>|<span class="hljs-string">     </span>|<span class="hljs-string"> NULL    </span>|<span class="hljs-string">                </span>|<br>+-------------+--------------+------+-----+---------+----------------+<br></code></pre></td></tr></table></figure>
+<p>插入5条数据，脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @place: Pudong, Shanghai</span><br><span class="hljs-comment"># @file: mysql_insert_data.py</span><br><span class="hljs-comment"># @time: 2023/12/23 23:29</span><br><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">from</span> sqlalchemy <span class="hljs-keyword">import</span> create_engine<br><span class="hljs-keyword">from</span> sqlalchemy.orm <span class="hljs-keyword">import</span> sessionmaker<br><span class="hljs-keyword">from</span> mysql_create_table <span class="hljs-keyword">import</span> Users<br><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime <span class="hljs-keyword">as</span> dt<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_time</span>():<br>    time.sleep(<span class="hljs-number">5</span>)<br>    <span class="hljs-keyword">return</span> dt.now().strftime(<span class="hljs-string">&quot;%Y-%m-%d %H:%M:%S&quot;</span>)<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">insert_data</span>():<br>    <span class="hljs-comment"># 初始化数据库连接</span><br>    engine = create_engine(<span class="hljs-string">&quot;mysql+pymysql://root:root@localhost:3306/orm_test&quot;</span>)<br>    <span class="hljs-comment"># 创建DBSession类型</span><br>    DBSession = sessionmaker(bind=engine)<br><br>    <span class="hljs-comment"># 创建session对象</span><br>    session = DBSession()<br>    <span class="hljs-comment"># 插入单条数据</span><br>    <span class="hljs-comment"># 创建新User对象</span><br>    new_user = Users(<span class="hljs-built_in">id</span>=<span class="hljs-number">1</span>, name=<span class="hljs-string">&#x27;Jack&#x27;</span>, age=<span class="hljs-number">25</span>, place=<span class="hljs-string">&#x27;USA&#x27;</span>, insert_time=get_time())<br>    <span class="hljs-comment"># 添加到session</span><br>    session.add(new_user)<br>    <span class="hljs-comment"># 提交即保存到数据库</span><br>    session.commit()<br><br>    time.sleep(<span class="hljs-number">5</span>)<br><br>    <span class="hljs-comment"># 插入多条数据</span><br>    user_list = [Users(<span class="hljs-built_in">id</span>=<span class="hljs-number">2</span>, name=<span class="hljs-string">&#x27;Green&#x27;</span>, age=<span class="hljs-number">26</span>, place=<span class="hljs-string">&#x27;UK&#x27;</span>, insert_time=get_time()),<br>                 Users(<span class="hljs-built_in">id</span>=<span class="hljs-number">3</span>, name=<span class="hljs-string">&#x27;Alex&#x27;</span>, age=<span class="hljs-number">31</span>, place=<span class="hljs-string">&#x27;GER&#x27;</span>, insert_time=get_time()),<br>                 Users(<span class="hljs-built_in">id</span>=<span class="hljs-number">4</span>, name=<span class="hljs-string">&#x27;Chen&#x27;</span>, age=<span class="hljs-number">52</span>, place=<span class="hljs-string">&#x27;CHN&#x27;</span>, insert_time=get_time()),<br>                 Users(<span class="hljs-built_in">id</span>=<span class="hljs-number">5</span>, name=<span class="hljs-string">&#x27;Zhang&#x27;</span>, age=<span class="hljs-number">42</span>, place=<span class="hljs-string">&#x27;CHN&#x27;</span>, insert_time=get_time())<br>                 ]<br>    session.add_all(user_list)<br>    session.commit()<br>    <span class="hljs-comment"># 关闭session</span><br>    session.close()<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;insert into db successfully!&#x27;</span>)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    insert_data()<br><br></code></pre></td></tr></table></figure>
+<p>在需要同步的ES中创建对应的index为mysql_users, 其mapping如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;mysql_users&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;mappings&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>      <span class="hljs-attr">&quot;properties&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;age&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>          <span class="hljs-attr">&quot;type&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;integer&quot;</span><br>        <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;date_format(insert_time, &#x27;%y-%m-%d %h:%i:%s&#x27;)&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>          <span class="hljs-attr">&quot;type&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text&quot;</span><span class="hljs-punctuation">,</span><br>          <span class="hljs-attr">&quot;fields&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>            <span class="hljs-attr">&quot;keyword&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>              <span class="hljs-attr">&quot;type&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;keyword&quot;</span><span class="hljs-punctuation">,</span><br>              <span class="hljs-attr">&quot;ignore_above&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-number">256</span><br>            <span class="hljs-punctuation">&#125;</span><br>          <span class="hljs-punctuation">&#125;</span><br>        <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;insert_time&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>          <span class="hljs-attr">&quot;type&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;date&quot;</span><span class="hljs-punctuation">,</span><br>          <span class="hljs-attr">&quot;format&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;yyyy-MM-dd HH:mm:ss&quot;</span><br>        <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;name&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>          <span class="hljs-attr">&quot;type&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text&quot;</span><br>        <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;place&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>          <span class="hljs-attr">&quot;type&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text&quot;</span><br>        <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;user_id&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>          <span class="hljs-attr">&quot;type&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;integer&quot;</span><br>        <span class="hljs-punctuation">&#125;</span><br>      <span class="hljs-punctuation">&#125;</span><br>    <span class="hljs-punctuation">&#125;</span><br>  <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<p>下载Java链接Mysq的第三方Jar包<code>mysql-connector-java-8.0.16.jar</code>.</p>
+<h2 id="全量数据同步">全量数据同步</h2>
+<p>将Mysql中users表的数据全量同步至ES中的mysql_users这个index中.
+docker-compose.yml文件如下：</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><code class="hljs yml"><br><span class="hljs-attr">version:</span> <span class="hljs-string">&#x27;3&#x27;</span><br><br><span class="hljs-attr">services:</span><br>  <span class="hljs-attr">mysql8.0:</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">mysql:8.0</span><br>    <span class="hljs-attr">container_name:</span> <span class="hljs-string">mysql8.0</span><br>    <span class="hljs-attr">restart:</span> <span class="hljs-string">always</span><br>    <span class="hljs-attr">environment:</span><br>      <span class="hljs-attr">TZ:</span> <span class="hljs-string">Asia/Shanghai</span><br>      <span class="hljs-attr">MYSQL_ROOT_PASSWORD:</span> <span class="hljs-string">root</span><br>      <span class="hljs-attr">MYSQL_DATABASE:</span> <span class="hljs-string">orm_test</span><br>    <span class="hljs-attr">ports:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-number">3306</span><span class="hljs-string">:3306</span><br>    <span class="hljs-attr">volumes:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">./mysql/data/:/var/lib/mysql/</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">./mysql/conf/:/etc/mysql/conf.d/</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">./mysql/init/:/docker-entrypoint-initdb.d/</span><br>    <span class="hljs-attr">command:</span><br>      <span class="hljs-comment"># 将mysql8.0默认密码策略 修改为 原先 策略 (mysql8.0对其默认策略做了更改 会导致密码无法匹配)</span><br>      <span class="hljs-string">--default-authentication-plugin=mysql_native_password</span><br>      <span class="hljs-string">--character-set-server=utf8mb4</span><br>      <span class="hljs-string">--collation-server=utf8mb4_general_ci</span><br>      <span class="hljs-string">--explicit_defaults_for_timestamp=true</span><br>    <span class="hljs-attr">networks:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">mysql_elk_net</span><br><br>  <span class="hljs-attr">logstash:</span><br>    <span class="hljs-attr">container_name:</span> <span class="hljs-string">logstash-7.17.0</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">docker.elastic.co/logstash/logstash:7.17.0</span><br>    <span class="hljs-attr">volumes:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">./logstash/config/logstash.yml:/usr/share/logstash/logstash.yml</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">./logstash/data:/usr/share/logstash/data</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">./logstash/pipeline:/usr/share/logstash/pipeline</span><br>    <span class="hljs-attr">networks:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">mysql_elk_net</span><br>    <span class="hljs-attr">depends_on:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">elasticsearch</span><br><br>  <span class="hljs-attr">elasticsearch:</span><br>    <span class="hljs-attr">container_name:</span> <span class="hljs-string">elasticsearch-7.17.0</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">elasticsearch:7.17.0</span><br>    <span class="hljs-attr">environment:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;ES_JAVA_OPTS=-Xms1024m -Xmx1024m&quot;</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;http.host=0.0.0.0&quot;</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;node.name=elastic01&quot;</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;cluster.name=cluster_elasticsearch&quot;</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;discovery.type=single-node&quot;</span><br>    <span class="hljs-attr">ports:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;9200:9200&quot;</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;9300:9300&quot;</span><br>    <span class="hljs-attr">volumes:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">./es/plugins:/usr/share/elasticsearch/plugins</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">./es/data:/usr/share/elasticsearch/data</span><br>    <span class="hljs-attr">networks:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">mysql_elk_net</span><br>    <span class="hljs-attr">depends_on:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">mysql8.0</span><br><br>  <span class="hljs-attr">kibana:</span><br>    <span class="hljs-attr">container_name:</span> <span class="hljs-string">kibana-7.17.0</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">kibana:7.17.0</span><br>    <span class="hljs-attr">ports:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;5601:5601&quot;</span><br>    <span class="hljs-attr">networks:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">mysql_elk_net</span><br>    <span class="hljs-attr">depends_on:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">elasticsearch</span><br><br><span class="hljs-comment"># 网络配置</span><br><span class="hljs-attr">networks:</span><br>  <span class="hljs-attr">mysql_elk_net:</span><br>    <span class="hljs-attr">driver:</span> <span class="hljs-string">bridge</span><br></code></pre></td></tr></table></figure>
+<p>logstash.conf配置如下:</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs yml"><span class="hljs-string">input</span> &#123;<br>  <span class="hljs-string">jdbc</span> &#123;<br>    <span class="hljs-string">jdbc_driver_library</span> <span class="hljs-string">=&gt;</span> <span class="hljs-string">&quot;/usr/share/logstash/data/mysql-connector-java-8.0.16.jar&quot;</span><br>    <span class="hljs-string">jdbc_driver_class</span> <span class="hljs-string">=&gt;</span> <span class="hljs-string">&quot;com.mysql.cj.jdbc.Driver&quot;</span><br>    <span class="hljs-string">jdbc_connection_string</span> <span class="hljs-string">=&gt;</span> <span class="hljs-string">&quot;jdbc:mysql://mysql8.0:3306/orm_test?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=UTC&quot;</span><br>    <span class="hljs-string">jdbc_user</span> <span class="hljs-string">=&gt;</span> <span class="hljs-string">&quot;root&quot;</span><br>    <span class="hljs-string">jdbc_password</span> <span class="hljs-string">=&gt;</span> <span class="hljs-string">&quot;root&quot;</span><br>    <span class="hljs-comment"># 为了格式化日期，需要将date字段转换为字符串</span><br>    <span class="hljs-string">statement</span> <span class="hljs-string">=&gt;</span> <span class="hljs-string">&quot;SELECT id as user_id, name, age, place, date_format(insert_time, &#x27;%Y-%m-%d %H:%i:%S&#x27;) as insert_time from users&quot;</span><br>  &#125;<br>&#125;<br><span class="hljs-string">filter</span> &#123;<br>  <span class="hljs-string">mutate</span> &#123;<br>       <span class="hljs-string">remove_field</span> <span class="hljs-string">=&gt;</span> [<span class="hljs-string">&quot;@timestamp&quot;</span>]<br>  &#125;<br>  <span class="hljs-string">mutate</span> &#123;<br>       <span class="hljs-string">remove_field</span> <span class="hljs-string">=&gt;</span> [<span class="hljs-string">&quot;@version&quot;</span>]<br>  &#125;<br>&#125;<br><span class="hljs-string">output</span> &#123;<br>  <span class="hljs-string">stdout</span> &#123;<br>    <span class="hljs-string">codec</span> <span class="hljs-string">=&gt;</span> <span class="hljs-string">rubydebug</span><br>  &#125;<br>  <span class="hljs-string">elasticsearch</span> &#123;<br>    <span class="hljs-string">hosts</span> <span class="hljs-string">=&gt;</span> [<span class="hljs-string">&quot;http://elasticsearch:9200&quot;</span>]<br>    <span class="hljs-string">index</span> <span class="hljs-string">=&gt;</span> <span class="hljs-string">&quot;mysql_users&quot;</span><br>    <span class="hljs-string">document_id</span> <span class="hljs-string">=&gt;</span> <span class="hljs-string">&quot;<span class="hljs-template-variable">%&#123;user_id&#125;</span>&quot;</span><br>    <span class="hljs-string">action</span> <span class="hljs-string">=&gt;</span> <span class="hljs-string">&quot;index&quot;</span><br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>对ES中的mysql_users进行查询，如下图：</p>
+<figure>
+<img src="https://s2.loli.net/2023/12/24/VCjx71aSscR5enK.png" srcset="/img/loading.gif" lazyload
+alt="ES中已同步MySQL表中的全量数据" />
+<figcaption
+aria-hidden="true">ES中已同步MySQL表中的全量数据</figcaption>
+</figure>
+<h2 id="增量数据同步">增量数据同步</h2>
+<p>docker-compose.yml文件同上述全量数据同步。在增量数据同步时，对logstash.conf修改如下：</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs yml"><span class="hljs-string">input</span> &#123;<br>  <span class="hljs-string">jdbc</span> &#123;<br>    <span class="hljs-string">jdbc_driver_library</span> <span class="hljs-string">=&gt;</span> <span class="hljs-string">&quot;/usr/share/logstash/data/mysql-connector-java-8.0.16.jar&quot;</span><br>    <span class="hljs-string">jdbc_driver_class</span> <span class="hljs-string">=&gt;</span> <span class="hljs-string">&quot;com.mysql.cj.jdbc.Driver&quot;</span><br>    <span class="hljs-string">jdbc_connection_string</span> <span class="hljs-string">=&gt;</span> <span class="hljs-string">&quot;jdbc:mysql://mysql8.0:3306/orm_test?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=UTC&quot;</span><br>    <span class="hljs-string">jdbc_user</span> <span class="hljs-string">=&gt;</span> <span class="hljs-string">&quot;root&quot;</span><br>    <span class="hljs-string">jdbc_password</span> <span class="hljs-string">=&gt;</span> <span class="hljs-string">&quot;root&quot;</span><br>    <span class="hljs-comment"># 为了格式化日期，需要将date字段转换为字符串</span><br>    <span class="hljs-string">statement</span> <span class="hljs-string">=&gt;</span> <span class="hljs-string">&quot;SELECT id as user_id,name,age,place,date_format(insert_time, &#x27;%Y-%m-%d %H:%i:%S&#x27;) as insert_time from users where insert_time &gt; :sql_last_value&quot;</span><br>    <span class="hljs-string">record_last_run</span> <span class="hljs-string">=&gt;</span> <span class="hljs-literal">true</span><br>    <span class="hljs-string">use_column_value</span> <span class="hljs-string">=&gt;</span> <span class="hljs-literal">true</span><br>    <span class="hljs-string">tracking_column_type</span> <span class="hljs-string">=&gt;</span> <span class="hljs-string">&quot;timestamp&quot;</span><br>    <span class="hljs-string">tracking_column</span> <span class="hljs-string">=&gt;</span> <span class="hljs-string">&quot;insert_time&quot;</span><br>    <span class="hljs-string">last_run_metadata_path</span> <span class="hljs-string">=&gt;</span> <span class="hljs-string">&quot;./user&quot;</span><br>    <span class="hljs-string">schedule</span> <span class="hljs-string">=&gt;</span> <span class="hljs-string">&quot;* * * * *&quot;</span><br>  &#125;<br>&#125;<br><span class="hljs-string">filter</span> &#123;<br>  <span class="hljs-string">mutate</span> &#123;<br>       <span class="hljs-string">remove_field</span> <span class="hljs-string">=&gt;</span> [<span class="hljs-string">&quot;@timestamp&quot;</span>]<br>  &#125;<br>  <span class="hljs-string">mutate</span> &#123;<br>       <span class="hljs-string">remove_field</span> <span class="hljs-string">=&gt;</span> [<span class="hljs-string">&quot;@version&quot;</span>]<br>  &#125;<br>&#125;<br><span class="hljs-string">output</span> &#123;<br>  <span class="hljs-string">stdout</span> &#123;<br>    <span class="hljs-string">codec</span> <span class="hljs-string">=&gt;</span> <span class="hljs-string">rubydebug</span><br>  &#125;<br>  <span class="hljs-string">elasticsearch</span> &#123;<br>    <span class="hljs-string">hosts</span> <span class="hljs-string">=&gt;</span> [<span class="hljs-string">&quot;http://elasticsearch:9200&quot;</span>]<br>    <span class="hljs-string">index</span> <span class="hljs-string">=&gt;</span> <span class="hljs-string">&quot;mysql_users&quot;</span><br>    <span class="hljs-string">document_id</span> <span class="hljs-string">=&gt;</span> <span class="hljs-string">&quot;<span class="hljs-template-variable">%&#123;user_id&#125;</span>&quot;</span><br>    <span class="hljs-string">action</span> <span class="hljs-string">=&gt;</span> <span class="hljs-string">&quot;index&quot;</span><br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>跟全量抽取的配置相比，上述配置input部分的<code>jdbc插件</code>配置有所改变。</p>
+<ul>
+<li>statement的SQL语句，末尾加上了where条件，表示只查询insert_time字段大于最后一次抽取标记的数据。</li>
+<li>record_last_run设置为true，表示要保存抽取标记，抽取标记的保存路径在last_run_metadata_path中指定。</li>
+<li>tracking_column_type设置为timestamp表示抽取标记字段是时间类型的，如果选择自增长数字主键作为抽取标记，则tracking_column_type应当设置为numeric。</li>
+<li>配置tracking_column用于指定抽取标记的列名称，use_column_value设置为true表示使用数据的内容作为抽取标记，否则使用最后一次查询的时间作为抽取标记。</li>
+<li>最后schedule用于配置定时抽取的<strong>cron表达式</strong>，"* * * *
+*"表示每分钟抽取一次。</li>
+</ul>
+<p>执行时，由于第一次没有抽取标记，该脚本会抽取MySQL表users的全部数据到索引mysql_users，抽取完后，会在脚本的当前目录下生成一个user文件，打开它可以看到当前的数据抽取标记，该内容应当为字段insert_time的最新值。</p>
+<figure>
+<img src="https://s2.loli.net/2023/12/24/k5rGuSHB39sOjtz.png" srcset="/img/loading.gif" lazyload
+alt="ES中已同步MySQL表中的增量数据" />
+<figcaption
+aria-hidden="true">ES中已同步MySQL表中的增量数据</figcaption>
+</figure>
+<h2 id="总结">总结</h2>
+<p>本文主要介绍了如何使用ELK来实现数据同步，将MySQL中的表数据同步至ElasticSearch中，可分为全量数据同步与增量数据同步。实际上，ELK不仅仅能提供MySQL同步至ES，还能做到各种数据库、文件系统等之间的同步，功能十分强大。</p>
+<p>感谢大家的阅读~</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" class="category-chain-item">数据库</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/ELK/" class="print-no-link">#ELK</a>
+      
+        <a href="/tags/%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5/" class="print-no-link">#数据同步</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>ELK学习笔记（二）数据同步</div>
+      <div>https://percent4.github.io/ELK学习笔记（二）数据同步/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年1月11日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/ELK%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%89%EF%BC%89Beats%E5%AE%B6%E6%97%8F/" title="ELK学习笔记（三）Beats家族">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">ELK学习笔记（三）Beats家族</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/ELK%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/" title="ELK学习笔记（一）">
+                        <span class="hidden-mobile">ELK学习笔记（一）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,891 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将介绍如何使用LangChain中的Evalution工具来实现大模型评估。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（八十）大模型评估（Evaluation）">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E5%85%AB%E5%8D%81%EF%BC%89%E5%A4%A7%E6%A8%A1%E5%9E%8B%E8%AF%84%E4%BC%B0%EF%BC%88Evaluation%EF%BC%89/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将介绍如何使用LangChain中的Evalution工具来实现大模型评估。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg">
+<meta property="article:published_time" content="2024-01-11T04:43:34.000Z">
+<meta property="article:modified_time" content="2024-01-11T04:45:10.120Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="LLM Evaluation">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+  
+  
+  
+  <title>NLP（八十）大模型评估（Evaluation） - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（八十）大模型评估（Evaluation）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-01-11 12:43" pubdate>
+          星期四, 一月 11日 2024, 12:43 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          9.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          81 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（八十）大模型评估（Evaluation）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将介绍如何使用LangChain中的Evalution工具来实现大模型评估。</p>
+</blockquote>
+<p>欢迎关注我的公众号<strong>NLP奇幻之旅</strong>，原创技术文章第一时间推送。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+<p>欢迎关注我的知识星球“<strong>自然语言处理奇幻之旅</strong>”，笔者正在努力构建自己的技术社区。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+<h2 id="概念澄清">概念澄清</h2>
+<p>首先，让我们来澄清下大模型的<code>评测</code>与<code>评估</code>的区别，虽然它们的英文都为evaluation.</p>
+<p>在本文中，大模型的评测指的是带有评测数据集（比如MMLU, AGIEval,
+C-Eval等）的大模型能力评估，通常会带有评估指标，如accuracy等。大模型评测较为客观、全面，考虑的是模型本身自带的能力与世界知识。</p>
+<p>在文本中，大模型的评估指的是针对具体问题时，大模型的回复质量，包括正确性、简洁性等。大模型评估偏重实际应用中的问题，考虑的是大模型能力的扩展与外延。</p>
+<p>当然，这两者的区别仅是本文提出的概念上的区别，仅是为了叙述方便，不至于使读者产生混淆。实际上，关于大模型能力的评估，虽然业界有一些合理的方案，但现阶段仍是百家争鸣，并没有统一的评价标准。</p>
+<h2 id="介绍">介绍</h2>
+<p>大模型评估无疑是大模型生态中重要的一环，<code>LangChain</code>提供了<a
+target="_blank" rel="noopener" href="https://python.langchain.com/docs/guides/evaluation/">Evaluation工具</a>，能帮助我们更好、更方便地进行大模型评估。</p>
+<p>LangChain中的每种评估器类型（evaluator
+type）都附带即用型的实现和可扩展
+API，允许根据用户的独特需求进行定制。以下是LangChain中提供的常见评估器类型：</p>
+<ul>
+<li>字符串评估器（String
+Evaluators）：这些评估器评估给定输入的预测字符串，通常将其与参考字符串进行比较。</li>
+<li>轨迹评估器（Trajectory
+Evaluators）：用于评估代理动作的整个轨迹。</li>
+<li>比较评估器（Comparison
+Evaluators）：这些评估器旨在比较公共输入上两次运行的预测。</li>
+</ul>
+<p>参考LangChain(版本为:
+langchain==0.0.340)中的源码，给出的评估器类型及说明如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">EvaluatorType</span>(<span class="hljs-built_in">str</span>, Enum):<br>    <span class="hljs-string">&quot;&quot;&quot;The types of the evaluators.&quot;&quot;&quot;</span><br><br>    QA = <span class="hljs-string">&quot;qa&quot;</span><br>    <span class="hljs-string">&quot;&quot;&quot;Question answering evaluator, which grades answers to questions</span><br><span class="hljs-string">    directly using an LLM.&quot;&quot;&quot;</span><br>    COT_QA = <span class="hljs-string">&quot;cot_qa&quot;</span><br>    <span class="hljs-string">&quot;&quot;&quot;Chain of thought question answering evaluator, which grades</span><br><span class="hljs-string">    answers to questions using</span><br><span class="hljs-string">    chain of thought &#x27;reasoning&#x27;.&quot;&quot;&quot;</span><br>    CONTEXT_QA = <span class="hljs-string">&quot;context_qa&quot;</span><br>    <span class="hljs-string">&quot;&quot;&quot;Question answering evaluator that incorporates &#x27;context&#x27; in the response.&quot;&quot;&quot;</span><br>    PAIRWISE_STRING = <span class="hljs-string">&quot;pairwise_string&quot;</span><br>    <span class="hljs-string">&quot;&quot;&quot;The pairwise string evaluator, which predicts the preferred prediction from</span><br><span class="hljs-string">    between two models.&quot;&quot;&quot;</span><br>    SCORE_STRING = <span class="hljs-string">&quot;score_string&quot;</span><br>    <span class="hljs-string">&quot;&quot;&quot;The scored string evaluator, which gives a score between 1 and 10 </span><br><span class="hljs-string">    to a prediction.&quot;&quot;&quot;</span><br>    LABELED_PAIRWISE_STRING = <span class="hljs-string">&quot;labeled_pairwise_string&quot;</span><br>    <span class="hljs-string">&quot;&quot;&quot;The labeled pairwise string evaluator, which predicts the preferred prediction</span><br><span class="hljs-string">    from between two models based on a ground truth reference label.&quot;&quot;&quot;</span><br>    LABELED_SCORE_STRING = <span class="hljs-string">&quot;labeled_score_string&quot;</span><br>    <span class="hljs-string">&quot;&quot;&quot;The labeled scored string evaluator, which gives a score between 1 and 10</span><br><span class="hljs-string">    to a prediction based on a ground truth reference label.&quot;&quot;&quot;</span><br>    AGENT_TRAJECTORY = <span class="hljs-string">&quot;trajectory&quot;</span><br>    <span class="hljs-string">&quot;&quot;&quot;The agent trajectory evaluator, which grades the agent&#x27;s intermediate steps.&quot;&quot;&quot;</span><br>    CRITERIA = <span class="hljs-string">&quot;criteria&quot;</span><br>    <span class="hljs-string">&quot;&quot;&quot;The criteria evaluator, which evaluates a model based on a</span><br><span class="hljs-string">    custom set of criteria without any reference labels.&quot;&quot;&quot;</span><br>    LABELED_CRITERIA = <span class="hljs-string">&quot;labeled_criteria&quot;</span><br>    <span class="hljs-string">&quot;&quot;&quot;The labeled criteria evaluator, which evaluates a model based on a</span><br><span class="hljs-string">    custom set of criteria, with a reference label.&quot;&quot;&quot;</span><br>    STRING_DISTANCE = <span class="hljs-string">&quot;string_distance&quot;</span><br>    <span class="hljs-string">&quot;&quot;&quot;Compare predictions to a reference answer using string edit distances.&quot;&quot;&quot;</span><br>    EXACT_MATCH = <span class="hljs-string">&quot;exact_match&quot;</span><br>    <span class="hljs-string">&quot;&quot;&quot;Compare predictions to a reference answer using exact matching.&quot;&quot;&quot;</span><br>    REGEX_MATCH = <span class="hljs-string">&quot;regex_match&quot;</span><br>    <span class="hljs-string">&quot;&quot;&quot;Compare predictions to a reference answer using regular expressions.&quot;&quot;&quot;</span><br>    PAIRWISE_STRING_DISTANCE = <span class="hljs-string">&quot;pairwise_string_distance&quot;</span><br>    <span class="hljs-string">&quot;&quot;&quot;Compare predictions based on string edit distances.&quot;&quot;&quot;</span><br>    EMBEDDING_DISTANCE = <span class="hljs-string">&quot;embedding_distance&quot;</span><br>    <span class="hljs-string">&quot;&quot;&quot;Compare a prediction to a reference label using embedding distance.&quot;&quot;&quot;</span><br>    PAIRWISE_EMBEDDING_DISTANCE = <span class="hljs-string">&quot;pairwise_embedding_distance&quot;</span><br>    <span class="hljs-string">&quot;&quot;&quot;Compare two predictions using embedding distance.&quot;&quot;&quot;</span><br>    JSON_VALIDITY = <span class="hljs-string">&quot;json_validity&quot;</span><br>    <span class="hljs-string">&quot;&quot;&quot;Check if a prediction is valid JSON.&quot;&quot;&quot;</span><br>    JSON_EQUALITY = <span class="hljs-string">&quot;json_equality&quot;</span><br>    <span class="hljs-string">&quot;&quot;&quot;Check if a prediction is equal to a reference JSON.&quot;&quot;&quot;</span><br>    JSON_EDIT_DISTANCE = <span class="hljs-string">&quot;json_edit_distance&quot;</span><br>    <span class="hljs-string">&quot;&quot;&quot;Compute the edit distance between two JSON strings after canonicalization.&quot;&quot;&quot;</span><br>    JSON_SCHEMA_VALIDATION = <span class="hljs-string">&quot;json_schema_validation&quot;</span><br>    <span class="hljs-string">&quot;&quot;&quot;Check if a prediction is valid JSON according to a JSON schema.&quot;&quot;&quot;</span><br></code></pre></td></tr></table></figure>
+<p>本文将介绍其中的三种：</p>
+<ul>
+<li>CRITERIA</li>
+<li>LABELED_CRITERIA</li>
+<li>CONTEXT_QA</li>
+</ul>
+<p>一般使用<strong>GPT-4模型</strong>作为评估模型。</p>
+<h2 id="criteria-evaluation">CRITERIA Evaluation</h2>
+<p>CRITERIA
+Evaluation一般不带reference(参考答案)，常见的CRITERIA如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pprint <span class="hljs-keyword">import</span> pprint<br><span class="hljs-keyword">from</span> langchain.evaluation <span class="hljs-keyword">import</span> Criteria<br><br><span class="hljs-comment"># list criteria</span><br>pprint(<span class="hljs-built_in">list</span>(Criteria))<br></code></pre></td></tr></table></figure>
+<p>输出结果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs bash">[&lt;Criteria.CONCISENESS: <span class="hljs-string">&#x27;conciseness&#x27;</span>&gt;,<br> &lt;Criteria.RELEVANCE: <span class="hljs-string">&#x27;relevance&#x27;</span>&gt;,<br> &lt;Criteria.CORRECTNESS: <span class="hljs-string">&#x27;correctness&#x27;</span>&gt;,<br> &lt;Criteria.COHERENCE: <span class="hljs-string">&#x27;coherence&#x27;</span>&gt;,<br> &lt;Criteria.HARMFULNESS: <span class="hljs-string">&#x27;harmfulness&#x27;</span>&gt;,<br> &lt;Criteria.MALICIOUSNESS: <span class="hljs-string">&#x27;maliciousness&#x27;</span>&gt;,<br> &lt;Criteria.HELPFULNESS: <span class="hljs-string">&#x27;helpfulness&#x27;</span>&gt;,<br> &lt;Criteria.CONTROVERSIALITY: <span class="hljs-string">&#x27;controversiality&#x27;</span>&gt;,<br> &lt;Criteria.MISOGYNY: <span class="hljs-string">&#x27;misogyny&#x27;</span>&gt;,<br> &lt;Criteria.CRIMINALITY: <span class="hljs-string">&#x27;criminality&#x27;</span>&gt;,<br> &lt;Criteria.INSENSITIVITY: <span class="hljs-string">&#x27;insensitivity&#x27;</span>&gt;,<br> &lt;Criteria.DEPTH: <span class="hljs-string">&#x27;depth&#x27;</span>&gt;,<br> &lt;Criteria.CREATIVITY: <span class="hljs-string">&#x27;creativity&#x27;</span>&gt;,<br> &lt;Criteria.DETAIL: <span class="hljs-string">&#x27;detail&#x27;</span>&gt;]<br></code></pre></td></tr></table></figure>
+<p>以<code>简洁性(CONCISENESS)</code>标准为例，示例评估代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> langchain.evaluation <span class="hljs-keyword">import</span> load_evaluator, EvaluatorType, Criteria<br><span class="hljs-keyword">from</span> langchain.chat_models <span class="hljs-keyword">import</span> ChatOpenAI<br><span class="hljs-keyword">from</span> pprint <span class="hljs-keyword">import</span> pprint<br><br>os.environ[<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>] = os.getenv(<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>)<br>evaluation_llm = ChatOpenAI(model=<span class="hljs-string">&quot;gpt-4&quot;</span>, temperature=<span class="hljs-number">0</span>)<br><br>evaluator = load_evaluator(EvaluatorType.CRITERIA,<br>                           criteria=Criteria.CONCISENESS,<br>                           llm=evaluation_llm)<br><br>eval_result = evaluator.evaluate_strings(<br>    prediction=<span class="hljs-string">&quot;What&#x27;s 2+2? That&#x27;s an elementary question. The answer you&#x27;re looking for is that two and two is four.&quot;</span>,<br>    <span class="hljs-built_in">input</span>=<span class="hljs-string">&quot;What&#x27;s 2+2?&quot;</span>,<br>)<br>pprint(eval_result)<br></code></pre></td></tr></table></figure>
+<p>输出结果如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span>&#x27;reasoning&#x27;<span class="hljs-punctuation">:</span> &#x27;The criterion is conciseness<span class="hljs-punctuation">,</span> which means the submission should &#x27;<br>              &#x27;be brief and to the point. \n&#x27;<br>              &#x27;\n&#x27;<br>              &#x27;Looking at the submission<span class="hljs-punctuation">,</span> the answer to the question <span class="hljs-string">&quot;What\&#x27;s &#x27;</span><br><span class="hljs-string">              &#x27;2+2?&quot;</span> is given as <span class="hljs-string">&quot;The answer you\&#x27;re looking for is that two &#x27;</span><br><span class="hljs-string">              &#x27;and two is four.&quot;</span> However<span class="hljs-punctuation">,</span> before providing the answer<span class="hljs-punctuation">,</span> the &#x27;<br>              &#x27;respondent adds an unnecessary comment<span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;That\&#x27;s an elementary &#x27;</span><br><span class="hljs-string">              &#x27;question.&quot;</span> \n&#x27;<br>              &#x27;\n&#x27;<br>              &#x27;This additional comment does not contribute to answering the &#x27;<br>              &#x27;question and therefore makes the response less concise. \n&#x27;<br>              &#x27;\n&#x27;<br>              &#x27;So<span class="hljs-punctuation">,</span> based on the criterion of conciseness<span class="hljs-punctuation">,</span> the submission does &#x27;<br>              &#x27;not meet the criterion.\n&#x27;<br>              &#x27;\n&#x27;<br>              &#x27;N&#x27;<span class="hljs-punctuation">,</span><br> &#x27;score&#x27;<span class="hljs-punctuation">:</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span><br> &#x27;value&#x27;<span class="hljs-punctuation">:</span> &#x27;N&#x27;<span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<p>输出结果包括三个字段：</p>
+<ul>
+<li>score:
+评估分数，这里取0或1，1代表输出答案与标准（CRITERIA）符合，0则不符合</li>
+<li>value: 评估值，这里取Y(Yes)或N(No)</li>
+<li>reasoning: 评估理由，evaluator会给出评估结果的理由</li>
+</ul>
+<p>在上述的例子中，<strong>GPT-4模型</strong>作为评估模型器，判断给出的答案不符合简洁性标准，并给出了具体的判断理由。</p>
+<h2 id="labeled_criteria-evaluation">LABELED_CRITERIA Evaluation</h2>
+<p>CRITERIA
+Evaluation一般带有reference(参考答案)，有了参考答案，评估结果会更加可靠。</p>
+<p>示例代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> langchain.evaluation <span class="hljs-keyword">import</span> load_evaluator, EvaluatorType, Criteria<br><span class="hljs-keyword">from</span> langchain.chat_models <span class="hljs-keyword">import</span> ChatOpenAI<br><span class="hljs-keyword">from</span> pprint <span class="hljs-keyword">import</span> pprint<br><br>os.environ[<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>] = os.getenv(<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>)<br>evaluation_llm = ChatOpenAI(model=<span class="hljs-string">&quot;gpt-4&quot;</span>, temperature=<span class="hljs-number">0</span>)<br><br>evaluator = load_evaluator(EvaluatorType.LABELED_CRITERIA,<br>                           criteria=Criteria.CORRECTNESS,<br>                           llm=evaluation_llm)<br><br>eval_result = evaluator.evaluate_strings(<br>    <span class="hljs-built_in">input</span>=<span class="hljs-string">&quot;What is the capital city of the Jiangsu Province?&quot;</span>,<br>    prediction=<span class="hljs-string">&quot;Suzhou&quot;</span>,<br>    reference=<span class="hljs-string">&quot;The capital city of Jiangsu Province is Nanjing.&quot;</span>,<br>)<br>pprint(eval_result)<br></code></pre></td></tr></table></figure>
+<p>输出结果如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span>&#x27;reasoning&#x27;<span class="hljs-punctuation">:</span> &#x27;The criterion for this task is the correctness of the submitted &#x27;<br>              &#x27;answer. This means the answer should be accurate and factual.\n&#x27;<br>              &#x27;\n&#x27;<br>              &#x27;The input asks for the capital city of the Jiangsu Province.\n&#x27;<br>              &#x27;\n&#x27;<br>              &#x27;The submitted answer is Suzhou.\n&#x27;<br>              &#x27;\n&#x27;<br>              &#x27;The reference answer<span class="hljs-punctuation">,</span> however<span class="hljs-punctuation">,</span> states that the capital city of &#x27;<br>              &#x27;Jiangsu Province is Nanjing.\n&#x27;<br>              &#x27;\n&#x27;<br>              &#x27;Comparing the submitted answer with the reference answer<span class="hljs-punctuation">,</span> it is &#x27;<br>              &#x27;clear that the submitted answer is incorrect. Suzhou is not the &#x27;<br>              &#x27;capital of Jiangsu Province<span class="hljs-punctuation">,</span> Nanjing is.\n&#x27;<br>              &#x27;\n&#x27;<br>              &#x27;Therefore<span class="hljs-punctuation">,</span> the submission does not meet the criterion of &#x27;<br>              &#x27;correctness.\n&#x27;<br>              &#x27;\n&#x27;<br>              &#x27;N&#x27;<span class="hljs-punctuation">,</span><br> &#x27;score&#x27;<span class="hljs-punctuation">:</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span><br> &#x27;value&#x27;<span class="hljs-punctuation">:</span> &#x27;N&#x27;<span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<h2 id="context_qa-evaluation">CONTEXT_QA Evaluation</h2>
+<p>CONTEXT_QA
+Evaluation会对文档问答的回复进行评估，当然这也可用于RAG(Retrieval
+Augmented Generation)的回复结果评估。</p>
+<p>此时，需要提供的reference即为文档问答中的文档（document）.</p>
+<p>示例代码如下:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> langchain.evaluation <span class="hljs-keyword">import</span> load_evaluator, EvaluatorType, Criteria<br><span class="hljs-keyword">from</span> langchain.chat_models <span class="hljs-keyword">import</span> ChatOpenAI<br><br>os.environ[<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>] = os.getenv(<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>)<br>evaluation_llm = ChatOpenAI(model=<span class="hljs-string">&quot;gpt-4&quot;</span>, temperature=<span class="hljs-number">0</span>)<br><br>evaluator = load_evaluator(EvaluatorType.CONTEXT_QA,<br>                           criteria=Criteria.CORRECTNESS,<br>                           llm=evaluation_llm,<br>                           requires_reference=<span class="hljs-literal">True</span>)<br><br><br>question = <span class="hljs-string">&quot;2022年上海的常住人口是多少?&quot;</span><br>context = <span class="hljs-string">&quot;上海市，简称沪。 是中华人民共和国直辖市、中国共产党诞生地、国家中心城市、超大城市 、上海大都市圈核心城市、中国历史文化名城、&quot;</span> \<br>          <span class="hljs-string">&quot;世界一线城市。 上海基本建成国际经济、金融、贸易、航运中心，形成具有全球影响力的科技创新中心基本框架。&quot;</span> \<br>          <span class="hljs-string">&quot;上海市总面积6340.5平方千米，辖16个区。 2022年，上海市常住人口为2475.89万人。&quot;</span><br><br>pred = <span class="hljs-string">&quot;2022年，上海市的常住人口为2000万人。&quot;</span><br><span class="hljs-comment"># evaluate</span><br>eval_result = evaluator.evaluate_strings(<br>  <span class="hljs-built_in">input</span>=question,<br>  prediction=pred,<br>  reference=context<br>)<br><span class="hljs-built_in">print</span>(eval_result)<br></code></pre></td></tr></table></figure>
+<p>输出结果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">&#123;<span class="hljs-string">&#x27;reasoning&#x27;</span>: <span class="hljs-string">&#x27;INCORRECT&#x27;</span>, <span class="hljs-string">&#x27;value&#x27;</span>: <span class="hljs-string">&#x27;INCORRECT&#x27;</span>, <span class="hljs-string">&#x27;score&#x27;</span>: 0&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="总结">总结</h2>
+<p>本文介绍了LangChain中的Evaluation工具，并演示了三种评估类型的使用方式。</p>
+<p>当然，还有更多的评估类型值得探索，本文仅是抛砖引玉，希望能给读者带来启发~</p>
+<h2 id="参考文献">参考文献</h2>
+<ol type="1">
+<li>LangChain Evaluation: <a
+target="_blank" rel="noopener" href="https://python.langchain.com/docs/guides/evaluation/"
+class="uri">https://python.langchain.com/docs/guides/evaluation/</a></li>
+<li>criteria evaluation: <a
+target="_blank" rel="noopener" href="https://python.langchain.com/docs/guides/evaluation/string/criteria_eval_chain"
+class="uri">https://python.langchain.com/docs/guides/evaluation/string/criteria_eval_chain</a></li>
+<li>Evaluate LLMs and RAG a practical example using Langchain and
+Hugging Face: <a target="_blank" rel="noopener" href="https://www.philschmid.de/evaluate-llm"
+class="uri">https://www.philschmid.de/evaluate-llm</a>)</li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/LLM-Evaluation/" class="print-no-link">#LLM Evaluation</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（八十）大模型评估（Evaluation）</div>
+      <div>https://percent4.github.io/NLP（八十）大模型评估（Evaluation）/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年1月11日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/Python%E4%B8%AD%E5%B8%B8%E8%A7%81%E7%9A%84%E8%A3%85%E9%A5%B0%E5%99%A8%EF%BC%88decorator%EF%BC%89/" title="Python中常见的装饰器（decorator）">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Python中常见的装饰器（decorator）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%B8%83%E5%8D%81%E4%B9%9D%EF%BC%89%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%EF%BC%88function-calling%EF%BC%89/" title="NLP（七十九）函数调用（function_calling）">
+                        <span class="hidden-mobile">NLP（七十九）函数调用（function_calling）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,849 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍使用keras-bert实现完形填空及简单的文本纠错功能。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（三十九）使用keras-bert实现完形填空及简单的文本纠错功能">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E4%B9%9D%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%AE%8C%E5%BD%A2%E5%A1%AB%E7%A9%BA%E5%8F%8A%E7%AE%80%E5%8D%95%E7%9A%84%E6%96%87%E6%9C%AC%E7%BA%A0%E9%94%99%E5%8A%9F%E8%83%BD/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍使用keras-bert实现完形填空及简单的文本纠错功能。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://percent4.github.io/img/nlp39_1.png">
+<meta property="article:published_time" content="2023-07-10T05:17:48.000Z">
+<meta property="article:modified_time" content="2024-01-10T15:53:13.997Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="keras-bert">
+<meta property="article:tag" content="完形填空">
+<meta property="article:tag" content="文本纠错">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp39_1.png">
+  
+  
+  
+  <title>NLP（三十九）使用keras-bert实现完形填空及简单的文本纠错功能 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（三十九）使用keras-bert实现完形填空及简单的文本纠错功能"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-10 13:17" pubdate>
+          星期一, 七月 10日 2023, 1:17 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          4.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          38 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（三十九）使用keras-bert实现完形填空及简单的文本纠错功能</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>在之前的系列文章中，笔者介绍了如何使用keras-bert来调用BERT模型，实现文本多分类，文本多标签分类以及序列标注任务，文章如下：</p>
+<ul>
+<li><a
+href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a></li>
+<li></li>
+<li><a
+href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E4%BA%94%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E5%A4%9A%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1/">NLP（三十五）使用keras-bert实现文本多分类任务</a></li>
+<li></li>
+<li><a
+href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E5%A4%9A%E6%A0%87%E7%AD%BE%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1/">NLP（三十六）使用keras-bert实现文本多标签分类任务</a></li>
+</ul>
+<p>在本文中，笔者将介绍如何使用keras-bert来调用BERT模型使用完形填空及简单的文本纠错功能。</p>
+<h3 id="完形填空">完形填空</h3>
+<p>首先，我们来了解下什么是完形填空。所谓完形填空，指的是将句子中缺失的单词（或字）补充成正确的单词（或字）。举个简单的例子：</p>
+<figure>
+<img src="/img/nlp39_1.png" srcset="/img/loading.gif" lazyload alt="完形填空的例子" />
+<figcaption aria-hidden="true">完形填空的例子</figcaption>
+</figure>
+<p>在上图中，第一行是原始句子，第二行是需要完形填空的句子，在这里我们把闵行区的行字缺失掉，即MASK掉，第三行为补充的汉字：行。</p>
+<p>在BERT模型中，它的任务是由两个自监督任务组成，即MLM和NSP。我们需要了解下MLM。</p>
+<p>MLM的全称是Masked Language
+Model，所谓MLM是指在训练的时候随即从输入预料上mask掉一些单词，然后通过的上下文预测该单词，该任务非常像我们在中学时期经常做的完形填空。</p>
+<p>在BERT的实验中，15%的WordPiece
+Token会被随机Mask掉。在训练模型时，一个句子会被多次喂到模型中用于参数学习，但是Google并没有在每次都mask掉这些单词，而是在确定要Mask掉的单词之后，80%的时候会直接替换为[Mask]，10%的时候将其替换为其它任意单词，10%的时候会保留原始Token。</p>
+<p>基于BERT模型的这个特性，我们尝试着利用keras-bert来调用它解决完形填空问题。实现完形填空的代码（<code>cloze_predict.py</code>）如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">from</span> keras_bert <span class="hljs-keyword">import</span> Tokenizer<br><span class="hljs-keyword">from</span> keras_bert <span class="hljs-keyword">import</span> load_trained_model_from_checkpoint<br><br><span class="hljs-comment"># 加载词典</span><br>dict_path = <span class="hljs-string">&#x27;./chinese_L-12_H-768_A-12/vocab.txt&#x27;</span><br>token_dict = &#123;&#125;<br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(dict_path, <span class="hljs-string">&#x27;r&#x27;</span>, encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>) <span class="hljs-keyword">as</span> reader:<br>    <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> reader:<br>        token = line.strip()<br>        token_dict[token] = <span class="hljs-built_in">len</span>(token_dict)<br><br>id_token_dict = &#123;v: k <span class="hljs-keyword">for</span> k, v <span class="hljs-keyword">in</span> token_dict.items()&#125;<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">OurTokenizer</span>(<span class="hljs-title class_ inherited__">Tokenizer</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">_tokenize</span>(<span class="hljs-params">self, text</span>):<br>        R = []<br>        <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> text:<br>            <span class="hljs-keyword">if</span> c <span class="hljs-keyword">in</span> self._token_dict:<br>                R.append(c)<br>            <span class="hljs-keyword">else</span>:<br>                R.append(<span class="hljs-string">&#x27;[UNK]&#x27;</span>)<br>        <span class="hljs-keyword">return</span> R<br><br><br>tokenizer = OurTokenizer(token_dict)<br><br><span class="hljs-comment"># 加载模型</span><br>model_path = <span class="hljs-string">&quot;./chinese_L-12_H-768_A-12/&quot;</span><br>bert_model = load_trained_model_from_checkpoint(<br>    model_path + <span class="hljs-string">&quot;bert_config.json&quot;</span>,<br>    model_path + <span class="hljs-string">&quot;bert_model.ckpt&quot;</span>,<br>    training=<span class="hljs-literal">True</span><br>)<br><span class="hljs-comment"># bert_model.summary()</span><br><br><br><span class="hljs-comment"># 完形填空，预测MASK的字符</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_mask_character</span>(<span class="hljs-params">start_string, mask_num, end_string</span>):<br>    string = <span class="hljs-built_in">list</span>(start_string) + [<span class="hljs-string">&#x27;MASK&#x27;</span>] * mask_num + <span class="hljs-built_in">list</span>(end_string)<br>    token_ids, segment_ids = tokenizer.encode(string, max_len=<span class="hljs-number">512</span>)<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(mask_num):<br>        token_ids[<span class="hljs-built_in">len</span>(start_string)+i+<span class="hljs-number">1</span>] = tokenizer._token_dict[<span class="hljs-string">&#x27;[MASK]&#x27;</span>]<br><br>    <span class="hljs-comment"># mask</span><br>    masks = [<span class="hljs-number">0</span>] * <span class="hljs-number">512</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(mask_num):<br>        masks[<span class="hljs-built_in">len</span>(start_string)+i+<span class="hljs-number">1</span>] = <span class="hljs-number">1</span><br><br>    <span class="hljs-comment"># 模型预测被mask掉的部分</span><br>    predicts = bert_model.predict([np.array([token_ids]), np.array([segment_ids]), np.array([masks])])[<span class="hljs-number">0</span>]<br>    pred_indice = predicts[<span class="hljs-number">0</span>][<span class="hljs-built_in">len</span>(start_string)+<span class="hljs-number">1</span>:<span class="hljs-built_in">len</span>(start_string)+mask_num+<span class="hljs-number">1</span>].argmax(axis=<span class="hljs-number">1</span>).tolist()<br>    <span class="hljs-keyword">return</span> [id_token_dict[_] <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> pred_indice]<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    <span class="hljs-comment"># 原句1： 白云山，位于广东省广州市白云区，为南粤名山之一，自古就有“羊城第一秀”之称。</span><br>    start_str1 = <span class="hljs-string">&quot;白云山，位于&quot;</span><br>    end_str1 = <span class="hljs-string">&quot;广州市白云区，为南粤名山之一，自古就有“羊城第一秀”之称。&quot;</span><br>    pred_chars = get_mask_character(start_str1, <span class="hljs-number">3</span>, end_str1)<br>    <span class="hljs-built_in">print</span>(pred_chars)<br><br>    <span class="hljs-comment"># 原句2：首先，从市值看，腾讯和阿里市值已经有2500亿，而百度才500多亿，是BAT体量中最小的一家公司。</span><br>    start_str2 = <span class="hljs-string">&quot;首先，从&quot;</span><br>    end_str2 = <span class="hljs-string">&quot;看，腾讯和阿里市值已经有2500亿，而百度才500多亿，是BAT体量中最小的一家公司。&quot;</span><br>    pred_chars = get_mask_character(start_str2, <span class="hljs-number">2</span>, end_str2)<br>    <span class="hljs-built_in">print</span>(pred_chars)<br><br>    <span class="hljs-comment"># 原句3：特斯拉CEO埃隆·马斯克的个人净资产升至1850亿美元，超越亚马逊CEO贝索斯荣登全球第一大富豪。</span><br>    start_str3 = <span class="hljs-string">&quot;特斯拉CEO埃隆·马斯克的个人净资产升至1850亿美元，超越亚马逊CEO贝索斯荣登&quot;</span><br>    end_str3 = <span class="hljs-string">&quot;第一大富豪。&quot;</span><br>    pred_chars = get_mask_character(start_str3, <span class="hljs-number">2</span>, end_str3)<br>    <span class="hljs-built_in">print</span>(pred_chars)<br><br>    <span class="hljs-comment"># 原句4：我在上海闵行区工作。</span><br>    start_str4 = <span class="hljs-string">&quot;我在上海闵&quot;</span><br>    end_str4 = <span class="hljs-string">&quot;区工作。&quot;</span><br>    pred_chars = get_mask_character(start_str4, <span class="hljs-number">1</span>, end_str4)<br>    <span class="hljs-built_in">print</span>(pred_chars)<br></code></pre></td></tr></table></figure>
+<p>注意keras-bert来调用BERT时，如果需要开启MLM和NSP任务时，需要将training设置为True，然后再调用MLM模型对文本中MASK掉的部分进行预测。运行脚本的输出结果如下：</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs scheme">[<span class="hljs-symbol">&#x27;广</span>&#x27;, <span class="hljs-symbol">&#x27;东</span>&#x27;, <span class="hljs-symbol">&#x27;省</span>&#x27;]<br>[<span class="hljs-symbol">&#x27;市</span>&#x27;, <span class="hljs-symbol">&#x27;值</span>&#x27;]<br>[<span class="hljs-symbol">&#x27;全</span>&#x27;, <span class="hljs-symbol">&#x27;球</span>&#x27;]<br>[<span class="hljs-symbol">&#x27;行</span>&#x27;]<br></code></pre></td></tr></table></figure>
+<h3 id="简单的文本纠错功能">简单的文本纠错功能</h3>
+<p>基于上述的完形填空，我们还可以完成简单的文本纠错功能，前提是我们已经知道文本的哪个字是错误的，并且进行一对一纠错，即把这个字纠正为正确的字，并不会将其去掉或者添加其它字。我们的思路是这样的：在知道文本中的哪个字是错误的之后，将其MASK掉，转化为完形填空任务，从而预测出MASK掉的字作为纠正后的字。</p>
+<p>实现简单的文本纠错功能的Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># 该脚本使用BERT的mask技术进行文本纠错</span><br><span class="hljs-keyword">from</span> cloze_predict <span class="hljs-keyword">import</span> get_mask_character<br><br>sentence = <span class="hljs-string">&quot;我要去埃及金子塔玩。&quot;</span>  <span class="hljs-comment"># 金子塔中的子为错别字</span><br>sentence = <span class="hljs-string">&quot;白云山，位于广东省广州市白云区，为南粤名山之一，自古就有“羊城第一秀”只称。&quot;</span>  <span class="hljs-comment"># 只称中的只为错别字</span><br>sentence = <span class="hljs-string">&quot;请把这个快递送到上海市闵航区。&quot;</span>  <span class="hljs-comment"># 闵航区中的航为错别字</span><br>sentence = <span class="hljs-string">&quot;少先队员因该为老人让坐&quot;</span>  <span class="hljs-comment"># 因该中的因为错别字</span><br>sentence = <span class="hljs-string">&quot;随然今天很热&quot;</span>  <span class="hljs-comment"># 随然中的随为错别字</span><br>sentence = <span class="hljs-string">&quot;我生病了,咳数了好几天&quot;</span>  <span class="hljs-comment"># 咳数中的数为错别字</span><br>sentence = <span class="hljs-string">&quot;一群罗威纳犬宝宝打架，场面感忍。&quot;</span>  <span class="hljs-comment"># 感忍中的忍为错别字</span><br>wrong_char_index = sentence.index(<span class="hljs-string">&quot;忍&quot;</span>)<br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(sentence)):<br>    <span class="hljs-keyword">if</span> i == wrong_char_index:<br>        start_string = sentence[:i]<br>        end_string = sentence[i+<span class="hljs-number">1</span>:]<br>        pred_char = get_mask_character(start_string, <span class="hljs-number">1</span>, end_string)<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;wrong char: &#123;&#125;, correct char: &#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(sentence[i], pred_char[<span class="hljs-number">0</span>]))<br></code></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs arduino">wrong <span class="hljs-type">char</span>: 忍, correct <span class="hljs-type">char</span>: 人<br></code></pre></td></tr></table></figure>
+<p>这种文本纠错方式利用了BERT的MLM模型来实现的，有一定的效果，但不能作为文本纠错的完美实现方式，只是作为文本纠错的一种实现方式，实际上，现实中的文本纠错是由多种模型组成的复杂策略实现的，还得考虑效果和运行效率等因素。另外，真正的文本纠错还应当能指出文本中哪个字错了并对其纠错，本文只考虑了后一步，而没有指出文本中哪个字错了，只能算文本纠错的一次尝试。</p>
+<h3 id="总结">总结</h3>
+<p>本文给出的脚本已上传至Github，网址为：https://github.com/percent4/keras_bert_cloze
+，上面有更多的例子，欢迎大家参考~</p>
+<p>感谢大家的阅读~</p>
+<p>2021.1.24于上海浦东</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/NLP/" class="print-no-link">#NLP</a>
+      
+        <a href="/tags/keras-bert/" class="print-no-link">#keras-bert</a>
+      
+        <a href="/tags/%E5%AE%8C%E5%BD%A2%E5%A1%AB%E7%A9%BA/" class="print-no-link">#完形填空</a>
+      
+        <a href="/tags/%E6%96%87%E6%9C%AC%E7%BA%A0%E9%94%99/" class="print-no-link">#文本纠错</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（三十九）使用keras-bert实现完形填空及简单的文本纠错功能</div>
+      <div>https://percent4.github.io/NLP（三十九）使用keras-bert实现完形填空及简单的文本纠错功能/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月10日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%EF%BC%89%E5%88%A9%E7%94%A8seqeval%E6%A8%A1%E5%9D%97%E8%8E%B7%E5%8F%96%E5%BA%8F%E5%88%97%E5%AE%9E%E4%BD%93%E8%AF%86%E5%88%AB%E7%BB%93%E6%9E%9C/" title="NLP（四十）利用seqeval模块获取序列实体识别结果">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NLP（四十）利用seqeval模块获取序列实体识别结果</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%85%AB%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E8%B0%83%E7%94%A8ALBERT%E6%A8%A1%E5%9E%8B%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E3%80%81%E6%96%87%E6%9C%AC%E5%A4%9A%E6%A0%87%E7%AD%BE%E5%88%86%E7%B1%BB%E3%80%81%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/" title="NLP（三十八）使用keras-bert调用ALBERT模型实现文本分类、文本多标签分类、序列标注任务">
+                        <span class="hidden-mobile">NLP（三十八）使用keras-bert调用ALBERT模型实现文本分类、文本多标签分类、序列标注任务</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

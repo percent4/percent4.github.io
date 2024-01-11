@@ -1,0 +1,1123 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将详细介绍RAG框架中的各种Retrieve算法，比如BM25, Embedding Search, Ensemble Search, Rerank等的评估实验过程与结果。本文是目前除了LlamaIndex官方网站例子之外为数不多的介绍Retrieve算法评估实验的文章。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（八十二）RAG框架中的Retrieve算法评估">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E5%85%AB%E5%8D%81%E4%BA%8C%EF%BC%89RAG%E6%A1%86%E6%9E%B6%E4%B8%AD%E7%9A%84Retrieve%E7%AE%97%E6%B3%95%E8%AF%84%E4%BC%B0/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将详细介绍RAG框架中的各种Retrieve算法，比如BM25, Embedding Search, Ensemble Search, Rerank等的评估实验过程与结果。本文是目前除了LlamaIndex官方网站例子之外为数不多的介绍Retrieve算法评估实验的文章。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2023/12/28/5VjRy7rCeXOtAZq.png">
+<meta property="og:image" content="https://s2.loli.net/2023/12/28/s9SvU4kL7Zc1MK5.png">
+<meta property="article:published_time" content="2024-01-11T04:56:05.000Z">
+<meta property="article:modified_time" content="2024-01-11T04:56:56.194Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="RAG">
+<meta property="article:tag" content="Retrieve">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2023/12/28/5VjRy7rCeXOtAZq.png">
+  
+  
+  
+  <title>NLP（八十二）RAG框架中的Retrieve算法评估 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（八十二）RAG框架中的Retrieve算法评估"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-01-11 12:56" pubdate>
+          星期四, 一月 11日 2024, 12:56 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          13k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          112 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（八十二）RAG框架中的Retrieve算法评估</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将详细介绍RAG框架中的各种Retrieve算法，比如BM25, Embedding
+Search, Ensemble Search,
+Rerank等的评估实验过程与结果。本文是目前除了LlamaIndex官方网站例子之外为数不多的介绍Retrieve算法评估实验的文章。</p>
+</blockquote>
+<h2 id="什么是rag中的retrieve">什么是RAG中的Retrieve？</h2>
+<p><code>RAG</code>即Retrieval Augmented
+Generation的简称，是现阶段增强使用LLM的常见方式之一，其一般步骤为：</p>
+<ol type="1">
+<li>文档划分（Document Split）</li>
+<li>向量嵌入（Embedding）</li>
+<li>文档获取（Retrieve）</li>
+<li>Prompt工程（Prompt Engineering）</li>
+<li>大模型问答（LLM）</li>
+</ol>
+<p>大致的流程图参考如下：</p>
+<p><img
+src="https://towhee.io/assets/img/task/retrieval-augmented-generation.png" srcset="/img/loading.gif" lazyload /></p>
+<p>通常来说，可将<code>RAG</code>划分为召回（<strong>Retrieve</strong>）阶段和答案生成(<strong>Answer
+Generate</strong>)阶段，而效果优化也从这方面入手。针对召回阶段，文档获取是其中重要的步骤，决定了注入大模型的知识背景，常见的召回算法如下：</p>
+<ul>
+<li><strong>BM25（又称Keyword Search）</strong>:
+使用BM24算法找回相关文档，一般对于特定领域关键词效果较好，比如人名，结构名等；</li>
+<li><strong>Embedding Search</strong>:
+使用Embedding模型将query和corpus进行文本嵌入，使用向量相似度进行文本匹配，可解决BM25算法的相似关键词召回效果差的问题，该过程一般会使用向量数据库（Vector
+Database）；</li>
+<li><strong>Ensemble Search</strong>: 融合BM25算法和Embedding
+Search的结果，使用RFF算法进行重排序，一般会比单独的召回算法效果好；</li>
+<li><strong>Rerank</strong>:
+上述的召回算法一般属于粗召回阶段，更看重性能；Rerank是对粗召回阶段的结果，再与query进行文本匹配，属于Rerank（又称为重排、精排）阶段，更看重效果；</li>
+</ul>
+<p>综合上述Retrieve算法的框架示意图如下：</p>
+<p><img
+src="https://1673940196-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FRncMhlfeYTrpujwzDIqw%2Fuploads%2FoalmRC4UOlhQNF0hFaBR%2Fspaces_CdDIVDY6AtAz028MFT4d_uploads_ohgmBurknjsKmg53Z00U_image.webp?alt=media&amp;token=33e4c026-8d5e-4e77-98b2-f1dcce42a15b" srcset="/img/loading.gif" lazyload /></p>
+<p>上述的Retrieve算法更有优劣，一般会选择合适的场景进行使用或考虑综合几种算法进行使用。那么，它们的效果具体如何呢？</p>
+<h2 id="retrieve算法评估">Retrieve算法评估</h2>
+<p>那么，如何对Retrieve算法进行具体效果评估呢？</p>
+<p>本文将通过构造自有数据集进行测试，分别对上述四种Retrieve算法进行实验，采用<code>Hit Rate</code>和<code>MRR</code>指标进行评估。</p>
+<p>在<strong>LlamaIndex</strong>官方Retrieve
+Evaluation中，提供了对Retrieve算法的评估示例，具体细节可参考如下：</p>
+<p><a
+target="_blank" rel="noopener" href="https://blog.llamaindex.ai/boosting-rag-picking-the-best-embedding-reranker-models-42d079022e83">https://blog.llamaindex.ai/boosting-rag-picking-the-best-embedding-reranker-models-42d079022e83</a></p>
+<p>这是现在网上较为权威的Retrieve
+Evaluation实验，本文将参考LlamaIndex的做法，给出更为详细的评估实验过程与结果。</p>
+<p>Retrieve Evaluation实验的步骤如下：</p>
+<ol type="1">
+<li><code>文档划分</code>：寻找合适数据集，进行文档划分；</li>
+<li><code>问题生成</code>：对划分后的文档，使用LLM对文档内容生成问题；</li>
+<li><code>召回文本</code>：对生成的每个问题，采用不同的Retrieve算法，得到召回结果；</li>
+<li><code>指标评估</code>：使用<code>Hit Rate</code>和<code>MRR</code>指标进行评估</li>
+</ol>
+<p>步骤是清晰的，那么，我们来看下评估指标：<code>Hit Rate</code>和<code>MRR</code>。</p>
+<p><code>Hit Rate</code>即命中率，一般指的是我们预期的召回文本（真实值）在召回结果的前k个文本中会出现，也就是Recall@k时，能得到预期文本。一般，<code>Hit Rate</code>越高，就说明召回算法效果越好。</p>
+<p><code>MRR</code>即Mean Reciprocal
+Rank，是一种常见的评估检索效果的指标。MRR
+是衡量系统在一系列查询中返回相关文档或信息的平均排名的逆数的平均值。例如，如果一个系统对第一个查询的正确答案排在第二位，对第二个查询的正确答案排在第一位，则
+MRR 为 (1/2 + 1/1) / 2。</p>
+<p>在LlamaIndex中，这两个指标的对应类分别为<code>HitRate</code>和<code>MRR</code>，源代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">HitRate</span>(<span class="hljs-title class_ inherited__">BaseRetrievalMetric</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;Hit rate metric.&quot;&quot;&quot;</span><br><br>    metric_name: <span class="hljs-built_in">str</span> = <span class="hljs-string">&quot;hit_rate&quot;</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">compute</span>(<span class="hljs-params"></span><br><span class="hljs-params">        self,</span><br><span class="hljs-params">        query: <span class="hljs-type">Optional</span>[<span class="hljs-built_in">str</span>] = <span class="hljs-literal">None</span>,</span><br><span class="hljs-params">        expected_ids: <span class="hljs-type">Optional</span>[<span class="hljs-type">List</span>[<span class="hljs-built_in">str</span>]] = <span class="hljs-literal">None</span>,</span><br><span class="hljs-params">        retrieved_ids: <span class="hljs-type">Optional</span>[<span class="hljs-type">List</span>[<span class="hljs-built_in">str</span>]] = <span class="hljs-literal">None</span>,</span><br><span class="hljs-params">        expected_texts: <span class="hljs-type">Optional</span>[<span class="hljs-type">List</span>[<span class="hljs-built_in">str</span>]] = <span class="hljs-literal">None</span>,</span><br><span class="hljs-params">        retrieved_texts: <span class="hljs-type">Optional</span>[<span class="hljs-type">List</span>[<span class="hljs-built_in">str</span>]] = <span class="hljs-literal">None</span>,</span><br><span class="hljs-params">        **kwargs: <span class="hljs-type">Any</span>,</span><br><span class="hljs-params">    </span>) -&gt; RetrievalMetricResult:<br>        <span class="hljs-string">&quot;&quot;&quot;Compute metric.&quot;&quot;&quot;</span><br>        <span class="hljs-keyword">if</span> retrieved_ids <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">or</span> expected_ids <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>            <span class="hljs-keyword">raise</span> ValueError(<span class="hljs-string">&quot;Retrieved ids and expected ids must be provided&quot;</span>)<br>        is_hit = <span class="hljs-built_in">any</span>(<span class="hljs-built_in">id</span> <span class="hljs-keyword">in</span> expected_ids <span class="hljs-keyword">for</span> <span class="hljs-built_in">id</span> <span class="hljs-keyword">in</span> retrieved_ids)<br>        <span class="hljs-keyword">return</span> RetrievalMetricResult(<br>            score=<span class="hljs-number">1.0</span> <span class="hljs-keyword">if</span> is_hit <span class="hljs-keyword">else</span> <span class="hljs-number">0.0</span>,<br>        )<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">MRR</span>(<span class="hljs-title class_ inherited__">BaseRetrievalMetric</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;MRR metric.&quot;&quot;&quot;</span><br><br>    metric_name: <span class="hljs-built_in">str</span> = <span class="hljs-string">&quot;mrr&quot;</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">compute</span>(<span class="hljs-params"></span><br><span class="hljs-params">        self,</span><br><span class="hljs-params">        query: <span class="hljs-type">Optional</span>[<span class="hljs-built_in">str</span>] = <span class="hljs-literal">None</span>,</span><br><span class="hljs-params">        expected_ids: <span class="hljs-type">Optional</span>[<span class="hljs-type">List</span>[<span class="hljs-built_in">str</span>]] = <span class="hljs-literal">None</span>,</span><br><span class="hljs-params">        retrieved_ids: <span class="hljs-type">Optional</span>[<span class="hljs-type">List</span>[<span class="hljs-built_in">str</span>]] = <span class="hljs-literal">None</span>,</span><br><span class="hljs-params">        expected_texts: <span class="hljs-type">Optional</span>[<span class="hljs-type">List</span>[<span class="hljs-built_in">str</span>]] = <span class="hljs-literal">None</span>,</span><br><span class="hljs-params">        retrieved_texts: <span class="hljs-type">Optional</span>[<span class="hljs-type">List</span>[<span class="hljs-built_in">str</span>]] = <span class="hljs-literal">None</span>,</span><br><span class="hljs-params">        **kwargs: <span class="hljs-type">Any</span>,</span><br><span class="hljs-params">    </span>) -&gt; RetrievalMetricResult:<br>        <span class="hljs-string">&quot;&quot;&quot;Compute metric.&quot;&quot;&quot;</span><br>        <span class="hljs-keyword">if</span> retrieved_ids <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">or</span> expected_ids <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>            <span class="hljs-keyword">raise</span> ValueError(<span class="hljs-string">&quot;Retrieved ids and expected ids must be provided&quot;</span>)<br>        <span class="hljs-keyword">for</span> i, <span class="hljs-built_in">id</span> <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(retrieved_ids):<br>            <span class="hljs-keyword">if</span> <span class="hljs-built_in">id</span> <span class="hljs-keyword">in</span> expected_ids:<br>                <span class="hljs-keyword">return</span> RetrievalMetricResult(<br>                    score=<span class="hljs-number">1.0</span> / (i + <span class="hljs-number">1</span>),<br>                )<br>        <span class="hljs-keyword">return</span> RetrievalMetricResult(<br>            score=<span class="hljs-number">0.0</span>,<br>        )<br></code></pre></td></tr></table></figure>
+<h2 id="数据集构造">数据集构造</h2>
+<p>在文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247485425&amp;idx=1&amp;sn=bd85ddfce82d77ceec5a66cb96835400&amp;chksm=fcb9be61cbce37773109f9703c2b6c4256d5037c8bf4497dfb9ad0f296ce0ee4065255954c1c&amp;token=1977141018&amp;lang=zh_CN#rd">NLP（六十一）使用Baichuan-13B-Chat模型构建智能文档</a>笔者介绍了如何使用RAG框架来实现智能文档问答。</p>
+<p>以这个项目为基础，笔者采集了日本半导体行业相关的网络文章及其他文档，进行文档划分，导入至ElastricSearch，并使用OpenAI
+Embedding获取文本嵌入向量。语料库一共为433个文档片段（Chunk），其中321个与日本半导体行业相关（不妨称之为<code>领域文档</code>）。</p>
+<p>还差query数据集。这点是从LlamaIndex官方示例中获取的灵感：<strong>使用大模型生成query</strong>!</p>
+<p>针对上述321个领域文档，使用GPT-4模型生成一个与文本内容相关的问题，即query，Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @place: Pudong, Shanghai</span><br><span class="hljs-comment"># @file: data_transfer.py</span><br><span class="hljs-comment"># @time: 2023/12/25 17:51</span><br><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br><span class="hljs-keyword">from</span> llama_index.llms <span class="hljs-keyword">import</span> OpenAI<br><span class="hljs-keyword">from</span> llama_index.schema <span class="hljs-keyword">import</span> TextNode<br><span class="hljs-keyword">from</span> llama_index.evaluation <span class="hljs-keyword">import</span> generate_question_context_pairs<br><span class="hljs-keyword">import</span> random<br>random.seed(<span class="hljs-number">42</span>)<br><br>llm = OpenAI(model=<span class="hljs-string">&quot;gpt-4&quot;</span>, max_retries=<span class="hljs-number">5</span>)<br><br><span class="hljs-comment"># Prompt to generate questions</span><br>qa_generate_prompt_tmpl = <span class="hljs-string">&quot;&quot;&quot;\</span><br><span class="hljs-string">Context information is below.</span><br><span class="hljs-string"></span><br><span class="hljs-string">---------------------</span><br><span class="hljs-string">&#123;context_str&#125;</span><br><span class="hljs-string">---------------------</span><br><span class="hljs-string"></span><br><span class="hljs-string">Given the context information and not prior knowledge.</span><br><span class="hljs-string">generate only questions based on the below query.</span><br><span class="hljs-string"></span><br><span class="hljs-string">You are a university professor. Your task is to set &#123;num_questions_per_chunk&#125; questions for the upcoming Chinese quiz.</span><br><span class="hljs-string">Questions throughout the test should be diverse. Questions should not contain options or start with Q1/Q2.</span><br><span class="hljs-string">Questions must be written in Chinese. The expression must be concise and clear. </span><br><span class="hljs-string">It should not exceed 15 Chinese characters. Words such as &quot;这&quot;, &quot;那&quot;, &quot;根据&quot;, &quot;依据&quot; and other punctuation marks </span><br><span class="hljs-string">should not be used. Abbreviations may be used for titles and professional terms.</span><br><span class="hljs-string">&quot;&quot;&quot;</span><br><br>nodes = []<br>data_df = pd.read_csv(<span class="hljs-string">&quot;../data/doc_qa_dataset.csv&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>)<br><span class="hljs-keyword">for</span> i, row <span class="hljs-keyword">in</span> data_df.iterrows():<br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(row[<span class="hljs-string">&quot;content&quot;</span>]) &gt; <span class="hljs-number">80</span> <span class="hljs-keyword">and</span> i &gt; <span class="hljs-number">96</span>:<br>        node = TextNode(text=row[<span class="hljs-string">&quot;content&quot;</span>])<br>        node.id_ = <span class="hljs-string">f&quot;node_<span class="hljs-subst">&#123;i + <span class="hljs-number">1</span>&#125;</span>&quot;</span><br>        nodes.append(node)<br><br><br>doc_qa_dataset = generate_question_context_pairs(<br>    nodes, llm=llm, num_questions_per_chunk=<span class="hljs-number">1</span>, qa_generate_prompt_tmpl=qa_generate_prompt_tmpl<br>)<br><br>doc_qa_dataset.save_json(<span class="hljs-string">&quot;../data/doc_qa_dataset.json&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>原始数据<code>doc_qa_dataset.csv</code>是笔者从Kibana中的Discover中导出的，使用llama-index模块和GPT-4模型，以合适的Prompt，对每个领域文档生成一个问题，并保存为doc_qa_dataset.json，这就是我们进行Retrieve
+Evaluation的数据格式，其中包括queries, corpus, relevant_docs,
+mode四个字段。</p>
+<p>我们来查看第一个文档及生成的答案，如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;queries&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;7813f025-333d-494f-bc14-a51b2d57721b&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;日本半导体产业的现状和影响因素是什么？&quot;</span><span class="hljs-punctuation">,</span><br>        ...<br>    <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;corpus&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;node_98&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;日本半导体产业在上世纪80年代到达顶峰后就在缓慢退步，但若简单认为日本半导体产业失败了，就是严重误解，今天日本半导体产业仍有非常有竞争力的企业和产品。客观认识日本半导体产业的成败及其背后的原因，对正在大力发展半导体产业的中国，有非常强的参考价值。&quot;</span><span class="hljs-punctuation">,</span><br>        ...<br>    <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;relevant_docs&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;7813f025-333d-494f-bc14-a51b2d57721b&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>            <span class="hljs-string">&quot;node_98&quot;</span><br>        <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>        ...<br>    <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;mode&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text&quot;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<h2 id="retrieve算法评估-1">Retrieve算法评估</h2>
+<p>我们需要评估的Retrieve算法为BM25, Embedding Search, Ensemble Search,
+Ensemble +
+Rerank，下面将分别就Retriever实现方式、指标评估实验对每种Retrieve算法进行详细介绍。</p>
+<h3 id="bm25">BM25</h3>
+<p>BM25的储存采用ElasticSearch，即直接使用ES内置的BM25算法。笔者在llama-index对BaseRetriever进行定制化开发（这也是我们实现自己想法的一种常规方法），对其简单封装，Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @place: Pudong, Shanghai</span><br><span class="hljs-comment"># @file: bm25_retriever.py</span><br><span class="hljs-comment"># @time: 2023/12/25 17:42</span><br><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span><br><br><span class="hljs-keyword">from</span> elasticsearch <span class="hljs-keyword">import</span> Elasticsearch<br><span class="hljs-keyword">from</span> llama_index.schema <span class="hljs-keyword">import</span> TextNode<br><span class="hljs-keyword">from</span> llama_index <span class="hljs-keyword">import</span> QueryBundle<br><span class="hljs-keyword">from</span> llama_index.schema <span class="hljs-keyword">import</span> NodeWithScore<br><span class="hljs-keyword">from</span> llama_index.retrievers <span class="hljs-keyword">import</span> BaseRetriever<br><span class="hljs-keyword">from</span> llama_index.indices.query.schema <span class="hljs-keyword">import</span> QueryType<br><br><span class="hljs-keyword">from</span> preprocess.get_text_id_mapping <span class="hljs-keyword">import</span> text_node_id_mapping<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">CustomBM25Retriever</span>(<span class="hljs-title class_ inherited__">BaseRetriever</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;Custom retriever for elasticsearch with bm25&quot;&quot;&quot;</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, top_k</span>) -&gt; <span class="hljs-literal">None</span>:<br>        <span class="hljs-string">&quot;&quot;&quot;Init params.&quot;&quot;&quot;</span><br>        <span class="hljs-built_in">super</span>().__init__()<br>        self.es_client = Elasticsearch([&#123;<span class="hljs-string">&#x27;host&#x27;</span>: <span class="hljs-string">&#x27;localhost&#x27;</span>, <span class="hljs-string">&#x27;port&#x27;</span>: <span class="hljs-number">9200</span>&#125;])<br>        self.top_k = top_k<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">_retrieve</span>(<span class="hljs-params">self, query: QueryType</span>) -&gt; <span class="hljs-type">List</span>[NodeWithScore]:<br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(query, <span class="hljs-built_in">str</span>):<br>            query = QueryBundle(query)<br>        <span class="hljs-keyword">else</span>:<br>            query = query<br><br>        result = []<br>        <span class="hljs-comment"># 查询数据(全文搜索)</span><br>        dsl = &#123;<br>            <span class="hljs-string">&#x27;query&#x27;</span>: &#123;<br>                <span class="hljs-string">&#x27;match&#x27;</span>: &#123;<br>                    <span class="hljs-string">&#x27;content&#x27;</span>: query.query_str<br>                &#125;<br>            &#125;,<br>            <span class="hljs-string">&quot;size&quot;</span>: self.top_k<br>        &#125;<br>        search_result = self.es_client.search(index=<span class="hljs-string">&#x27;docs&#x27;</span>, body=dsl)<br>        <span class="hljs-keyword">if</span> search_result[<span class="hljs-string">&#x27;hits&#x27;</span>][<span class="hljs-string">&#x27;hits&#x27;</span>]:<br>            <span class="hljs-keyword">for</span> record <span class="hljs-keyword">in</span> search_result[<span class="hljs-string">&#x27;hits&#x27;</span>][<span class="hljs-string">&#x27;hits&#x27;</span>]:<br>                text = record[<span class="hljs-string">&#x27;_source&#x27;</span>][<span class="hljs-string">&#x27;content&#x27;</span>]<br>                node_with_score = NodeWithScore(node=TextNode(text=text,<br>                                                id_=text_node_id_mapping[text]),<br>                                                score=record[<span class="hljs-string">&#x27;_score&#x27;</span>])<br>                result.append(node_with_score)<br><br>        <span class="hljs-keyword">return</span> result<br></code></pre></td></tr></table></figure>
+<p>之后，对top_k结果进行指标评估，Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @place: Pudong, Shanghai</span><br><span class="hljs-comment"># @file: evaluation_exp.py</span><br><span class="hljs-comment"># @time: 2023/12/25 20:01</span><br><span class="hljs-keyword">import</span> asyncio<br><span class="hljs-keyword">import</span> time<br><br><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime<br><span class="hljs-keyword">from</span> faiss <span class="hljs-keyword">import</span> IndexFlatIP<br><span class="hljs-keyword">from</span> llama_index.evaluation <span class="hljs-keyword">import</span> RetrieverEvaluator<br><span class="hljs-keyword">from</span> llama_index.finetuning.embeddings.common <span class="hljs-keyword">import</span> EmbeddingQAFinetuneDataset<br><br><span class="hljs-keyword">from</span> custom_retriever.bm25_retriever <span class="hljs-keyword">import</span> CustomBM25Retriever<br><span class="hljs-keyword">from</span> custom_retriever.vector_store_retriever <span class="hljs-keyword">import</span> VectorSearchRetriever<br><span class="hljs-keyword">from</span> custom_retriever.ensemble_retriever <span class="hljs-keyword">import</span> EnsembleRetriever<br><span class="hljs-keyword">from</span> custom_retriever.ensemble_rerank_retriever <span class="hljs-keyword">import</span> EnsembleRerankRetriever<br><span class="hljs-keyword">from</span> custom_retriever.query_rewrite_ensemble_retriever <span class="hljs-keyword">import</span> QueryRewriteEnsembleRetriever<br><br><br><span class="hljs-comment"># Display results from evaluate.</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">display_results</span>(<span class="hljs-params">name_list, eval_results_list</span>):<br>    pd.set_option(<span class="hljs-string">&#x27;display.precision&#x27;</span>, <span class="hljs-number">4</span>)<br>    columns = &#123;<span class="hljs-string">&quot;retrievers&quot;</span>: [], <span class="hljs-string">&quot;hit_rate&quot;</span>: [], <span class="hljs-string">&quot;mrr&quot;</span>: []&#125;<br>    <span class="hljs-keyword">for</span> name, eval_results <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(name_list, eval_results_list):<br>        metric_dicts = []<br>        <span class="hljs-keyword">for</span> eval_result <span class="hljs-keyword">in</span> eval_results:<br>            metric_dict = eval_result.metric_vals_dict<br>            metric_dicts.append(metric_dict)<br><br>        full_df = pd.DataFrame(metric_dicts)<br><br>        hit_rate = full_df[<span class="hljs-string">&quot;hit_rate&quot;</span>].mean()<br>        mrr = full_df[<span class="hljs-string">&quot;mrr&quot;</span>].mean()<br><br>        columns[<span class="hljs-string">&quot;retrievers&quot;</span>].append(name)<br>        columns[<span class="hljs-string">&quot;hit_rate&quot;</span>].append(hit_rate)<br>        columns[<span class="hljs-string">&quot;mrr&quot;</span>].append(mrr)<br><br>    metric_df = pd.DataFrame(columns)<br><br>    <span class="hljs-keyword">return</span> metric_df<br><br><br>doc_qa_dataset = EmbeddingQAFinetuneDataset.from_json(<span class="hljs-string">&quot;../data/doc_qa_test.json&quot;</span>)<br>metrics = [<span class="hljs-string">&quot;mrr&quot;</span>, <span class="hljs-string">&quot;hit_rate&quot;</span>]<br><span class="hljs-comment"># bm25 retrieve</span><br>evaluation_name_list = []<br>evaluation_result_list = []<br>cost_time_list = []<br><span class="hljs-keyword">for</span> top_k <span class="hljs-keyword">in</span> [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>]:<br>    start_time = time.time()<br>    bm25_retriever = CustomBM25Retriever(top_k=top_k)<br>    bm25_retriever_evaluator = RetrieverEvaluator.from_metric_names(metrics, retriever=bm25_retriever)<br>    bm25_eval_results = asyncio.run(bm25_retriever_evaluator.aevaluate_dataset(doc_qa_dataset))<br>    evaluation_name_list.append(<span class="hljs-string">f&quot;bm25_top_<span class="hljs-subst">&#123;top_k&#125;</span>_eval&quot;</span>)<br>    evaluation_result_list.append(bm25_eval_results)<br>    cost_time_list.append((time.time() - start_time) * <span class="hljs-number">1000</span>)<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;done for bm25 evaluation!&quot;</span>)<br>df = display_results(evaluation_name_list, evaluation_result_list)<br>df[<span class="hljs-string">&#x27;cost_time&#x27;</span>] = cost_time_list<br><span class="hljs-built_in">print</span>(df.head())<br>df.to_csv(<span class="hljs-string">f&quot;evaluation_bm25_<span class="hljs-subst">&#123;datetime.now().strftime(<span class="hljs-string">&#x27;%Y-%m-%d %H:%M:%S&#x27;</span>)&#125;</span>.csv&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>, index=<span class="hljs-literal">False</span>)<br></code></pre></td></tr></table></figure>
+<p>BM25算法的实验结果如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>retrievers</th>
+<th>hit_rate</th>
+<th>mrr</th>
+<th>cost_time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>bm25_top_1_eval</td>
+<td>0.7975</td>
+<td>0.7975</td>
+<td>461.277</td>
+</tr>
+<tr class="even">
+<td>bm25_top_2_eval</td>
+<td>0.8536</td>
+<td>0.8255</td>
+<td>510.3021</td>
+</tr>
+<tr class="odd">
+<td>bm25_top_3_eval</td>
+<td>0.9003</td>
+<td>0.8411</td>
+<td>570.6708</td>
+</tr>
+<tr class="even">
+<td>bm25_top_4_eval</td>
+<td>0.9159</td>
+<td>0.845</td>
+<td>420.7261</td>
+</tr>
+<tr class="odd">
+<td>bm25_top_5_eval</td>
+<td>0.9408</td>
+<td>0.85</td>
+<td>388.5961</td>
+</tr>
+</tbody>
+</table>
+<h3 id="embedding-search">Embedding Search</h3>
+<p>BM25算法的实现是简单的。Embedding
+Search的较为复杂些，首先需要对queries和corpus进行文本嵌入，这里的Embedding模型使用Openai的text-embedding-ada-002，向量维度为1536，并将结果存入numpy数据结构中，保存为npy文件，方便后续加载和重复使用。</p>
+<p>为了避免使用过重的向量数据集，本实验采用内存向量数据集:
+<strong>faiss</strong>。使用faiss加载向量，index类型选用IndexFlatIP，并进行向量相似度搜索。</p>
+<p>Embedding
+Search也需要定制化开发Retriever及指标评估，这里不再赘述，具体实验可参考文章末尾的Github项目地址。</p>
+<p>Embedding Search的实验结果如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>retrievers</th>
+<th>hit_rate</th>
+<th>mrr</th>
+<th>cost_time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>embedding_top_1_eval</td>
+<td>0.6075</td>
+<td>0.6075</td>
+<td>67.6837</td>
+</tr>
+<tr class="even">
+<td>embedding_top_2_eval</td>
+<td>0.6978</td>
+<td>0.6526</td>
+<td>60.8449</td>
+</tr>
+<tr class="odd">
+<td>embedding_top_3_eval</td>
+<td>0.7321</td>
+<td>0.6641</td>
+<td>59.9051</td>
+</tr>
+<tr class="even">
+<td>embedding_top_4_eval</td>
+<td>0.7788</td>
+<td>0.6758</td>
+<td>63.5488</td>
+</tr>
+<tr class="odd">
+<td>embedding_top_5_eval</td>
+<td>0.7944</td>
+<td>0.6789</td>
+<td>67.7922</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>注意:
+这里的召回时间花费比BM25还要少，完全得益于我们已经存储好了文本向量，并使用faiss进行加载、查询。</p>
+</blockquote>
+<h3 id="ensemble-search">Ensemble Search</h3>
+<p>Ensemble Search融合BM25算法和Embedding
+Search算法，针对两种算法召回的top_k个文档，使用RRF算法进行重新排序，再获取top_k个文档。RRF算法是经典且优秀的集成排序算法，这里不再展开介绍，后续专门写文章介绍。</p>
+<p>Ensemble Search的实验结果如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>retrievers</th>
+<th>hit_rate</th>
+<th>mrr</th>
+<th>cost_time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ensemble_top_1_eval</td>
+<td>0.7009</td>
+<td>0.7009</td>
+<td>1072.7379</td>
+</tr>
+<tr class="even">
+<td>ensemble_top_2_eval</td>
+<td>0.8536</td>
+<td>0.7741</td>
+<td>1088.8782</td>
+</tr>
+<tr class="odd">
+<td>ensemble_top_3_eval</td>
+<td>0.8941</td>
+<td>0.7928</td>
+<td>980.7949</td>
+</tr>
+<tr class="even">
+<td>ensemble_top_4_eval</td>
+<td>0.919</td>
+<td>0.8017</td>
+<td>935.1702</td>
+</tr>
+<tr class="odd">
+<td>ensemble_top_5_eval</td>
+<td>0.9377</td>
+<td>0.8079</td>
+<td>868.299</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ensemble-rerank">Ensemble + Rerank</h3>
+<p>如果还想在Ensemble
+Search的基础上再进行效果优化，可考虑加入Rerank算法。常见的Rerank模型有Cohere（API调用），BGE-Rerank（开源模型）等。本文使用Cohere
+Rerank API.</p>
+<p>Ensemble + Rerank的实验结果如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>retrievers</th>
+<th>hit_rate</th>
+<th>mrr</th>
+<th>cost_time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ensemble_rerank_top_1_eval</td>
+<td>0.8349</td>
+<td>0.8349</td>
+<td>2140632.4041</td>
+</tr>
+<tr class="even">
+<td>ensemble_rerank_top_2_eval</td>
+<td>0.9034</td>
+<td>0.8785</td>
+<td>2157657.2871</td>
+</tr>
+<tr class="odd">
+<td>ensemble_rerank_top_3_eval</td>
+<td>0.9346</td>
+<td>0.9008</td>
+<td>2200800.936</td>
+</tr>
+<tr class="even">
+<td>ensemble_rerank_top_4_eval</td>
+<td>0.947</td>
+<td>0.9078</td>
+<td>2150398.7348</td>
+</tr>
+<tr class="odd">
+<td>ensemble_rerank_top_5_eval</td>
+<td>0.9657</td>
+<td>0.9099</td>
+<td>2149122.9382</td>
+</tr>
+</tbody>
+</table>
+<h2 id="指标可视化及分析">指标可视化及分析</h2>
+<h3 id="指标可视化">指标可视化</h3>
+<p>上述的评估结果不够直观，我们使用Plotly模块绘制指标的条形图，结果如下：</p>
+<figure>
+<img src="https://s2.loli.net/2023/12/28/5VjRy7rCeXOtAZq.png" srcset="/img/loading.gif" lazyload
+alt="Hit Rate" />
+<figcaption aria-hidden="true">Hit Rate</figcaption>
+</figure>
+<figure>
+<img src="https://s2.loli.net/2023/12/28/s9SvU4kL7Zc1MK5.png" srcset="/img/loading.gif" lazyload
+alt="MRR" />
+<figcaption aria-hidden="true">MRR</figcaption>
+</figure>
+<h3 id="指标分析">指标分析</h3>
+<p>我们对上述统计图进行指标分析，可得到结论如下：</p>
+<ul>
+<li>对于每种Retrieve算法，随着k的增加，top_k的Hit
+Rate指标和MRR指标都有所增加，即检索效果变好，这是显而易见的结论；</li>
+<li>就总体检索效果而言，Ensemble + Rerank &gt; Ensemble &gt;
+单独的Retrieve</li>
+<li>本项目中就单独的Retrieve算法而言，BM25的检索效果比Embedding
+Search好（可能与生成的问答来源于文档有关），但这不是普遍结论，两种算法更有合适的场景</li>
+<li>加入Rerank后，检索效果可获得一定的提升，以top_3评估结果来说，ensemble的Hit
+Rate为0.8941，加入Rerank后为0.9346，提升约4%</li>
+</ul>
+<h2 id="总结">总结</h2>
+<p>本文详细介绍了RAG框架，并结合自有数据集对各种Retrieve算法进行评估。笔者通过亲身实验和编写Retriever代码，深入了解了RAG框架中的经典之作LlamaIndex，同时，本文也是难得的介绍RAG框架Retrieve阶段评估实验的文章。</p>
+<p>本文的所有过程及指标结果已开源至Github，网址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/embedding_rerank_retrieval">https://github.com/percent4/embedding_rerank_retrieval</a>
+.</p>
+<p>后续，笔者将在此项目基础上，验证各种优化RAG框架Retrieve效果的手段，比如Query
+Rewrite, Query Transform, HyDE等，这将是一个获益无穷的项目啊！</p>
+<h2 id="参考文献">参考文献</h2>
+<ol type="1">
+<li>Retrieve
+Evaluation官网文章：https://blog.llamaindex.ai/boosting-rag-picking-the-best-embedding-reranker-models-42d079022e83</li>
+<li>Retrieve Evaluation
+Colab上的代码：https://colab.research.google.com/drive/1TxDVA__uimVPOJiMEQgP5fwHiqgKqm4-?usp=sharing</li>
+<li>LlamaIndex官网：https://docs.llamaindex.ai/en/stable/index.html</li>
+<li>RetrieverEvaluator in LlamaIndex:
+https://docs.llamaindex.ai/en/stable/module_guides/evaluating/usage_pattern_retrieval.html</li>
+<li>NLP（六十一）使用Baichuan-13B-Chat模型构建智能文档:
+https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247485425&amp;idx=1&amp;sn=bd85ddfce82d77ceec5a66cb96835400&amp;chksm=fcb9be61cbce37773109f9703c2b6c4256d5037c8bf4497dfb9ad0f296ce0ee4065255954c1c&amp;token=1977141018&amp;lang=zh_CN#rd</li>
+<li>NLP（六十九）智能文档助手升级:
+https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247485609&amp;idx=1&amp;sn=f8337b4822b1cdf95a586af6097ef288&amp;chksm=fcb9b139cbce382f735e4c119ade8084067cde0482910c72767f36a29e7291385cbe6dfbd6a9&amp;payreadticket=HBB91zkl4I6dXpw0Q4OcOF8ECZz0pS9kOGHJqycwrN7jFWHyUOCBe7sWFWytD7_9wo_NzcM#rd</li>
+<li>NLP（八十一）智能文档问答助手项目改进:
+https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486103&amp;idx=1&amp;sn=caa204eda0760bab69b7e40abff8e696&amp;chksm=fcb9b307cbce3a1108d305ec44281e3446241e90e9c17d62dd0b6eaa48cba5e20d31f0129584&amp;token=1977141018&amp;lang=zh_CN#rd</li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/RAG/" class="print-no-link">#RAG</a>
+      
+        <a href="/tags/Retrieve/" class="print-no-link">#Retrieve</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（八十二）RAG框架中的Retrieve算法评估</div>
+      <div>https://percent4.github.io/NLP（八十二）RAG框架中的Retrieve算法评估/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年1月11日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E5%85%AB%E5%8D%81%E4%B8%89%EF%BC%89RAG%E6%A1%86%E6%9E%B6%E4%B8%AD%E7%9A%84Rerank%E7%AE%97%E6%B3%95%E8%AF%84%E4%BC%B0/" title="NLP（八十三）RAG框架中的Rerank算法评估">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NLP（八十三）RAG框架中的Rerank算法评估</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/ELK%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%89%EF%BC%89Beats%E5%AE%B6%E6%97%8F/" title="ELK学习笔记（三）Beats家族">
+                        <span class="hidden-mobile">ELK学习笔记（三）Beats家族</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

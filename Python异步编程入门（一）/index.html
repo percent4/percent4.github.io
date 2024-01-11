@@ -1,0 +1,898 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将介绍Python异步编程入门。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python异步编程入门（一）">
+<meta property="og:url" content="https://percent4.github.io/Python%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A8%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将介绍Python异步编程入门。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-01-10T15:37:13.000Z">
+<meta property="article:modified_time" content="2024-01-10T15:54:04.967Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="异步编程">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Python异步编程入门（一） - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Python异步编程入门（一）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-01-10 23:37" pubdate>
+          星期三, 一月 10日 2024, 11:37 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          7.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          60 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Python异步编程入门（一）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>协程：单线程；充分提升性能：多核 + 单线程</p>
+<p>Python对<strong>协程</strong>的支持是通过<strong>generator</strong>实现的。</p>
+<p>Python
+3.5开始引入了新的语法async和await，可以让coroutine的代码更简洁易读。</p>
+<p>异步模块:</p>
+<ul>
+<li>IO: asyncio</li>
+<li>HTTP: aiohttp</li>
+</ul>
+<h2 id="简单示例">简单示例</h2>
+<ul>
+<li>hello world</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime<br><span class="hljs-keyword">import</span> asyncio<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">hello</span>():<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Hello world!&quot;</span>, datetime.now())<br>    r = <span class="hljs-keyword">await</span> asyncio.sleep(<span class="hljs-number">1</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Hello again!&quot;</span>, datetime.now())<br><br><span class="hljs-comment"># 获取EventLoop</span><br>loop = asyncio.get_event_loop()<br><span class="hljs-comment"># 执行coroutine</span><br>loop.run_until_complete(hello())<br>loop.close()<br></code></pre></td></tr></table></figure>
+<p>输出结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">Hello world! 2023-09-18 11:14:14.840318<br>Hello again! 2023-09-18 11:14:15.840848<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>asyncio.sleep(1) 也是协程</p>
+</blockquote>
+<blockquote>
+<p>python 3.7以后可以用asyncio.run()运行</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime<br><span class="hljs-keyword">import</span> asyncio<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">hello</span>():<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Hello world!&quot;</span>, datetime.now())<br>    r = <span class="hljs-keyword">await</span> asyncio.sleep(<span class="hljs-number">1</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Hello again!&quot;</span>, datetime.now())<br><br>asyncio.run(hello())<br></code></pre></td></tr></table></figure>
+<ul>
+<li>任务组</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime<br><span class="hljs-keyword">import</span> asyncio<br><span class="hljs-keyword">from</span> random <span class="hljs-keyword">import</span> randint<br><span class="hljs-keyword">import</span> threading<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">hello</span>():<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Hello world!&quot;</span>, datetime.now(), threading.current_thread())<br>    sleep_time = randint(<span class="hljs-number">0</span>, <span class="hljs-number">4</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;sleep time: <span class="hljs-subst">&#123;sleep_time&#125;</span>&quot;</span>, threading.current_thread())<br>    r = <span class="hljs-keyword">await</span> asyncio.sleep(sleep_time)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Hello again!&quot;</span>, datetime.now(), threading.current_thread())<br><br><span class="hljs-comment"># 获取EventLoop</span><br>loop = asyncio.get_event_loop()<br><span class="hljs-comment"># 执行coroutine</span><br>tasks = [hello(), hello(), hello(), hello()]<br>loop.run_until_complete(asyncio.wait(tasks))<br>loop.close()<br></code></pre></td></tr></table></figure>
+<p>输出结果：</p>
+<pre><code class="hljs">Hello world! 2023-09-18 14:40:17.230477 &lt;_MainThread(MainThread, started 8127873344)&gt;
+sleep time: 3 &lt;_MainThread(MainThread, started 8127873344)&gt;
+Hello world! 2023-09-18 14:40:17.230515 &lt;_MainThread(MainThread, started 8127873344)&gt;
+sleep time: 1 &lt;_MainThread(MainThread, started 8127873344)&gt;
+Hello world! 2023-09-18 14:40:17.230528 &lt;_MainThread(MainThread, started 8127873344)&gt;
+sleep time: 3 &lt;_MainThread(MainThread, started 8127873344)&gt;
+Hello world! 2023-09-18 14:40:17.230539 &lt;_MainThread(MainThread, started 8127873344)&gt;
+sleep time: 2 &lt;_MainThread(MainThread, started 8127873344)&gt;
+Hello again! 2023-09-18 14:40:18.231054 &lt;_MainThread(MainThread, started 8127873344)&gt;
+Hello again! 2023-09-18 14:40:19.231754 &lt;_MainThread(MainThread, started 8127873344)&gt;
+Hello again! 2023-09-18 14:40:20.231809 &lt;_MainThread(MainThread, started 8127873344)&gt;
+Hello again! 2023-09-18 14:40:20.231981 &lt;_MainThread(MainThread, started 8127873344)&gt;</code></pre>
+<blockquote>
+<p>使用asyncio.gather()运行任务组</p>
+</blockquote>
+<ul>
+<li>gather的使用</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime<br><span class="hljs-keyword">import</span> asyncio<br><span class="hljs-keyword">from</span> random <span class="hljs-keyword">import</span> randint<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">hello</span>():<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Hello world!&quot;</span>, datetime.now())<br>    sleep_time = randint(<span class="hljs-number">0</span>, <span class="hljs-number">4</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;sleep time: <span class="hljs-subst">&#123;sleep_time&#125;</span>&quot;</span>)<br>    r = <span class="hljs-keyword">await</span> asyncio.sleep(sleep_time)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Hello again!&quot;</span>, datetime.now())<br>    <span class="hljs-keyword">return</span> sleep_time<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">group_task</span>():<br>    tasks = [hello(), hello(), hello(), hello()]<br>    <span class="hljs-keyword">await</span> asyncio.gather(*tasks)<br><br><br>asyncio.run(group_task())<br></code></pre></td></tr></table></figure>
+<p>输出结果：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">Hello</span> world! <span class="hljs-number">2023</span>-<span class="hljs-number">09</span>-<span class="hljs-number">19</span> <span class="hljs-number">13</span>:<span class="hljs-number">36</span>:<span class="hljs-number">34</span>.<span class="hljs-number">779374</span><br><span class="hljs-attribute">sleep</span> time: <span class="hljs-number">2</span><br><span class="hljs-attribute">Hello</span> world! <span class="hljs-number">2023</span>-<span class="hljs-number">09</span>-<span class="hljs-number">19</span> <span class="hljs-number">13</span>:<span class="hljs-number">36</span>:<span class="hljs-number">34</span>.<span class="hljs-number">779417</span><br><span class="hljs-attribute">sleep</span> time: <span class="hljs-number">4</span><br><span class="hljs-attribute">Hello</span> world! <span class="hljs-number">2023</span>-<span class="hljs-number">09</span>-<span class="hljs-number">19</span> <span class="hljs-number">13</span>:<span class="hljs-number">36</span>:<span class="hljs-number">34</span>.<span class="hljs-number">779427</span><br><span class="hljs-attribute">sleep</span> time: <span class="hljs-number">1</span><br><span class="hljs-attribute">Hello</span> world! <span class="hljs-number">2023</span>-<span class="hljs-number">09</span>-<span class="hljs-number">19</span> <span class="hljs-number">13</span>:<span class="hljs-number">36</span>:<span class="hljs-number">34</span>.<span class="hljs-number">779433</span><br><span class="hljs-attribute">sleep</span> time: <span class="hljs-number">0</span><br><span class="hljs-attribute">Hello</span> again! <span class="hljs-number">2023</span>-<span class="hljs-number">09</span>-<span class="hljs-number">19</span> <span class="hljs-number">13</span>:<span class="hljs-number">36</span>:<span class="hljs-number">34</span>.<span class="hljs-number">779463</span><br><span class="hljs-attribute">Hello</span> again! <span class="hljs-number">2023</span>-<span class="hljs-number">09</span>-<span class="hljs-number">19</span> <span class="hljs-number">13</span>:<span class="hljs-number">36</span>:<span class="hljs-number">35</span>.<span class="hljs-number">780650</span><br><span class="hljs-attribute">Hello</span> again! <span class="hljs-number">2023</span>-<span class="hljs-number">09</span>-<span class="hljs-number">19</span> <span class="hljs-number">13</span>:<span class="hljs-number">36</span>:<span class="hljs-number">36</span>.<span class="hljs-number">780536</span><br><span class="hljs-attribute">Hello</span> again! <span class="hljs-number">2023</span>-<span class="hljs-number">09</span>-<span class="hljs-number">19</span> <span class="hljs-number">13</span>:<span class="hljs-number">36</span>:<span class="hljs-number">38</span>.<span class="hljs-number">780285</span><br></code></pre></td></tr></table></figure>
+<p>使用<code>gather</code>还可以获取返回结果。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime<br><span class="hljs-keyword">import</span> asyncio<br><span class="hljs-keyword">from</span> random <span class="hljs-keyword">import</span> randint<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">hello</span>():<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Hello world!&quot;</span>, datetime.now())<br>    sleep_time = randint(<span class="hljs-number">0</span>, <span class="hljs-number">4</span>)<br>    r = <span class="hljs-keyword">await</span> asyncio.sleep(sleep_time)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Hello again!&quot;</span>, datetime.now())<br>    <span class="hljs-keyword">return</span> sleep_time<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">group_task</span>():<br>    tasks = [hello(), hello(), hello(), hello()]<br>    result = <span class="hljs-keyword">await</span> asyncio.gather(*tasks)<br>    <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> result:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;result =&gt; <span class="hljs-subst">&#123;v&#125;</span>&quot;</span>)<br><br><br>asyncio.run(group_task())<br></code></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">Hello</span> world! <span class="hljs-number">2023</span>-<span class="hljs-number">09</span>-<span class="hljs-number">19</span> <span class="hljs-number">13</span>:<span class="hljs-number">54</span>:<span class="hljs-number">38</span>.<span class="hljs-number">360411</span><br><span class="hljs-attribute">Hello</span> world! <span class="hljs-number">2023</span>-<span class="hljs-number">09</span>-<span class="hljs-number">19</span> <span class="hljs-number">13</span>:<span class="hljs-number">54</span>:<span class="hljs-number">38</span>.<span class="hljs-number">360461</span><br><span class="hljs-attribute">Hello</span> world! <span class="hljs-number">2023</span>-<span class="hljs-number">09</span>-<span class="hljs-number">19</span> <span class="hljs-number">13</span>:<span class="hljs-number">54</span>:<span class="hljs-number">38</span>.<span class="hljs-number">360469</span><br><span class="hljs-attribute">Hello</span> world! <span class="hljs-number">2023</span>-<span class="hljs-number">09</span>-<span class="hljs-number">19</span> <span class="hljs-number">13</span>:<span class="hljs-number">54</span>:<span class="hljs-number">38</span>.<span class="hljs-number">360475</span><br><span class="hljs-attribute">Hello</span> again! <span class="hljs-number">2023</span>-<span class="hljs-number">09</span>-<span class="hljs-number">19</span> <span class="hljs-number">13</span>:<span class="hljs-number">54</span>:<span class="hljs-number">39</span>.<span class="hljs-number">361758</span><br><span class="hljs-attribute">Hello</span> again! <span class="hljs-number">2023</span>-<span class="hljs-number">09</span>-<span class="hljs-number">19</span> <span class="hljs-number">13</span>:<span class="hljs-number">54</span>:<span class="hljs-number">40</span>.<span class="hljs-number">361681</span><br><span class="hljs-attribute">Hello</span> again! <span class="hljs-number">2023</span>-<span class="hljs-number">09</span>-<span class="hljs-number">19</span> <span class="hljs-number">13</span>:<span class="hljs-number">54</span>:<span class="hljs-number">41</span>.<span class="hljs-number">361665</span><br><span class="hljs-attribute">Hello</span> again! <span class="hljs-number">2023</span>-<span class="hljs-number">09</span>-<span class="hljs-number">19</span> <span class="hljs-number">13</span>:<span class="hljs-number">54</span>:<span class="hljs-number">42</span>.<span class="hljs-number">361748</span><br><span class="hljs-attribute">result</span> =&gt; <span class="hljs-number">3</span><br><span class="hljs-attribute">result</span> =&gt; <span class="hljs-number">2</span><br><span class="hljs-attribute">result</span> =&gt; <span class="hljs-number">4</span><br><span class="hljs-attribute">result</span> =&gt; <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>超时</li>
+</ul>
+<p>wait_for提供了超时功能。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> asyncio<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">my_job</span>():<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;before sleep&#x27;</span>)<br>    <span class="hljs-keyword">await</span> asyncio.sleep(<span class="hljs-number">2</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;never print&#x27;</span>)<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    <span class="hljs-keyword">try</span>:<br>        <span class="hljs-keyword">await</span> asyncio.wait_for(my_job(), timeout=<span class="hljs-number">1</span>)<br>    <span class="hljs-keyword">except</span> asyncio.TimeoutError:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;timeout!&#x27;</span>)<br><br><br>asyncio.run(main())<br></code></pre></td></tr></table></figure>
+<p>输出结果：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs applescript"><span class="hljs-keyword">before</span> sleep<br><span class="hljs-keyword">timeout</span>!<br></code></pre></td></tr></table></figure>
+<ul>
+<li>to_thread</li>
+</ul>
+<p>event loop 遇到执行时间特别长的代码，有没有 await 能让event loop
+转为执行其它工作时，就会造成event loop 阻塞</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> asyncio<br><span class="hljs-keyword">import</span> threading<br><br><span class="hljs-keyword">from</span> time <span class="hljs-keyword">import</span> sleep, time<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">hard_work</span>():<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;thread id:&#x27;</span>, threading.get_ident())<br>    sleep(<span class="hljs-number">10</span>)<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">do_async_job</span>():<br>    hard_work()<br>    <span class="hljs-keyword">await</span> asyncio.sleep(<span class="hljs-number">1</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;job done!&#x27;</span>)<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    <span class="hljs-built_in">print</span>(time())<br>    task1 = asyncio.create_task(do_async_job())<br>    task2 = asyncio.create_task(do_async_job())<br>    task3 = asyncio.create_task(do_async_job())<br>    <span class="hljs-keyword">await</span> asyncio.gather(task1, task2, task3)<br>    <span class="hljs-built_in">print</span>(time())<br><br><br>asyncio.run(main())<br></code></pre></td></tr></table></figure>
+<p>输出结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">1695103401.266803<br>thread <span class="hljs-built_in">id</span>: 8127873344<br>thread <span class="hljs-built_in">id</span>: 8127873344<br>thread <span class="hljs-built_in">id</span>: 8127873344<br>job <span class="hljs-keyword">done</span>!<br>job <span class="hljs-keyword">done</span>!<br>job <span class="hljs-keyword">done</span>!<br>1695103432.283202<br></code></pre></td></tr></table></figure>
+<p>为解决某些耗时执行的代码阻塞 event loop的问题，Python 3.9 提供
+asyncio.to_thread() 可以将耗时执行的代码丟至 event loop 以外的另 1 个
+thread 中执行，每呼叫 1 次就會在 1 个新的 thread.</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs css">import asyncio<br>import threading<br><br><span class="hljs-selector-tag">from</span> <span class="hljs-selector-tag">time</span> import sleep, <span class="hljs-selector-tag">time</span><br><br><br>def hard_work():<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;thread id:&#x27;</span>, threading.<span class="hljs-built_in">get_ident</span>())<br>    <span class="hljs-built_in">sleep</span>(<span class="hljs-number">10</span>)<br><br><br>async def <span class="hljs-built_in">do_async_job</span>():<br>    await asyncio.<span class="hljs-built_in">to_thread</span>(hard_work)<br>    await asyncio.<span class="hljs-built_in">sleep</span>(<span class="hljs-number">1</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;job done!&#x27;</span>)<br><br><br>async def <span class="hljs-built_in">main</span>():<br>    <span class="hljs-built_in">print</span>(<span class="hljs-built_in">time</span>())<br>    task1 = asyncio.<span class="hljs-built_in">create_task</span>(<span class="hljs-built_in">do_async_job</span>())<br>    task2 = asyncio.<span class="hljs-built_in">create_task</span>(<span class="hljs-built_in">do_async_job</span>())<br>    task3 = asyncio.<span class="hljs-built_in">create_task</span>(<span class="hljs-built_in">do_async_job</span>())<br>    await asyncio.<span class="hljs-built_in">gather</span>(task1, task2, task3)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-built_in">time</span>())<br></code></pre></td></tr></table></figure>
+<p>输出结果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">1695103741.921301<br>thread <span class="hljs-built_in">id</span>: 6153449472<br>thread <span class="hljs-built_in">id</span>: 6170275840<br>thread <span class="hljs-built_in">id</span>: 6187102208<br>job <span class="hljs-keyword">done</span>!<br>job <span class="hljs-keyword">done</span>!<br>job <span class="hljs-keyword">done</span>!<br>1695103752.9301171<br></code></pre></td></tr></table></figure>
+<ul>
+<li>aiohttp</li>
+</ul>
+<p>https://example.com/ 为示例网站，用于演示HTTP请求。</p>
+<p>同步请求：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">import</span> time<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">make_requests</span>():<br>    resp = requests.get(<span class="hljs-string">&#x27;https://example.com&#x27;</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;example.com =&gt;&#x27;</span>, resp.status_code)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, <span class="hljs-number">5</span>):<br>        make_requests()<br><br><br>s_time = time.time()<br>main()<br><span class="hljs-built_in">print</span>(time.time() - s_time)<br><br></code></pre></td></tr></table></figure>
+<p>输出结果：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">example</span>.com =&gt; <span class="hljs-number">200</span><br><span class="hljs-attribute">example</span>.com =&gt; <span class="hljs-number">200</span><br><span class="hljs-attribute">example</span>.com =&gt; <span class="hljs-number">200</span><br><span class="hljs-attribute">example</span>.com =&gt; <span class="hljs-number">200</span><br><span class="hljs-attribute">example</span>.com =&gt; <span class="hljs-number">200</span><br><span class="hljs-attribute">5</span>.<span class="hljs-number">089737892150879</span><br></code></pre></td></tr></table></figure>
+<p>使用aiohttp完成HTTP异步请求：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> aiohttp<br><span class="hljs-keyword">import</span> asyncio<br><span class="hljs-keyword">import</span> time<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">make_requests</span>(<span class="hljs-params">session</span>):<br>    <span class="hljs-keyword">return</span> session.get(<span class="hljs-string">&#x27;https://example.com&#x27;</span>)<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> aiohttp.ClientSession() <span class="hljs-keyword">as</span> session:<br>        tasks = []<br>        <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, <span class="hljs-number">5</span>):<br>            tasks.append(make_requests(session))<br><br>        results = <span class="hljs-keyword">await</span> asyncio.gather(*tasks)<br>        <span class="hljs-keyword">for</span> r <span class="hljs-keyword">in</span> results:<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;example.com =&gt;&#x27;</span>, r.status)<br><br><br>s_time = time.time()<br>asyncio.run(main())<br><span class="hljs-built_in">print</span>(time.time() - s_time)<br></code></pre></td></tr></table></figure>
+<p>输出结果：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">example</span>.com =&gt; <span class="hljs-number">200</span><br><span class="hljs-attribute">example</span>.com =&gt; <span class="hljs-number">200</span><br><span class="hljs-attribute">example</span>.com =&gt; <span class="hljs-number">200</span><br><span class="hljs-attribute">example</span>.com =&gt; <span class="hljs-number">200</span><br><span class="hljs-attribute">example</span>.com =&gt; <span class="hljs-number">200</span><br><span class="hljs-attribute">0</span>.<span class="hljs-number">8919808864593506</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>异步生成器</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># SuperFastPython.com</span><br><span class="hljs-comment"># example of asynchronous generator with async for loop</span><br><span class="hljs-keyword">import</span> asyncio<br><br><br><span class="hljs-comment"># define an asynchronous generator</span><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">async_generator</span>():<br>    <span class="hljs-comment"># normal loop</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">10</span>):<br>        <span class="hljs-comment"># block to simulate doing work</span><br>        <span class="hljs-keyword">await</span> asyncio.sleep(<span class="hljs-number">1</span>)<br>        <span class="hljs-comment"># yield the result</span><br>        <span class="hljs-keyword">yield</span> i<br><br><br><span class="hljs-comment"># main coroutine</span><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    <span class="hljs-comment"># loop over async generator with async for loop</span><br>    <span class="hljs-keyword">async</span> <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> async_generator():<br>        <span class="hljs-built_in">print</span>(item)<br><br><br><span class="hljs-comment"># execute the asyncio program</span><br>asyncio.run(main())<br><br></code></pre></td></tr></table></figure>
+<h2 id="参考网站">参考网站</h2>
+<ol type="1">
+<li><a target="_blank" rel="noopener" href="https://myapollo.com.tw/blog/begin-to-asyncio/">Python
+asyncio 從不會到上路</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.liaoxuefeng.com/wiki/1016959663602400/1017968846697824">协程</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.maxlist.xyz/2020/03/29/python-coroutine/">【Python教學】淺談
+Coroutine 協程使用方法</a></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Python/" class="category-chain-item">Python</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B/" class="print-no-link">#异步编程</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Python异步编程入门（一）</div>
+      <div>https://percent4.github.io/Python异步编程入门（一）/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年1月10日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%B8%83%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8LangChain%E5%92%8C%E5%BC%82%E6%AD%A5Web%E6%A1%86%E6%9E%B6%E5%AE%9E%E7%8E%B0%E6%8E%A5%E5%8F%A3%E6%B5%81%E5%BC%8F%E8%BE%93%E5%87%BA/" title="NLP（七十四）使用LangChain和异步Web框架实现接口流式输出">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NLP（七十四）使用LangChain和异步Web框架实现接口流式输出</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%B8%83%E5%8D%81%E4%B8%89%EF%BC%89%E4%BB%8EBERT%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%88%B0%E9%87%8F%E5%8C%96%E3%80%81%E8%92%B8%E9%A6%8F%E4%B9%8B%E8%B7%AF/" title="NLP（七十三）从BERT模型训练到量化、蒸馏之路">
+                        <span class="hidden-mobile">NLP（七十三）从BERT模型训练到量化、蒸馏之路</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

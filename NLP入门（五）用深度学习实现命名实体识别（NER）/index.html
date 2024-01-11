@@ -1,0 +1,912 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍如何使用深度学习中的神经网络模型来自己实现命名实体识别（NER）。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP入门（五）用深度学习实现命名实体识别（NER）">
+<meta property="og:url" content="https://percent4.github.io/NLP%E5%85%A5%E9%97%A8%EF%BC%88%E4%BA%94%EF%BC%89%E7%94%A8%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%AE%9E%E7%8E%B0%E5%91%BD%E5%90%8D%E5%AE%9E%E4%BD%93%E8%AF%86%E5%88%AB%EF%BC%88NER%EF%BC%89/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍如何使用深度学习中的神经网络模型来自己实现命名实体识别（NER）。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://percent4.github.io/img/nlp5_1.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp5_2.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp5_3.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp5_4.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp5_5.png">
+<meta property="article:published_time" content="2023-07-08T01:58:36.000Z">
+<meta property="article:modified_time" content="2024-01-10T15:53:14.040Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="NER">
+<meta property="article:tag" content="深度学习">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp5_1.png">
+  
+  
+  
+  <title>NLP入门（五）用深度学习实现命名实体识别（NER） - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP入门（五）用深度学习实现命名实体识别（NER）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-08 09:58" pubdate>
+          星期六, 七月 8日 2023, 9:58 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          20k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          168 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP入门（五）用深度学习实现命名实体识别（NER）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h3 id="前言">前言</h3>
+<p>在文章：<a
+href="https://percent4.github.io/2023/07/08/NLP%E5%85%A5%E9%97%A8%EF%BC%88%E5%9B%9B%EF%BC%89%E5%91%BD%E5%90%8D%E5%AE%9E%E4%BD%93%E8%AF%86%E5%88%AB%EF%BC%88NER%EF%BC%89/">NLP入门（四）命名实体识别（NER）</a>中，笔者介绍了两个实现命名实体识别的工具——NLTK和Stanford
+NLP。在本文中，我们将会学习到如何使用深度学习工具来自己一步步地实现NER，只要你坚持看完，就一定会很有收获的。</p>
+<p>OK，话不多说，让我们进入正题。</p>
+<p>几乎所有的NLP都依赖一个强大的语料库，本项目实现NER的语料库如下(文件名为train.txt，一共42000行，这里只展示前15行，可以在文章最后的Github地址下载该语料库)：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs bash">played	on	Monday	(	home	team	<span class="hljs-keyword">in</span>	CAPS	)	:<br>VBD	IN	NNP	(	NN	NN	IN	NNP	)	:<br>O	O	O	O	O	O	O	O	O	O<br>American	League<br>NNP	NNP<br>B-MISC	I-MISC<br>Cleveland	2	DETROIT	1<br>NNP	CD	NNP	CD<br>B-ORG	O	B-ORG	O<br>BALTIMORE	12	Oakland	11	(	10	innings	)<br>VB	CD	NNP	CD	(	CD	NN	)<br>B-ORG	O	B-ORG	O	O	O	O	O<br>TORONTO	5	Minnesota	3<br>TO	CD	NNP	CD<br>B-ORG	O	B-ORG	O<br>......<br></code></pre></td></tr></table></figure>
+<p>简单介绍下该语料库的结构：该语料库一共42000行，每三行为一组，其中，第一行为英语句子，第二行为每个句子的词性（关于英语单词的词性，可参考文章：<a
+href="https://percent4.github.io/2023/07/06/NLP%E5%85%A5%E9%97%A8%EF%BC%88%E4%B8%89%EF%BC%89%E8%AF%8D%E5%BD%A2%E8%BF%98%E5%8E%9F%EF%BC%88Lemmatization%EF%BC%89/">NLP入门（三）词形还原（Lemmatization）</a>），第三行为NER系统的标注，具体的含义会在之后介绍。</p>
+<p>我们的NER项目的名称为DL_4_NER，结构如下：</p>
+<figure>
+<img src="/img/nlp5_1.png" srcset="/img/loading.gif" lazyload alt="NER项目名称" />
+<figcaption aria-hidden="true">NER项目名称</figcaption>
+</figure>
+<p>项目中每个文件的功能如下：</p>
+<ul>
+<li><p>utils.py: 项目配置及数据导入</p></li>
+<li><p>data_processing.py: 数据探索</p></li>
+<li><p>Bi_LSTM_Model_training.py: 模型创建及训练</p></li>
+<li><p>Bi_LSTM_Model_predict.py: 对新句子进行NER预测</p>
+<p>接下来，笔者将结合代码文件，分部介绍该项目的步骤，当所有步骤介绍完毕后，我们的项目就结束了，而你，也就知道了如何用深度学习实现命名实体识别（NER）。</p>
+<p>Let's begin!</p></li>
+</ul>
+<h3 id="项目配置">项目配置</h3>
+<p>第一步，是项目的配置及数据导入，在utils.py文件中实现，完整的代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br><br><span class="hljs-comment"># basic settings for DL_4_NER Project</span><br>BASE_DIR = <span class="hljs-string">&quot;F://NERSystem&quot;</span><br>CORPUS_PATH = <span class="hljs-string">&quot;%s/train.txt&quot;</span> % BASE_DIR<br><br>KERAS_MODEL_SAVE_PATH = <span class="hljs-string">&#x27;%s/Bi-LSTM-4-NER.h5&#x27;</span> % BASE_DIR<br>WORD_DICTIONARY_PATH = <span class="hljs-string">&#x27;%s/word_dictionary.pk&#x27;</span> % BASE_DIR<br>InVERSE_WORD_DICTIONARY_PATH = <span class="hljs-string">&#x27;%s/inverse_word_dictionary.pk&#x27;</span> % BASE_DIR<br>LABEL_DICTIONARY_PATH = <span class="hljs-string">&#x27;%s/label_dictionary.pk&#x27;</span> % BASE_DIR<br>OUTPUT_DICTIONARY_PATH = <span class="hljs-string">&#x27;%s/output_dictionary.pk&#x27;</span> % BASE_DIR<br><br>CONSTANTS = [<br>             KERAS_MODEL_SAVE_PATH,<br>             InVERSE_WORD_DICTIONARY_PATH,<br>             WORD_DICTIONARY_PATH,<br>             LABEL_DICTIONARY_PATH,<br>             OUTPUT_DICTIONARY_PATH<br>             ]<br><br><span class="hljs-comment"># load data from corpus to from pandas DataFrame</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">load_data</span>():<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(CORPUS_PATH, <span class="hljs-string">&#x27;r&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>        text_data = [text.strip() <span class="hljs-keyword">for</span> text <span class="hljs-keyword">in</span> f.readlines()]<br>    text_data = [text_data[k].split(<span class="hljs-string">&#x27;\t&#x27;</span>) <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(text_data))]<br>    index = <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(text_data), <span class="hljs-number">3</span>)<br><br>    <span class="hljs-comment"># Transforming data to matrix format for neural network</span><br>    input_data = <span class="hljs-built_in">list</span>()<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, <span class="hljs-built_in">len</span>(index) - <span class="hljs-number">1</span>):<br>        rows = text_data[index[i-<span class="hljs-number">1</span>]:index[i]]<br>        sentence_no = np.array([i]*<span class="hljs-built_in">len</span>(rows[<span class="hljs-number">0</span>]), dtype=<span class="hljs-built_in">str</span>)<br>        rows.append(sentence_no)<br>        rows = np.array(rows).T<br>        input_data.append(rows)<br><br>    input_data = pd.DataFrame(np.concatenate([item <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> input_data]),\<br>                               columns=[<span class="hljs-string">&#x27;word&#x27;</span>, <span class="hljs-string">&#x27;pos&#x27;</span>, <span class="hljs-string">&#x27;tag&#x27;</span>, <span class="hljs-string">&#x27;sent_no&#x27;</span>])<br><br>    <span class="hljs-keyword">return</span> input_data<br></code></pre></td></tr></table></figure>
+<p>在该代码中，先是设置了语料库文件的路径CORPUS_PATH，KERAS模型保存路径KERAS_MODEL_SAVE_PATH，以及在项目过程中会用到的三个字典的保存路径（以pickle文件形式保存）WORD_DICTIONARY_PATH，LABEL_DICTIONARY_PATH，
+OUTPUT_DICTIONARY_PATH。然后是load_data()函数，它将语料库中的文本以Pandas中的DataFrame结构展示出来，该数据框的前30行如下：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs apache">         <span class="hljs-attribute">word</span>  pos     tag sent_no<br><span class="hljs-attribute">0</span>      played  VBD       O       <span class="hljs-number">1</span><br><span class="hljs-attribute">1</span>          <span class="hljs-literal">on</span>   IN       O       <span class="hljs-number">1</span><br><span class="hljs-attribute">2</span>      Monday  NNP       O       <span class="hljs-number">1</span><br><span class="hljs-attribute">3</span>           (    (       O       <span class="hljs-number">1</span><br><span class="hljs-attribute">4</span>        home   NN       O       <span class="hljs-number">1</span><br><span class="hljs-attribute">5</span>        team   NN       O       <span class="hljs-number">1</span><br><span class="hljs-attribute">6</span>          in   IN       O       <span class="hljs-number">1</span><br><span class="hljs-attribute">7</span>        CAPS  NNP       O       <span class="hljs-number">1</span><br><span class="hljs-attribute">8</span>           )    )       O       <span class="hljs-number">1</span><br><span class="hljs-attribute">9</span>           :    :       O       <span class="hljs-number">1</span><br><span class="hljs-attribute">10</span>   American  NNP  B-MISC       <span class="hljs-number">2</span><br><span class="hljs-attribute">11</span>     League  NNP  I-MISC       <span class="hljs-number">2</span><br><span class="hljs-attribute">12</span>  Cleveland  NNP   B-ORG       <span class="hljs-number">3</span><br><span class="hljs-attribute">13</span>          <span class="hljs-number">2</span>   CD       O       <span class="hljs-number">3</span><br><span class="hljs-attribute">14</span>    DETROIT  NNP   B-ORG       <span class="hljs-number">3</span><br><span class="hljs-attribute">15</span>          <span class="hljs-number">1</span>   CD       O       <span class="hljs-number">3</span><br><span class="hljs-attribute">16</span>  BALTIMORE   VB   B-ORG       <span class="hljs-number">4</span><br><span class="hljs-attribute">17</span>         <span class="hljs-number">12</span>   CD       O       <span class="hljs-number">4</span><br><span class="hljs-attribute">18</span>    Oakland  NNP   B-ORG       <span class="hljs-number">4</span><br><span class="hljs-attribute">19</span>         <span class="hljs-number">11</span>   CD       O       <span class="hljs-number">4</span><br><span class="hljs-attribute">20</span>          (    (       O       <span class="hljs-number">4</span><br><span class="hljs-attribute">21</span>         <span class="hljs-number">10</span>   CD       O       <span class="hljs-number">4</span><br><span class="hljs-attribute">22</span>    innings   NN       O       <span class="hljs-number">4</span><br><span class="hljs-attribute">23</span>          )    )       O       <span class="hljs-number">4</span><br><span class="hljs-attribute">24</span>    TORONTO   TO   B-ORG       <span class="hljs-number">5</span><br><span class="hljs-attribute">25</span>          <span class="hljs-number">5</span>   CD       O       <span class="hljs-number">5</span><br><span class="hljs-attribute">26</span>  Minnesota  NNP   B-ORG       <span class="hljs-number">5</span><br><span class="hljs-attribute">27</span>          <span class="hljs-number">3</span>   CD       O       <span class="hljs-number">5</span><br><span class="hljs-attribute">28</span>  Milwaukee  NNP   B-ORG       <span class="hljs-number">6</span><br><span class="hljs-attribute">29</span>          <span class="hljs-number">3</span>   CD       O       <span class="hljs-number">6</span><br></code></pre></td></tr></table></figure>
+<p>在该数据框中，word这一列表示文本语料库中的单词，pos这一列表示该单词的词性，tag这一列表示NER的标注，sent_no这一列表示该单词在第几个句子中。</p>
+<h3 id="数据探索">数据探索</h3>
+<p>接着，第二步是数据探索，即对输入的数据（input_data）进行一些数据review，完整的代码（data_processing.py）如下:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><br><span class="hljs-keyword">import</span> pickle<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">from</span> collections <span class="hljs-keyword">import</span> Counter<br><span class="hljs-keyword">from</span> itertools <span class="hljs-keyword">import</span> accumulate<br><span class="hljs-keyword">from</span> operator <span class="hljs-keyword">import</span> itemgetter<br><span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt<br><span class="hljs-keyword">import</span> matplotlib <span class="hljs-keyword">as</span> mpl<br><span class="hljs-keyword">from</span> utils <span class="hljs-keyword">import</span> BASE_DIR, CONSTANTS, load_data<br><br><span class="hljs-comment"># 设置matplotlib绘图时的字体</span><br>mpl.rcParams[<span class="hljs-string">&#x27;font.sans-serif&#x27;</span>]=[<span class="hljs-string">&#x27;SimHei&#x27;</span>]<br><br><span class="hljs-comment"># 数据查看</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">data_review</span>():<br><br>    <span class="hljs-comment"># 数据导入</span><br>    input_data = load_data()<br><br>    <span class="hljs-comment"># 基本的数据review</span><br>    sent_num = input_data[<span class="hljs-string">&#x27;sent_no&#x27;</span>].astype(np.<span class="hljs-built_in">int</span>).<span class="hljs-built_in">max</span>()<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;一共有%s个句子。\n&quot;</span>%sent_num)<br><br>    vocabulary = input_data[<span class="hljs-string">&#x27;word&#x27;</span>].unique()<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;一共有%d个单词。&quot;</span>%<span class="hljs-built_in">len</span>(vocabulary))<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;前10个单词为：%s.\n&quot;</span>%vocabulary[:<span class="hljs-number">11</span>])<br><br>    pos_arr = input_data[<span class="hljs-string">&#x27;pos&#x27;</span>].unique()<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;单词的词性列表：%s.\n&quot;</span>%pos_arr)<br><br>    ner_tag_arr = input_data[<span class="hljs-string">&#x27;tag&#x27;</span>].unique()<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;NER的标注列表：%s.\n&quot;</span> % ner_tag_arr)<br><br>    df = input_data[[<span class="hljs-string">&#x27;word&#x27;</span>, <span class="hljs-string">&#x27;sent_no&#x27;</span>]].groupby(<span class="hljs-string">&#x27;sent_no&#x27;</span>).count()<br>    sent_len_list = df[<span class="hljs-string">&#x27;word&#x27;</span>].tolist()<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;句子长度及出现频数字典：\n%s.&quot;</span> % <span class="hljs-built_in">dict</span>(Counter(sent_len_list)))<br><br>    <span class="hljs-comment"># 绘制句子长度及出现频数统计图</span><br>    sort_sent_len_dist = <span class="hljs-built_in">sorted</span>(<span class="hljs-built_in">dict</span>(Counter(sent_len_list)).items(), key=itemgetter(<span class="hljs-number">0</span>))<br>    sent_no_data = [item[<span class="hljs-number">0</span>] <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> sort_sent_len_dist]<br>    sent_count_data = [item[<span class="hljs-number">1</span>] <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> sort_sent_len_dist]<br>    plt.bar(sent_no_data, sent_count_data)<br>    plt.title(<span class="hljs-string">&quot;句子长度及出现频数统计图&quot;</span>)<br>    plt.xlabel(<span class="hljs-string">&quot;句子长度&quot;</span>)<br>    plt.ylabel(<span class="hljs-string">&quot;句子长度出现的频数&quot;</span>)<br>    plt.savefig(<span class="hljs-string">&quot;%s/句子长度及出现频数统计图.png&quot;</span> % BASE_DIR)<br>    plt.close()<br><br>    <span class="hljs-comment"># 绘制句子长度累积分布函数(CDF)</span><br>    sent_pentage_list = [(count/sent_num) <span class="hljs-keyword">for</span> count <span class="hljs-keyword">in</span> accumulate(sent_count_data)]<br><br>    <span class="hljs-comment"># 寻找分位点为quantile的句子长度</span><br>    quantile = <span class="hljs-number">0.9992</span><br>    <span class="hljs-comment">#print(list(sent_pentage_list))</span><br>    <span class="hljs-keyword">for</span> length, per <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(sent_no_data, sent_pentage_list):<br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">round</span>(per, <span class="hljs-number">4</span>) == quantile:<br>            index = length<br>            <span class="hljs-keyword">break</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;\n分位点为%s的句子长度:%d.&quot;</span> % (quantile, index))<br><br>    <span class="hljs-comment"># 绘制CDF</span><br>    plt.plot(sent_no_data, sent_pentage_list)<br>    plt.hlines(quantile, <span class="hljs-number">0</span>, index, colors=<span class="hljs-string">&quot;c&quot;</span>, linestyles=<span class="hljs-string">&quot;dashed&quot;</span>)<br>    plt.vlines(index, <span class="hljs-number">0</span>, quantile, colors=<span class="hljs-string">&quot;c&quot;</span>, linestyles=<span class="hljs-string">&quot;dashed&quot;</span>)<br>    plt.text(<span class="hljs-number">0</span>, quantile, <span class="hljs-built_in">str</span>(quantile))<br>    plt.text(index, <span class="hljs-number">0</span>, <span class="hljs-built_in">str</span>(index))<br>    plt.title(<span class="hljs-string">&quot;句子长度累积分布函数图&quot;</span>)<br>    plt.xlabel(<span class="hljs-string">&quot;句子长度&quot;</span>)<br>    plt.ylabel(<span class="hljs-string">&quot;句子长度累积频率&quot;</span>)<br>    plt.savefig(<span class="hljs-string">&quot;%s/句子长度累积分布函数图.png&quot;</span> % BASE_DIR)<br>    plt.close()<br><br><span class="hljs-comment"># 数据处理</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">data_processing</span>():<br>    <span class="hljs-comment"># 数据导入</span><br>    input_data = load_data()<br><br>    <span class="hljs-comment"># 标签及词汇表</span><br>    labels, vocabulary = <span class="hljs-built_in">list</span>(input_data[<span class="hljs-string">&#x27;tag&#x27;</span>].unique()), <span class="hljs-built_in">list</span>(input_data[<span class="hljs-string">&#x27;word&#x27;</span>].unique())<br><br>    <span class="hljs-comment"># 字典列表</span><br>    word_dictionary = &#123;word: i+<span class="hljs-number">1</span> <span class="hljs-keyword">for</span> i, word <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(vocabulary)&#125;<br>    inverse_word_dictionary = &#123;i+<span class="hljs-number">1</span>: word <span class="hljs-keyword">for</span> i, word <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(vocabulary)&#125;<br>    label_dictionary = &#123;label: i+<span class="hljs-number">1</span> <span class="hljs-keyword">for</span> i, label <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(labels)&#125;<br>    output_dictionary = &#123;i+<span class="hljs-number">1</span>: labels <span class="hljs-keyword">for</span> i, labels <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(labels)&#125;<br><br>    dict_list = [word_dictionary, inverse_word_dictionary,label_dictionary, output_dictionary]<br><br>    <span class="hljs-comment"># 保存为pickle形式</span><br>    <span class="hljs-keyword">for</span> dict_item, path <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(dict_list, CONSTANTS[<span class="hljs-number">1</span>:]):<br>        <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(path, <span class="hljs-string">&#x27;wb&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>            pickle.dump(dict_item, f)<br><br><span class="hljs-comment">#data_review()</span><br></code></pre></td></tr></table></figure>
+<p>调用data_review()函数，输出的结果如下：</p>
+<figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs prolog">一共有<span class="hljs-number">13998</span>个句子。<br><br>一共有<span class="hljs-number">24339</span>个单词。<br>前<span class="hljs-number">10</span>个单词为：[<span class="hljs-string">&#x27;played&#x27;</span> <span class="hljs-string">&#x27;on&#x27;</span> <span class="hljs-string">&#x27;Monday&#x27;</span> <span class="hljs-string">&#x27;(&#x27;</span> <span class="hljs-string">&#x27;home&#x27;</span> <span class="hljs-string">&#x27;team&#x27;</span> <span class="hljs-string">&#x27;in&#x27;</span> <span class="hljs-string">&#x27;CAPS&#x27;</span> <span class="hljs-string">&#x27;)&#x27;</span> <span class="hljs-string">&#x27;:&#x27;</span> <span class="hljs-string">&#x27;American&#x27;</span>].<br><br>单词的词性列表：[<span class="hljs-string">&#x27;VBD&#x27;</span> <span class="hljs-string">&#x27;IN&#x27;</span> <span class="hljs-string">&#x27;NNP&#x27;</span> <span class="hljs-string">&#x27;(&#x27;</span> <span class="hljs-string">&#x27;NN&#x27;</span> <span class="hljs-string">&#x27;)&#x27;</span> <span class="hljs-string">&#x27;:&#x27;</span> <span class="hljs-string">&#x27;CD&#x27;</span> <span class="hljs-string">&#x27;VB&#x27;</span> <span class="hljs-string">&#x27;TO&#x27;</span> <span class="hljs-string">&#x27;NNS&#x27;</span> <span class="hljs-string">&#x27;,&#x27;</span> <span class="hljs-string">&#x27;VBP&#x27;</span> <span class="hljs-string">&#x27;VBZ&#x27;</span><br> <span class="hljs-string">&#x27;.&#x27;</span> <span class="hljs-string">&#x27;VBG&#x27;</span> <span class="hljs-string">&#x27;PRP$&#x27;</span> <span class="hljs-string">&#x27;JJ&#x27;</span> <span class="hljs-string">&#x27;CC&#x27;</span> <span class="hljs-string">&#x27;JJS&#x27;</span> <span class="hljs-string">&#x27;RB&#x27;</span> <span class="hljs-string">&#x27;DT&#x27;</span> <span class="hljs-string">&#x27;VBN&#x27;</span> <span class="hljs-string">&#x27;&quot;&#x27;</span> <span class="hljs-string">&#x27;PRP&#x27;</span> <span class="hljs-string">&#x27;WDT&#x27;</span> <span class="hljs-string">&#x27;WRB&#x27;</span><br> <span class="hljs-string">&#x27;MD&#x27;</span> <span class="hljs-string">&#x27;WP&#x27;</span> <span class="hljs-string">&#x27;POS&#x27;</span> <span class="hljs-string">&#x27;JJR&#x27;</span> <span class="hljs-string">&#x27;WP$&#x27;</span> <span class="hljs-string">&#x27;RP&#x27;</span> <span class="hljs-string">&#x27;NNPS&#x27;</span> <span class="hljs-string">&#x27;RBS&#x27;</span> <span class="hljs-string">&#x27;FW&#x27;</span> <span class="hljs-string">&#x27;$&#x27;</span> <span class="hljs-string">&#x27;RBR&#x27;</span> <span class="hljs-string">&#x27;EX&#x27;</span> <span class="hljs-string">&quot;&#x27;&#x27;&quot;</span><br> <span class="hljs-string">&#x27;PDT&#x27;</span> <span class="hljs-string">&#x27;UH&#x27;</span> <span class="hljs-string">&#x27;SYM&#x27;</span> <span class="hljs-string">&#x27;LS&#x27;</span> <span class="hljs-string">&#x27;NN|SYM&#x27;</span>].<br><br><span class="hljs-symbol">NER</span>的标注列表：[<span class="hljs-string">&#x27;O&#x27;</span> <span class="hljs-string">&#x27;B-MISC&#x27;</span> <span class="hljs-string">&#x27;I-MISC&#x27;</span> <span class="hljs-string">&#x27;B-ORG&#x27;</span> <span class="hljs-string">&#x27;I-ORG&#x27;</span> <span class="hljs-string">&#x27;B-PER&#x27;</span> <span class="hljs-string">&#x27;B-LOC&#x27;</span> <span class="hljs-string">&#x27;I-PER&#x27;</span> <span class="hljs-string">&#x27;I-LOC&#x27;</span><br> <span class="hljs-string">&#x27;sO&#x27;</span>].<br><br>句子长度及出现频数字典：<br>&#123;<span class="hljs-number">1</span>: <span class="hljs-number">177</span>, <span class="hljs-number">2</span>: <span class="hljs-number">1141</span>, <span class="hljs-number">3</span>: <span class="hljs-number">620</span>, <span class="hljs-number">4</span>: <span class="hljs-number">794</span>, <span class="hljs-number">5</span>: <span class="hljs-number">769</span>, <span class="hljs-number">6</span>: <span class="hljs-number">639</span>, <span class="hljs-number">7</span>: <span class="hljs-number">999</span>, <span class="hljs-number">8</span>: <span class="hljs-number">977</span>, <span class="hljs-number">9</span>: <span class="hljs-number">841</span>, <span class="hljs-number">10</span>: <span class="hljs-number">501</span>, <span class="hljs-number">11</span>: <span class="hljs-number">395</span>, <span class="hljs-number">12</span>: <span class="hljs-number">316</span>, <span class="hljs-number">13</span>: <span class="hljs-number">339</span>, <span class="hljs-number">14</span>: <span class="hljs-number">291</span>, <span class="hljs-number">15</span>: <span class="hljs-number">275</span>, <span class="hljs-number">16</span>: <span class="hljs-number">225</span>, <span class="hljs-number">17</span>: <span class="hljs-number">229</span>, <span class="hljs-number">18</span>: <span class="hljs-number">212</span>, <span class="hljs-number">19</span>: <span class="hljs-number">197</span>, <span class="hljs-number">20</span>: <span class="hljs-number">221</span>, <span class="hljs-number">21</span>: <span class="hljs-number">228</span>, <span class="hljs-number">22</span>: <span class="hljs-number">221</span>, <span class="hljs-number">23</span>: <span class="hljs-number">230</span>, <span class="hljs-number">24</span>: <span class="hljs-number">210</span>, <span class="hljs-number">25</span>: <span class="hljs-number">207</span>, <span class="hljs-number">26</span>: <span class="hljs-number">224</span>, <span class="hljs-number">27</span>: <span class="hljs-number">188</span>, <span class="hljs-number">28</span>: <span class="hljs-number">199</span>, <span class="hljs-number">29</span>: <span class="hljs-number">214</span>, <span class="hljs-number">30</span>: <span class="hljs-number">183</span>, <span class="hljs-number">31</span>: <span class="hljs-number">202</span>, <span class="hljs-number">32</span>: <span class="hljs-number">167</span>, <span class="hljs-number">33</span>: <span class="hljs-number">167</span>, <span class="hljs-number">34</span>: <span class="hljs-number">141</span>, <span class="hljs-number">35</span>: <span class="hljs-number">130</span>, <span class="hljs-number">36</span>: <span class="hljs-number">119</span>, <span class="hljs-number">37</span>: <span class="hljs-number">105</span>, <span class="hljs-number">38</span>: <span class="hljs-number">112</span>, <span class="hljs-number">39</span>: <span class="hljs-number">98</span>, <span class="hljs-number">40</span>: <span class="hljs-number">78</span>, <span class="hljs-number">41</span>: <span class="hljs-number">74</span>, <span class="hljs-number">42</span>: <span class="hljs-number">63</span>, <span class="hljs-number">43</span>: <span class="hljs-number">51</span>, <span class="hljs-number">44</span>: <span class="hljs-number">42</span>, <span class="hljs-number">45</span>: <span class="hljs-number">39</span>, <span class="hljs-number">46</span>: <span class="hljs-number">19</span>, <span class="hljs-number">47</span>: <span class="hljs-number">22</span>, <span class="hljs-number">48</span>: <span class="hljs-number">19</span>, <span class="hljs-number">49</span>: <span class="hljs-number">15</span>, <span class="hljs-number">50</span>: <span class="hljs-number">16</span>, <span class="hljs-number">51</span>: <span class="hljs-number">8</span>, <span class="hljs-number">52</span>: <span class="hljs-number">9</span>, <span class="hljs-number">53</span>: <span class="hljs-number">5</span>, <span class="hljs-number">54</span>: <span class="hljs-number">4</span>, <span class="hljs-number">55</span>: <span class="hljs-number">9</span>, <span class="hljs-number">56</span>: <span class="hljs-number">2</span>, <span class="hljs-number">57</span>: <span class="hljs-number">2</span>, <span class="hljs-number">58</span>: <span class="hljs-number">2</span>, <span class="hljs-number">59</span>: <span class="hljs-number">2</span>, <span class="hljs-number">60</span>: <span class="hljs-number">3</span>, <span class="hljs-number">62</span>: <span class="hljs-number">2</span>, <span class="hljs-number">66</span>: <span class="hljs-number">1</span>, <span class="hljs-number">67</span>: <span class="hljs-number">1</span>, <span class="hljs-number">69</span>: <span class="hljs-number">1</span>, <span class="hljs-number">71</span>: <span class="hljs-number">1</span>, <span class="hljs-number">72</span>: <span class="hljs-number">1</span>, <span class="hljs-number">78</span>: <span class="hljs-number">1</span>, <span class="hljs-number">80</span>: <span class="hljs-number">1</span>, <span class="hljs-number">113</span>: <span class="hljs-number">1</span>, <span class="hljs-number">124</span>: <span class="hljs-number">1</span>&#125;.<br><br>分位点为<span class="hljs-number">0.9992</span>的句子长度:<span class="hljs-number">60.</span><br></code></pre></td></tr></table></figure>
+<p>在该语料库中，一共有13998个句子，比预期的42000/3=14000个句子少两个。一个有24339个单词，单词量还是蛮大的，当然，这里对单词没有做任何处理，直接保留了语料库中的形式（后期可以继续优化）。单词的词性可以参考文章：<a
+target="_blank" rel="noopener" href="https://www.jianshu.com/p/79255fe0c5b5">NLP入门（三）词形还原（Lemmatization）</a>。我们需要注意的是，NER的标注列表为['O'
+,'B-MISC', 'I-MISC', 'B-ORG' ,'I-ORG', 'B-PER' ,'B-LOC' ,'I-PER',
+'I-LOC','sO']，因此，本项目的NER一共分为四类：PER（人名），LOC（位置），ORG（组织）以及MISC，其中B表示开始，I表示中间，O表示单字词，不计入NER，sO表示特殊单字词。</p>
+<p>接下来，让我们考虑下句子的长度，这对后面的建模时填充的句子长度有有参考作用。句子长度及出现频数的统计图如下：</p>
+<figure>
+<img src="/img/nlp5_2.png" srcset="/img/loading.gif" lazyload alt="句子长度及出现频数统计图" />
+<figcaption aria-hidden="true">句子长度及出现频数统计图</figcaption>
+</figure>
+<p>可以看到，句子长度基本在60以下，当然，这也可以在输出的句子长度及出现频数字典中看到。那么，我们是否可以选在一个标准作为后面模型的句子填充的长度呢？答案是，利用出现频数的累计分布函数的分位点，在这里，我们选择分位点为0.9992,对应的句子长度为60，如下图：</p>
+<figure>
+<img src="/img/nlp5_3.png" srcset="/img/loading.gif" lazyload alt="句子长度累积分布函数图" />
+<figcaption aria-hidden="true">句子长度累积分布函数图</figcaption>
+</figure>
+<p>接着是数据处理函数data_processing()，它的功能主要是实现单词、标签字典，并保存为pickle文件形式，便于后续直接调用。</p>
+<h3 id="建模">建模</h3>
+<p>在第三步中，我们建立Bi-LSTM模型来训练训练，完整的Python代码（Bi_LSTM_Model_training.py）如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> pickle<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br><span class="hljs-keyword">from</span> utils <span class="hljs-keyword">import</span> BASE_DIR, CONSTANTS, load_data<br><span class="hljs-keyword">from</span> data_processing <span class="hljs-keyword">import</span> data_processing<br><span class="hljs-keyword">from</span> keras.utils <span class="hljs-keyword">import</span> np_utils, plot_model<br><span class="hljs-keyword">from</span> keras.models <span class="hljs-keyword">import</span> Sequential<br><span class="hljs-keyword">from</span> keras.preprocessing.sequence <span class="hljs-keyword">import</span> pad_sequences<br><span class="hljs-keyword">from</span> keras.layers <span class="hljs-keyword">import</span> Bidirectional, LSTM, Dense, Embedding, TimeDistributed<br><br><br><span class="hljs-comment"># 模型输入数据</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">input_data_for_model</span>(<span class="hljs-params">input_shape</span>):<br><br>    <span class="hljs-comment"># 数据导入</span><br>    input_data = load_data()<br>    <span class="hljs-comment"># 数据处理</span><br>    data_processing()<br>    <span class="hljs-comment"># 导入字典</span><br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(CONSTANTS[<span class="hljs-number">1</span>], <span class="hljs-string">&#x27;rb&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>        word_dictionary = pickle.load(f)<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(CONSTANTS[<span class="hljs-number">2</span>], <span class="hljs-string">&#x27;rb&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>        inverse_word_dictionary = pickle.load(f)<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(CONSTANTS[<span class="hljs-number">3</span>], <span class="hljs-string">&#x27;rb&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>        label_dictionary = pickle.load(f)<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(CONSTANTS[<span class="hljs-number">4</span>], <span class="hljs-string">&#x27;rb&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>        output_dictionary = pickle.load(f)<br>    vocab_size = <span class="hljs-built_in">len</span>(word_dictionary.keys())<br>    label_size = <span class="hljs-built_in">len</span>(label_dictionary.keys())<br><br>    <span class="hljs-comment"># 处理输入数据</span><br>    aggregate_function = <span class="hljs-keyword">lambda</span> <span class="hljs-built_in">input</span>: [(word, pos, label) <span class="hljs-keyword">for</span> word, pos, label <span class="hljs-keyword">in</span><br>                                            <span class="hljs-built_in">zip</span>(<span class="hljs-built_in">input</span>[<span class="hljs-string">&#x27;word&#x27;</span>].values.tolist(),<br>                                                <span class="hljs-built_in">input</span>[<span class="hljs-string">&#x27;pos&#x27;</span>].values.tolist(),<br>                                                <span class="hljs-built_in">input</span>[<span class="hljs-string">&#x27;tag&#x27;</span>].values.tolist())]<br><br>    grouped_input_data = input_data.groupby(<span class="hljs-string">&#x27;sent_no&#x27;</span>).apply(aggregate_function)<br>    sentences = [sentence <span class="hljs-keyword">for</span> sentence <span class="hljs-keyword">in</span> grouped_input_data]<br><br>    x = [[word_dictionary[word[<span class="hljs-number">0</span>]] <span class="hljs-keyword">for</span> word <span class="hljs-keyword">in</span> sent] <span class="hljs-keyword">for</span> sent <span class="hljs-keyword">in</span> sentences]<br>    x = pad_sequences(maxlen=input_shape, sequences=x, padding=<span class="hljs-string">&#x27;post&#x27;</span>, value=<span class="hljs-number">0</span>)<br>    y = [[label_dictionary[word[<span class="hljs-number">2</span>]] <span class="hljs-keyword">for</span> word <span class="hljs-keyword">in</span> sent] <span class="hljs-keyword">for</span> sent <span class="hljs-keyword">in</span> sentences]<br>    y = pad_sequences(maxlen=input_shape, sequences=y, padding=<span class="hljs-string">&#x27;post&#x27;</span>, value=<span class="hljs-number">0</span>)<br>    y = [np_utils.to_categorical(label, num_classes=label_size + <span class="hljs-number">1</span>) <span class="hljs-keyword">for</span> label <span class="hljs-keyword">in</span> y]<br><br>    <span class="hljs-keyword">return</span> x, y, output_dictionary, vocab_size, label_size, inverse_word_dictionary<br><br><br><span class="hljs-comment"># 定义深度学习模型：Bi-LSTM</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">create_Bi_LSTM</span>(<span class="hljs-params">vocab_size, label_size, input_shape, output_dim, n_units, out_act, activation</span>):<br>    model = Sequential()<br>    model.add(Embedding(input_dim=vocab_size + <span class="hljs-number">1</span>, output_dim=output_dim,<br>                        input_length=input_shape, mask_zero=<span class="hljs-literal">True</span>))<br>    model.add(Bidirectional(LSTM(units=n_units, activation=activation,<br>                                 return_sequences=<span class="hljs-literal">True</span>)))<br>    model.add(TimeDistributed(Dense(label_size + <span class="hljs-number">1</span>, activation=out_act)))<br>    model.<span class="hljs-built_in">compile</span>(optimizer=<span class="hljs-string">&#x27;adam&#x27;</span>, loss=<span class="hljs-string">&#x27;categorical_crossentropy&#x27;</span>, metrics=[<span class="hljs-string">&#x27;accuracy&#x27;</span>])<br>    <span class="hljs-keyword">return</span> model<br><br><br><span class="hljs-comment"># 模型训练</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">model_train</span>():<br><br>    <span class="hljs-comment"># 将数据集分为训练集和测试集，占比为9:1</span><br>    input_shape = <span class="hljs-number">60</span><br>    x, y, output_dictionary, vocab_size, label_size, inverse_word_dictionary = input_data_for_model(input_shape)<br>    train_end = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">len</span>(x)*<span class="hljs-number">0.9</span>)<br>    train_x, train_y = x[<span class="hljs-number">0</span>:train_end], np.array(y[<span class="hljs-number">0</span>:train_end])<br>    test_x, test_y = x[train_end:], np.array(y[train_end:])<br><br>    <span class="hljs-comment"># 模型输入参数</span><br>    activation = <span class="hljs-string">&#x27;selu&#x27;</span><br>    out_act = <span class="hljs-string">&#x27;softmax&#x27;</span><br>    n_units = <span class="hljs-number">100</span><br>    batch_size = <span class="hljs-number">32</span><br>    epochs = <span class="hljs-number">10</span><br>    output_dim = <span class="hljs-number">20</span><br><br>    <span class="hljs-comment"># 模型训练</span><br>    lstm_model = create_Bi_LSTM(vocab_size, label_size, input_shape, output_dim, n_units, out_act, activation)<br>    lstm_model.fit(train_x, train_y, epochs=epochs, batch_size=batch_size, verbose=<span class="hljs-number">1</span>)<br><br>    <span class="hljs-comment"># 模型保存</span><br>    model_save_path = CONSTANTS[<span class="hljs-number">0</span>]<br>    lstm_model.save(model_save_path)<br>    plot_model(lstm_model, to_file=<span class="hljs-string">&#x27;%s/LSTM_model.png&#x27;</span> % BASE_DIR)<br><br>    <span class="hljs-comment"># 在测试集上的效果</span><br>    N = test_x.shape[<span class="hljs-number">0</span>]  <span class="hljs-comment"># 测试的条数</span><br>    avg_accuracy = <span class="hljs-number">0</span>  <span class="hljs-comment"># 预测的平均准确率</span><br>    <span class="hljs-keyword">for</span> start, end <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(<span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, N, <span class="hljs-number">1</span>), <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, N+<span class="hljs-number">1</span>, <span class="hljs-number">1</span>)):<br>        sentence = [inverse_word_dictionary[i] <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> test_x[start] <span class="hljs-keyword">if</span> i != <span class="hljs-number">0</span>]<br>        y_predict = lstm_model.predict(test_x[start:end])<br>        input_sequences, output_sequences = [], []<br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(y_predict[<span class="hljs-number">0</span>])):<br>            output_sequences.append(np.argmax(y_predict[<span class="hljs-number">0</span>][i]))<br>            input_sequences.append(np.argmax(test_y[start][i]))<br><br>        <span class="hljs-built_in">eval</span> = lstm_model.evaluate(test_x[start:end], test_y[start:end])<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Test Accuracy: loss = %0.6f accuracy = %0.2f%%&#x27;</span> % (<span class="hljs-built_in">eval</span>[<span class="hljs-number">0</span>], <span class="hljs-built_in">eval</span>[<span class="hljs-number">1</span>] * <span class="hljs-number">100</span>))<br>        avg_accuracy += <span class="hljs-built_in">eval</span>[<span class="hljs-number">1</span>]<br>        output_sequences = <span class="hljs-string">&#x27; &#x27;</span>.join([output_dictionary[key] <span class="hljs-keyword">for</span> key <span class="hljs-keyword">in</span> output_sequences <span class="hljs-keyword">if</span> key != <span class="hljs-number">0</span>]).split()<br>        input_sequences = <span class="hljs-string">&#x27; &#x27;</span>.join([output_dictionary[key] <span class="hljs-keyword">for</span> key <span class="hljs-keyword">in</span> input_sequences <span class="hljs-keyword">if</span> key != <span class="hljs-number">0</span>]).split()<br>        output_input_comparison = pd.DataFrame([sentence, output_sequences, input_sequences]).T<br>        <span class="hljs-built_in">print</span>(output_input_comparison.dropna())<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;#&#x27;</span> * <span class="hljs-number">80</span>)<br><br>    avg_accuracy /= N<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;测试样本的平均预测准确率：%.2f%%.&quot;</span> % (avg_accuracy * <span class="hljs-number">100</span>))<br><br>model_train()<br></code></pre></td></tr></table></figure>
+<p>在上面的代码中，先是通过input_data_for_model()函数来处理好进入模型的数据，其参数为input_shape，即填充句子时的长度。然后是创建Bi-LSTM模型create_Bi_LSTM()，模型的示意图如下：</p>
+<figure>
+<img src="/img/nlp5_4.png" srcset="/img/loading.gif" lazyload alt="模型示意图" />
+<figcaption aria-hidden="true">模型示意图</figcaption>
+</figure>
+<p>最后，是在输入的数据上进行模型训练，将原始的数据分为训练集和测试集，占比为9:1，训练的周期为10次。</p>
+<h3 id="模型训练">模型训练</h3>
+<p>运行上述模型训练代码，一共训练10个周期，训练时间大概为500s，在训练集上的准确率达99%以上，在测试集上的平均准确率为95%以上。以下是最后几个测试集上的预测结果：</p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><code class="hljs clean">......(前面的输出已忽略)<br>Test Accuracy: loss = <span class="hljs-number">0.000986</span> accuracy = <span class="hljs-number">100.00</span>%<br>          <span class="hljs-number">0</span>      <span class="hljs-number">1</span>      <span class="hljs-number">2</span><br><span class="hljs-number">0</span>   Cardiff  B-ORG  B-ORG<br><span class="hljs-number">1</span>         <span class="hljs-number">1</span>      O      O<br><span class="hljs-number">2</span>  Brighton  B-ORG  B-ORG<br><span class="hljs-number">3</span>         <span class="hljs-number">0</span>      O      O<br>################################################################################<br><br><span class="hljs-number">1</span>/<span class="hljs-number">1</span> [==============================] - <span class="hljs-number">0</span>s <span class="hljs-number">10</span>ms/step<br>Test Accuracy: loss = <span class="hljs-number">0.000274</span> accuracy = <span class="hljs-number">100.00</span>%<br>          <span class="hljs-number">0</span>      <span class="hljs-number">1</span>      <span class="hljs-number">2</span><br><span class="hljs-number">0</span>  Carlisle  B-ORG  B-ORG<br><span class="hljs-number">1</span>         <span class="hljs-number">0</span>      O      O<br><span class="hljs-number">2</span>      Hull  B-ORG  B-ORG<br><span class="hljs-number">3</span>         <span class="hljs-number">0</span>      O      O<br>################################################################################<br><br><span class="hljs-number">1</span>/<span class="hljs-number">1</span> [==============================] - <span class="hljs-number">0</span>s <span class="hljs-number">9</span>ms/step<br>Test Accuracy: loss = <span class="hljs-number">0.000479</span> accuracy = <span class="hljs-number">100.00</span>%<br>           <span class="hljs-number">0</span>      <span class="hljs-number">1</span>      <span class="hljs-number">2</span><br><span class="hljs-number">0</span>    Chester  B-ORG  B-ORG<br><span class="hljs-number">1</span>          <span class="hljs-number">1</span>      O      O<br><span class="hljs-number">2</span>  Cambridge  B-ORG  B-ORG<br><span class="hljs-number">3</span>          <span class="hljs-number">1</span>      O      O<br>################################################################################<br><br><span class="hljs-number">1</span>/<span class="hljs-number">1</span> [==============================] - <span class="hljs-number">0</span>s <span class="hljs-number">9</span>ms/step<br>Test Accuracy: loss = <span class="hljs-number">0.003092</span> accuracy = <span class="hljs-number">100.00</span>%<br>            <span class="hljs-number">0</span>      <span class="hljs-number">1</span>      <span class="hljs-number">2</span><br><span class="hljs-number">0</span>  Darlington  B-ORG  B-ORG<br><span class="hljs-number">1</span>           <span class="hljs-number">4</span>      O      O<br><span class="hljs-number">2</span>     Swansea  B-ORG  B-ORG<br><span class="hljs-number">3</span>           <span class="hljs-number">1</span>      O      O<br>################################################################################<br><br><span class="hljs-number">1</span>/<span class="hljs-number">1</span> [==============================] - <span class="hljs-number">0</span>s <span class="hljs-number">8</span>ms/step<br>Test Accuracy: loss = <span class="hljs-number">0.000705</span> accuracy = <span class="hljs-number">100.00</span>%<br>             <span class="hljs-number">0</span>      <span class="hljs-number">1</span>      <span class="hljs-number">2</span><br><span class="hljs-number">0</span>       Exeter  B-ORG  B-ORG<br><span class="hljs-number">1</span>            <span class="hljs-number">2</span>      O      O<br><span class="hljs-number">2</span>  Scarborough  B-ORG  B-ORG<br><span class="hljs-number">3</span>            <span class="hljs-number">2</span>      O      O<br>################################################################################<br>测试样本的平均预测准确率：<span class="hljs-number">95.55</span>%.<br></code></pre></td></tr></table></figure>
+<p>该模型在原始数据上的识别效果还是可以的。</p>
+<p>训练完模型后，BASE_DIR中的所有文件如下：</p>
+<figure>
+<img src="/img/nlp5_5.png" srcset="/img/loading.gif" lazyload alt="模型训练完后的所有文件截图" />
+<figcaption aria-hidden="true">模型训练完后的所有文件截图</figcaption>
+</figure>
+<h3 id="模型预测">模型预测</h3>
+<p>最后，也许是整个项目最为激动人心的时刻，因为，我们要在新数据集上测试模型的识别效果。预测新数据的识别结果的完整Python代码（Bi_LSTM_Model_predict.py）如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># Name entity recognition for new data</span><br><br><span class="hljs-comment"># Import the necessary modules</span><br><span class="hljs-keyword">import</span> pickle<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">from</span> utils <span class="hljs-keyword">import</span> CONSTANTS<br><span class="hljs-keyword">from</span> keras.preprocessing.sequence <span class="hljs-keyword">import</span> pad_sequences<br><span class="hljs-keyword">from</span> keras.models <span class="hljs-keyword">import</span> load_model<br><span class="hljs-keyword">from</span> nltk <span class="hljs-keyword">import</span> word_tokenize<br><br><span class="hljs-comment"># 导入字典</span><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(CONSTANTS[<span class="hljs-number">1</span>], <span class="hljs-string">&#x27;rb&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>    word_dictionary = pickle.load(f)<br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(CONSTANTS[<span class="hljs-number">4</span>], <span class="hljs-string">&#x27;rb&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>    output_dictionary = pickle.load(f)<br><br><span class="hljs-keyword">try</span>:<br>    <span class="hljs-comment"># 数据预处理</span><br>    input_shape = <span class="hljs-number">60</span><br>    sent = <span class="hljs-string">&#x27;New York is the biggest city in America.&#x27;</span><br>    new_sent = word_tokenize(sent)<br>    new_x = [[word_dictionary[word] <span class="hljs-keyword">for</span> word <span class="hljs-keyword">in</span> new_sent]]<br>    x = pad_sequences(maxlen=input_shape, sequences=new_x, padding=<span class="hljs-string">&#x27;post&#x27;</span>, value=<span class="hljs-number">0</span>)<br><br>    <span class="hljs-comment"># 载入模型</span><br>    model_save_path = CONSTANTS[<span class="hljs-number">0</span>]<br>    lstm_model = load_model(model_save_path)<br><br>    <span class="hljs-comment"># 模型预测</span><br>    y_predict = lstm_model.predict(x)<br><br>    ner_tag = []<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(new_sent)):<br>        ner_tag.append(np.argmax(y_predict[<span class="hljs-number">0</span>][i]))<br><br>    ner = [output_dictionary[i] <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> ner_tag]<br>    <span class="hljs-built_in">print</span>(new_sent)<br>    <span class="hljs-built_in">print</span>(ner)<br><br>    <span class="hljs-comment"># 去掉NER标注为O的元素</span><br>    ner_reg_list = []<br>    <span class="hljs-keyword">for</span> word, tag <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(new_sent, ner):<br>        <span class="hljs-keyword">if</span> tag != <span class="hljs-string">&#x27;O&#x27;</span>:<br>            ner_reg_list.append((word, tag))<br><br>    <span class="hljs-comment"># 输出模型的NER识别结果</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;NER识别结果：&quot;</span>)<br>    <span class="hljs-keyword">if</span> ner_reg_list:<br>        <span class="hljs-keyword">for</span> i, item <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(ner_reg_list):<br>            <span class="hljs-keyword">if</span> item[<span class="hljs-number">1</span>].startswith(<span class="hljs-string">&#x27;B&#x27;</span>):<br>                end = i+<span class="hljs-number">1</span><br>                <span class="hljs-keyword">while</span> end &lt;= <span class="hljs-built_in">len</span>(ner_reg_list)-<span class="hljs-number">1</span> <span class="hljs-keyword">and</span> ner_reg_list[end][<span class="hljs-number">1</span>].startswith(<span class="hljs-string">&#x27;I&#x27;</span>):<br>                    end += <span class="hljs-number">1</span><br><br>                ner_type = item[<span class="hljs-number">1</span>].split(<span class="hljs-string">&#x27;-&#x27;</span>)[<span class="hljs-number">1</span>]<br>                ner_type_dict = &#123;<span class="hljs-string">&#x27;PER&#x27;</span>: <span class="hljs-string">&#x27;PERSON: &#x27;</span>,<br>                                <span class="hljs-string">&#x27;LOC&#x27;</span>: <span class="hljs-string">&#x27;LOCATION: &#x27;</span>,<br>                                <span class="hljs-string">&#x27;ORG&#x27;</span>: <span class="hljs-string">&#x27;ORGANIZATION: &#x27;</span>,<br>                                <span class="hljs-string">&#x27;MISC&#x27;</span>: <span class="hljs-string">&#x27;MISC: &#x27;</span><br>                                &#125;<br>                <span class="hljs-built_in">print</span>(ner_type_dict[ner_type],\<br>                    <span class="hljs-string">&#x27; &#x27;</span>.join([item[<span class="hljs-number">0</span>] <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> ner_reg_list[i:end]]))<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;模型并未识别任何有效命名实体。&quot;</span>)<br><br><span class="hljs-keyword">except</span> KeyError <span class="hljs-keyword">as</span> err:<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;您输入的句子有单词不在词汇表中，请重新输入！&quot;</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;不在词汇表中的单词为：%s.&quot;</span> % err)<br></code></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">[<span class="hljs-string">&#x27;New&#x27;</span>, <span class="hljs-string">&#x27;York&#x27;</span>, <span class="hljs-string">&#x27;is&#x27;</span>, <span class="hljs-string">&#x27;the&#x27;</span>, <span class="hljs-string">&#x27;biggest&#x27;</span>, <span class="hljs-string">&#x27;city&#x27;</span>, <span class="hljs-string">&#x27;in&#x27;</span>, <span class="hljs-string">&#x27;America&#x27;</span>, <span class="hljs-string">&#x27;.&#x27;</span>]<br>[<span class="hljs-string">&#x27;B-LOC&#x27;</span>, <span class="hljs-string">&#x27;I-LOC&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;B-LOC&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>]<br>NER识别结果：<br><span class="hljs-keyword">LOCATION</span>:  <span class="hljs-built_in">New</span> York<br><span class="hljs-keyword">LOCATION</span>:  America<br></code></pre></td></tr></table></figure>
+<p>接下来，再测试三个笔者自己想的句子：</p>
+<p>输入为： <figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ada">sent = <span class="hljs-symbol">&#x27;James</span> <span class="hljs-keyword">is</span> a world famous actor, whose home <span class="hljs-keyword">is</span> <span class="hljs-keyword">in</span> London.&#x27;<br></code></pre></td></tr></table></figure> 输出结果为：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-attr">[<span class="hljs-string">&#x27;James&#x27;</span>, <span class="hljs-string">&#x27;is&#x27;</span>, <span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-string">&#x27;world&#x27;</span>, <span class="hljs-string">&#x27;famous&#x27;</span>, <span class="hljs-string">&#x27;actor&#x27;</span>, <span class="hljs-string">&#x27;,&#x27;</span>, <span class="hljs-string">&#x27;whose&#x27;</span>, <span class="hljs-string">&#x27;home&#x27;</span>, <span class="hljs-string">&#x27;is&#x27;</span>, <span class="hljs-string">&#x27;in&#x27;</span>, <span class="hljs-string">&#x27;London&#x27;</span>, <span class="hljs-string">&#x27;.&#x27;</span>]</span><br><span class="hljs-selector-attr">[<span class="hljs-string">&#x27;B-PER&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;B-LOC&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>]</span><br>NER识别结果：<br>PERSON:  James<br>LOCATION:  London<br></code></pre></td></tr></table></figure>
+<p>输入为： <figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ada">sent = <span class="hljs-symbol">&#x27;Oxford</span> <span class="hljs-keyword">is</span> <span class="hljs-keyword">in</span> England, Jack <span class="hljs-keyword">is</span> from here.&#x27;<br></code></pre></td></tr></table></figure> 输出为： <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-attr">[<span class="hljs-string">&#x27;Oxford&#x27;</span>, <span class="hljs-string">&#x27;is&#x27;</span>, <span class="hljs-string">&#x27;in&#x27;</span>, <span class="hljs-string">&#x27;England&#x27;</span>, <span class="hljs-string">&#x27;,&#x27;</span>, <span class="hljs-string">&#x27;Jack&#x27;</span>, <span class="hljs-string">&#x27;is&#x27;</span>, <span class="hljs-string">&#x27;from&#x27;</span>, <span class="hljs-string">&#x27;here&#x27;</span>, <span class="hljs-string">&#x27;.&#x27;</span>]</span><br><span class="hljs-selector-attr">[<span class="hljs-string">&#x27;B-PER&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;B-LOC&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;B-PER&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>]</span><br>NER识别结果：<br>PERSON:  Oxford<br>LOCATION:  England<br>PERSON:  Jack<br></code></pre></td></tr></table></figure></p>
+<p>输入为： <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">sent</span> = <span class="hljs-string">&#x27;I love Shanghai.&#x27;</span><br></code></pre></td></tr></table></figure> 输出为： <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-attr">[<span class="hljs-string">&#x27;I&#x27;</span>, <span class="hljs-string">&#x27;love&#x27;</span>, <span class="hljs-string">&#x27;Shanghai&#x27;</span>, <span class="hljs-string">&#x27;.&#x27;</span>]</span><br><span class="hljs-selector-attr">[<span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;B-LOC&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>]</span><br>NER识别结果：<br>LOCATION:  Shanghai<br></code></pre></td></tr></table></figure></p>
+<p>在上面的例子中，只有Oxford的识别效果不理想，模型将它识别为PERSON，其实应该是ORGANIZATION。</p>
+<p>接下来是三个来自CNN和wikipedia的句子：</p>
+<p>输入为： <figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs abnf"><span class="hljs-attribute">sent</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;the US runs the risk of a military defeat by China or Russia&quot;</span><br></code></pre></td></tr></table></figure> 输出为： <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">[<span class="hljs-string">&#x27;the&#x27;</span>, <span class="hljs-string">&#x27;US&#x27;</span>, <span class="hljs-string">&#x27;runs&#x27;</span>, <span class="hljs-string">&#x27;the&#x27;</span>, <span class="hljs-string">&#x27;risk&#x27;</span>, <span class="hljs-string">&#x27;of&#x27;</span>, <span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-string">&#x27;military&#x27;</span>, <span class="hljs-string">&#x27;defeat&#x27;</span>, <span class="hljs-string">&#x27;by&#x27;</span>, <span class="hljs-string">&#x27;China&#x27;</span>, <span class="hljs-string">&#x27;or&#x27;</span>, <span class="hljs-string">&#x27;Russia&#x27;</span>]<br>[<span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;B-LOC&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;B-LOC&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;B-LOC&#x27;</span>]<br>NER识别结果：<br><span class="hljs-keyword">LOCATION</span>:  US<br><span class="hljs-keyword">LOCATION</span>:  China<br><span class="hljs-keyword">LOCATION</span>:  Russia<br></code></pre></td></tr></table></figure> 输入为：
+<figure class="highlight smalltalk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs smalltalk">sent = <span class="hljs-comment">&quot;Home to the headquarters of the United Nations, New York is an important center for international diplomacy.&quot;</span><br></code></pre></td></tr></table></figure> 输出为： <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-attr">[<span class="hljs-string">&#x27;Home&#x27;</span>, <span class="hljs-string">&#x27;to&#x27;</span>, <span class="hljs-string">&#x27;the&#x27;</span>, <span class="hljs-string">&#x27;headquarters&#x27;</span>, <span class="hljs-string">&#x27;of&#x27;</span>, <span class="hljs-string">&#x27;the&#x27;</span>, <span class="hljs-string">&#x27;United&#x27;</span>, <span class="hljs-string">&#x27;Nations&#x27;</span>, <span class="hljs-string">&#x27;,&#x27;</span>, <span class="hljs-string">&#x27;New&#x27;</span>, <span class="hljs-string">&#x27;York&#x27;</span>, <span class="hljs-string">&#x27;is&#x27;</span>, <span class="hljs-string">&#x27;an&#x27;</span>, <span class="hljs-string">&#x27;important&#x27;</span>, <span class="hljs-string">&#x27;center&#x27;</span>, <span class="hljs-string">&#x27;for&#x27;</span>, <span class="hljs-string">&#x27;international&#x27;</span>, <span class="hljs-string">&#x27;diplomacy&#x27;</span>, <span class="hljs-string">&#x27;.&#x27;</span>]</span><br><span class="hljs-selector-attr">[<span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;B-ORG&#x27;</span>, <span class="hljs-string">&#x27;I-ORG&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;B-LOC&#x27;</span>, <span class="hljs-string">&#x27;I-LOC&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>]</span><br>NER识别结果：<br>ORGANIZATION:  United Nations<br>LOCATION:  New York<br></code></pre></td></tr></table></figure></p>
+<p>输入为： <figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs abnf"><span class="hljs-attribute">sent</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;The United States is a founding member of the United Nations, World Bank, International Monetary Fund.&quot;</span><br></code></pre></td></tr></table></figure> 输出为: <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-attr">[<span class="hljs-string">&#x27;The&#x27;</span>, <span class="hljs-string">&#x27;United&#x27;</span>, <span class="hljs-string">&#x27;States&#x27;</span>, <span class="hljs-string">&#x27;is&#x27;</span>, <span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-string">&#x27;founding&#x27;</span>, <span class="hljs-string">&#x27;member&#x27;</span>, <span class="hljs-string">&#x27;of&#x27;</span>, <span class="hljs-string">&#x27;the&#x27;</span>, <span class="hljs-string">&#x27;United&#x27;</span>, <span class="hljs-string">&#x27;Nations&#x27;</span>, <span class="hljs-string">&#x27;,&#x27;</span>, <span class="hljs-string">&#x27;World&#x27;</span>, <span class="hljs-string">&#x27;Bank&#x27;</span>, <span class="hljs-string">&#x27;,&#x27;</span>, <span class="hljs-string">&#x27;International&#x27;</span>, <span class="hljs-string">&#x27;Monetary&#x27;</span>, <span class="hljs-string">&#x27;Fund&#x27;</span>, <span class="hljs-string">&#x27;.&#x27;</span>]</span><br><span class="hljs-selector-attr">[<span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;B-LOC&#x27;</span>, <span class="hljs-string">&#x27;I-LOC&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;B-ORG&#x27;</span>, <span class="hljs-string">&#x27;I-ORG&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;B-ORG&#x27;</span>, <span class="hljs-string">&#x27;I-ORG&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>, <span class="hljs-string">&#x27;B-ORG&#x27;</span>, <span class="hljs-string">&#x27;I-ORG&#x27;</span>, <span class="hljs-string">&#x27;I-ORG&#x27;</span>, <span class="hljs-string">&#x27;O&#x27;</span>]</span><br>NER识别结果：<br>LOCATION:  United States<br>ORGANIZATION:  United Nations<br>ORGANIZATION:  World Bank<br>ORGANIZATION:  International Monetary Fund<br></code></pre></td></tr></table></figure></p>
+<p>这三个例子识别全部正确。</p>
+<h3 id="总结">总结</h3>
+<p>到这儿，笔者的这个项目就差不多了。我们有必要对这个项目做个总结。</p>
+<p>首先是这个项目的优点。它的优点在于能够让你一步步地实现NER，而且除了语料库，你基本熟悉了如何创建一个识别NER系统的步骤，同时，对深度学习模型及其应用也有了深刻理解。因此，好处是显而易见的。当然，在实际工作中，语料库的整理才是最耗费时间的，能够占到90%或者更多的时间，因此，有一个好的语料库你才能展开工作。</p>
+<p>接着讲讲这个项目的缺点。第一个，是语料库不够大，当然，约14000条句子也够了，但本项目没有对句子进行文本预处理，所以，有些单词的变形可能无法进入词汇表。第二个，缺少对新词的处理，一旦句子中出现一个新的单词，这个模型便无法处理，这是后期需要完善的地方。第三个，句子的填充长度为60，如果输入的句子长度大于60，则后面的部分将无法有效识别。</p>
+<p>因此，后续还有更多的工作需要去做，当然，做一个中文NER也是可以考虑的。</p>
+<p>本项目已上传Github,地址为 <a
+target="_blank" rel="noopener" href="https://github.com/percent4/DL_4_NER">https://github.com/percent4/DL_4_NER</a>
+。：欢迎大家参考~</p>
+<p>注意：本人现已开通微信公众号：
+NLP奇幻之旅（微信号为：easy_web_scrape）， 欢迎大家关注哦~~</p>
+<h3 id="参考文献">参考文献</h3>
+<ol type="1">
+<li>BOOK： Applied Natural Language Processing with Python， Taweh
+Beysolow II</li>
+<li>WEBSITE：https://github.com/Apress/applied-natural-language-processing-w-python</li>
+<li>WEBSITE: NLP入门（四）命名实体识别（NER）:
+https://www.jianshu.com/p/16e1f6a7aaef</li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/NLP/" class="print-no-link">#NLP</a>
+      
+        <a href="/tags/NER/" class="print-no-link">#NER</a>
+      
+        <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" class="print-no-link">#深度学习</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP入门（五）用深度学习实现命名实体识别（NER）</div>
+      <div>https://percent4.github.io/NLP入门（五）用深度学习实现命名实体识别（NER）/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月8日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/NLP%E5%85%A5%E9%97%A8%EF%BC%88%E5%85%AD%EF%BC%89pyltp%E7%9A%84%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/" title="NLP入门（六）pyltp的介绍与使用">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NLP入门（六）pyltp的介绍与使用</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/NLP%E5%85%A5%E9%97%A8%EF%BC%88%E5%9B%9B%EF%BC%89%E5%91%BD%E5%90%8D%E5%AE%9E%E4%BD%93%E8%AF%86%E5%88%AB%EF%BC%88NER%EF%BC%89/" title="NLP入门（四）命名实体识别（NER）">
+                        <span class="hidden-mobile">NLP入门（四）命名实体识别（NER）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

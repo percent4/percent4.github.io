@@ -1,0 +1,854 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍如何使用kenlm进行文本纠错。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（四十九）使用kenlm进行文本纠错">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%B9%9D%EF%BC%89%E4%BD%BF%E7%94%A8kenlm%E8%BF%9B%E8%A1%8C%E6%96%87%E6%9C%AC%E7%BA%A0%E9%94%99/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍如何使用kenlm进行文本纠错。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-07-10T09:35:22.000Z">
+<meta property="article:modified_time" content="2024-01-10T15:53:14.032Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="文本纠错">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>NLP（四十九）使用kenlm进行文本纠错 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（四十九）使用kenlm进行文本纠错"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-10 17:35" pubdate>
+          星期一, 七月 10日 2023, 5:35 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          4.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          39 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（四十九）使用kenlm进行文本纠错</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>本文将会介绍如何使用kenlm工具进行文本纠错。</p>
+<p>kenlm是用C++编写的语言模型工具，可以方便、快速地计算n-gram。kenlm工具的首页网址为：<a
+target="_blank" rel="noopener" href="https://kheafield.com/code/kenlm/">https://kheafield.com/code/kenlm/</a>，该工具的Github网址为：<a
+target="_blank" rel="noopener" href="https://github.com/kpu/kenlm">https://github.com/kpu/kenlm</a>。</p>
+<p>关于kenlm的安装，本文不再详细介绍，网上有很多这方面的介绍。安装完kenlm工具包后，其文件夹目录结构如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs bash">BUILDING<br>CMakeLists.txt<br>COPYING<br>COPYING.3<br>COPYING.LESSER.3<br>Doxyfile<br>GIT_REVISION<br>LICENSE<br>MANIFEST.<span class="hljs-keyword">in</span><br>README.md<br>build<br>clean_query_only.sh<br>cmake<br>compile_query_only.sh<br>include<br>lm<br>python<br>setup.py<br>util<br></code></pre></td></tr></table></figure>
+<h3 id="模型训练">模型训练</h3>
+<p>我们训练的语料为<code>people2014_words.txt</code>，来自百度网盘，访问网址为<a
+target="_blank" rel="noopener" href="https://pan.baidu.com/s/1971a5XLQsIpL0zL0zxuK2A#list/path=/">https://pan.baidu.com/s/1971a5XLQsIpL0zL0zxuK2A#list/path=%2F</a>。我们需要将原来已经分词好的文件（<code>people2014_words.txt</code>）改成单个字的文件（<code>people2014_chars.txt</code>），即每个字用空格隔开，python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;people2014_words.txt&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> f:<br>    content = [_.strip() <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> f.readlines()]<br><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;people2014_chars.txt&quot;</span>, <span class="hljs-string">&quot;w&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> g:<br>    <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> content:<br>        g.write(<span class="hljs-string">&quot; &quot;</span>.join(<span class="hljs-built_in">list</span>(<span class="hljs-string">&quot;&quot;</span>.join(line.split())))+<span class="hljs-string">&quot;\n&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>改写后的文件前两行如下：</p>
+<blockquote>
+<p>1 . 手 指 长 度 一 项 2 0 0 8 年 在 期 刊 上 发 表 的 调 查 发 现 食
+指 比 无 名 指 短 的 女 性 可 能 有 比 其 他 女 性 高 两 倍 的 可 能 性
+患 上 在 膝 盖 处 的 关 节 炎 。 研 究 人 员 还 宣 称 ， 有 这 些 明 显
+男 性 特 征 的 女 性 更 加 容 易 雌 激 素 激 素 分 泌 水 平 低 ， 这 可
+能 会 对 关 节 炎 的 产 生 有 极 大 的 影 响 。 预 防 措 施 ： 加 强 锻
+炼 膝 盖 周 围 的 肌 肉 。 在 你 坐 着 的 时 候 ， 把 两 腿 伸 直 并 平
+行 于 地 面 ， 做 十 次 每 次 坚 持 5 — 1 0 秒 。</p>
+</blockquote>
+<p>我们将该文件放在build/result目录下。</p>
+<p>切换至build文件夹所在目录，模型运行的运行命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">./bin/lmplz -o 3 --verbose_header --text ./result/people2014_chars.txt --arpa ./result/people2014corpus_chars.arps -S 4G<br></code></pre></td></tr></table></figure>
+<p>运行参数解释：</p>
+<ul>
+<li>-o表示n-gram中n的数量，一般取3足够了，也可以取5；</li>
+<li>-verbose_header:在生成的文件头位置加上统计信息；</li>
+<li>--text表示输入的文本文件；--arpa表示输出的模型参数文件；</li>
+<li>-S表示使用系统内存大小，<code>注意：需要设置合适的内存大小，不然可能会运行失败</code></li>
+</ul>
+<p>运行过程如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs bash">=== 1/5 Counting and sorting n-grams ===<br>Reading ~/work/kenlm/build/result/people2014_chars.txt<br>----5---10---15---20---25---30---35---40---45---50---55---60---65---70---75---80---85---90---95--100<br>****************************************************************************************************<br>Unigram tokens 36092956 types 6914<br>=== 2/5 Calculating and sorting adjusted counts ===<br>Chain sizes: 1:82968 2:1493872896 3:2801011712<br>Statistics:<br>1 6914 D1=0.53084 D2=1.03394 D3+=1.4564<br>2 1159283 D1=0.625083 D2=1.08043 D3+=1.49998<br>3 6643214 D1=0.589546 D2=1.13123 D3+=1.52492<br>Memory estimate <span class="hljs-keyword">for</span> binary LM:<br><span class="hljs-built_in">type</span>     MB<br>probing 140 assuming -p 1.5<br>probing 147 assuming -r models -p 1.5<br>trie     48 without quantization<br>trie     23 assuming -q 8 -b 8 quantization <br>trie     46 assuming -a 22 array pointer compression<br>trie     22 assuming -a 22 -q 8 -b 8 array pointer compression and quantization<br>=== 3/5 Calculating and sorting initial probabilities ===<br>Chain sizes: 1:82968 2:18548528 3:132864280<br>----5---10---15---20---25---30---35---40---45---50---55---60---65---70---75---80---85---90---95--100<br><span class="hljs-comment">####################################################################################################</span><br>=== 4/5 Calculating and writing order-interpolated probabilities ===<br>Chain sizes: 1:82968 2:18548528 3:132864280<br>----5---10---15---20---25---30---35---40---45---50---55---60---65---70---75---80---85---90---95--100<br><span class="hljs-comment">####################################################################################################</span><br>=== 5/5 Writing ARPA model ===<br>----5---10---15---20---25---30---35---40---45---50---55---60---65---70---75---80---85---90---95--100<br>****************************************************************************************************<br>Name:lmplz      VmPeak:4358320 kB       VmRSS:24136 kB  RSSMax:1112940 kB       user:13.5094    sys:2.38785     CPU:15.8973     real:15.2563<br></code></pre></td></tr></table></figure>
+<p>运行完后会生成arps格式的模型文件，我们需要运行如下命令将模型文件进行压缩：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">./bin/build_binary ./result/people2014corpus_chars.arps ./result/people2014corpus_chars.klm<br></code></pre></td></tr></table></figure>
+<p>运行完该命令后，就会生成klm格式的模型文件，模型文件体积大大减小，这也是我们所需要的的训练好后的模型文件。至此，我们已完成了使用kenlm训练n-gram模型。</p>
+<h3 id="文本纠错">文本纠错</h3>
+<p><code>pycorrector</code>模块支持使用自己训练好的kenlm模型进行纠错，参考网址：<a
+target="_blank" rel="noopener" href="https://github.com/shibing624/pycorrector">https://github.com/shibing624/pycorrector</a>
+。</p>
+<p>演示的Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pycorrector <span class="hljs-keyword">import</span> Corrector<br><br><span class="hljs-comment"># 加载训练好的kenlm模型</span><br>lm_path = <span class="hljs-string">&quot;~/work/kenlm/build/result/people2014corpus_chars.klm&quot;</span><br>model = Corrector(language_model_path=lm_path)<br><br><span class="hljs-comment"># 文本纠错</span><br>corrected_sent, detail = model.correct(<span class="hljs-string">&#x27;真麻烦你了。希望你们好好的跳无&#x27;</span>)<br><span class="hljs-built_in">print</span>(corrected_sent)<br><span class="hljs-built_in">print</span>(detail)<br></code></pre></td></tr></table></figure>
+<p>我们对pycorrector中给出的5个样例句子进行纠错，结果如下：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs css">原句：真麻烦你了。希望你们好好的跳无<br>纠错后：真麻烦你了。希望你们好好的跳舞<br>纠错细节：<span class="hljs-selector-attr">[(<span class="hljs-string">&#x27;无&#x27;</span>, <span class="hljs-string">&#x27;舞&#x27;</span>, 14, 15)]</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs css">原句：少先队员因该为老人让坐<br>纠错后：少先队员应该为老人让坐<br>纠错细节：<span class="hljs-selector-attr">[(<span class="hljs-string">&#x27;因该&#x27;</span>, <span class="hljs-string">&#x27;应该&#x27;</span>, 4, 6)]</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs css">原句：机七学习是人工智能领遇最能体现智能的一个分知<br>纠错后：机器学习是人工智能领域最能体现智能的一个分知<br>纠错细节：<span class="hljs-selector-attr">[(<span class="hljs-string">&#x27;机七&#x27;</span>, <span class="hljs-string">&#x27;机器&#x27;</span>, 0, 2), (<span class="hljs-string">&#x27;领遇&#x27;</span>, <span class="hljs-string">&#x27;领域&#x27;</span>, 9, 11)]</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs css">原句：一只小鱼船浮在平净的河面上<br>纠错后：一只小鱼船夫在平静的河面上<br>纠错细节：<span class="hljs-selector-attr">[(<span class="hljs-string">&#x27;船浮&#x27;</span>, <span class="hljs-string">&#x27;船夫&#x27;</span>, 4, 6), (<span class="hljs-string">&#x27;平净&#x27;</span>, <span class="hljs-string">&#x27;平静&#x27;</span>, 7, 9)]</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs css">原句：我的家乡是有明的渔米之乡<br>纠错后：我的家乡是有名的鱼米之乡<br>纠错细节：<span class="hljs-selector-attr">[(<span class="hljs-string">&#x27;有明&#x27;</span>, <span class="hljs-string">&#x27;有名&#x27;</span>, 5, 7), (<span class="hljs-string">&#x27;渔米&#x27;</span>, <span class="hljs-string">&#x27;鱼米&#x27;</span>, 8, 10)]</span><br></code></pre></td></tr></table></figure>
+<p>可以看到，训练好的kenlm模型对于常见的文本错误具有一定的纠错能力，但也有一些没有纠正过来。</p>
+<p>因为使用的是n-gram模型，所以文本纠错的效果依赖于语料的质量及语料大小。</p>
+<h3 id="总结">总结</h3>
+<p>本文介绍了如何使用kenlm工具进行文本纠错。之所以写这篇文章，是因为网上人云亦云，很多文章都讲到使用kenlm训练n-gram模型时必须使用分词后的文件，但根据笔者自身的实践，发现分词后的文件并没有纠错能力，反而是单个字的文件进行训练有一定的纠错能力。希望大家不要迷信网上的所谓博客，还是要自己亲身实践下~</p>
+<p>n-gram模型是文本纠错中的统计语言模型，属于较为简单的纠错方法，但有一定的使用价值，后续笔者将会为大家介绍更多的文本纠错相关内容，欢迎大家关注~</p>
+<p>2021年7月26日于上海浦东，此日上海台风肆虐~</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/NLP/" class="print-no-link">#NLP</a>
+      
+        <a href="/tags/%E6%96%87%E6%9C%AC%E7%BA%A0%E9%94%99/" class="print-no-link">#文本纠错</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（四十九）使用kenlm进行文本纠错</div>
+      <div>https://percent4.github.io/NLP（四十九）使用kenlm进行文本纠错/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月10日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%BA%94%E5%8D%81%EF%BC%89%E5%88%AB%E5%90%8D%E5%8F%91%E7%8E%B0%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%88%9D%E6%AC%A1%E5%B0%9D%E8%AF%95/" title="NLP（五十）别名发现模型的初次尝试">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NLP（五十）别名发现模型的初次尝试</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E5%85%AB%EF%BC%89%E6%96%87%E6%9C%AC%E7%BA%A0%E9%94%99%E4%B9%8B%E8%8E%B7%E5%8F%96%E5%BD%A2%E8%BF%91%E5%AD%97/" title="NLP（四十八）文本纠错之获取形近字">
+                        <span class="hidden-mobile">NLP（四十八）文本纠错之获取形近字</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

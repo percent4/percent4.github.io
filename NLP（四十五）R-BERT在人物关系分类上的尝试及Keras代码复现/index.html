@@ -1,0 +1,890 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍R-BERT在人物关系分类上的尝试及Keras代码复现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（四十五）R-BERT在人物关系分类上的尝试及Keras代码复现">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%BA%94%EF%BC%89R-BERT%E5%9C%A8%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E5%88%86%E7%B1%BB%E4%B8%8A%E7%9A%84%E5%B0%9D%E8%AF%95%E5%8F%8AKeras%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%8E%B0/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍R-BERT在人物关系分类上的尝试及Keras代码复现。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://percent4.github.io/img/nlp45_1.png">
+<meta property="article:published_time" content="2023-07-10T09:19:01.000Z">
+<meta property="article:modified_time" content="2024-01-10T15:53:14.021Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="BERT">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="关系分类">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp45_1.png">
+  
+  
+  
+  <title>NLP（四十五）R-BERT在人物关系分类上的尝试及Keras代码复现 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（四十五）R-BERT在人物关系分类上的尝试及Keras代码复现"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-10 17:19" pubdate>
+          星期一, 七月 10日 2023, 5:19 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          7.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          63 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（四十五）R-BERT在人物关系分类上的尝试及Keras代码复现</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>本文将介绍关系分类模型<code>R-BERT</code>和该模型在人物关系数据集上的表现，以及该模型的Keras代码复现。</p>
+<h3 id="关系分类任务">关系分类任务</h3>
+<p>关系分类属于NLP任务中的文本分类，不同之处在于，关系分类提供了文本和实体。比如下面的例子：</p>
+<blockquote>
+<p>亲戚
+1837年6月20日，<e1>威廉四世</e1>辞世，他的侄女<e2>维多利亚</e2>即位。</p>
+</blockquote>
+<p>其中两个实体在文本中用<e1></e1>和<e2></e2>包围着，人物关系为亲戚。</p>
+<p>在关系分类中，我们要注重文本特征，更要留意实体特征。常见的英文关系分类的数据集为<a
+target="_blank" rel="noopener" href="https://www.aclweb.org/anthology/S18-1117.pdf">SemEval 2010 Task
+8</a>、New York Times Corpus、WikiData dataset for Sentential Relation
+Extraction、NYT29、NYT24等，中文的关系分类数据集比较少，而且质量不高。</p>
+<p>关于SemEval 2010 Task
+8数据集的实现模型及效果，可以参考：http://nlpprogress.com/english/relationship_extraction.html,
+其中常见的实现模型如下：</p>
+<ul>
+<li><p>Machince Learning: SVM, Word2Vec ...</p></li>
+<li><p>Dependency Models: BRCNN, DRNN ...</p></li>
+<li><p>CNN-based Models: Multi-Attention CNN, Attention CNN, PCNN+ATT
+...</p></li>
+<li><p>BERT-based Models: R-BERT, Matching-the-Blanks ...</p>
+<p>本文将介绍<code>R-BERT</code>模型。</p></li>
+</ul>
+<h3 id="模型介绍">模型介绍</h3>
+<p><code>R-BERT</code>模型是Alibaba Group (U.S.)
+Inc的两位研究者在2019年5月的论文<a
+target="_blank" rel="noopener" href="https://arxiv.org/pdf/1905.08284.pdf">Enriching Pre-trained
+Language Model with Entity Information for Relation
+Classification</a>，该模型在SemEval 2010 Task
+8数据集上的F1值为89.25%，只比现有的SOTA模型低了0.25%。</p>
+<p><code>R-BERT</code>很好地融合了文本特征以及两个实体在文本中的特征，简单来说，该模型主要是BERT模型中的三个向量的融合：</p>
+<ul>
+<li><p>[CLS]对应的向量</p></li>
+<li><p>实体1的平均向量</p></li>
+<li><p>实体2的平均向量</p>
+<p>下面将详细讲解<code>R-BERT</code>的具体模型结构。</p></li>
+</ul>
+<h3 id="模型结构">模型结构</h3>
+<p><code>R-BERT</code>的具体模型结构如下图：</p>
+<figure>
+<img src="/img/nlp45_1.png" srcset="/img/loading.gif" lazyload alt="R-BERT模型结构图" />
+<figcaption aria-hidden="true">R-BERT模型结构图</figcaption>
+</figure>
+<p>一图胜千言。从上述的模型结构图中，我们将模型结构分解步骤如下：</p>
+<ol type="1">
+<li>将文本接入BERT模型，获取[CLS]
+token的对应向量、实体1的在BERT输出层中的平均向量、实体2的在BERT输出层中的平均向量；</li>
+<li>将上述三个向量分别接Drouput层、Tanh激活层以及全连接层；</li>
+<li>再将步骤2输出的三个向量进行拼接（concatenate）；</li>
+<li>最后接Dropout层和全连接层，用Softmax作为多分类的激活函数。</li>
+</ol>
+<p>此外，需要注意的是，输入文本中没有[SEP]这个token。</p>
+<p>论文中并没有给出更多的实现细节，需要深入到代码中去查看。网上已经有人给出了Torch框架的实现<code>R-BERT</code>的代码，参考网址为：https://github.com/monologg/R-BERT。</p>
+<h3 id="torch实现">Torch实现</h3>
+<p>Torch框架的实现<code>R-BERT</code>的代码（模型部分）如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">import</span> torch.nn <span class="hljs-keyword">as</span> nn<br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> BertModel, BertPreTrainedModel<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">FCLayer</span>(nn.Module):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, input_dim, output_dim, dropout_rate=<span class="hljs-number">0.0</span>, use_activation=<span class="hljs-literal">True</span></span>):<br>        <span class="hljs-built_in">super</span>(FCLayer, self).__init__()<br>        self.use_activation = use_activation<br>        self.dropout = nn.Dropout(dropout_rate)<br>        self.linear = nn.Linear(input_dim, output_dim)<br>        self.tanh = nn.Tanh()<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">forward</span>(<span class="hljs-params">self, x</span>):<br>        x = self.dropout(x)<br>        <span class="hljs-keyword">if</span> self.use_activation:<br>            x = self.tanh(x)<br>        <span class="hljs-keyword">return</span> self.linear(x)<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">RBERT</span>(<span class="hljs-title class_ inherited__">BertPreTrainedModel</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, config, args</span>):<br>        <span class="hljs-built_in">super</span>(RBERT, self).__init__(config)<br>        self.bert = BertModel(config=config)  <span class="hljs-comment"># Load pretrained bert</span><br><br>        self.num_labels = config.num_labels<br><br>        self.cls_fc_layer = FCLayer(config.hidden_size, config.hidden_size, args.dropout_rate)<br>        self.entity_fc_layer = FCLayer(config.hidden_size, config.hidden_size, args.dropout_rate)<br>        self.label_classifier = FCLayer(<br>            config.hidden_size * <span class="hljs-number">3</span>,<br>            config.num_labels,<br>            args.dropout_rate,<br>            use_activation=<span class="hljs-literal">False</span>,<br>        )<br><br><span class="hljs-meta">    @staticmethod</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">entity_average</span>(<span class="hljs-params">hidden_output, e_mask</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        Average the entity hidden state vectors (H_i ~ H_j)</span><br><span class="hljs-string">        :param hidden_output: [batch_size, j-i+1, dim]</span><br><span class="hljs-string">        :param e_mask: [batch_size, max_seq_len]</span><br><span class="hljs-string">                e.g. e_mask[0] == [0, 0, 0, 1, 1, 1, 0, 0, ... 0]</span><br><span class="hljs-string">        :return: [batch_size, dim]</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        e_mask_unsqueeze = e_mask.unsqueeze(<span class="hljs-number">1</span>)  <span class="hljs-comment"># [b, 1, j-i+1]</span><br>        length_tensor = (e_mask != <span class="hljs-number">0</span>).<span class="hljs-built_in">sum</span>(dim=<span class="hljs-number">1</span>).unsqueeze(<span class="hljs-number">1</span>)  <span class="hljs-comment"># [batch_size, 1]</span><br><br>        <span class="hljs-comment"># [b, 1, j-i+1] * [b, j-i+1, dim] = [b, 1, dim] -&gt; [b, dim]</span><br>        sum_vector = torch.bmm(e_mask_unsqueeze.<span class="hljs-built_in">float</span>(), hidden_output).squeeze(<span class="hljs-number">1</span>)<br>        avg_vector = sum_vector.<span class="hljs-built_in">float</span>() / length_tensor.<span class="hljs-built_in">float</span>()  <span class="hljs-comment"># broadcasting</span><br>        <span class="hljs-keyword">return</span> avg_vector<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">forward</span>(<span class="hljs-params">self, input_ids, attention_mask, token_type_ids, labels, e1_mask, e2_mask</span>):<br>        outputs = self.bert(<br>            input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids<br>        )  <span class="hljs-comment"># sequence_output, pooled_output, (hidden_states), (attentions)</span><br>        sequence_output = outputs[<span class="hljs-number">0</span>]<br>        pooled_output = outputs[<span class="hljs-number">1</span>]  <span class="hljs-comment"># [CLS]</span><br><br>        <span class="hljs-comment"># Average</span><br>        e1_h = self.entity_average(sequence_output, e1_mask)<br>        e2_h = self.entity_average(sequence_output, e2_mask)<br><br>        <span class="hljs-comment"># Dropout -&gt; tanh -&gt; fc_layer (Share FC layer for e1 and e2)</span><br>        pooled_output = self.cls_fc_layer(pooled_output)<br>        e1_h = self.entity_fc_layer(e1_h)<br>        e2_h = self.entity_fc_layer(e2_h)<br><br>        <span class="hljs-comment"># Concat -&gt; fc_layer</span><br>        concat_h = torch.cat([pooled_output, e1_h, e2_h], dim=-<span class="hljs-number">1</span>)<br>        logits = self.label_classifier(concat_h)<br><br>        outputs = (logits,) + outputs[<span class="hljs-number">2</span>:]  <span class="hljs-comment"># add hidden states and attention if they are here</span><br><br>        <span class="hljs-comment"># Softmax</span><br>        <span class="hljs-keyword">if</span> labels <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>            <span class="hljs-keyword">if</span> self.num_labels == <span class="hljs-number">1</span>:<br>                loss_fct = nn.MSELoss()<br>                loss = loss_fct(logits.view(-<span class="hljs-number">1</span>), labels.view(-<span class="hljs-number">1</span>))<br>            <span class="hljs-keyword">else</span>:<br>                loss_fct = nn.CrossEntropyLoss()<br>                loss = loss_fct(logits.view(-<span class="hljs-number">1</span>, self.num_labels), labels.view(-<span class="hljs-number">1</span>))<br><br>            outputs = (loss,) + outputs<br><br>        <span class="hljs-keyword">return</span> outputs<br></code></pre></td></tr></table></figure>
+<p>该项目是在SemEval 2010 Task
+8数据集实现的，笔者将其在自己的人物关系分类数据集上进行测试，最终在测试集上的评估结果如下：</p>
+<figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs gcode"><span class="hljs-attr"># Model: chinese-roberta-wwm-ext, weighted avgage F1</span> = <span class="hljs-number">85.35</span><span class="hljs-meta">%</span><br><span class="hljs-attr"># Model: chinese-roberta-wwm-ext-large, weighted avgage F1</span> = <span class="hljs-number">87.22</span><span class="hljs-meta">%</span><br></code></pre></td></tr></table></figure>
+<p>Model: chinese-roberta-wwm-ext-large, 详细的评估结果如下：</p>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs crystal">                precision    recall  f1-score   support<br><br>     unknown      <span class="hljs-number">0.8756</span>    <span class="hljs-number">0.8421</span>    <span class="hljs-number">0.8585</span>       <span class="hljs-number">209</span><br>         上下级    <span class="hljs-number">0.7297</span>    <span class="hljs-number">0.8710</span>    <span class="hljs-number">0.7941</span>        <span class="hljs-number">31</span><br>          亲戚     <span class="hljs-number">0.8421</span>    <span class="hljs-number">0.6667</span>    <span class="hljs-number">0.7442</span>        <span class="hljs-number">24</span><br>        兄弟姐妹    <span class="hljs-number">0.8333</span>    <span class="hljs-number">0.8824</span>    <span class="hljs-number">0.8571</span>        <span class="hljs-number">34</span><br>          合作     <span class="hljs-number">0.9074</span>    <span class="hljs-number">0.8305</span>    <span class="hljs-number">0.8673</span>        <span class="hljs-number">59</span><br>          同人     <span class="hljs-number">0.9744</span>    <span class="hljs-number">0.9744</span>    <span class="hljs-number">0.9744</span>        <span class="hljs-number">39</span><br>          同学     <span class="hljs-number">0.9130</span>    <span class="hljs-number">0.8750</span>    <span class="hljs-number">0.8936</span>        <span class="hljs-number">24</span><br>          同门     <span class="hljs-number">0.9630</span>    <span class="hljs-number">1.0000</span>    <span class="hljs-number">0.9811</span>        <span class="hljs-number">26</span><br>          夫妻     <span class="hljs-number">0.8372</span>    <span class="hljs-number">0.9114</span>    <span class="hljs-number">0.8727</span>        <span class="hljs-number">79</span><br>          好友     <span class="hljs-number">0.8438</span>    <span class="hljs-number">0.9000</span>    <span class="hljs-number">0.8710</span>        <span class="hljs-number">30</span><br>          师生     <span class="hljs-number">0.8378</span>    <span class="hljs-number">0.8378</span>    <span class="hljs-number">0.8378</span>        <span class="hljs-number">37</span><br>          情侣     <span class="hljs-number">0.8125</span>    <span class="hljs-number">0.8387</span>    <span class="hljs-number">0.8254</span>        <span class="hljs-number">31</span><br>          父母     <span class="hljs-number">0.8931</span>    <span class="hljs-number">0.9141</span>    <span class="hljs-number">0.9035</span>       <span class="hljs-number">128</span><br>          祖孙     <span class="hljs-number">0.9545</span>    <span class="hljs-number">0.8400</span>    <span class="hljs-number">0.8936</span>        <span class="hljs-number">25</span><br><br>    accuracy                         <span class="hljs-number">0.8724</span>       <span class="hljs-number">776</span><br>   <span class="hljs-function"><span class="hljs-keyword">macro</span> <span class="hljs-title">avg</span></span>     <span class="hljs-number">0.8727</span>    <span class="hljs-number">0.8703</span>    <span class="hljs-number">0.8696</span>       <span class="hljs-number">776</span><br>weighted avg     <span class="hljs-number">0.8743</span>    <span class="hljs-number">0.8724</span>    <span class="hljs-number">0.8722</span>       <span class="hljs-number">776</span><br></code></pre></td></tr></table></figure>
+<p><code>R-BERT</code>模型在人物关系数据集上的Github项目为<a
+target="_blank" rel="noopener" href="https://github.com/percent4/R-BERT_for_people_relation_extraction">R-BERT_for_people_relation_extraction</a>
+。下面将介绍<code>R-BERT</code>模型的Keras框架复现。</p>
+<h3 id="keras复现">Keras复现</h3>
+<p><code>R-BERT</code>模型的Keras框架复现（模型部分）的代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># main architecture of R-BERT</span><br><span class="hljs-keyword">from</span> keras.models <span class="hljs-keyword">import</span> Model<br><span class="hljs-keyword">from</span> keras.utils <span class="hljs-keyword">import</span> plot_model<br><span class="hljs-keyword">from</span> keras.layers <span class="hljs-keyword">import</span> Input, Lambda, Dense, Dropout, concatenate, Dot<br><span class="hljs-keyword">from</span> keras_bert <span class="hljs-keyword">import</span> load_trained_model_from_checkpoint<br><br><br><span class="hljs-comment"># model structure of R-BERT</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">RBERT</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, config_path, checkpoint_path, maxlen, num_labels</span>):<br>        self.config_path = config_path<br>        self.checkpoint_path = checkpoint_path<br>        self.maxlen = maxlen<br>        self.num_labels = num_labels<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">create_model</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-comment"># BERT model</span><br>        bert_model = load_trained_model_from_checkpoint(self.config_path, self.checkpoint_path, seq_len=<span class="hljs-literal">None</span>)<br>        <span class="hljs-keyword">for</span> layer <span class="hljs-keyword">in</span> bert_model.layers:<br>            layer.trainable = <span class="hljs-literal">True</span><br>        x1_in = Input(shape=(self.maxlen,))<br>        x2_in = Input(shape=(self.maxlen,))<br>        bert_layer = bert_model([x1_in, x2_in])<br><br>        <span class="hljs-comment"># get three vectors</span><br>        cls_layer = Lambda(<span class="hljs-keyword">lambda</span> x: x[:, <span class="hljs-number">0</span>])(bert_layer)    <span class="hljs-comment"># 取出[CLS]对应的向量</span><br>        e1_mask = Input(shape=(self.maxlen,))<br>        e2_mask = Input(shape=(self.maxlen,))<br>        e1_layer = self.entity_average(bert_layer, e1_mask)  <span class="hljs-comment"># 取出实体1对应的向量</span><br>        e2_layer = self.entity_average(bert_layer, e2_mask)  <span class="hljs-comment"># 取出实体2对应的向量</span><br><br>        <span class="hljs-comment"># dropout -&gt; linear -&gt; concatenate</span><br>        output_dim = cls_layer.shape[-<span class="hljs-number">1</span>].value<br>        cls_fc_layer = self.crate_fc_layer(cls_layer, output_dim, dropout_rate=<span class="hljs-number">0.1</span>)<br>        e1_fc_layer = self.crate_fc_layer(e1_layer, output_dim, dropout_rate=<span class="hljs-number">0.1</span>)<br>        e2_fc_layer = self.crate_fc_layer(e2_layer, output_dim, dropout_rate=<span class="hljs-number">0.1</span>)<br>        concat_layer = concatenate([cls_fc_layer, e1_fc_layer, e2_fc_layer], axis=-<span class="hljs-number">1</span>)<br><br>        <span class="hljs-comment"># FC layer for classification</span><br>        output = Dense(self.num_labels, activation=<span class="hljs-string">&quot;softmax&quot;</span>)(concat_layer)<br>        model = Model([x1_in, x2_in, e1_mask, e2_mask], output)<br>        model.summary()<br>        <span class="hljs-keyword">return</span> model<br><br><span class="hljs-meta">    @staticmethod</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">crate_fc_layer</span>(<span class="hljs-params">input_layer, output_dim, dropout_rate=<span class="hljs-number">0.0</span>, activation_func=<span class="hljs-string">&quot;tanh&quot;</span></span>):<br>        dropout_layer = Dropout(rate=dropout_rate)(input_layer)<br>        linear_layer = Dense(output_dim, activation=activation_func)(dropout_layer)<br>        <span class="hljs-keyword">return</span> linear_layer<br><br><span class="hljs-meta">    @staticmethod</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">entity_average</span>(<span class="hljs-params">hidden_output, e_mask</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        Average the entity hidden state vectors (H_i ~ H_j)</span><br><span class="hljs-string">        :param hidden_output: BERT hidden output</span><br><span class="hljs-string">        :param e_mask:</span><br><span class="hljs-string">                e.g. e_mask[0] == [0, 0, 0, 1, 1, 1, 0, 0, ... 0]/num_of_ones</span><br><span class="hljs-string">        :return: entity average layer</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        avg_layer = Dot(axes=<span class="hljs-number">1</span>)([e_mask, hidden_output])<br>        <span class="hljs-keyword">return</span> avg_layer<br></code></pre></td></tr></table></figure>
+<h3 id="总结">总结</h3>
+<p><code>R-BERT</code>模型再次见证了BERT等预训练模型的强大。该模型的实现思路比较简单，也取得了很不错的效果，是关系分类任务的一大突破。</p>
+<p>当然对笔者来说，也有种重要的意义：第一次自己复现了论文代码，虽然有Torch代码可以参考。</p>
+<p>本文分享到此结束，感谢阅读~</p>
+<p>2021年4月1日于上海杨浦，此日大雾迷城~</p>
+<h3 id="参考文献">参考文献</h3>
+<ul>
+<li>NLP-progress Relation Extraction:
+http://nlpprogress.com/english/relationship_extraction.html</li>
+<li>Huggingface Transformers:
+https://github.com/huggingface/transformers</li>
+<li>https://github.com/wang-h/bert-relation-classification</li>
+<li>R-BERT: https://github.com/monologg/R-BERT</li>
+<li>Enriching Pre-trained Language Model with Entity Information for
+Relation Classification: https://arxiv.org/pdf/1905.08284.pdf</li>
+<li>Chinese-BERT-wwm: https://github.com/ymcui/Chinese-BERT-wwm</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/BERT/" class="print-no-link">#BERT</a>
+      
+        <a href="/tags/NLP/" class="print-no-link">#NLP</a>
+      
+        <a href="/tags/%E5%85%B3%E7%B3%BB%E5%88%86%E7%B1%BB/" class="print-no-link">#关系分类</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（四十五）R-BERT在人物关系分类上的尝试及Keras代码复现</div>
+      <div>https://percent4.github.io/NLP（四十五）R-BERT在人物关系分类上的尝试及Keras代码复现/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月10日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E5%85%AD%EF%BC%89%E5%AF%B9%E6%8A%97%E8%AE%AD%E7%BB%83%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95/" title="NLP（四十六）对抗训练的一次尝试">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NLP（四十六）对抗训练的一次尝试</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%8A%A0%E8%BD%BDBERT%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%96%B9%E6%B3%95/" title="NLP（四十四）使用keras-bert加载BERT模型的两种方法">
+                        <span class="hidden-mobile">NLP（四十四）使用keras-bert加载BERT模型的两种方法</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,878 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文介绍了测试工具coverage的高阶使用，希望能对读者有所启发~">
+<meta property="og:type" content="article">
+<meta property="og:title" content="测试工具coverage的高阶使用">
+<meta property="og:url" content="https://percent4.github.io/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7coverage%E7%9A%84%E9%AB%98%E9%98%B6%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文介绍了测试工具coverage的高阶使用，希望能对读者有所启发~">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://percent4.github.io/img/coverage1_1.png">
+<meta property="og:image" content="https://percent4.github.io/img/coverage1_2.png">
+<meta property="og:image" content="https://percent4.github.io/img/coverage1_3.png">
+<meta property="og:image" content="https://percent4.github.io/img/coverage1_4.png">
+<meta property="og:image" content="https://percent4.github.io/img/coverage1_5.png">
+<meta property="article:published_time" content="2023-08-19T10:41:37.000Z">
+<meta property="article:modified_time" content="2023-08-19T10:45:27.633Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="单元测试">
+<meta property="article:tag" content="coverage">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://percent4.github.io/img/coverage1_1.png">
+  
+  
+  
+  <title>测试工具coverage的高阶使用 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="测试工具coverage的高阶使用"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-08-19 18:41" pubdate>
+          星期六, 八月 19日 2023, 6:41 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          5.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          47 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">测试工具coverage的高阶使用</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>在文章<a target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/details/123833933">Python之单元测试使用的一点心得</a>中，笔者介绍了自己在使用Python测试工具<code>coverge</code>的一点心得，包括：</p>
+<ol>
+<li>使用coverage模块计算代码测试覆盖率</li>
+<li>使用coverage api计算代码测试覆盖率</li>
+<li>coverage配置文件的使用</li>
+<li>coverage badge的生成</li>
+</ol>
+<p>本文在此基础上，将会介绍coverage的高阶使用，包括：</p>
+<ul>
+<li>
+<p>Flask API测试</p>
+</li>
+<li>
+<p>coverage多文件测试</p>
+</li>
+<li>
+<p>coverage的Gitlab CI/CD集成</p>
+</li>
+<li>
+<p>coverage badge生成</p>
+<p>本文中使用coverage的版本均为7.3.0。</p>
+</li>
+<li></li>
+</ul>
+<h3 id="Flask-API测试">Flask API测试</h3>
+<p>在unittest测试框架如果对Flask API进行测试时使用HTTP请求，那么将无法得到代码覆盖率。</p>
+<p>我们有如下的示例Flask服务：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> flask <span class="hljs-keyword">import</span> Flask<br><br>app = Flask(__name__)<br><br><br><span class="hljs-meta">@app.route(<span class="hljs-params"><span class="hljs-string">&#x27;/&#x27;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">index</span>():<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;Hello index&quot;</span><br><br><br><span class="hljs-meta">@app.route(<span class="hljs-params"><span class="hljs-string">&#x27;/test&#x27;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test</span>():<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;Hello test&quot;</span><br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    app.run(host=<span class="hljs-string">&quot;0.0.0.0&quot;</span>, port=<span class="hljs-number">5000</span>, debug=<span class="hljs-literal">True</span>)<br></code></pre></td></tr></table></figure>
+<p>正确的测试代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> unittest<br><br><span class="hljs-keyword">from</span> flask_app <span class="hljs-keyword">import</span> app<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">AppTestCase</span>(unittest.TestCase):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">setUp</span>(<span class="hljs-params">self</span>):<br>        self.ctx = app.app_context()<br>        self.ctx.push()<br>        self.client = app.test_client()<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">tearDown</span>(<span class="hljs-params">self</span>):<br>        self.ctx.pop()<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">test_case1</span>(<span class="hljs-params">self</span>):<br>        response = self.client.get(<span class="hljs-string">&quot;/&quot;</span>)<br>        self.assertEqual(response.status_code, <span class="hljs-number">200</span>)<br>        self.assertEqual(response.text, <span class="hljs-string">&quot;Hello index&quot;</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">test_case2</span>(<span class="hljs-params">self</span>):<br>        response = self.client.get(<span class="hljs-string">&quot;/test&quot;</span>)<br>        self.assertEqual(response.status_code, <span class="hljs-number">200</span>)<br>        self.assertEqual(response.text, <span class="hljs-string">&quot;Hello test&quot;</span>)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    suite = unittest.TestSuite()<br>    suite.addTest(AppTestCase(<span class="hljs-string">&#x27;test_case1&#x27;</span>))<br>    suite.addTest(AppTestCase(<span class="hljs-string">&#x27;test_case2&#x27;</span>))<br>    run = unittest.TextTestRunner()<br>    run.run(suite)<br></code></pre></td></tr></table></figure>
+<h3 id="coverage多文件测试">coverage多文件测试</h3>
+<p>我们有如下的实现两个变量相加的代码（<code>func_add.py</code>）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">add</span>(<span class="hljs-params">a, b</span>):<br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(a, <span class="hljs-built_in">str</span>) <span class="hljs-keyword">and</span> <span class="hljs-built_in">isinstance</span>(b, <span class="hljs-built_in">str</span>):<br>        <span class="hljs-keyword">return</span> a + <span class="hljs-string">&#x27;+&#x27;</span> + b<br>    <span class="hljs-keyword">elif</span> <span class="hljs-built_in">isinstance</span>(a, <span class="hljs-built_in">list</span>) <span class="hljs-keyword">and</span> <span class="hljs-built_in">isinstance</span>(b, <span class="hljs-built_in">list</span>):<br>        <span class="hljs-keyword">return</span> a + b<br>    <span class="hljs-keyword">elif</span> <span class="hljs-built_in">isinstance</span>(a, (<span class="hljs-built_in">int</span>, <span class="hljs-built_in">float</span>)) <span class="hljs-keyword">and</span> <span class="hljs-built_in">isinstance</span>(b, (<span class="hljs-built_in">int</span>, <span class="hljs-built_in">float</span>)):<br>        <span class="hljs-keyword">return</span> a + b<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">None</span><br></code></pre></td></tr></table></figure>
+<p>两个测试文件<code>test_func_add1.py</code>和<code>test_func_add2.py</code>，内容如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> unittest<br><br><span class="hljs-keyword">from</span> func_add <span class="hljs-keyword">import</span> add<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">TestAdd</span>(unittest.TestCase):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">setUp</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-keyword">pass</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">test_add_case1</span>(<span class="hljs-params">self</span>):<br>        a = <span class="hljs-string">&quot;Hello&quot;</span><br>        b = <span class="hljs-string">&quot;World&quot;</span><br>        res = add(a, b)<br>        <span class="hljs-built_in">print</span>(res)<br>        self.assertEqual(res, <span class="hljs-string">&quot;Hello+World&quot;</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">test_add_case2</span>(<span class="hljs-params">self</span>):<br>        a = <span class="hljs-number">1</span><br>        b = <span class="hljs-number">2</span><br>        res = add(a, b)<br>        <span class="hljs-built_in">print</span>(res)<br>        self.assertEqual(res, <span class="hljs-number">3</span>)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br><br>    <span class="hljs-comment"># 部分用例测试</span><br>    <span class="hljs-comment"># 构造一个容器用来存放我们的测试用例</span><br>    suite = unittest.TestSuite()<br>    <span class="hljs-comment"># 添加类中的测试用例</span><br>    suite.addTest(TestAdd(<span class="hljs-string">&#x27;test_add_case1&#x27;</span>))<br>    suite.addTest(TestAdd(<span class="hljs-string">&#x27;test_add_case2&#x27;</span>))<br>    run = unittest.TextTestRunner()<br>    run.run(suite)<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> unittest<br><br><span class="hljs-keyword">from</span> func_add <span class="hljs-keyword">import</span> add<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">TestAdd</span>(unittest.TestCase):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">setUp</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-keyword">pass</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">test_add_case3</span>(<span class="hljs-params">self</span>):<br>        a = [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>]<br>        b = [<span class="hljs-number">3</span>]<br>        res = add(a, b)<br>        <span class="hljs-built_in">print</span>(res)<br>        self.assertEqual(res, [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>])<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">test_add_case4</span>(<span class="hljs-params">self</span>):<br>        a = <span class="hljs-number">2</span><br>        b = <span class="hljs-string">&quot;3&quot;</span><br>        res = add(a, b)<br>        <span class="hljs-built_in">print</span>(<span class="hljs-literal">None</span>)<br>        self.assertEqual(res, <span class="hljs-literal">None</span>)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br><br>    <span class="hljs-comment"># 部分用例测试</span><br>    <span class="hljs-comment"># 构造一个容器用来存放我们的测试用例</span><br>    suite = unittest.TestSuite()<br>    <span class="hljs-comment"># 添加类中的测试用例</span><br>    suite.addTest(TestAdd(<span class="hljs-string">&#x27;test_add_case3&#x27;</span>))<br>    suite.addTest(TestAdd(<span class="hljs-string">&#x27;test_add_case4&#x27;</span>))<br>    run = unittest.TextTestRunner()<br>    run.run(suite)<br></code></pre></td></tr></table></figure>
+<p>使用命令进行测试：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">coverage run test_func_add1.py<br>coverage run test_func_add2.py<br>coverage report<br></code></pre></td></tr></table></figure>
+<p>生成的代码测试覆盖率如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">Name          Stmts   Miss  Cover<br>---------------------------------<br>func_add.py       8      2    75%<br>---------------------------------<br>TOTAL             8      2    75%<br></code></pre></td></tr></table></figure>
+<p>这是不符合我们预期的，因为在这两个测试文件中我们对所有的代码都进行了测试，理论上测试覆盖率应该为100%，之所以这样，是因为<code>coverage run</code>命令运行时每一次都会覆盖掉之前的测试。正确的测试命令（以文件追加的形式）如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">coverage run test_func_add1.py<br>coverage run --append test_func_add2.py<br>coverage report<br></code></pre></td></tr></table></figure>
+<p>此时代码覆盖率如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">Name          Stmts   Miss  Cover<br>---------------------------------<br>func_add.py       8      0   100%<br>---------------------------------<br>TOTAL             8      0   100%<br></code></pre></td></tr></table></figure>
+<h3 id="coverage的Gitlab-CI-CD集成">coverage的Gitlab CI/CD集成</h3>
+<p>在文章<a target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/details/131258147">Gitlab CI/CD入门（一）Python项目的CI演示</a>中，笔者介绍了Gitlab CI/CD的入门。在此基础上，我们将集成coverage。</p>
+<p>首先我们的test目录如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">.<br>├── __init__.py<br>├── func_add.py<br>└── test_func_add.py<br></code></pre></td></tr></table></figure>
+<p><code>func_add.py</code>为实现两个变量相加的代码，如前述。<code>test_func_add.py</code>为测试代码，如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> unittest<br><br><span class="hljs-keyword">from</span> func_add <span class="hljs-keyword">import</span> add<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">TestAdd</span>(unittest.TestCase):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">setUp</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-keyword">pass</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">test_add_case1</span>(<span class="hljs-params">self</span>):<br>        a = <span class="hljs-string">&quot;Hello&quot;</span><br>        b = <span class="hljs-string">&quot;World&quot;</span><br>        res = add(a, b)<br>        <span class="hljs-built_in">print</span>(res)<br>        self.assertEqual(res, <span class="hljs-string">&quot;Hello+World&quot;</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">test_add_case2</span>(<span class="hljs-params">self</span>):<br>        a = <span class="hljs-number">1</span><br>        b = <span class="hljs-number">2</span><br>        res = add(a, b)<br>        <span class="hljs-built_in">print</span>(res)<br>        self.assertEqual(res, <span class="hljs-number">3</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">test_add_case3</span>(<span class="hljs-params">self</span>):<br>        a = [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>]<br>        b = [<span class="hljs-number">3</span>]<br>        res = add(a, b)<br>        <span class="hljs-built_in">print</span>(res)<br>        self.assertEqual(res, [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>])<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">test_add_case4</span>(<span class="hljs-params">self</span>):<br>        a = <span class="hljs-number">2</span><br>        b = <span class="hljs-string">&quot;3&quot;</span><br>        res = add(a, b)<br>        <span class="hljs-built_in">print</span>(<span class="hljs-literal">None</span>)<br>        self.assertEqual(res, <span class="hljs-literal">None</span>)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br><br>    <span class="hljs-comment"># 部分用例测试</span><br>    <span class="hljs-comment"># 构造一个容器用来存放我们的测试用例</span><br>    suite = unittest.TestSuite()<br>    <span class="hljs-comment"># 添加类中的测试用例</span><br>    suite.addTest(TestAdd(<span class="hljs-string">&#x27;test_add_case1&#x27;</span>))<br>    suite.addTest(TestAdd(<span class="hljs-string">&#x27;test_add_case2&#x27;</span>))<br>    suite.addTest(TestAdd(<span class="hljs-string">&#x27;test_add_case3&#x27;</span>))<br>    suite.addTest(TestAdd(<span class="hljs-string">&#x27;test_add_case4&#x27;</span>))<br>    run = unittest.TextTestRunner()<br>    run.run(suite)<br></code></pre></td></tr></table></figure>
+<p>CI/CD依赖<code>.gitlab-ci.yml</code>，配置如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">stages:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">build</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">unittest</span><br><br><span class="hljs-attr">build-job:</span><br>  <span class="hljs-attr">stage:</span> <span class="hljs-string">build</span><br>  <span class="hljs-attr">script:</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">echo</span> <span class="hljs-string">`date`</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">echo</span> <span class="hljs-string">&quot;Hello, $GITLAB_USER_LOGIN!&quot;</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">echo</span> <span class="hljs-string">&quot;This job deploys something from the $CI_COMMIT_BRANCH branch.&quot;</span><br><br><span class="hljs-attr">unit_test_job:</span><br>  <span class="hljs-attr">stage:</span> <span class="hljs-string">unittest</span><br>  <span class="hljs-attr">image:</span> <span class="hljs-string">python:3.9-alpine3.17</span><br>  <span class="hljs-attr">script:</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">pip3</span> <span class="hljs-string">install</span> <span class="hljs-string">coverage==7.3.0</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">coverage</span> <span class="hljs-string">run</span> <span class="hljs-string">test/test_func_add.py</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">coverage</span> <span class="hljs-string">report</span><br>  <span class="hljs-attr">coverage:</span> <span class="hljs-string">&#x27;/TOTAL.*\s+(\d+%)$/&#x27;</span><br></code></pre></td></tr></table></figure>
+<p>运行CI/CD，结果如下图：</p>
+<p><img src="/img/coverage1_1.png" srcset="/img/loading.gif" lazyload alt="unittest_job运行结果"></p>
+<p>在Gitlab项目中的<code>Settings -&gt; CI/CD -&gt; General pipelines</code>中点击Expand，会显示CI/CD已内置<code>Pipeline status, Coverage report, Latest release</code>，其中<code>Coverage repor</code>如下图：</p>
+<p><img src="/img/coverage1_2.png" srcset="/img/loading.gif" lazyload alt="Coverage report"></p>
+<p>最后我们要在项目中加入coverage badge（徽章），在Gitlab项目中的<code>Settings -&gt; General -&gt; Badge</code>中点击Expand，再点击Add badge，coverage徽章的配置如下：</p>
+<p><img src="/img/coverage1_3.png" srcset="/img/loading.gif" lazyload alt="Add badge"></p>
+<p>本项目中只有main分支，因此不需要设置变量，实际在使用过程中，需要配置变量如default_branch等。</p>
+<p>以上配置完毕后，项目徽章显示如下：</p>
+<p><img src="/img/coverage1_4.png" srcset="/img/loading.gif" lazyload alt="成功加入徽章！"></p>
+<p>以上配置过程已开源，项目网址为：<a target="_blank" rel="noopener" href="https://gitlab.com/jclian91/gitlab_ci_test">https://gitlab.com/jclian91/gitlab_ci_test</a> 。</p>
+<h3 id="coverage-badge生成">coverage badge生成</h3>
+<p>coverage badge生成方式分为静态和动态。</p>
+<p>动态的话，可使用<code>coverage-badge</code>或者<code>genbadge</code>模块。</p>
+<p>静态的话，可使用网站：<a target="_blank" rel="noopener" href="https://shields.io/badges/static-badge">https://shields.io/badges/static-badge</a> .</p>
+<p>比如我们生成编程语言的徽章，如下图：</p>
+<p><img src="/img/coverage1_5.png" srcset="/img/loading.gif" lazyload alt="示例徽章生成"></p>
+<p>之后我们就可以用该网址访问徽章了。</p>
+<h3 id="总结">总结</h3>
+<p>本文介绍了测试工具coverage的高阶使用，希望能对读者有所启发~</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Python/" class="category-chain-item">Python</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/" class="print-no-link">#单元测试</a>
+      
+        <a href="/tags/coverage/" class="print-no-link">#coverage</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>测试工具coverage的高阶使用</div>
+      <div>https://percent4.github.io/测试工具coverage的高阶使用/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年8月19日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/Gradio%E5%85%A5%E9%97%A8%EF%BC%881%EF%BC%89%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E3%80%81%E8%A1%A8%E6%A0%BC%E3%80%81%E6%96%87%E6%9C%AC%E9%AB%98%E4%BA%AE/" title="Gradio入门（1）输入输出、表格、文本高亮">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Gradio入门（1）输入输出、表格、文本高亮</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/tensorflow%EF%BC%881%EF%BC%89%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/" title="tensorflow（1）基础入门">
+                        <span class="hidden-mobile">tensorflow（1）基础入门</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

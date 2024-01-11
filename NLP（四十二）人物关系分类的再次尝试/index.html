@@ -1,0 +1,918 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍人物关系分类的再次尝试。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（四十二）人物关系分类的再次尝试">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%BA%8C%EF%BC%89%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E5%88%86%E7%B1%BB%E7%9A%84%E5%86%8D%E6%AC%A1%E5%B0%9D%E8%AF%95/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍人物关系分类的再次尝试。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://percent4.github.io/img/nlp42_1.png">
+<meta property="og:image" content="https://percent4.github.io/img/nlp42_1.png">
+<meta property="article:published_time" content="2023-07-10T08:53:10.000Z">
+<meta property="article:modified_time" content="2024-01-10T15:53:14.074Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="关系分类">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp42_1.png">
+  
+  
+  
+  <title>NLP（四十二）人物关系分类的再次尝试 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（四十二）人物关系分类的再次尝试"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-10 16:53" pubdate>
+          星期一, 七月 10日 2023, 4:53 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          2.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          22 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（四十二）人物关系分类的再次尝试</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>两周前的周末，笔者决定对人物关系分类进行再次尝试。</p>
+<p>为什么说是再次尝试呢？因为笔者之前已经写过一篇文章<a
+target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/details/104380371">NLP（二十一）人物关系抽取的一次实战</a>，当时的标注数据大约2900条，使用的模型也比较简单，为BERT+Bi-GRU+Attention+FC结构，其中BERT用作特征提取，该模型在原有数据集上的F1为79%。</p>
+<p>经过笔者一年断断续续的努力，现在的标注样本已经达到3900多条。鉴于笔者已做过BERT微调相关工作，当然希望在此数据集上进行再次尝试。</p>
+<p>现有的人物关系数据集大约3900多条，分布如下图：</p>
+<figure>
+<img src="/img/nlp42_1.png" srcset="/img/loading.gif" lazyload alt="人物关系分布图" />
+<figcaption aria-hidden="true">人物关系分布图</figcaption>
+</figure>
+<p>首先，我们只使用BERT分类模型，对输入数据进行格式改造，进行简单地尝试。</p>
+<p>我们以样本<code>亲戚  1837年6月20日，威廉四世辞世，他的侄女维多利亚即位。</code>为例，其中<code>亲戚</code>为人物关系，<code>威廉四世</code>为实体1，<code>维多利亚</code>为实体2，来演示输入的文本格式。下面的部分我们统一使用<code>chinese-RoBERTa-wwm-ext</code>作为预训练模型，数据集分为训练集和测试集，比例为8:2。</p>
+<p>第一种方法，我们与文章<a
+href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%80%EF%BC%89%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E6%8A%BD%E5%8F%96%E7%9A%84%E4%B8%80%E6%AC%A1%E5%AE%9E%E6%88%98/">NLP（二十一）人物关系抽取的一次实战</a>一样，在文本中将实体1替换为同样数量的<code>#</code>，实体2替换为同样数量的<code>#</code>，再将实体1、实体2、文本用<code>$</code>连接，输入格式为：<code>威廉四世$维多利亚$1837年6月20日，####辞世，他的侄女####即位。</code>。使用BERT+Bi-GRU+Attention+FC模型，在测试集上的评估结果如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>模型名称</th>
+<th>训练1</th>
+<th>训练2</th>
+<th>训练3</th>
+<th>训练4</th>
+<th>训练5</th>
+<th>Avg</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>BiGRU+Attention</td>
+<td>0.7726</td>
+<td>0.7974</td>
+<td>0.7935</td>
+<td>0.7908</td>
+<td>0.7941</td>
+<td>0.7897</td>
+</tr>
+</tbody>
+</table>
+<p>第二种方法，输入格式与第一种方法一致。使用文章<a
+href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E4%BA%94%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E5%A4%9A%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1/">NLP（三十五）使用keras-bert实现文本多分类任务</a>中的多分类模型进行训练，在测试集上的评估结果如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>模型名称</th>
+<th>训练1</th>
+<th>训练2</th>
+<th>训练3</th>
+<th>训练4</th>
+<th>训练5</th>
+<th>Avg</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Bert_cls</td>
+<td>0.8246</td>
+<td>0.8110</td>
+<td>0.8282</td>
+<td>0.8448</td>
+<td>0.8218</td>
+<td>0.8260</td>
+</tr>
+</tbody>
+</table>
+<p>可以看到，有了预训练模型的帮助，模型效果有了显著提升，F1值平均高了3.6%。</p>
+<p>第三种方法，在文本中将实体用<code>#</code>包围，输入格式为：<code>1837年6月20日，#威廉四世#辞世，他的侄女#维多利亚#即位。</code>使用BERT_cls模型，在测试集上的评估结果如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>模型名称</th>
+<th>训练1</th>
+<th>训练2</th>
+<th>训练3</th>
+<th>训练4</th>
+<th>训练5</th>
+<th>Avg</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Bert_cls2（实体用#围绕）</td>
+<td>0.8175</td>
+<td>0.8259</td>
+<td>0.8275</td>
+<td>0.8335</td>
+<td>0.8299</td>
+<td>0.8269</td>
+</tr>
+</tbody>
+</table>
+<p>可以看到，该输入格式与第二种方法相比，在模型效果上并没有太大的提升。</p>
+<p>也许，是时候尝试新的模型了。</p>
+<p>上周一晚上，笔者无意中看到一篇论文，名称为<a
+target="_blank" rel="noopener" href="https://arxiv.org/pdf/1905.08284.pdf">Enriching Pre-trained
+Language Model with Entity Information for Relation
+Classification</a>，顾名思义为使用实体信息将预训练模型用于关系分类（RC）。其模型结构如下图：</p>
+<figure>
+<img src="/img/nlp42_1.png" srcset="/img/loading.gif" lazyload alt="R-BERT模型结构图" />
+<figcaption aria-hidden="true">R-BERT模型结构图</figcaption>
+</figure>
+<p>该模型被称为<code>R-BERT</code>，模型结构在此不多介绍，后面有机会再介绍。在Github上有<code>R-BERT</code>模型的Torch框架实现方式，在<code>Semeval 2010 Task 8 Dataset</code>取得了不错的效果。</p>
+<p>笔者将<code>R-BERT</code>用于人物关系分类数据集中，在测试集上的评估结果如下：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">Model</span>: chinese-roberta-wwm-ext, weighted avgage F1 = <span class="hljs-number">85</span>.<span class="hljs-number">35</span>%<br></code></pre></td></tr></table></figure>
+<p>该项目笔者已上传至Github，网址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/R-BERT_for_people_relation_extraction">https://github.com/percent4/R-BERT_for_people_relation_extraction</a>。</p>
+<p>本周，笔者下定决心使用Keras实现<code>R-BERT</code>。第一天，无果。第二天，实现关键Keras层的突破，进行简单模型训练，发现离Torch版本的结果尚有一定差距。第三天，对照Torch版本，不断调整模型，加入Warmup机制，发现终于取得了与Torch版本一样的效果。在测试集上的评估结果如下：</p>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs crystal"><span class="hljs-comment"># Model: chinese-RoBERTa-wwm-ext, weighted avgage F1 = 85.27%</span><br>              precision    recall  f1-score   support<br><br>     unknown     <span class="hljs-number">0.7930</span>    <span class="hljs-number">0.8612</span>    <span class="hljs-number">0.8257</span>       <span class="hljs-number">209</span><br>         上下级     <span class="hljs-number">0.7188</span>    <span class="hljs-number">0.7419</span>    <span class="hljs-number">0.7302</span>        <span class="hljs-number">31</span><br>          亲戚     <span class="hljs-number">0.8824</span>    <span class="hljs-number">0.6250</span>    <span class="hljs-number">0.7317</span>        <span class="hljs-number">24</span><br>        兄弟姐妹     <span class="hljs-number">0.8378</span>    <span class="hljs-number">0.9118</span>    <span class="hljs-number">0.8732</span>        <span class="hljs-number">34</span><br>          合作     <span class="hljs-number">0.8600</span>    <span class="hljs-number">0.7288</span>    <span class="hljs-number">0.7890</span>        <span class="hljs-number">59</span><br>          同人     <span class="hljs-number">1.0000</span>    <span class="hljs-number">0.9487</span>    <span class="hljs-number">0.9737</span>        <span class="hljs-number">39</span><br>          同学     <span class="hljs-number">0.8800</span>    <span class="hljs-number">0.9167</span>    <span class="hljs-number">0.8980</span>        <span class="hljs-number">24</span><br>          同门     <span class="hljs-number">0.9615</span>    <span class="hljs-number">0.9615</span>    <span class="hljs-number">0.9615</span>        <span class="hljs-number">26</span><br>          夫妻     <span class="hljs-number">0.8333</span>    <span class="hljs-number">0.8861</span>    <span class="hljs-number">0.8589</span>        <span class="hljs-number">79</span><br>          好友     <span class="hljs-number">0.8065</span>    <span class="hljs-number">0.8333</span>    <span class="hljs-number">0.8197</span>        <span class="hljs-number">30</span><br>          师生     <span class="hljs-number">0.8857</span>    <span class="hljs-number">0.8378</span>    <span class="hljs-number">0.8611</span>        <span class="hljs-number">37</span><br>          情侣     <span class="hljs-number">0.9231</span>    <span class="hljs-number">0.7742</span>    <span class="hljs-number">0.8421</span>        <span class="hljs-number">31</span><br>          父母     <span class="hljs-number">0.9062</span>    <span class="hljs-number">0.9062</span>    <span class="hljs-number">0.9062</span>       <span class="hljs-number">128</span><br>          祖孙     <span class="hljs-number">0.9524</span>    <span class="hljs-number">0.8000</span>    <span class="hljs-number">0.8696</span>        <span class="hljs-number">25</span><br><br>    accuracy                         <span class="hljs-number">0.8531</span>       <span class="hljs-number">776</span><br>   <span class="hljs-function"><span class="hljs-keyword">macro</span> <span class="hljs-title">avg</span></span>     <span class="hljs-number">0.8743</span>    <span class="hljs-number">0.8381</span>    <span class="hljs-number">0.8529</span>       <span class="hljs-number">776</span><br>weighted avg     <span class="hljs-number">0.8566</span>    <span class="hljs-number">0.8531</span>    <span class="hljs-number">0.8527</span>       <span class="hljs-number">776</span><br></code></pre></td></tr></table></figure>
+<p>该项目已上传至Github，网址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/Keras_R_BERT">https://github.com/percent4/Keras_R_BERT</a>。后面有机会笔者再详细介绍。</p>
+<p>至此，笔者不仅用Keras实现了R-BERT，并且比最初的BERT+Bi-GRU+Attention+FC模型，在测试集上的F1值提升了6.3%。</p>
+<p>实现模型的过程是痛苦的，笔者一度想放弃，但当模型成功复现后，那种快乐，是简单枯燥的工作中的一抹绚丽的阳光！这也是笔者第一次复现模型，虽然只是深度学习框架不同，但对我来说是极其重要的一步！</p>
+<p>最近又发现一个很不错的关系分类的模型：<code>Mul-BERT</code>，但由于该模型的论文并未公布，Github也没有公开源码，笔者只好按自己的理解，简单地实现了近似<code>Mul-BERT</code>模型，已上传至Github，网址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/Keras_quasi_Mul_BERT">https://github.com/percent4/Keras_quasi_Mul_BERT</a>。等论文出来后，再用Keras去复现<code>Mul-BERT</code>模型。</p>
+<p>本文到此结束，感谢阅读~</p>
+<p>2021年3月25日于上海浦东，此日阳光明媚~</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/NLP/" class="print-no-link">#NLP</a>
+      
+        <a href="/tags/%E5%85%B3%E7%B3%BB%E5%88%86%E7%B1%BB/" class="print-no-link">#关系分类</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（四十二）人物关系分类的再次尝试</div>
+      <div>https://percent4.github.io/NLP（四十二）人物关系分类的再次尝试/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月10日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%B8%89%EF%BC%89%E6%A8%A1%E5%9E%8B%E8%B0%83%E5%8F%82%E6%8A%80%E5%B7%A7%E4%B9%8BWarmup-and-Decay/" title="NLP（四十三）模型调参技巧之Warmup and Decay">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NLP（四十三）模型调参技巧之Warmup and Decay</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E5%9B%9B%E5%8D%81%E4%B8%80%EF%BC%89%E4%BD%BF%E7%94%A8HuggingFace%E7%BF%BB%E8%AF%91%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95/" title="NLP（四十一）使用HuggingFace翻译模型的一次尝试">
+                        <span class="hidden-mobile">NLP（四十一）使用HuggingFace翻译模型的一次尝试</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

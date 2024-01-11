@@ -1,0 +1,958 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文介绍了如何使用HuggingFace的&#96;Optimum&#96;，来对微调后的BERT模型进行量化（Quantization），在&#96;optimum.onnxruntime&#96;模块中，平均推理时间提速约1.8倍。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（六十八）使用Optimum进行模型量化">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E5%85%AB%EF%BC%89%E4%BD%BF%E7%94%A8Optimum%E8%BF%9B%E8%A1%8C%E6%A8%A1%E5%9E%8B%E9%87%8F%E5%8C%96/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文介绍了如何使用HuggingFace的&#96;Optimum&#96;，来对微调后的BERT模型进行量化（Quantization），在&#96;optimum.onnxruntime&#96;模块中，平均推理时间提速约1.8倍。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://percent4.github.io/img/nlp68_1.png">
+<meta property="og:image" content="https://percent4.github.io/img/weixin_gzh.png">
+<meta property="article:published_time" content="2023-09-06T15:39:33.000Z">
+<meta property="article:modified_time" content="2024-01-10T15:53:13.999Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="BERT">
+<meta property="article:tag" content="模型量化">
+<meta property="article:tag" content="Optimum">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://percent4.github.io/img/nlp68_1.png">
+  
+  
+  
+  <title>NLP（六十八）使用Optimum进行模型量化 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（六十八）使用Optimum进行模型量化"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-09-06 23:39" pubdate>
+          星期三, 九月 6日 2023, 11:39 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          7.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          64 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（六十八）使用Optimum进行模型量化</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>本文将会介绍如何使用HuggingFace的<code>Optimum</code>，来对微调后的BERT模型进行量化（Quantization）。</p>
+<p>在文章<a
+href="https://percent4.github.io/2023/09/03/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E4%B8%83%EF%BC%89BERT%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%90%8E%E5%8A%A8%E6%80%81%E9%87%8F%E5%8C%96%EF%BC%88PTDQ%EF%BC%89/">NLP（六十七）BERT模型训练后动态量化（PTDQ）</a>中，我们使用PyTorch自带的PTDQ（Post
+Training Dynamic
+Quantization）量化策略对微调后的BERT模型进行量化，取得了模型推理性能的提升（大约1.5倍）。本文将尝试使用<code>Optimum</code>量化工具。</p>
+<h3 id="optimum介绍">Optimum介绍</h3>
+<p><code>Optimum</code> 是 <code>Transformers</code>
+的扩展，它提供了一组性能优化工具，可以在目标硬件上以最高效率训练和运行模型。</p>
+<p><code>Optimum</code>针对不同的硬件，提供了不同的优化方案，如下表：</p>
+<table>
+
+<thead>
+<tr class="header">
+<th>硬件</th>
+<th>安装命令</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ONNX runtime</td>
+<td>python -m pip install optimum[onnxruntime]</td>
+</tr>
+<tr class="even">
+<td>Intel Neural Compressor (INC)</td>
+<td>python -m pip install optimum[neural-compressor]</td>
+</tr>
+<tr class="odd">
+<td>Intel OpenVINO</td>
+<td>python -m pip install optimum[openvino,nncf]</td>
+</tr>
+<tr class="even">
+<td>Graphcore IPU</td>
+<td>python -m pip install optimum[graphcore]</td>
+</tr>
+<tr class="odd">
+<td>Habana Gaudi Processor (HPU)</td>
+<td>python -m pip install optimum[habana]</td>
+</tr>
+<tr class="even">
+<td>GPU</td>
+<td>python -m pip install optimum[onnxruntime-gpu]</td>
+</tr>
+</tbody>
+</table>
+<p>本文将会介绍基于ONNX的模型量化技术。ONNX（英语：Open Neural Network
+Exchange）是一种针对机器学习所设计的开放式的文件格式，用于存储训练好的模型。它使得不同的人工智能框架（如Pytorch、MXNet）可以采用相同格式存储模型数据并交互。</p>
+<h3 id="模型量化">模型量化</h3>
+<p>我们使用的微调后的BERT模型采用文章<a
+href="https://percent4.github.io/2023/09/02/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8HuggingFace%E4%B8%AD%E7%9A%84Trainer%E8%BF%9B%E8%A1%8CBERT%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/">https://percent4.github.io/2023/09/02/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8HuggingFace%E4%B8%AD%E7%9A%84Trainer%E8%BF%9B%E8%A1%8CBERT%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/</a>中给出的文本分类模型。</p>
+<p>首先，我们先加载PyTorch中的设备（CPU）。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># load device</span><br><span class="hljs-keyword">import</span> torch<br><br>device = torch.device(<span class="hljs-string">&quot;cpu&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>接着，我们使用<code>optimum.onnxruntime</code>模块加载模型和tokenizer，并将模型保存为onnx格式。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> optimum.onnxruntime <span class="hljs-keyword">import</span> ORTModelForSequenceClassification<br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoTokenizer<br><span class="hljs-keyword">import</span> torch<br><br>model_id = <span class="hljs-string">&quot;./sougou_test_trainer_256/checkpoint-96&quot;</span><br>onnx_path = <span class="hljs-string">&quot;./sougou_test_trainer_256/onnx_256&quot;</span><br><br><span class="hljs-comment"># load vanilla transformers and convert to onnx</span><br>model = ORTModelForSequenceClassification.from_pretrained(model_id, from_transformers=<span class="hljs-literal">True</span>)<br>tokenizer = AutoTokenizer.from_pretrained(model_id)<br><br><span class="hljs-comment"># save onnx checkpoint and tokenizer</span><br>model.save_pretrained(onnx_path)<br>tokenizer.save_pretrained(onnx_path)<br></code></pre></td></tr></table></figure>
+<p>此时，会多出onnx_256文件夹，保存模型为model.onnx。</p>
+<figure>
+<img src="/img/nlp68_1.png" srcset="/img/loading.gif" lazyload alt="保存为onnx模型" />
+<figcaption aria-hidden="true">保存为onnx模型</figcaption>
+</figure>
+<p>输出结果为：</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs scheme">(<span class="hljs-symbol">&#x27;./sougou_test_trainer_256/onnx_256</span>\\tokenizer_config.json&#x27;,<br> <span class="hljs-symbol">&#x27;./sougou_test_trainer_256/onnx_256</span>\\special_tokens_map.json&#x27;,<br> <span class="hljs-symbol">&#x27;./sougou_test_trainer_256/onnx_256</span>\\vocab.txt&#x27;,<br> <span class="hljs-symbol">&#x27;./sougou_test_trainer_256/onnx_256</span>\\added_tokens.json&#x27;,<br> <span class="hljs-symbol">&#x27;./sougou_test_trainer_256/onnx_256</span>\\tokenizer.json&#x27;)<br></code></pre></td></tr></table></figure>
+<p>使用<code>transfomers</code>中的pipeline对模型进行快速推理。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> pipeline<br><br>vanilla_clf = pipeline(<span class="hljs-string">&quot;text-classification&quot;</span>, model=model, tokenizer=tokenizer)<br>vanilla_clf(<span class="hljs-string">&quot;这期节目继续关注中国篮球的话题。众所周知，我们已经结束了男篮世界杯的所有赛程，一胜四负的一个成绩，甚至比上一届的世界杯成绩还要差。因为这一次我们连奥运会落选赛也都没有资格参加，所以，连续两次错过了巴黎奥运会的话，对于中国篮协，还有对于姚明来说，确实成为了他任职的一个最大的败笔。对于球迷非常关注的一个话题，乔尔杰维奇是否下课，可能对于这个悬念来说也都是暂时有答案了。&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>输出结果如下：</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scheme">[&#123;<span class="hljs-symbol">&#x27;label</span><span class="hljs-symbol">&#x27;:</span> <span class="hljs-symbol">&#x27;LABEL_0</span>&#x27;, <span class="hljs-symbol">&#x27;score</span><span class="hljs-symbol">&#x27;:</span> <span class="hljs-number">0.9963239431381226</span>&#125;]<br></code></pre></td></tr></table></figure>
+<p>对ONNX模型进行优化。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> optimum.onnxruntime <span class="hljs-keyword">import</span> ORTOptimizer<br><span class="hljs-keyword">from</span> optimum.onnxruntime.configuration <span class="hljs-keyword">import</span> OptimizationConfig<br><br><span class="hljs-comment"># create ORTOptimizer and define optimization configuration</span><br>optimizer = ORTOptimizer.from_pretrained(model)<br>optimization_config = OptimizationConfig(optimization_level=<span class="hljs-number">99</span>) <span class="hljs-comment"># enable all optimizations</span><br><br><span class="hljs-comment"># apply the optimization configuration to the model</span><br>optimizer.optimize(<br>    save_dir=onnx_path,<br>    optimization_config=optimization_config,<br>)<br></code></pre></td></tr></table></figure>
+<p>此时，优化后的模型为model_optimized.onnx。</p>
+<p>对优化后的模型进行推理。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> pipeline<br><br><span class="hljs-comment"># load optimized model</span><br>optimized_model = ORTModelForSequenceClassification.from_pretrained(onnx_path, file_name=<span class="hljs-string">&quot;model_optimized.onnx&quot;</span>)<br><br><span class="hljs-comment"># create optimized pipeline</span><br>optimized_clf = pipeline(<span class="hljs-string">&quot;text-classification&quot;</span>, model=optimized_model, tokenizer=tokenizer)<br>optimized_clf(<span class="hljs-string">&quot;今年7月，教育部等四部门联合印发了《关于在深化非学科类校外培训治理中加强艺考培训规范管理的通知》（以下简称《通知》）。《通知》针对近年来校外艺术培训的状况而发布，并从源头就校外艺术培训机构的“培训主体、从业人员、招生行为、安全底线”等方面进行严格规范。校外艺术培训之所以火热，主要在于高中阶段艺术教育发展迟滞于学生需求。分析教育部数据，2021年艺术学科在校生占比为9.84%，高于2020年的9.73%；2020至2021年艺术学科在校生的年增长率为5.04%，远高于4.28%的总在校生年增长率。增长的数据，是近年来艺考招生连年火热的缩影，在未来一段时间内，艺考或将在全国范围内继续保持高热度。&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scheme">[&#123;<span class="hljs-symbol">&#x27;label</span><span class="hljs-symbol">&#x27;:</span> <span class="hljs-symbol">&#x27;LABEL_3</span>&#x27;, <span class="hljs-symbol">&#x27;score</span><span class="hljs-symbol">&#x27;:</span> <span class="hljs-number">0.9926980137825012</span>&#125;]<br></code></pre></td></tr></table></figure>
+<p>对优化后的ONNX模型再进行量化，代码为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> optimum.onnxruntime <span class="hljs-keyword">import</span> ORTQuantizer<br><span class="hljs-keyword">from</span> optimum.onnxruntime.configuration <span class="hljs-keyword">import</span> AutoQuantizationConfig<br><br><span class="hljs-comment"># create ORTQuantizer and define quantization configuration</span><br>dynamic_quantizer = ORTQuantizer.from_pretrained(optimized_model)<br>dqconfig = AutoQuantizationConfig.avx2(is_static=<span class="hljs-literal">False</span>, per_channel=<span class="hljs-literal">False</span>)<br><br><span class="hljs-comment"># apply the quantization configuration to the model</span><br>model_quantized_path = dynamic_quantizer.quantize(<br>    save_dir=onnx_path,<br>    quantization_config=dqconfig,<br>)<br></code></pre></td></tr></table></figure>
+<p>此时量化后的模型为model_optimized_quantized.onnx。比较量化前后的模型大小，代码为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><br><span class="hljs-comment"># get model file size</span><br>size = os.path.getsize(os.path.join(onnx_path, <span class="hljs-string">&quot;model_optimized.onnx&quot;</span>))/(<span class="hljs-number">1024</span>*<span class="hljs-number">1024</span>)<br>quantized_model = os.path.getsize(os.path.join(onnx_path, <span class="hljs-string">&quot;model_optimized_quantized.onnx&quot;</span>))/(<span class="hljs-number">1024</span>*<span class="hljs-number">1024</span>)<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Model file size: <span class="hljs-subst">&#123;size:<span class="hljs-number">.2</span>f&#125;</span> MB&quot;</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Quantized Model file size: <span class="hljs-subst">&#123;quantized_model:<span class="hljs-number">.2</span>f&#125;</span> MB&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">Model</span> file size: <span class="hljs-number">390</span>.<span class="hljs-number">17</span> MB<br><span class="hljs-attribute">Quantized</span> Model file size: <span class="hljs-number">97</span>.<span class="hljs-number">98</span> MB<br></code></pre></td></tr></table></figure>
+<p>最后，加载量化后的模型，代码为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># load quantization model</span><br><span class="hljs-keyword">from</span> optimum.onnxruntime <span class="hljs-keyword">import</span> ORTModelForSequenceClassification<br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> pipeline, AutoTokenizer<br><br>quantized_model = ORTModelForSequenceClassification.from_pretrained(onnx_path, file_name=<span class="hljs-string">&quot;model_optimized_quantized.onnx&quot;</span>).to(device)<br>tokenizer = AutoTokenizer.from_pretrained(onnx_path)<br></code></pre></td></tr></table></figure>
+<h3 id="推理实验">推理实验</h3>
+<p>在进行模型推理实验前，先加载测试数据集。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br><br>test_df = pd.read_csv(<span class="hljs-string">&quot;./data/sougou/test.csv&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>使用量化前的模型进行推理，记录推理时间，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># original model evaluate</span><br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">import</span> time<br><br>cost_time_list = []<br>s_time = time.time()<br>true_labels, pred_labels = [], [] <br><span class="hljs-keyword">for</span> i, row <span class="hljs-keyword">in</span> test_df.iterrows():<br>    row_s_time = time.time()<br>    true_labels.append(row[<span class="hljs-string">&quot;label&quot;</span>])<br>    encoded_text = tokenizer(row[<span class="hljs-string">&#x27;text&#x27;</span>], max_length=<span class="hljs-number">256</span>, truncation=<span class="hljs-literal">True</span>, padding=<span class="hljs-literal">True</span>, return_tensors=<span class="hljs-string">&#x27;pt&#x27;</span>)<br>    <span class="hljs-comment"># print(encoded_text)</span><br>    logits = model(**encoded_text)<br>    label_id = np.argmax(logits[<span class="hljs-number">0</span>].detach().numpy(), axis=<span class="hljs-number">1</span>)[<span class="hljs-number">0</span>]<br>    pred_labels.append(label_id)<br>    cost_time_list.append((time.time() - row_s_time) * <span class="hljs-number">1000</span>)<br>    <span class="hljs-keyword">if</span> i % <span class="hljs-number">100</span>:<br>    	<span class="hljs-built_in">print</span>(i, (time.time() - row_s_time) * <span class="hljs-number">1000</span>, label_id)<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;avg time:&quot;</span>, (time.time() - s_time) * <span class="hljs-number">1000</span> / test_df.shape[<span class="hljs-number">0</span>])<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;P50 time:&quot;</span>, np.percentile(np.array(cost_time_list), <span class="hljs-number">50</span>))<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;P95 time:&quot;</span>, np.percentile(np.array(cost_time_list), <span class="hljs-number">95</span>))<br></code></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">0</span> <span class="hljs-number">710</span>.<span class="hljs-number">2577686309814</span> <span class="hljs-number">0</span><br><span class="hljs-attribute">100</span> <span class="hljs-number">477</span>.<span class="hljs-number">72765159606934</span> <span class="hljs-number">1</span><br><span class="hljs-attribute">200</span> <span class="hljs-number">616</span>.<span class="hljs-number">3530349731445</span> <span class="hljs-number">2</span><br><span class="hljs-attribute">300</span> <span class="hljs-number">509</span>.<span class="hljs-number">63783264160156</span> <span class="hljs-number">3</span><br><span class="hljs-attribute">400</span> <span class="hljs-number">531</span>.<span class="hljs-number">57639503479</span> <span class="hljs-number">4</span><br><br><span class="hljs-attribute">avg</span> time: <span class="hljs-number">501</span>.<span class="hljs-number">0757282526806</span><br><span class="hljs-attribute">P50</span> time: <span class="hljs-number">504</span>.<span class="hljs-number">6522617340088</span><br><span class="hljs-attribute">P95</span> time: <span class="hljs-number">623</span>.<span class="hljs-number">9353895187337</span><br><br></code></pre></td></tr></table></figure>
+<p>对输出结果进行指标评级，代码为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> sklearn.metrics <span class="hljs-keyword">import</span> classification_report<br><br><span class="hljs-built_in">print</span>(classification_report(true_labels, pred_labels, digits=<span class="hljs-number">4</span>))<br></code></pre></td></tr></table></figure>
+<p>重复上述代码，将模型替换为量化前ONNX模型（model.onnx），优化后ONNX模型（model_oprimized.onnx），量化后ONNX模型（model_optimized_quantized.onnx），进行推理时间（单位：ms）统计和推理指标评估，结果见下表：</p>
+<table>
+<thead>
+<tr class="header">
+<th>模型</th>
+<th>平均推理时间</th>
+<th>P95推理时间</th>
+<th>weighted F1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>量化前ONNX模型</td>
+<td>501.1</td>
+<td>623.9</td>
+<td>0.9717</td>
+</tr>
+<tr class="even">
+<td>优化后ONNX模型</td>
+<td>484.6</td>
+<td>629.6</td>
+<td>0.9717</td>
+</tr>
+<tr class="odd">
+<td>量化后ONNX模型</td>
+<td>361.5</td>
+<td>426.9</td>
+<td>0.9738</td>
+</tr>
+</tbody>
+</table>
+<p>对比文章<a
+href="https://percent4.github.io/2023/09/03/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E4%B8%83%EF%BC%89BERT%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%90%8E%E5%8A%A8%E6%80%81%E9%87%8F%E5%8C%96%EF%BC%88PTDQ%EF%BC%89/">NLP（六十七）BERT模型训练后动态量化（PTDQ）</a>中的推理结果，原始模型的平均推理时间为666.6ms，weighted
+F1值为0.9717，我们有如下结论：</p>
+<ul>
+<li><p>ONNX模型不影响推理效果，但在平均推理时间上提速约1.33倍</p></li>
+<li><p>优化ONNX模型不影响推理效果，但在平均推理时间上提速约1.38倍</p></li>
+<li><p>量化后的ONNX模型影响推理效果，一般会略有下降，本次实验结果为提升，但在平均推理时间上提速约1.84倍，由于PyTorch的PTDQ（模型训练后动态量化）</p></li>
+<li><h3 id="总结">总结</h3>
+<p>本文介绍了如何使用HuggingFace的<code>Optimum</code>，来对微调后的BERT模型进行量化（Quantization），在<code>optimum.onnxruntime</code>模块中，平均推理时间提速约1.8倍。</p>
+<p>本文已开源至Github，网址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/dynamic_quantization_on_bert">https://github.com/percent4/dynamic_quantization_on_bert</a>
+。</p>
+<p>本文已开通个人博客，欢迎大家访问：<a
+href="https://percent4.github.io/">https://percent4.github.io/</a>
+。</p>
+<p>欢迎你关注我的微信公众号，每周我都会在这里更新文章。</p></li>
+</ul>
+<figure>
+<img src="/img/weixin_gzh.png" srcset="/img/loading.gif" lazyload alt="个人微信公众号" />
+<figcaption aria-hidden="true">个人微信公众号</figcaption>
+</figure>
+<h3 id="参考文献">参考文献</h3>
+<ol type="1">
+<li>NLP（六十六）使用HuggingFace中的Trainer进行BERT模型微调：<a
+href="https://percent4.github.io/2023/09/02/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8HuggingFace%E4%B8%AD%E7%9A%84Trainer%E8%BF%9B%E8%A1%8CBERT%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/">https://percent4.github.io/2023/09/02/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8HuggingFace%E4%B8%AD%E7%9A%84Trainer%E8%BF%9B%E8%A1%8CBERT%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/</a></li>
+<li>NLP（六十七）BERT模型训练后动态量化（PTDQ）：<a
+href="https://percent4.github.io/2023/09/03/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E4%B8%83%EF%BC%89BERT%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%90%8E%E5%8A%A8%E6%80%81%E9%87%8F%E5%8C%96%EF%BC%88PTDQ%EF%BC%89/">https://percent4.github.io/2023/09/03/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E4%B8%83%EF%BC%89BERT%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%90%8E%E5%8A%A8%E6%80%81%E9%87%8F%E5%8C%96%EF%BC%88PTDQ%EF%BC%89/</a></li>
+<li>Optimum: <a
+target="_blank" rel="noopener" href="https://huggingface.co/docs/optimum/index">https://huggingface.co/docs/optimum/index</a></li>
+<li>Optimizing Transformers with Hugging Face Optimum: <a
+target="_blank" rel="noopener" href="https://www.philschmid.de/optimizing-transformers-with-optimum">https://www.philschmid.de/optimizing-transformers-with-optimum</a></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/BERT/" class="print-no-link">#BERT</a>
+      
+        <a href="/tags/%E6%A8%A1%E5%9E%8B%E9%87%8F%E5%8C%96/" class="print-no-link">#模型量化</a>
+      
+        <a href="/tags/Optimum/" class="print-no-link">#Optimum</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（六十八）使用Optimum进行模型量化</div>
+      <div>https://percent4.github.io/NLP（六十八）使用Optimum进行模型量化/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年9月6日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/%E5%9F%BA%E4%BA%8Etoken%E7%9A%84%E7%BC%96%E8%BE%91%E8%B7%9D%E7%A6%BB%E8%AE%A1%E7%AE%97/" title="基于token的编辑距离计算">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">基于token的编辑距离计算</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E5%85%AD%E5%8D%81%E4%B8%83%EF%BC%89BERT%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%90%8E%E5%8A%A8%E6%80%81%E9%87%8F%E5%8C%96%EF%BC%88PTDQ%EF%BC%89/" title="NLP（六十七）BERT模型训练后动态量化（PTDQ）">
+                        <span class="hidden-mobile">NLP（六十七）BERT模型训练后动态量化（PTDQ）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
