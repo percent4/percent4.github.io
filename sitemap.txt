@@ -1,3 +1,4 @@
+https://percent4.github.io/about/index.html
 https://percent4.github.io/PyTorch%E5%85%A5%E9%97%A8%EF%BC%88%E5%85%AB%EF%BC%89Optuna%E7%9A%84%E4%BD%BF%E7%94%A8/
 https://percent4.github.io/%E5%9F%BA%E4%BA%8Etoken%E7%9A%84%E7%BC%96%E8%BE%91%E8%B7%9D%E7%A6%BB%E8%AE%A1%E7%AE%97/
 https://percent4.github.io/%E5%88%A9%E7%94%A8%E5%85%B3%E7%B3%BB%E6%8A%BD%E5%8F%96%E6%9E%84%E5%BB%BA%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95/
@@ -116,7 +117,6 @@ https://percent4.github.io/Elasticsearch%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0%EF%
 https://percent4.github.io/keras%E5%85%A5%E9%97%A8%EF%BC%88%E4%B8%89%EF%BC%89%E6%90%AD%E5%BB%BACNN%E6%A8%A1%E5%9E%8B%E7%A0%B4%E8%A7%A3%E7%BD%91%E7%AB%99%E9%AA%8C%E8%AF%81%E7%A0%81/
 https://percent4.github.io/FastAPI%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B/
 https://percent4.github.io/BERT%E7%9A%84%E5%87%A0%E4%B8%AA%E5%8F%AF%E8%83%BD%E7%9A%84%E5%BA%94%E7%94%A8/
-https://percent4.github.io/about/index.html
 https://percent4.github.io/NLP%EF%BC%88%E4%B8%83%E5%8D%81%EF%BC%89%E4%BD%BF%E7%94%A8LLAMA-2%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83Multiple-Choice-MRC/
 https://percent4.github.io/Apollo%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E5%8F%8APython%E8%BF%9E%E6%8E%A5/
 https://percent4.github.io/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0%E5%86%99%E4%BD%9C%E8%AE%A1%E5%88%92/
