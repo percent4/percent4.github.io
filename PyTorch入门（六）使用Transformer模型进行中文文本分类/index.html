@@ -23,14 +23,17 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文将会介绍如何使用Transformer模型进行中文文本分类。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://percent4.github.io/img/pytorch2.png">
+<meta property="og:image" content="https://percent4.github.io/img/pytorch6_1.png">
+<meta property="og:image" content="https://percent4.github.io/img/pytorch6_2.png">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg">
 <meta property="article:published_time" content="2023-07-30T06:15:57.000Z">
-<meta property="article:modified_time" content="2023-08-06T15:21:43.492Z">
+<meta property="article:modified_time" content="2024-01-18T05:48:51.425Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="PyTorch">
 <meta property="article:tag" content="Transformer">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://percent4.github.io/img/pytorch2.png">
+<meta name="twitter:image" content="https://percent4.github.io/img/pytorch6_1.png">
   
   
   
@@ -260,7 +263,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          3.2k 字
+          3.3k 字
         
       </span>
     
@@ -322,9 +325,14 @@
             
               <div class="markdown-body">
                 
-                <p>在文章<a href="https://percent4.github.io/2023/07/30/PyTorch%E5%85%A5%E9%97%A8%EF%BC%88%E4%BA%94%EF%BC%89%E4%BD%BF%E7%94%A8CNN%E6%A8%A1%E5%9E%8B%E8%BF%9B%E8%A1%8C%E4%B8%AD%E6%96%87%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/">PyTorch入门（五）使用CNN模型进行中文文本分类</a>中，笔者介绍了如何在PyTorch中使用CNN模型进行中文文本分类。本文将会使用Transformer模型实现中文文本分类。</p>
-<p>本文将会使用相同的数据集。文本预处理已经在文章<a target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/details/129657824">PyTorch入门（五）使用CNN模型进行中文文本分类</a>中介绍，本文使用Transformer模型的Encoder部分，Transformer模型如图：</p>
-<p><img src="/img/pytorch6_1.png" srcset="/img/loading.gif" lazyload alt="Transformer模型图"></p>
+                <p>在文章<a
+href="https://percent4.github.io/PyTorch%E5%85%A5%E9%97%A8%EF%BC%88%E4%BA%94%EF%BC%89%E4%BD%BF%E7%94%A8CNN%E6%A8%A1%E5%9E%8B%E8%BF%9B%E8%A1%8C%E4%B8%AD%E6%96%87%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/">PyTorch入门（五）使用CNN模型进行中文文本分类</a>中，笔者介绍了如何在PyTorch中使用CNN模型进行中文文本分类。本文将会使用Transformer模型实现中文文本分类。</p>
+<p>本文将会使用相同的数据集。文本预处理已经在文章<a
+target="_blank" rel="noopener" href="https://blog.csdn.net/jclian91/article/details/129657824">PyTorch入门（五）使用CNN模型进行中文文本分类</a>中介绍，本文使用Transformer模型的Encoder部分，Transformer模型如图：</p>
+<figure>
+<img src="/img/pytorch6_1.png" srcset="/img/loading.gif" lazyload alt="Transformer模型图" />
+<figcaption aria-hidden="true">Transformer模型图</figcaption>
+</figure>
 <p>使用Transformer的Encoder部分建立文本分类模型，Python代码如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @Time : 2023/3/16 14:28</span><br><span class="hljs-comment"># @Author : Jclian91</span><br><span class="hljs-comment"># @File : model.py</span><br><span class="hljs-comment"># @Place : Minghang, Shanghai</span><br><span class="hljs-keyword">import</span> math<br><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">import</span> torch.nn <span class="hljs-keyword">as</span> nn<br><br><span class="hljs-keyword">from</span> params <span class="hljs-keyword">import</span> NUM_WORDS, EMBEDDING_SIZE<br><br><br><span class="hljs-comment"># https://pytorch.org/tutorials/beginner/transformer_tutorial.html</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">PositionalEncoding</span>(nn.Module):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, d_model, vocab_size=<span class="hljs-number">5000</span>, dropout=<span class="hljs-number">0.1</span></span>):<br>        <span class="hljs-built_in">super</span>().__init__()<br>        self.dropout = nn.Dropout(p=dropout)<br><br>        pe = torch.zeros(vocab_size, d_model)<br>        position = torch.arange(<span class="hljs-number">0</span>, vocab_size, dtype=torch.<span class="hljs-built_in">float</span>).unsqueeze(<span class="hljs-number">1</span>)<br>        div_term = torch.exp(<br>            torch.arange(<span class="hljs-number">0</span>, d_model, <span class="hljs-number">2</span>).<span class="hljs-built_in">float</span>()<br>            * (-math.log(<span class="hljs-number">10000.0</span>) / d_model)<br>        )<br>        pe[:, <span class="hljs-number">0</span>::<span class="hljs-number">2</span>] = torch.sin(position * div_term)<br>        pe[:, <span class="hljs-number">1</span>::<span class="hljs-number">2</span>] = torch.cos(position * div_term)<br>        pe = pe.unsqueeze(<span class="hljs-number">0</span>)<br>        self.register_buffer(<span class="hljs-string">&quot;pe&quot;</span>, pe)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">forward</span>(<span class="hljs-params">self, x</span>):<br>        x = x + self.pe[:, : x.size(<span class="hljs-number">1</span>), :]<br>        <span class="hljs-keyword">return</span> self.dropout(x)<br><br><br><span class="hljs-comment"># Text classifier based on a pytorch TransformerEncoder.</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">TextClassifier</span>(nn.Module):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params"></span><br><span class="hljs-params">            self,</span><br><span class="hljs-params">            nhead=<span class="hljs-number">8</span>,</span><br><span class="hljs-params">            dim_feedforward=<span class="hljs-number">2048</span>,</span><br><span class="hljs-params">            num_layers=<span class="hljs-number">6</span>,</span><br><span class="hljs-params">            dropout=<span class="hljs-number">0.1</span>,</span><br><span class="hljs-params">            activation=<span class="hljs-string">&quot;relu&quot;</span>,</span><br><span class="hljs-params">            classifier_dropout=<span class="hljs-number">0.1</span></span><br><span class="hljs-params">    </span>):<br>        <span class="hljs-built_in">super</span>().__init__()<br><br>        vocab_size = NUM_WORDS + <span class="hljs-number">2</span><br>        d_model = EMBEDDING_SIZE<br>        <span class="hljs-comment"># vocab_size, d_model = embeddings.size()</span><br>        <span class="hljs-keyword">assert</span> d_model % nhead == <span class="hljs-number">0</span>, <span class="hljs-string">&quot;nheads must divide evenly into d_model&quot;</span><br><br>        <span class="hljs-comment"># Embedding layer definition</span><br>        self.emb = nn.Embedding(vocab_size, d_model, padding_idx=<span class="hljs-number">0</span>)<br><br>        self.pos_encoder = PositionalEncoding(<br>            d_model=d_model,<br>            dropout=dropout,<br>            vocab_size=vocab_size<br>        )<br><br>        encoder_layer = nn.TransformerEncoderLayer(<br>            d_model=d_model,<br>            nhead=nhead,<br>            dim_feedforward=dim_feedforward,<br>            dropout=dropout<br>        )<br>        self.transformer_encoder = nn.TransformerEncoder(<br>            encoder_layer,<br>            num_layers=num_layers<br>        )<br>        self.classifier = nn.Linear(d_model, <span class="hljs-number">5</span>)<br>        self.d_model = d_model<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">forward</span>(<span class="hljs-params">self, x</span>):<br>        x = self.emb(x) * math.sqrt(self.d_model)<br>        x = self.pos_encoder(x)<br>        x = self.transformer_encoder(x)<br>        x = x.mean(dim=<span class="hljs-number">1</span>)<br>        x = self.classifier(x)<br><br>        <span class="hljs-keyword">return</span> x<br><br></code></pre></td></tr></table></figure>
 <p>需要注意的是，Encoder部分的位置编码（PositionalEncoding类）需要自己实现，因为PyTorch中没有实现。</p>
@@ -338,8 +346,12 @@
 <li>训练轮数（epoch）为10</li>
 <li>批量大小（batch size）为32</li>
 </ul>
-<p>进行模型训练，得到在验证集上的结果为：accuracy=0.9010, precision=0.9051, recall=0.9010, f1-score=0.9018, 混淆矩阵为：</p>
-<p><img src="/img/pytorch6_2.png" srcset="/img/loading.gif" lazyload alt="在验证集上的混淆矩阵"></p>
+<p>进行模型训练，得到在验证集上的结果为：accuracy=0.9010,
+precision=0.9051, recall=0.9010, f1-score=0.9018, 混淆矩阵为：</p>
+<figure>
+<img src="/img/pytorch6_2.png" srcset="/img/loading.gif" lazyload alt="在验证集上的混淆矩阵" />
+<figcaption aria-hidden="true">在验证集上的混淆矩阵</figcaption>
+</figure>
 <h3 id="参数影响">参数影响</h3>
 <p>我们考察模型参数对模型在验证集上的表现的影响。</p>
 <ul>
@@ -348,7 +360,7 @@
 <p>保持其它参数不变，设置文本长度（SENT_LENGTH）分别为200，256，300，结果如下：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>文本长度</th>
 <th>accuracy</th>
 <th>precision</th>
@@ -357,21 +369,21 @@
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>200</td>
 <td>0.9010</td>
 <td>0.9051</td>
 <td>0.9010</td>
 <td>0.9018</td>
 </tr>
-<tr>
+<tr class="even">
 <td>256</td>
 <td>0.8990</td>
 <td>0.9019</td>
 <td>0.8990</td>
 <td>0.8977</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>300</td>
 <td>0.8788</td>
 <td>0.8824</td>
@@ -383,10 +395,11 @@
 <ul>
 <li>考察词向量维度对模型表现的影响</li>
 </ul>
-<p>设置文本长度（SENT_LENGTH）为200，保持其它参数不变，设置词向量维度为32, 64， 128，结果如下：</p>
+<p>设置文本长度（SENT_LENGTH）为200，保持其它参数不变，设置词向量维度为32,
+64， 128，结果如下：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>词向量维度</th>
 <th>accuracy</th>
 <th>precision</th>
@@ -395,28 +408,28 @@
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>32</td>
 <td>0.6869</td>
 <td>0.7402</td>
 <td>0.6869</td>
 <td>0.6738</td>
 </tr>
-<tr>
+<tr class="even">
 <td>64</td>
 <td>0.7576</td>
 <td>0.7629</td>
 <td>0.7576</td>
 <td>0.7518</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>128</td>
 <td>0.9010</td>
 <td>0.9051</td>
 <td>0.9010</td>
 <td>0.9018</td>
 </tr>
-<tr>
+<tr class="even">
 <td>256</td>
 <td>0.9212</td>
 <td>0.9238</td>
@@ -428,12 +441,23 @@
 <p>从中，我们可以发现，文本长度对模型表现的影响不如词向量维度对模型表现的影响大，当然，这是相对而言，因为文本长度一直保持在200以上，如果文本长度下降很多的话，模型表现会迅速下降。</p>
 <h3 id="总结">总结</h3>
 <p>本文介绍了如何使用Transformer模型进行中文文本分类，并考察了各重要参数对模型表现的影响。</p>
-<p>本项目已上传至Github，访问网址为：<a target="_blank" rel="noopener" href="https://github.com/percent4/pytorch_transformer_chinese_text_classification">https://github.com/percent4/pytorch_transformer_chinese_text_classification</a></p>
+<p>本项目已上传至Github，访问网址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/pytorch_transformer_chinese_text_classification">https://github.com/percent4/pytorch_transformer_chinese_text_classification</a></p>
 <h3 id="参考文献">参考文献</h3>
-<ol>
-<li>Language Modeling with nn.Transformer and TorchText: <a target="_blank" rel="noopener" href="https://pytorch.org/tutorials/beginner/transformer_tutorial.html">https://pytorch.org/tutorials/beginner/transformer_tutorial.html</a></li>
-<li>The Annotated Transformer: <a target="_blank" rel="noopener" href="http://nlp.seas.harvard.edu/annotated-transformer/">http://nlp.seas.harvard.edu/annotated-transformer/</a></li>
+<ol type="1">
+<li>Language Modeling with nn.Transformer and TorchText: <a
+target="_blank" rel="noopener" href="https://pytorch.org/tutorials/beginner/transformer_tutorial.html">https://pytorch.org/tutorials/beginner/transformer_tutorial.html</a></li>
+<li>The Annotated Transformer: <a
+target="_blank" rel="noopener" href="http://nlp.seas.harvard.edu/annotated-transformer/">http://nlp.seas.harvard.edu/annotated-transformer/</a></li>
 </ol>
+欢迎关注我的公众号<strong>NLP奇幻之旅</strong>，原创技术文章第一时间推送。
+<center>
+<img src="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+<p>欢迎关注我的知识星球“<strong>自然语言处理奇幻之旅</strong>”，笔者正在努力构建自己的技术社区。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
 
                 
               </div>

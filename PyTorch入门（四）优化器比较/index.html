@@ -23,14 +23,16 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文将会对PyTorch中的各种优化器进行比较，比较它们在一个例子上的表现。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://percent4.github.io/img/pytorch2.png">
+<meta property="og:image" content="https://percent4.github.io/img/pytorch4_1.png">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg">
 <meta property="article:published_time" content="2023-07-30T06:09:16.000Z">
-<meta property="article:modified_time" content="2023-08-06T15:21:43.477Z">
+<meta property="article:modified_time" content="2024-01-18T05:48:51.426Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="PyTorch">
 <meta property="article:tag" content="优化器">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://percent4.github.io/img/pytorch2.png">
+<meta name="twitter:image" content="https://percent4.github.io/img/pytorch4_1.png">
   
   
   
@@ -260,7 +262,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          2.9k 字
+          3k 字
         
       </span>
     
@@ -272,7 +274,7 @@
         
         
           <!-- compatible with older versions-->
-          25 分钟
+          26 分钟
         
       </span>
     
@@ -325,31 +327,27 @@
                 <p>优化器就是在深度学习反向传播过程中，指引损失函数的各个参数往正确的方向更新合适的大小，使得更新后的各个参数让损失函数（目标函数）值不断逼近全局最小。</p>
 <p>常见的优化器有：</p>
 <ul>
-<li>
-<p>梯度及梯度下降算法</p>
-</li>
-<li>
-<p>随机梯度下降算法</p>
-</li>
-<li>
-<p>标准动量优化算法</p>
-</li>
-<li>
-<p>AdaGrad算法</p>
-</li>
-<li>
-<p>RMSProp算法</p>
-</li>
-<li>
-<p>Adam算法</p>
+<li><p>梯度及梯度下降算法</p></li>
+<li><p>随机梯度下降算法</p></li>
+<li><p>标准动量优化算法</p></li>
+<li><p>AdaGrad算法</p></li>
+<li><p>RMSProp算法</p></li>
+<li><p>Adam算法</p>
 <p>本文将不会介绍这些算法的细节，我们通过一个例子来比较各优化器的表现。</p>
-<p>在PyTorch，实现的优化算法有SGD（随机梯度下降算法）、Adagrad（AdaGrad算法）、RMSprop（RMSprop算法）、Adam（Adam算法），我们将会通过各优化器在优化样例目标函数的最小值来观察它们的表现。以下是Python实现代码：</p>
-</li>
+<p>在PyTorch，实现的优化算法有SGD（随机梯度下降算法）、Adagrad（AdaGrad算法）、RMSprop（RMSprop算法）、Adam（Adam算法），我们将会通过各优化器在优化样例目标函数的最小值来观察它们的表现。以下是Python实现代码：</p></li>
 </ul>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @Time : 2023/3/18 11:01</span><br><span class="hljs-comment"># @Author : Jclian91</span><br><span class="hljs-comment"># @File : optimizer_comparsion.py</span><br><span class="hljs-comment"># @Place : Minghang, Shanghai</span><br><span class="hljs-comment"># comparison in Five optimizers in PyTorch: SGD, AdaGrad, RMSProp, Adam</span><br><span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt<br><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">import</span> torch.nn<br><span class="hljs-keyword">import</span> torch.utils.data <span class="hljs-keyword">as</span> Data<br><span class="hljs-keyword">from</span> torch.utils.data <span class="hljs-keyword">import</span> Dataset<br><span class="hljs-keyword">from</span> matplotlib <span class="hljs-keyword">import</span> rcParams<br>rcParams[<span class="hljs-string">&#x27;font.family&#x27;</span>] = <span class="hljs-string">&#x27;SimHei&#x27;</span><br><br><span class="hljs-comment"># prepare data</span><br>x = torch.unsqueeze(torch.linspace(-<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">500</span>), dim=<span class="hljs-number">1</span>)<br>y = x.<span class="hljs-built_in">pow</span>(<span class="hljs-number">3</span>)<br><br><span class="hljs-comment"># set parameters</span><br>lr = <span class="hljs-number">0.01</span><br>batch_size = <span class="hljs-number">15</span><br>epoch = <span class="hljs-number">5</span><br>torch.manual_seed(<span class="hljs-number">1234</span>)<br><br><br><span class="hljs-comment"># Dataloader</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">MyDataset</span>(<span class="hljs-title class_ inherited__">Dataset</span>):<br>    <span class="hljs-comment"># load the dataset</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, x, y</span>):<br>        self.X = x<br>        self.y = y<br><br>    <span class="hljs-comment"># number of rows in the dataset</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__len__</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(self.X)<br><br>    <span class="hljs-comment"># get a row at an index</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__getitem__</span>(<span class="hljs-params">self, idx</span>):<br>        <span class="hljs-keyword">return</span> [self.X[idx], self.y[idx]]<br><br><br>loader = Data.DataLoader(dataset=MyDataset(x, y),<br>                         batch_size=batch_size,<br>                         shuffle=<span class="hljs-literal">True</span>,<br>                         num_workers=<span class="hljs-number">2</span>)<br><br><br><span class="hljs-comment"># create model</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Net</span>(torch.nn.Module):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, n_input, n_hidden, n_output</span>):<br>        <span class="hljs-built_in">super</span>(Net, self).__init__()<br>        self.hidden_layer = torch.nn.Linear(n_input, n_hidden)<br>        self.output_layer = torch.nn.Linear(n_hidden, n_output)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">forward</span>(<span class="hljs-params">self, <span class="hljs-built_in">input</span></span>):<br>        x = torch.relu(self.hidden_layer(<span class="hljs-built_in">input</span>))<br>        output = self.output_layer(x)<br>        <span class="hljs-keyword">return</span> output<br><br><br><span class="hljs-comment"># train model and plot</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">train</span>():<br>    net_sgd = Net(<span class="hljs-number">1</span>, <span class="hljs-number">10</span>, <span class="hljs-number">1</span>)<br>    net_adagrad = Net(<span class="hljs-number">1</span>, <span class="hljs-number">10</span>, <span class="hljs-number">1</span>)<br>    net_rmsprop = Net(<span class="hljs-number">1</span>, <span class="hljs-number">10</span>, <span class="hljs-number">1</span>)<br>    net_adam = Net(<span class="hljs-number">1</span>, <span class="hljs-number">10</span>, <span class="hljs-number">1</span>)<br>    nets = [net_sgd, net_adagrad, net_rmsprop, net_adam]<br><br>    <span class="hljs-comment"># optimizer</span><br>    opt_sgd = torch.optim.SGD(net_sgd.parameters(), lr=lr)<br>    opt_momentum = torch.optim.Adagrad(net_adagrad.parameters(), lr=lr, lr_decay=<span class="hljs-number">0</span>)<br>    opt_rmsprop = torch.optim.RMSprop(net_rmsprop.parameters(), lr=lr, alpha=<span class="hljs-number">0.9</span>)<br>    opt_adam = torch.optim.Adam(net_adam.parameters(), lr=lr, betas=(<span class="hljs-number">0.9</span>, <span class="hljs-number">0.99</span>))<br>    optimizers = [opt_sgd, opt_momentum, opt_rmsprop, opt_adam]<br><br>    <span class="hljs-comment"># loss function</span><br>    loss_func = torch.nn.MSELoss()<br>    losses = [[], [], [], []]<br>    <span class="hljs-keyword">for</span> i_epoch <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(epoch):<br>        <span class="hljs-keyword">for</span> step, (batch_x, batch_y) <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(loader):<br>            <span class="hljs-keyword">for</span> net, optimizer, loss_list <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(nets, optimizers, losses):<br>                pred_y = net(batch_x)<br>                loss = loss_func(pred_y, batch_y)<br>                optimizer.zero_grad()<br>                loss.backward()<br>                optimizer.step()<br>                loss_list.append(loss.data.numpy())<br><br>    plt.figure()<br>    labels = [<span class="hljs-string">&#x27;SGD&#x27;</span>, <span class="hljs-string">&#x27;AdaGrad&#x27;</span>, <span class="hljs-string">&#x27;RMSProp&#x27;</span>, <span class="hljs-string">&#x27;Adam&#x27;</span>]<br>    <span class="hljs-keyword">for</span> i, loss <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(losses):<br>        plt.plot(loss, label=labels[i])<br><br>    plt.legend(loc=<span class="hljs-string">&#x27;upper right&#x27;</span>, fontsize=<span class="hljs-number">15</span>)<br>    plt.tick_params(labelsize=<span class="hljs-number">13</span>)<br>    plt.xlabel(<span class="hljs-string">&#x27;训练步骤&#x27;</span>, size=<span class="hljs-number">15</span>)<br>    plt.ylabel(<span class="hljs-string">&#x27;模型损失&#x27;</span>, size=<span class="hljs-number">15</span>)<br>    plt.ylim((<span class="hljs-number">0</span>, <span class="hljs-number">0.3</span>))<br>    <span class="hljs-comment"># plt.show()</span><br>    plt.savefig(<span class="hljs-string">&#x27;optimizer_comparison.png&#x27;</span>)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    train()<br><br></code></pre></td></tr></table></figure>
 <p>各优化器在优化目标函数的损失值的图像如下：</p>
-<p><img src="/img/pytorch4_1.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="/img/pytorch4_1.png" srcset="/img/loading.gif" lazyload /></p>
 <p>从中我们可以看到，在上述四个优化器中，Adam和RMSProp优化器表现较好，其中Adam优化器收敛最快，表现最稳定。</p>
+欢迎关注我的公众号<strong>NLP奇幻之旅</strong>，原创技术文章第一时间推送。
+<center>
+<img src="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+<p>欢迎关注我的知识星球“<strong>自然语言处理奇幻之旅</strong>”，笔者正在努力构建自己的技术社区。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
 
                 
               </div>
