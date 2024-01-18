@@ -23,8 +23,10 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文将会介绍如何使用keras-bert调用ALBERT模型实现文本分类、文本多标签分类、序列标注任务。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg">
 <meta property="article:published_time" content="2023-07-10T05:10:53.000Z">
-<meta property="article:modified_time" content="2024-01-10T15:53:14.026Z">
+<meta property="article:modified_time" content="2024-01-18T02:56:04.298Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="keras-bert">
@@ -33,6 +35,7 @@
 <meta property="article:tag" content="ALBERT">
 <meta property="article:tag" content="多标签分类">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
   
   
   
@@ -262,7 +265,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          9.3k 字
+          9.4k 字
         
       </span>
     
@@ -274,7 +277,7 @@
         
         
           <!-- compatible with older versions-->
-          78 分钟
+          79 分钟
         
       </span>
     
@@ -325,11 +328,11 @@
               <div class="markdown-body">
                 
                 <p>在系列文章<a
-href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a>、<a
+href="https://percent4.github.io/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%9B%9B%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E5%BA%8F%E5%88%97%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1/">NLP（三十四）使用keras-bert实现序列标注任务</a>、<a
 href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E4%BA%94%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E5%A4%9A%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1/">NLP（三十五）使用keras-bert实现文本多分类任务</a>、<a
 href="https://percent4.github.io/2023/07/10/NLP%EF%BC%88%E4%B8%89%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8keras-bert%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E5%A4%9A%E6%A0%87%E7%AD%BE%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1/">NLP（三十六）使用keras-bert实现文本多标签分类任务</a>中，笔者介绍了如何使用keras-bert模块来调用BERT等模型来实现文本分类、文本多标签分类、序列标注任务。</p>
 <p>在系列文章<a
-href="https://percent4.github.io/2023/07/08/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%BA%8C%EF%BC%89%E5%88%A9%E7%94%A8ALBERT%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E4%BA%8C%E5%88%86%E7%B1%BB/">NLP（二十二）利用ALBERT实现文本二分类</a>、<a
+href="https://percent4.github.io/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%BA%8C%EF%BC%89%E5%88%A9%E7%94%A8ALBERT%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E4%BA%8C%E5%88%86%E7%B1%BB/">NLP（二十二）利用ALBERT实现文本二分类</a>、<a
 href="https://percent4.github.io/2023/07/09/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E4%BA%94%EF%BC%89%E5%AE%9E%E7%8E%B0ALBERT-Bi-LSTM-CRF%E6%A8%A1%E5%9E%8B/">NLP（二十五）实现ALBERT+Bi-LSTM+CRF模型</a>、<a
 href="https://percent4.github.io/2023/07/09/NLP%EF%BC%88%E4%BA%8C%E5%8D%81%E5%85%AB%EF%BC%89%E5%A4%9A%E6%A0%87%E7%AD%BE%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/">NLP（二十八）多标签文本分类</a>中，笔者将ALBERT模型作为特征向量提取工具，实现了文本分类、文本多标签分类、序列标注任务。</p>
 <p>本文将会介绍如何使用keras-bert调用ALBERT模型实现文本分类、文本多标签分类、序列标注任务，其模型效果比单纯将ALBERT模型作为特征向量提取工具的效果肯定来得好。</p>
@@ -453,6 +456,14 @@ id="不同版本albert模型与bert模型的参数对比">不同版本ALBERT模�
 <p>本文介绍了如何使用keras-bert调用ALBERT模型实现文本分类、文本多标签分类、序列标注任务，其Github项目地址已经在文章开头给出。</p>
 <p>在模型评估时，不少任务都未给出albert_xlarge_zh_183k模型的评估结果，这是由于GPU机器的性能限制，而不是笔者不愿做或偷懒，希望读者理解，同时也希望读者能有机会弥补这个遗憾。</p>
 <p>感谢大家的阅读，也感谢所有为开源项目作出贡献的人~</p>
+欢迎关注我的公众号<strong>NLP奇幻之旅</strong>，原创技术文章第一时间推送。
+<center>
+<img src="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+<p>欢迎关注我的知识星球“<strong>自然语言处理奇幻之旅</strong>”，笔者正在努力构建自己的技术社区。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
 
                 
               </div>

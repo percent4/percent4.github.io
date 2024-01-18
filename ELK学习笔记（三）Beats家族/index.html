@@ -23,16 +23,16 @@
 <meta property="og:site_name" content="My Github Blog">
 <meta property="og:description" content="本文主要介绍了Beats工具，并在之前的ELK流程中加入Filebeat进行演示。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2023/12/24/wQH824rDaOY31sV.png">
 <meta property="og:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
 <meta property="og:image" content="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg">
-<meta property="og:image" content="https://s2.loli.net/2023/12/24/wQH824rDaOY31sV.png">
 <meta property="article:published_time" content="2024-01-11T04:55:24.000Z">
-<meta property="article:modified_time" content="2024-01-11T04:55:51.513Z">
+<meta property="article:modified_time" content="2024-01-18T02:38:15.815Z">
 <meta property="article:author" content="Jclian91">
 <meta property="article:tag" content="ELK">
 <meta property="article:tag" content="Beats">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+<meta name="twitter:image" content="https://s2.loli.net/2023/12/24/wQH824rDaOY31sV.png">
   
   
   
@@ -327,14 +327,6 @@
                 <blockquote>
 <p>本文主要介绍了Beats工具，并在之前的ELK流程中加入Filebeat进行演示。</p>
 </blockquote>
-<p>欢迎关注我的公众号<strong>NLP奇幻之旅</strong>，原创技术文章第一时间推送。</p>
-<center>
-<img src="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
-</center>
-<p>欢迎关注我的知识星球“<strong>自然语言处理奇幻之旅</strong>”，笔者正在努力构建自己的技术社区。</p>
-<center>
-<img src="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
-</center>
 <h2 id="beats-介绍">Beats 介绍</h2>
 <p><code>Logstash</code>是一个较早开发的数据收集和转换工具，用户仅需编写配置文件便可轻松地将各类数据导入<code>Elasticsearch</code>。然而，Logstash在运行时较为耗费资源，因此官方随后推出了一系列轻量级数据收集器，这些以“beat”为命名的工具被统称为<code>Beats</code>。Beats实际上是将Logstash的数据收集功能拆分出来，由这些更轻量的工具来完成。因此，<code>Beats</code>家族是<code>Elastic Stack</code>中的后起之秀。</p>
 <p><code>Beats</code>采集的数据既可以先汇聚到<code>Logstash</code>，再由其写入<code>Elasticsearch</code>，也可以直接由<code>Beats</code>采集后直接写入<code>Elasticsearch</code>。</p>
@@ -381,6 +373,14 @@ alt="示例数据" />
 <h2 id="总结">总结</h2>
 <p>有了之前ELK基础，那么学习Beats是十分迅速的。Beats工具的想法也很简单，就是在ELK之前做一步数据采集工作，能够支持分布式数据，而轻量化。</p>
 <p>本文主要介绍了Beats工具，并在之前的ELK流程中加入Filebeat进行演示。</p>
+欢迎关注我的公众号<strong>NLP奇幻之旅</strong>，原创技术文章第一时间推送。
+<center>
+<img src="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+<p>欢迎关注我的知识星球“<strong>自然语言处理奇幻之旅</strong>”，笔者正在努力构建自己的技术社区。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
 
                 
               </div>
