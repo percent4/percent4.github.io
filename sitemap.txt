@@ -1,3 +1,4 @@
+https://percent4.github.io/ELK%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%89%EF%BC%89Beats%E5%AE%B6%E6%97%8F/
 https://percent4.github.io/vLLM%E5%85%A5%E9%97%A8%EF%BC%88%E4%B8%80%EF%BC%89%E5%88%9D%E5%A7%8BvLLM/
 https://percent4.github.io/about/index.html
 https://percent4.github.io/PyTorch%E5%85%A5%E9%97%A8%EF%BC%88%E5%85%AB%EF%BC%89Optuna%E7%9A%84%E4%BD%BF%E7%94%A8/
@@ -105,7 +106,6 @@ https://percent4.github.io/NLP%EF%BC%88%E4%B8%83%E5%8D%81%E5%85%AD%EF%BC%89%E4%B
 https://percent4.github.io/Keras%E5%85%A5%E9%97%A8%EF%BC%88%E4%B8%80%EF%BC%89%E6%90%AD%E5%BB%BA%E6%B7%B1%E5%BA%A6%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%EF%BC%88DNN%EF%BC%89%E8%A7%A3%E5%86%B3%E5%A4%9A%E5%88%86%E7%B1%BB%E9%97%AE%E9%A2%98/
 https://percent4.github.io/Keras%E5%85%A5%E9%97%A8%EF%BC%88%E5%85%AD%EF%BC%89%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%AE%9E%E6%97%B6%E5%8F%AF%E8%A7%86%E5%8C%96/
 https://percent4.github.io/ELK%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5/
-https://percent4.github.io/ELK%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%89%EF%BC%89Beats%E5%AE%B6%E6%97%8F/
 https://percent4.github.io/Gradio%E5%85%A5%E9%97%A8%EF%BC%881%EF%BC%89%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E3%80%81%E8%A1%A8%E6%A0%BC%E3%80%81%E6%96%87%E6%9C%AC%E9%AB%98%E4%BA%AE/
 https://percent4.github.io/Hexo%E7%9A%84Fluid%E4%B8%BB%E9%A2%98%E4%B8%AD%E8%87%AA%E5%AE%9A%E4%B9%89iconfont%E5%9B%BE%E6%A0%87/
 https://percent4.github.io/ELK%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/
@@ -273,4 +273,3 @@ https://percent4.github.io/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1
 https://percent4.github.io/categories/%E4%B9%A6%E7%B1%8D%E6%91%98%E6%8A%84/
 https://percent4.github.io/categories/%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1/
 https://percent4.github.io/categories/%E5%86%99%E4%BD%9C%E8%AE%A1%E5%88%92/
-https://percent4.github.io/categories/ELK/
