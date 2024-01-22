@@ -1,3 +1,4 @@
+https://percent4.github.io/%E4%BD%BF%E7%94%A8Hatchling%E8%BD%BB%E6%9D%BE%E5%AE%9E%E7%8E%B0Python%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85/
 https://percent4.github.io/NLP%EF%BC%88%E5%85%AB%E5%8D%81%E5%9B%9B%EF%BC%89RAG%E6%A1%86%E6%9E%B6%E4%B8%AD%E7%9A%84%E5%8F%AC%E5%9B%9E%E7%AE%97%E6%B3%95%E5%8F%AF%E8%A7%86%E5%8C%96%E5%88%86%E6%9E%90%E5%8F%8A%E6%8F%90%E5%8D%87%E6%96%B9%E6%B3%95/
 https://percent4.github.io/ELK%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%89%EF%BC%89Beats%E5%AE%B6%E6%97%8F/
 https://percent4.github.io/vLLM%E5%85%A5%E9%97%A8%EF%BC%88%E4%B8%80%EF%BC%89%E5%88%9D%E5%A7%8BvLLM/
@@ -265,6 +266,8 @@ https://percent4.github.io/tags/RAG/
 https://percent4.github.io/tags/Retrieve/
 https://percent4.github.io/tags/Rerank/
 https://percent4.github.io/tags/vLLM/
+https://percent4.github.io/tags/hatchling/
+https://percent4.github.io/tags/%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85/
 https://percent4.github.io/categories/NLP/
 https://percent4.github.io/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/
 https://percent4.github.io/categories/%E8%8D%89%E7%A8%BF/
