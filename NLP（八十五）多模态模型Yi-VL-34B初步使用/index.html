@@ -1,0 +1,924 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍笔者在使用多模态模型Yi-VL-34B中所遇到的坑以及具体的使用体验。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（八十五）多模态模型Yi-VL-34B初步使用">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E5%85%AB%E5%8D%81%E4%BA%94%EF%BC%89%E5%A4%9A%E6%A8%A1%E6%80%81%E6%A8%A1%E5%9E%8BYi-VL-34B%E5%88%9D%E6%AD%A5%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍笔者在使用多模态模型Yi-VL-34B中所遇到的坑以及具体的使用体验。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2024/01/24/ZvF5dTAL8b3oSah.jpg">
+<meta property="og:image" content="https://s2.loli.net/2024/01/24/6aqLIsl1Ted92Kn.png">
+<meta property="og:image" content="https://s2.loli.net/2024/01/25/R5lDfZrW6BVkdzN.png">
+<meta property="og:image" content="https://s2.loli.net/2024/01/25/sjpBTodKwfnvuJ4.png">
+<meta property="og:image" content="https://s2.loli.net/2024/01/25/VsFvE32PrmZQ6Yd.png">
+<meta property="og:image" content="https://s2.loli.net/2024/01/25/GthKWBfiIjmd8wT.png">
+<meta property="og:image" content="https://s2.loli.net/2024/01/25/9o1jMaQTK3c8bqH.png">
+<meta property="og:image" content="https://s2.loli.net/2024/01/25/eZimVOFIEAcL7hy.png">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg">
+<meta property="article:published_time" content="2024-01-30T02:34:56.000Z">
+<meta property="article:modified_time" content="2024-01-30T02:36:11.048Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="Yi-VL-34B">
+<meta property="article:tag" content="多模态">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2024/01/24/ZvF5dTAL8b3oSah.jpg">
+  
+  
+  
+  <title>NLP（八十五）多模态模型Yi-VL-34B初步使用 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（八十五）多模态模型Yi-VL-34B初步使用"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-01-30 10:34" pubdate>
+          星期二, 一月 30日 2024, 10:34 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          7.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          64 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（八十五）多模态模型Yi-VL-34B初步使用</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍笔者在使用多模态模型Yi-VL-34B中所遇到的坑以及具体的使用体验。</p>
+</blockquote>
+<p>2024年1月22日，零一万物<code>Yi</code>系列模型家族迎来新成员：<strong>Yi
+Vision
+Language</strong>（<code>Yi-VL</code>）多模态语言大模型正式面向全球开源。据悉，Yi-VL模型基于Yi语言模型开发，包括
+<code>Yi-VL-34B</code>和<code>Yi-VL-6B</code>两个版本。</p>
+<p>凭借卓越的图文理解和对话生成能力，<code>Yi-VL</code>模型在英文数据集<strong>MMMU</strong>和中文数据集<strong>CMMMU</strong>上取得了领先成绩，其中在<strong>MMMU</strong>上的指标仅次于GPT-4V，而在<strong>CMMMU</strong>上的指标仅次于GPT-4V和Qwen-VL-Plus展示了在复杂跨学科任务上的强大实力。</p>
+<p>目前，<code>Yi-VL</code>模型已经开源，网址如下：</p>
+<ul>
+<li>国外平台HuggingFace: <a
+target="_blank" rel="noopener" href="https://huggingface.co/01-ai/Yi-VL-34B"
+class="uri">https://huggingface.co/01-ai/Yi-VL-34B</a></li>
+<li>国内平台ModelScope(魔搭社区): <a
+target="_blank" rel="noopener" href="https://www.modelscope.cn/organization/01ai"
+class="uri">https://www.modelscope.cn/organization/01ai</a></li>
+</ul>
+<p>本文将分以下三部分展开：</p>
+<ul>
+<li><code>Yi-VL</code>模型部署</li>
+<li>CLI模式模型推理</li>
+<li>可视化模型问答</li>
+</ul>
+<p>本文中的模型以<code>Yi-VL-34B</code>模型为准。</p>
+<h3 id="模型部署">模型部署</h3>
+<p>HuggingFace网站中介绍了<code>Yi-VL-34B</code>模型的部署方式，主要参考<code>LLaVA</code>框架，但笔者尝试几天，发现需要修改的代码较多，遇到了不少坑，仍无法部署。</p>
+<p>而在Yi的Github项目中给出了方便的模型部署方式，可参考项目：<a
+target="_blank" rel="noopener" href="https://github.com/01-ai/Yi/tree/0124/VL"
+class="uri">https://github.com/01-ai/Yi/tree/0124/VL</a>。</p>
+<ol type="1">
+<li><p>模块安装：第三方模块: torch ==
+2.1.2，其余模块参考Github项目中的requirements.txt文件。</p></li>
+<li><p>其余修改：将<code>Yi-VL-34B</code>模型中config.json中的<code>mm_vision_tower</code>改为本地的clip模型路径。</p></li>
+</ol>
+<p>经过以上步骤即可完成部署。<code>Yi-VL-34B</code>模型在对话中的system
+prompt调整如下：</p>
+<pre><code class="hljs">This is a chat between an inquisitive human and an AI assistant. Assume the role of the AI assistant. Read all the images carefully, and respond to the human&#39;s questions with informative, helpful, detailed and polite answers. 这是一个好奇的人类和一个人工智能助手之间的对话。假设你扮演这个AI助手的角色。仔细阅读所有的图像，并对人类的问题做出信息丰富、有帮助、详细的和礼貌的回答。
+
+### Human: &lt;image_placeholder&gt;
+Describe the cats and what they are doing in detail.
+### Assistant:</code></pre>
+<h3 id="模型推理">模型推理</h3>
+<p>以命令行（CLI）的模型进行模型推理，需要将图片下载至images文件夹，同时将<code>single_inference.py</code>略作调整，以支持多次提问。</p>
+<p>运行命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">CUDA_VISIBLE_DEVICES=0 python single_inference.py --model-path /data-ai/usr/models/Yi-VL-34B --image-file images/cats.jpg --question <span class="hljs-string">&quot;How many cats are there in this image?&quot;</span><br></code></pre></td></tr></table></figure>
+<p>模型推理时使用一张A100（显存80G）就可满足推理要求。</p>
+<p>示例图片如下：</p>
+<figure>
+<img src="https://s2.loli.net/2024/01/24/ZvF5dTAL8b3oSah.jpg" srcset="/img/loading.gif" lazyload
+alt="示例图片" />
+<figcaption aria-hidden="true">示例图片</figcaption>
+</figure>
+<p>回复结果如下：</p>
+<figure>
+<img src="https://s2.loli.net/2024/01/24/6aqLIsl1Ted92Kn.png" srcset="/img/loading.gif" lazyload
+alt="Yi-VL-34B模型回复" />
+<figcaption aria-hidden="true">Yi-VL-34B模型回复</figcaption>
+</figure>
+<h3 id="可视化模型问答">可视化模型问答</h3>
+<p>基于此，我们将会用gradio模块，对<code>Yi-VL-34B</code>模型和<code>GPT-4V</code>模型的结果进行对比。</p>
+<p>Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> traceback<br><br><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> base64<br><span class="hljs-keyword">import</span> gradio <span class="hljs-keyword">as</span> gr<br><span class="hljs-keyword">from</span> PIL <span class="hljs-keyword">import</span> Image<br><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime<br><br><span class="hljs-keyword">from</span> llava.conversation <span class="hljs-keyword">import</span> conv_templates<br><span class="hljs-keyword">from</span> llava.mm_utils <span class="hljs-keyword">import</span> (<br>    KeywordsStoppingCriteria,<br>    expand2square,<br>    load_pretrained_model,<br>    get_model_name_from_path,<br>    tokenizer_image_token<br>)<br><span class="hljs-keyword">from</span> llava.model.constants <span class="hljs-keyword">import</span> DEFAULT_IMAGE_TOKEN, IMAGE_TOKEN_INDEX, key_info<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">disable_torch_init</span>():<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    Disable the redundant torch default initialization to accelerate model creation.</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-built_in">setattr</span>(torch.nn.Linear, <span class="hljs-string">&quot;reset_parameters&quot;</span>, <span class="hljs-keyword">lambda</span> self: <span class="hljs-literal">None</span>)<br>    <span class="hljs-built_in">setattr</span>(torch.nn.LayerNorm, <span class="hljs-string">&quot;reset_parameters&quot;</span>, <span class="hljs-keyword">lambda</span> self: <span class="hljs-literal">None</span>)<br><br><br>disable_torch_init()<br>model_path = <span class="hljs-string">&quot;/data-ai/usr/models/Yi-VL-34B&quot;</span><br>key_info[<span class="hljs-string">&quot;model_path&quot;</span>] = model_path<br>get_model_name_from_path(model_path)<br>tokenizer, model, image_processor, context_len = load_pretrained_model(model_path)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;model loaded!&quot;</span>)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">model_infer</span>(<span class="hljs-params">qs, image_file</span>):<br>    <span class="hljs-keyword">global</span> model<br>    qs = DEFAULT_IMAGE_TOKEN + <span class="hljs-string">&quot;\n&quot;</span> + qs<br>    conv = conv_templates[<span class="hljs-string">&quot;mm_default&quot;</span>].copy()<br>    conv.append_message(conv.roles[<span class="hljs-number">0</span>], qs)<br>    conv.append_message(conv.roles[<span class="hljs-number">1</span>], <span class="hljs-literal">None</span>)<br>    prompt = conv.get_prompt()<br><br>    input_ids = (<br>        tokenizer_image_token(prompt, tokenizer, IMAGE_TOKEN_INDEX, return_tensors=<span class="hljs-string">&quot;pt&quot;</span>)<br>        .unsqueeze(<span class="hljs-number">0</span>)<br>        .cuda()<br>    )<br><br>    image = Image.<span class="hljs-built_in">open</span>(image_file)<br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">getattr</span>(model.config, <span class="hljs-string">&quot;image_aspect_ratio&quot;</span>, <span class="hljs-literal">None</span>) == <span class="hljs-string">&quot;pad&quot;</span>:<br>        image = expand2square(<br>            image, <span class="hljs-built_in">tuple</span>(<span class="hljs-built_in">int</span>(x * <span class="hljs-number">255</span>) <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> image_processor.image_mean)<br>        )<br>    image_tensor = image_processor.preprocess(image, return_tensors=<span class="hljs-string">&quot;pt&quot;</span>)[<br>        <span class="hljs-string">&quot;pixel_values&quot;</span><br>    ][<span class="hljs-number">0</span>]<br><br>    stop_str = conv.sep<br>    keywords = [stop_str]<br>    stopping_criteria = KeywordsStoppingCriteria(keywords, tokenizer, input_ids)<br>    model = model.to(dtype=torch.bfloat16)<br>    <span class="hljs-keyword">with</span> torch.inference_mode():<br>        output_ids = model.generate(<br>            input_ids,<br>            images=image_tensor.unsqueeze(<span class="hljs-number">0</span>).to(dtype=torch.bfloat16).cuda(),<br>            do_sample=<span class="hljs-literal">True</span>,<br>            temperature=<span class="hljs-number">0.1</span>,<br>            top_p=<span class="hljs-number">0.7</span>,<br>            num_beams=<span class="hljs-number">1</span>,<br>            stopping_criteria=[stopping_criteria],<br>            max_new_tokens=<span class="hljs-number">1024</span>,<br>            use_cache=<span class="hljs-literal">True</span>,<br>        )<br><br>    input_token_len = input_ids.shape[<span class="hljs-number">1</span>]<br>    n_diff_input_output = (input_ids != output_ids[:, :input_token_len]).<span class="hljs-built_in">sum</span>().item()<br>    <span class="hljs-keyword">if</span> n_diff_input_output &gt; <span class="hljs-number">0</span>:<br>        <span class="hljs-built_in">print</span>(<br>            <span class="hljs-string">f&quot;[Warning] <span class="hljs-subst">&#123;n_diff_input_output&#125;</span> output_ids are not the same as the input_ids&quot;</span><br>        )<br>    outputs = tokenizer.batch_decode(<br>        output_ids[:, input_token_len:], skip_special_tokens=<span class="hljs-literal">True</span><br>    )[<span class="hljs-number">0</span>]<br>    outputs = outputs.strip()<br><br>    <span class="hljs-keyword">if</span> outputs.endswith(stop_str):<br>        outputs = outputs[: -<span class="hljs-built_in">len</span>(stop_str)]<br>    outputs = outputs.strip()<br>    <span class="hljs-keyword">return</span> outputs<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">gpt_4v_answer</span>(<span class="hljs-params">question, image_path</span>):<br>    <span class="hljs-keyword">try</span>:<br>        <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(image_path, <span class="hljs-string">&quot;rb&quot;</span>) <span class="hljs-keyword">as</span> image_file:<br>            base64_image = base64.b64encode(image_file.read()).decode(<span class="hljs-string">&#x27;utf-8&#x27;</span>)<br><br>        api_key = os.environ[<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>]<br>        url = <span class="hljs-string">&quot;https://api.openai.com/v1/chat/completions&quot;</span><br><br>        payload = json.dumps(&#123;<br>            <span class="hljs-string">&quot;model&quot;</span>: <span class="hljs-string">&quot;gpt-4-vision-preview&quot;</span>,<br>            <span class="hljs-string">&quot;messages&quot;</span>: [<br>                &#123;<br>                    <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>,<br>                    <span class="hljs-string">&quot;content&quot;</span>: [<br>                        &#123;<br>                            <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;text&quot;</span>,<br>                            <span class="hljs-string">&quot;text&quot;</span>: question<br>                        &#125;,<br>                        &#123;<br>                            <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;image_url&quot;</span>,<br>                            <span class="hljs-string">&quot;image_url&quot;</span>: &#123;<br>                                <span class="hljs-string">&quot;url&quot;</span>: <span class="hljs-string">f&quot;data:image/jpeg;base64,<span class="hljs-subst">&#123;base64_image&#125;</span>&quot;</span><br>                            &#125;<br>                        &#125;<br>                    ]<br>                &#125;<br>            ],<br>            <span class="hljs-string">&quot;max_tokens&quot;</span>: <span class="hljs-number">1024</span>,<br>            <span class="hljs-string">&quot;temperature&quot;</span>: <span class="hljs-number">0.1</span>,<br>            <span class="hljs-string">&quot;top_p&quot;</span>: <span class="hljs-number">0.7</span><br>        &#125;)<br>        headers = &#123;<br>            <span class="hljs-string">&#x27;Content-Type&#x27;</span>: <span class="hljs-string">&#x27;application/json&#x27;</span>,<br>            <span class="hljs-string">&#x27;Authorization&#x27;</span>: <span class="hljs-string">f&#x27;Bearer <span class="hljs-subst">&#123;api_key&#125;</span>&#x27;</span>,<br>        &#125;<br><br>        response = requests.request(<span class="hljs-string">&quot;POST&quot;</span>, url, headers=headers, data=payload)<br>        result = response.json()[<span class="hljs-string">&quot;choices&quot;</span>][<span class="hljs-number">0</span>][<span class="hljs-string">&quot;message&quot;</span>][<span class="hljs-string">&quot;content&quot;</span>]<br>    <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> err:<br>        <span class="hljs-built_in">print</span>(traceback.format_exc())<br>        <span class="hljs-built_in">print</span>(response.text)<br>        result = <span class="hljs-string">&quot;something error with gpt-4v&quot;</span><br><br>    <span class="hljs-keyword">return</span> result<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">model_answer</span>(<span class="hljs-params">question, array</span>):<br>    <span class="hljs-comment"># save image</span><br>    im = Image.fromarray(array)<br>    image_path = <span class="hljs-string">f&quot;./images/<span class="hljs-subst">&#123;datetime.now().strftime(<span class="hljs-string">&#x27;%Y_%m_%d_%H_%M_%S&#x27;</span>)&#125;</span>.jpg&quot;</span><br>    im.save(image_path)<br>    <span class="hljs-comment"># yi-vl-34b output</span><br>    model_output = model_infer(question, image_path)<br>    <span class="hljs-comment"># gpt-4v output</span><br>    gpt4v_output = gpt_4v_answer(question, image_path)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;question: <span class="hljs-subst">&#123;question&#125;</span>\n&quot;</span><br>          <span class="hljs-string">f&quot;yi-vl-34 output: <span class="hljs-subst">&#123;model_output&#125;</span>\n&quot;</span><br>          <span class="hljs-string">f&quot;gpt-4v output: <span class="hljs-subst">&#123;gpt4v_output&#125;</span>\n&quot;</span>)<br>    <span class="hljs-keyword">return</span> model_output, gpt4v_output<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    <span class="hljs-keyword">with</span> gr.Blocks() <span class="hljs-keyword">as</span> demo:<br>        <span class="hljs-keyword">with</span> gr.Row():<br>            <span class="hljs-keyword">with</span> gr.Column():<br>                image_box = gr.inputs.Image()<br>                user_input = gr.TextArea(lines=<span class="hljs-number">5</span>, placeholder=<span class="hljs-string">&quot;your question about the image&quot;</span>)<br>            <span class="hljs-keyword">with</span> gr.Column():<br>                yi_vl_output = gr.TextArea(lines=<span class="hljs-number">5</span>, label=<span class="hljs-string">&#x27;Yi-VL-34B&#x27;</span>)<br>                gpt_4v_output = gr.TextArea(lines=<span class="hljs-number">5</span>, label=<span class="hljs-string">&#x27;GPT-4V&#x27;</span>)<br>                submit = gr.Button(<span class="hljs-string">&quot;Submit&quot;</span>)<br>        submit.click(fn=model_answer,<br>                     inputs=[user_input, image_box],<br>                     outputs=[yi_vl_output, gpt_4v_output])<br><br>    demo.launch(server_port=<span class="hljs-number">50072</span>, server_name=<span class="hljs-string">&quot;0.0.0.0&quot;</span>, share=<span class="hljs-literal">True</span>)<br><br></code></pre></td></tr></table></figure>
+<p>以下是对不同模型和问题的回复：</p>
+<ul>
+<li>图片：taishan.jpg，问题：这张图片是中国的哪座山？</li>
+</ul>
+<p><img src="https://s2.loli.net/2024/01/25/R5lDfZrW6BVkdzN.png" srcset="/img/loading.gif" lazyload /></p>
+<ul>
+<li>图片：dishini.jpg，问题：这张图片是哪个景点的logo？</li>
+</ul>
+<p><img src="https://s2.loli.net/2024/01/25/sjpBTodKwfnvuJ4.png" srcset="/img/loading.gif" lazyload /></p>
+<ul>
+<li>图片：fruit.jpg，问题：详细描述下这张图片</li>
+</ul>
+<p><img src="https://s2.loli.net/2024/01/25/VsFvE32PrmZQ6Yd.png" srcset="/img/loading.gif" lazyload /></p>
+<ul>
+<li>图片：football.jpg，问题：图片中一个有几个人，他们在干什么？</li>
+</ul>
+<p><img src="https://s2.loli.net/2024/01/25/GthKWBfiIjmd8wT.png" srcset="/img/loading.gif" lazyload /></p>
+<ul>
+<li>图片：cartoon.jpg，问题：这张图片是哪部日本的动漫？</li>
+</ul>
+<p><img src="https://s2.loli.net/2024/01/25/9o1jMaQTK3c8bqH.png" srcset="/img/loading.gif" lazyload /></p>
+<p>从以上的几个测试用例来看，<code>Yi-VL-34B</code>模型的效果很不错，但对比<code>GPT-4V</code>模型，不管在图片理解，还是模型的回答上，仍有一定的差距。</p>
+<p>最后，我们来看一个验证码的例子（因为GPT-4V是不能用来破解验证码的！）</p>
+<p><img src="https://s2.loli.net/2024/01/25/eZimVOFIEAcL7hy.png" srcset="/img/loading.gif" lazyload /></p>
+<p>可以看到，<code>Yi-VL-34B</code>模型在尝试回答，但给出了错误答案，而<code>GPT-4V</code>模型则会报错，报错信息如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;error&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Your input image may contain content that is not allowed by our safety system.&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;invalid_request_error&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;param&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;code&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;content_policy_violation&quot;</span><br>  <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<p>无疑，<code>GPT-4V</code>模型这样的设计是合情合理的。</p>
+<h3 id="总结">总结</h3>
+<p><code>Yi-VL-34B</code>模型的开源，无疑是多模态大模型领域中的惊艳之作，让我们在为数不多的国产多模态大模型中多了一个选择，而且由于是开源，因此我们能做的事情会更多。与此同时，它与<code>GPT-4V</code>模型还存在着不小差距，可见<code>GPT-4V</code>模型的强大。</p>
+<p>有了多模态大模型的加入，我们在RAG框架中，可以加入图片，结合图文理解，丰富召回的素材的多样性。这是多模态大模型的其中应用方向之一，笔者将会在后续关注。</p>
+<p>本文介绍的代码已经开源，Github网址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/yi_vl_experiment"
+class="uri">https://github.com/percent4/yi_vl_experiment</a>.</p>
+<p>感谢阅读~</p>
+<h3 id="参考文献">参考文献</h3>
+<ol type="1">
+<li><a target="_blank" rel="noopener" href="https://github.com/01-ai/Yi/discussions/335"
+class="uri">https://github.com/01-ai/Yi/discussions/335</a></li>
+<li>零一万物Yi-VL多模态大模型开源，MMMU、CMMMU两大权威榜单领先: <a
+target="_blank" rel="noopener" href="https://www.jiqizhixin.com/articles/2024-01-22-10"
+class="uri">https://www.jiqizhixin.com/articles/2024-01-22-10</a></li>
+</ol>
+欢迎关注我的公众号<strong>NLP奇幻之旅</strong>，原创技术文章第一时间推送。
+<center>
+<img src="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+<p>欢迎关注我的知识星球“<strong>自然语言处理奇幻之旅</strong>”，笔者正在努力构建自己的技术社区。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Yi-VL-34B/" class="print-no-link">#Yi-VL-34B</a>
+      
+        <a href="/tags/%E5%A4%9A%E6%A8%A1%E6%80%81/" class="print-no-link">#多模态</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（八十五）多模态模型Yi-VL-34B初步使用</div>
+      <div>https://percent4.github.io/NLP（八十五）多模态模型Yi-VL-34B初步使用/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年1月30日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E5%85%AB%E5%8D%81%E5%85%AD%EF%BC%89RAG%E6%A1%86%E6%9E%B6Retrieve%E9%98%B6%E6%AE%B5%E7%9A%84Embedding%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/" title="NLP（八十六）RAG框架Retrieve阶段的Embedding模型微调">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NLP（八十六）RAG框架Retrieve阶段的Embedding模型微调</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/%E5%9C%A8Python%E4%B8%AD%E4%BC%98%E9%9B%85%E5%9C%B0%E5%8A%A0%E8%BD%BD%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F/" title="在Python中优雅地加载环境变量">
+                        <span class="hidden-mobile">在Python中优雅地加载环境变量</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

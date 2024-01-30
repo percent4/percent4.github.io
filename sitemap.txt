@@ -1,8 +1,11 @@
+https://percent4.github.io/NLP%EF%BC%88%E5%85%AB%E5%8D%81%E5%85%AD%EF%BC%89RAG%E6%A1%86%E6%9E%B6Retrieve%E9%98%B6%E6%AE%B5%E7%9A%84Embedding%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/
+https://percent4.github.io/NLP%EF%BC%88%E5%85%AB%E5%8D%81%E4%BA%94%EF%BC%89%E5%A4%9A%E6%A8%A1%E6%80%81%E6%A8%A1%E5%9E%8BYi-VL-34B%E5%88%9D%E6%AD%A5%E4%BD%BF%E7%94%A8/
+https://percent4.github.io/%E5%9C%A8Python%E4%B8%AD%E4%BC%98%E9%9B%85%E5%9C%B0%E5%8A%A0%E8%BD%BD%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F/
+https://percent4.github.io/about/index.html
 https://percent4.github.io/%E4%BD%BF%E7%94%A8Hatchling%E8%BD%BB%E6%9D%BE%E5%AE%9E%E7%8E%B0Python%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85/
 https://percent4.github.io/NLP%EF%BC%88%E5%85%AB%E5%8D%81%E5%9B%9B%EF%BC%89RAG%E6%A1%86%E6%9E%B6%E4%B8%AD%E7%9A%84%E5%8F%AC%E5%9B%9E%E7%AE%97%E6%B3%95%E5%8F%AF%E8%A7%86%E5%8C%96%E5%88%86%E6%9E%90%E5%8F%8A%E6%8F%90%E5%8D%87%E6%96%B9%E6%B3%95/
 https://percent4.github.io/ELK%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%89%EF%BC%89Beats%E5%AE%B6%E6%97%8F/
 https://percent4.github.io/vLLM%E5%85%A5%E9%97%A8%EF%BC%88%E4%B8%80%EF%BC%89%E5%88%9D%E5%A7%8BvLLM/
-https://percent4.github.io/about/index.html
 https://percent4.github.io/PyTorch%E5%85%A5%E9%97%A8%EF%BC%88%E5%85%AB%EF%BC%89Optuna%E7%9A%84%E4%BD%BF%E7%94%A8/
 https://percent4.github.io/%E5%9F%BA%E4%BA%8Etoken%E7%9A%84%E7%BC%96%E8%BE%91%E8%B7%9D%E7%A6%BB%E8%AE%A1%E7%AE%97/
 https://percent4.github.io/%E5%88%A9%E7%94%A8%E5%85%B3%E7%B3%BB%E6%8A%BD%E5%8F%96%E6%9E%84%E5%BB%BA%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95/
@@ -268,6 +271,10 @@ https://percent4.github.io/tags/Rerank/
 https://percent4.github.io/tags/vLLM/
 https://percent4.github.io/tags/hatchling/
 https://percent4.github.io/tags/%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85/
+https://percent4.github.io/tags/Embedding-Fine-tuning/
+https://percent4.github.io/tags/Yi-VL-34B/
+https://percent4.github.io/tags/%E5%A4%9A%E6%A8%A1%E6%80%81/
+https://percent4.github.io/tags/%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F/
 https://percent4.github.io/categories/NLP/
 https://percent4.github.io/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/
 https://percent4.github.io/categories/%E8%8D%89%E7%A8%BF/
