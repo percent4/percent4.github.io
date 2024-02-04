@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>BCE,BGE-ME,JINA_AI的Embedding模型召回效果对比</title>
+    <link href="/BCE-BGE-ME-JINA-AI%E7%9A%84Embedding%E6%A8%A1%E5%9E%8B%E5%8F%AC%E5%9B%9E%E6%95%88%E6%9E%9C%E5%AF%B9%E6%AF%94/"/>
+    <url>/BCE-BGE-ME-JINA-AI%E7%9A%84Embedding%E6%A8%A1%E5%9E%8B%E5%8F%AC%E5%9B%9E%E6%95%88%E6%9E%9C%E5%AF%B9%E6%AF%94/</url>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="/assets/css/APlayer.min.css"><script src="/assets/js/APlayer.min.js" class="aplayer-secondary-script-marker"></script><p>近来又密集地发布了Embedding模型:</p><ol><li>有道BCEmbedding（支持中英双语）: <a href="https://github.com/netease-youdao/BCEmbedding">https://github.com/netease-youdao/BCEmbedding</a></li><li>BAAI的BGE-M3 Embedding（支持100种语言）: <a href="https://huggingface.co/BAAI/bge-m3">https://huggingface.co/BAAI/bge-m3</a></li><li>Jina AI Embedding（支持中英德语）: <a href="https://jina.ai/embeddings/">https://jina.ai/embeddings/</a></li></ol><p>笔者在自己的实验中已加入这些Embedding模型进行效果对比，参考项目：<a href="https://github.com/percent4/embedding_rerank_retrieval">https://github.com/percent4/embedding_rerank_retrieval</a></p><p>Hit Rate指标:</p><p><img src="https://s2.loli.net/2024/02/04/9ZHclTtyBN6CM8n.png" alt="不同Embedding模型之间的Hit Rate比较"></p><p>MRR指标:</p><p><img src="https://s2.loli.net/2024/02/04/6UGQpCdlLoDAKiP.png" alt="不同Embedding模型之间的MRR比较"></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>NLP</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Embedding模型</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>NLP（八十六）RAG框架Retrieve阶段的Embedding模型微调</title>
     <link href="/NLP%EF%BC%88%E5%85%AB%E5%8D%81%E5%85%AD%EF%BC%89RAG%E6%A1%86%E6%9E%B6Retrieve%E9%98%B6%E6%AE%B5%E7%9A%84Embedding%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/"/>
     <url>/NLP%EF%BC%88%E5%85%AB%E5%8D%81%E5%85%AD%EF%BC%89RAG%E6%A1%86%E6%9E%B6Retrieve%E9%98%B6%E6%AE%B5%E7%9A%84Embedding%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83/</url>
