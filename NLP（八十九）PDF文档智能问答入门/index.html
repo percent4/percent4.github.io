@@ -1,0 +1,915 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍如何使用fitz模块处理PDF文档，以及如何使用OpenAI大模型对PDF文档进行问答。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（八十九）PDF文档智能问答入门">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E5%85%AB%E5%8D%81%E4%B9%9D%EF%BC%89PDF%E6%96%87%E6%A1%A3%E6%99%BA%E8%83%BD%E9%97%AE%E7%AD%94%E5%85%A5%E9%97%A8/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍如何使用fitz模块处理PDF文档，以及如何使用OpenAI大模型对PDF文档进行问答。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2024/03/02/QxN54ckVF3thTp8.png">
+<meta property="og:image" content="https://s2.loli.net/2024/03/02/JKGCVPdfvzloEWa.png">
+<meta property="og:image" content="https://s2.loli.net/2024/03/02/yRCMgO7WG2zlVkm.png">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg">
+<meta property="article:published_time" content="2024-04-03T15:45:25.000Z">
+<meta property="article:modified_time" content="2024-04-03T15:46:14.597Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="PDF问答">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2024/03/02/QxN54ckVF3thTp8.png">
+  
+  
+  
+  <title>NLP（八十九）PDF文档智能问答入门 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（八十九）PDF文档智能问答入门"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-04-03 23:45" pubdate>
+          星期三, 四月 3日 2024, 11:45 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          8.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          70 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（八十九）PDF文档智能问答入门</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍如何使用fitz模块处理PDF文档，以及如何使用OpenAI大模型对PDF文档进行问答。</p>
+</blockquote>
+<p>在文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247485425&amp;idx=1&amp;sn=bd85ddfce82d77ceec5a66cb96835400&amp;chksm=fcb9be61cbce37773109f9703c2b6c4256d5037c8bf4497dfb9ad0f296ce0ee4065255954c1c&amp;token=28280910&amp;lang=zh_CN#rd">NLP（六十一）使用Baichuan-13B-Chat模型构建智能文档</a>中笔者介绍如何使用大模型来构建智能文档问答助手，其中包括PDF文档。</p>
+<p>在文本中，笔者将会介绍如何使用<code>fitz</code>模块来处理PDF文档，并基于此，再使用大模型对PDF文档内容进行智能问答，提升问答效果。</p>
+<h3 id="fitz模块介绍">fitz模块介绍</h3>
+<p><code>PyMuPDF</code>和<code>Fitz</code>是用于在Python中处理PDF文件的相关模块。<code>Fitz</code>是<code>PyMuPDF</code>的子模块，提供了一个简化和封装版本的<code>PyMuPDF</code>功能。</p>
+<p><img
+src="https://pymupdf.readthedocs.io/en/latest/_images/pymupdf-logo.png" srcset="/img/loading.gif" lazyload /></p>
+<ol type="1">
+<li>关系：</li>
+</ol>
+<ul>
+<li>PyMuPDF：是一个强大灵活的Python库，用于处理PDF，不依赖其它Python包。</li>
+<li>Fitz：是PyMuPDF库的一个包装器，专门设计用于在Python中处理PDF文件。</li>
+</ul>
+<ol start="2" type="1">
+<li>用途：</li>
+</ol>
+<ul>
+<li>PyMuPDF：提供了广泛的功能，用于操作PDF文档，包括方便的高级函数和底层操作。</li>
+<li>Fitz：简化和封装了PyMuPDF的功能，使在Python中处理PDF文件更加简单。</li>
+</ul>
+<ol start="3" type="1">
+<li>安装：</li>
+</ol>
+<ul>
+<li>要使用Fitz，需要安装Fitz和PyMuPDF。如果未安装其中任何一个模块，可能会出现类似"ModuleNotFoundError:
+No module named 'frontend'"的错误。</li>
+<li>可以使用pip进行安装，例如从清华镜像源安装PyMuPDF。</li>
+</ul>
+<p>总之，虽然PyMuPDF是一个全面的用于在Python中操作PDF文档的库，但Fitz是一个子模块，简化和封装了PyMuPDF的功能，使其更适合特定涉及PDF文件的任务，并且更易于使用。</p>
+<h3 id="pdf文档处理">PDF文档处理</h3>
+<p>PyMuPDF模块的官方教程为：https://pymupdf.readthedocs.io/en/latest/tutorial.html
+。</p>
+<p>以下将会介绍如何使用<code>fitz</code>模块来获取PDF文档的基本信息、文本、图片、表格以及如何分割PDF文档。</p>
+<p>本文所使用的PDF文档为：</p>
+<ul>
+<li>demo1.pdf</li>
+</ul>
+<figure>
+<img src="https://s2.loli.net/2024/03/02/QxN54ckVF3thTp8.png" srcset="/img/loading.gif" lazyload
+alt="demo1.pdf" />
+<figcaption aria-hidden="true">demo1.pdf</figcaption>
+</figure>
+<ul>
+<li>demo2.pdf</li>
+</ul>
+<figure>
+<img src="https://s2.loli.net/2024/03/02/JKGCVPdfvzloEWa.png" srcset="/img/loading.gif" lazyload
+alt="demo2.pdf" />
+<figcaption aria-hidden="true">demo2.pdf</figcaption>
+</figure>
+<h4 id="获取pdf文档基本信息">获取PDF文档基本信息</h4>
+<p>Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># PyMuPDF==1.23.26</span><br><span class="hljs-keyword">import</span> fitz<br><br>pdf_path = <span class="hljs-string">&quot;../data/demo1.pdf&quot;</span><br>doc = fitz.<span class="hljs-built_in">open</span>(pdf_path)<br><br><span class="hljs-comment"># basic PDF info</span><br>title = doc.metadata[<span class="hljs-string">&quot;title&quot;</span>]<br>author = doc.metadata[<span class="hljs-string">&quot;author&quot;</span>]<br>create_date = doc.metadata[<span class="hljs-string">&quot;creationDate&quot;</span>]<br>num_pages = doc.page_count<br>page = doc.load_page(<span class="hljs-number">0</span>)<br>page_height = page.bound().height<br>page_width = page.bound().width<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;title: <span class="hljs-subst">&#123;title&#125;</span>\nauthor: <span class="hljs-subst">&#123;author&#125;</span>\ncreate_date: <span class="hljs-subst">&#123;create_date&#125;</span>\nnum_pages: <span class="hljs-subst">&#123;num_pages&#125;</span>\n&quot;</span><br>      <span class="hljs-string">f&quot;page_height: <span class="hljs-subst">&#123;page_height&#125;</span>\npage_width: <span class="hljs-subst">&#123;page_width&#125;</span>\n&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">title</span>: <br><span class="hljs-attribute">author</span>: <br><span class="hljs-attribute">create_date</span>: D:<span class="hljs-number">20240301052229</span>+<span class="hljs-number">00</span>&#x27;<span class="hljs-number">00</span>&#x27;<br><span class="hljs-attribute">num_pages</span>: <span class="hljs-number">1</span><br><span class="hljs-attribute">page_height</span>: <span class="hljs-number">841</span>.<span class="hljs-number">9199829101562</span><br><span class="hljs-attribute">page_width</span>: <span class="hljs-number">594</span>.<span class="hljs-number">9599609375</span><br></code></pre></td></tr></table></figure>
+<h4 id="获取文本">获取文本</h4>
+<p>Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># PyMuPDF==1.23.26</span><br><span class="hljs-keyword">import</span> fitz<br><br>pdf_path = <span class="hljs-string">&quot;../data/demo1.pdf&quot;</span><br>doc = fitz.<span class="hljs-built_in">open</span>(pdf_path)<br>num_pages = doc.page_count<br><br><span class="hljs-comment"># Text info of PDF</span><br><span class="hljs-keyword">for</span> page_index <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(num_pages):<br>    page = doc.load_page(page_index)<br>    text = page.get_text()<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;第<span class="hljs-subst">&#123;page_index + <span class="hljs-number">1</span>&#125;</span>页的文本内容为：\n<span class="hljs-subst">&#123;text&#125;</span>\n&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs awk">第<span class="hljs-number">1</span>页的文本内容为：<br><span class="hljs-number">2024</span><span class="hljs-regexp">/3/</span><span class="hljs-number">1</span> <span class="hljs-number">13</span>:<span class="hljs-number">22</span><br>md2pdf - Markdown to PDF<br>https:<span class="hljs-regexp">//m</span>d2pdf.netlify.app<br><span class="hljs-number">1</span>/<span class="hljs-number">1</span><br>This is a demo pdf.<br>Today is Friday, <span class="hljs-number">1</span>st Match, <span class="hljs-number">2024</span>.<br></code></pre></td></tr></table></figure>
+<h4 id="获取图片">获取图片</h4>
+<p>获取PDF文档中的图片的Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># PyMuPDF==1.23.26</span><br><span class="hljs-keyword">import</span> fitz<br><br>pdf_path = <span class="hljs-string">&quot;../data/demo1.pdf&quot;</span><br>doc = fitz.<span class="hljs-built_in">open</span>(pdf_path)<br>num_pages = doc.page_count<br><br><span class="hljs-comment"># Image info of PDF</span><br><span class="hljs-keyword">for</span> page_index <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(num_pages):<br>    page = doc.load_page(page_index)<br>    image_list = page.get_images()<br>    <span class="hljs-built_in">print</span>(image_list)<br>    <span class="hljs-keyword">for</span> img <span class="hljs-keyword">in</span> image_list:<br>        xref = img[<span class="hljs-number">0</span>]<br>        pix = fitz.Pixmap(doc, xref)<br>        <span class="hljs-built_in">print</span>(pix.colorspace, <span class="hljs-string">&#x27;--&gt;&#x27;</span>, fitz.csRGB)<br>        img_path = <span class="hljs-string">f&#x27;../output/image<span class="hljs-subst">&#123;page_index + <span class="hljs-number">1</span>&#125;</span>_<span class="hljs-subst">&#123;xref&#125;</span>.png&#x27;</span><br>        pix.save(img_path)<br><br><span class="hljs-comment"># 关闭文件</span><br>doc.close()<br></code></pre></td></tr></table></figure>
+<h4 id="获取表格">获取表格</h4>
+<p>从demo2.pdf文档中提取表格数据的Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> fitz<br><br>doc = fitz.<span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;../data/demo2.pdf&#x27;</span>)<br>page = doc[<span class="hljs-number">0</span>]   <span class="hljs-comment"># 提取第1页中的所有表格</span><br>tables = page.find_tables()<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;tables: <span class="hljs-subst">&#123;tables&#125;</span>&quot;</span>)<br><span class="hljs-keyword">for</span> i, table <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(tables):<br>    df = tables[<span class="hljs-number">0</span>].to_pandas()<br>    df.to_csv(<span class="hljs-string">f&#x27;../output/table_pg_<span class="hljs-subst">&#123;<span class="hljs-number">1</span>&#125;</span>_<span class="hljs-subst">&#123;i + <span class="hljs-number">1</span>&#125;</span>.csv&#x27;</span>, index=<span class="hljs-literal">False</span>)<br></code></pre></td></tr></table></figure>
+<p>提取的表格数据将会保存为csv格式文件。</p>
+<h4 id="分割pdf">分割PDF</h4>
+<p>处理book1.pdf文档（扫描版PDF文件），将其前三页分割形成新的PDF文档book_split.pdf，示例PDF代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> fitz<br><br><br>pdf_document = fitz.<span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;../data/book1.pdf&quot;</span>)<br><br><span class="hljs-comment"># 构建输出文件名，以页数命名</span><br>output_pdf = <span class="hljs-string">f&quot;../data/book_split.pdf&quot;</span><br><br><span class="hljs-comment"># 创建一个新的Document对象，包含当前页面</span><br>new_pdf = fitz.<span class="hljs-built_in">open</span>()<br>new_pdf.insert_pdf(pdf_document, from_page=<span class="hljs-number">0</span>, to_page=<span class="hljs-number">2</span>)<br><br><span class="hljs-comment"># 保存单独的PDF文件</span><br>new_pdf.save(output_pdf)<br>new_pdf.close()<br><br>pdf_document.close()<br></code></pre></td></tr></table></figure>
+<p>其中分割后PDF文档的第二页截图如下：</p>
+<figure>
+<img src="https://s2.loli.net/2024/03/02/yRCMgO7WG2zlVkm.png" srcset="/img/loading.gif" lazyload
+alt="分割后PDF文档第二页截图" />
+<figcaption aria-hidden="true">分割后PDF文档第二页截图</figcaption>
+</figure>
+<h3 id="pdf文档问答">PDF文档问答</h3>
+<p>基于上述的PDF文档处理，我们将结合大模型（OpenAI）对PDF文档进行回答。</p>
+<h4 id="文字版pdf">文字版PDF</h4>
+<p>文字版PDF可使用<code>fitz</code>轻松获取PDF文档中的纯文字内容，再使用大模型进行问答（简化版RAG）。</p>
+<p>示例Python代码如下(使用PDF文件为<code>oppo_n3_flip.pdf</code>)：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> fitz<br><span class="hljs-keyword">from</span> openai <span class="hljs-keyword">import</span> OpenAI<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_pdf_content</span>(<span class="hljs-params">pdf_path: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">str</span>:<br>    doc = fitz.<span class="hljs-built_in">open</span>(pdf_path)<br>    num_pages = doc.page_count<br>    bg_content_list = []<br><br>    <span class="hljs-comment"># Full Text of PDF</span><br>    <span class="hljs-keyword">for</span> page_index <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(num_pages):<br>        page = doc.load_page(page_index)<br>        text = page.get_text()<br>        bg_content_list.append(text)<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;&#x27;</span>.join(bg_content_list)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_answer</span>(<span class="hljs-params">pdf_content: <span class="hljs-built_in">str</span>, query: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">str</span>:<br>    client = OpenAI(api_key=os.getenv(<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>))<br>    response = client.chat.completions.create(<br>        model=<span class="hljs-string">&quot;gpt-3.5-turbo&quot;</span>,<br>        messages=[<br>            &#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;system&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;You are a helpful assistant.&quot;</span>&#125;,<br>            &#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">f&quot;The full text of PDF file is: <span class="hljs-subst">&#123;pdf_content&#125;</span>&quot;</span>&#125;,<br>            &#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: query&#125;<br>        ],<br>        max_tokens=<span class="hljs-number">1000</span><br>    )<br><br>    answer = response.choices[<span class="hljs-number">0</span>].message.content<br><br>    <span class="hljs-keyword">return</span> answer<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    content = get_pdf_content(<span class="hljs-string">&quot;../data/oppo_n3_flip.pdf&quot;</span>)<br>    query1 = <span class="hljs-string">&quot;OPPO Find N3 Flip的价格？&quot;</span><br>    <span class="hljs-built_in">print</span>(get_answer(pdf_content=content, query=query1))<br><br>    query2 = <span class="hljs-string">&quot;蚂蚁集团发布的大模型叫什么？&quot;</span><br>    <span class="hljs-built_in">print</span>(get_answer(pdf_content=content, query=query2))<br><br>    query3 = <span class="hljs-string">&quot;混元大模型是什么时候发布的？&quot;</span><br>    <span class="hljs-built_in">print</span>(get_answer(pdf_content=content, query=query3))<br></code></pre></td></tr></table></figure>
+<p>输出结果如下：</p>
+<figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs mathematica"><span class="hljs-variable">OPPO</span> <span class="hljs-built_in">Find</span> <span class="hljs-variable">N3</span> <span class="hljs-variable">Flip</span>有两个版本可选，分别是<span class="hljs-number">12</span><span class="hljs-variable">GB</span><span class="hljs-operator">+</span><span class="hljs-number">256</span><span class="hljs-variable">GB</span>和<span class="hljs-number">12</span><span class="hljs-variable">GB</span><span class="hljs-operator">+</span><span class="hljs-number">512</span><span class="hljs-variable">GB</span>。起售价为<span class="hljs-number">6799</span>元人民币。<br>蚂蚁集团发布的大模型叫做<span class="hljs-string">&quot;大图模型&quot;</span>（<span class="hljs-built_in">Large</span> <span class="hljs-built_in">Graph</span> <span class="hljs-variable">Model</span>，简称<span class="hljs-variable">LGM</span>）。<br>混元大模型是在<span class="hljs-number">2023</span>年<span class="hljs-number">9</span>月<span class="hljs-number">7</span>日，在<span class="hljs-number">2023</span>腾讯全球数字生态大会上正式对外亮相的。<br></code></pre></td></tr></table></figure>
+<h4 id="扫描版pdf">扫描版PDF</h4>
+<p>而扫描版PDF（也称为影印版PDF）想要使用<code>fitz</code>来获取PDF中的文字内容是困难的，因此，需要先将每一页PDF转化为图片，再使用OCR技术获取图片中的文字，这样就能获取扫描版PDF中的文字，当然，获取文本的质量主要取决于PDF文档的质量及OCR识别效果。</p>
+<p>可以使用<code>fitz</code>模块将每一页PDF转化为图片，同时，本文中采用PaddlePaddle的PaddleOCR模型进行文字识别。</p>
+<p>示例的PDF文档为book_split.pdf，我们仅使用其中的第二页，Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> fitz<br><span class="hljs-keyword">from</span> PIL <span class="hljs-keyword">import</span> Image<br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> cv2<br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> base64<br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">from</span> openai <span class="hljs-keyword">import</span> OpenAI<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">convert_pdf_2_img</span>(<span class="hljs-params">pdf_file: <span class="hljs-built_in">str</span>, pages: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-literal">None</span>:<br>    pdf_document = fitz.<span class="hljs-built_in">open</span>(pdf_file)<br><br>    <span class="hljs-comment"># Iterate through each page and convert to an image</span><br>    <span class="hljs-keyword">for</span> page_number <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(pages):<br>        <span class="hljs-comment"># Get the page</span><br>        page = pdf_document[page_number]<br>        <span class="hljs-comment"># Convert the page to an image</span><br>        pix = page.get_pixmap()<br>        <span class="hljs-comment"># Create a Pillow Image object from the pixmap</span><br>        image = Image.frombytes(<span class="hljs-string">&quot;RGB&quot;</span>, [pix.width, pix.height], pix.samples)<br>        <span class="hljs-comment"># Save the image</span><br>        image.save(<span class="hljs-string">f&quot;../output/book1_<span class="hljs-subst">&#123;page_number + <span class="hljs-number">1</span>&#125;</span>.png&quot;</span>)<br><br>    <span class="hljs-comment"># Close the PDF file</span><br>    pdf_document.close()<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">cv2_to_base64</span>(<span class="hljs-params">img</span>):<br>    data = cv2.imencode(<span class="hljs-string">&#x27;.jpg&#x27;</span>, img)[<span class="hljs-number">1</span>]<br>    <span class="hljs-keyword">return</span> base64.b64encode(data.tobytes()).decode(<span class="hljs-string">&#x27;utf8&#x27;</span>)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">image_ocr</span>(<span class="hljs-params">image_path</span>):<br>    <span class="hljs-comment"># get ocr result</span><br>    data = &#123;<span class="hljs-string">&#x27;images&#x27;</span>: [cv2_to_base64(cv2.imread(image_path))]&#125;<br>    headers = &#123;<span class="hljs-string">&quot;Content-type&quot;</span>: <span class="hljs-string">&quot;application/json&quot;</span>&#125;<br>    url = <span class="hljs-string">&quot;http://localhost:50076/predict/ch_pp-ocrv3&quot;</span><br>    r = requests.post(url=url, headers=headers, data=json.dumps(data))<br>    <span class="hljs-keyword">if</span> r.json()[<span class="hljs-string">&quot;results&quot;</span>]:<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;\n&quot;</span>.join([ocr_record[<span class="hljs-string">&quot;text&quot;</span>].strip() <span class="hljs-keyword">for</span> ocr_record <span class="hljs-keyword">in</span> r.json()[<span class="hljs-string">&quot;results&quot;</span>][<span class="hljs-number">0</span>][<span class="hljs-string">&quot;data&quot;</span>]])<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;&quot;</span><br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_answer</span>(<span class="hljs-params">pdf_content: <span class="hljs-built_in">str</span>, query: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">str</span>:<br>    client = OpenAI(api_key=os.getenv(<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>))<br>    response = client.chat.completions.create(<br>        model=<span class="hljs-string">&quot;gpt-3.5-turbo&quot;</span>,<br>        messages=[<br>            &#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;system&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;You are a helpful assistant.&quot;</span>&#125;,<br>            &#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">f&quot;The full text of PDF file is: <span class="hljs-subst">&#123;pdf_content&#125;</span>&quot;</span>&#125;,<br>            &#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: query&#125;<br>        ],<br>        max_tokens=<span class="hljs-number">1000</span><br>    )<br><br>    answer = response.choices[<span class="hljs-number">0</span>].message.content<br><br>    <span class="hljs-keyword">return</span> answer<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    test_pdf_file = <span class="hljs-string">&quot;../data/book1.pdf&quot;</span><br>    convert_pdf_2_img(pdf_file=test_pdf_file, pages=<span class="hljs-number">2</span>)<br>    page1_ocr_result = image_ocr(<span class="hljs-string">&quot;../output/book1_2.png&quot;</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;识别文字内容: <span class="hljs-subst">&#123;page1_ocr_result&#125;</span>&quot;</span>)<br><br>    query1 = <span class="hljs-string">&quot;破浪理论的创始人是谁，他的出生年月？&quot;</span><br>    predict_answer = get_answer(pdf_content=page1_ocr_result, query=query1)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;回答:&quot;</span>, predict_answer)<br><br>    query2 = <span class="hljs-string">&quot;这本书的作者是谁？&quot;</span><br>    predict_answer = get_answer(pdf_content=page1_ocr_result, query=query2)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;回答:&quot;</span>, predict_answer)<br></code></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs makefile"><span class="hljs-section">识别文字内容: 作者简介</span><br>R.N.艾略特（1871-1948），波浪理论的创始人，<br>曾当过会计师，就职于铁路公司、餐饮等多种行业。<br>人们对他的身世了解不多，1934年出版《波浪原理》，<br>为这一重要理论奠定了坚实的基础。他的理论由于<br>艰深难懂而被人们长期忽视。1978年，他的思想的<br>直接继承者帕御特出版了与人合著的《波浪理论》一<br>书，并在期权交易竞赛中取得四个月获得400%以上<br>的轿人成绩，从而使波浪原理迅速传播。现在的任<br>何一部股市理论教科书中波浪理论都占有越来越大<br>的篇幅。<br>ee more oleasevisit:htuos/nomeoto<br><span class="hljs-section">回答: 破浪理论的创始人是R.N.艾略特，他出生于1871年。</span><br><span class="hljs-section">回答: 这本书的作者是 R.N.艾略特，他是波浪理论的创始人。</span><br></code></pre></td></tr></table></figure>
+<p>可以看到，此时的回答效果是非常好的。</p>
+<h3 id="总结">总结</h3>
+<p>本文主要介绍了如何使用<code>fitz</code>模块来处理PDF文档，以及如何结合大模型对文字版、扫描版PDF文档进行智能回答。</p>
+<p>本文的亮点之一在于可使用OCR技术获得扫描版PDF文本内容，在大模型加持下回答效果表现很好。</p>
+<p>在后续的文章中，我们将会处理PDF文档中的多模态部分，比如表格、图片等，这将会是一项很有挑战性并且很有趣的事情。</p>
+<p>本文给出的Python代码均已开源，可访问Github网址：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/pdf-llm_series">https://github.com/percent4/pdf-llm_series</a>
+.</p>
+<p>欢迎关注我的公众号<strong>NLP奇幻之旅</strong>，原创技术文章第一时间推送。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+<p>欢迎关注我的知识星球“<strong>自然语言处理奇幻之旅</strong>”，笔者正在努力构建自己的技术社区。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/PDF%E9%97%AE%E7%AD%94/" class="print-no-link">#PDF问答</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（八十九）PDF文档智能问答入门</div>
+      <div>https://percent4.github.io/NLP（八十九）PDF文档智能问答入门/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年4月3日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/Python%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%8F%82%E6%95%B0%E6%A8%A1%E5%9D%97argparse/" title="Python命令行参数模块argparse">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Python命令行参数模块argparse</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E5%85%AB%E5%8D%81%E5%85%AB%EF%BC%89%E4%BD%BF%E7%94%A8LLaVA%E6%A8%A1%E5%9E%8B%E5%AE%9E%E7%8E%B0%E4%BB%A5%E6%96%87%E6%90%9C%E5%9B%BE%E5%92%8C%E4%BB%A5%E5%9B%BE%E6%90%9C%E5%9B%BE/" title="NLP（八十八）使用LLaVA模型实现以文搜图和以图搜图">
+                        <span class="hidden-mobile">NLP（八十八）使用LLaVA模型实现以文搜图和以图搜图</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

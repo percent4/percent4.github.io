@@ -1,0 +1,917 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍如何使用MkDocs来轻松搞定Python项目文档，这无疑是Python工程的重要部分。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用MkDocs轻松搞定Python项目文档">
+<meta property="og:url" content="https://percent4.github.io/%E4%BD%BF%E7%94%A8MkDocs%E8%BD%BB%E6%9D%BE%E6%90%9E%E5%AE%9APython%E9%A1%B9%E7%9B%AE%E6%96%87%E6%A1%A3/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍如何使用MkDocs来轻松搞定Python项目文档，这无疑是Python工程的重要部分。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2024/04/03/bf5qDjVoGCSyswv.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/03/OFzek7jQ9bKtTs3.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/03/Koi367BbUSTsRxq.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/03/NI9otFVCp4cAB2u.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/03/FGqby9guflIUv3i.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/03/fLaqFCXPupTUsA3.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/03/McNxqhvsEYUIQ8Z.png">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg">
+<meta property="article:published_time" content="2024-04-03T15:53:52.000Z">
+<meta property="article:modified_time" content="2024-04-03T15:54:27.025Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="Python">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2024/04/03/bf5qDjVoGCSyswv.png">
+  
+  
+  
+  <title>使用MkDocs轻松搞定Python项目文档 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="使用MkDocs轻松搞定Python项目文档"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-04-03 23:53" pubdate>
+          星期三, 四月 3日 2024, 11:53 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          5.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          48 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">使用MkDocs轻松搞定Python项目文档</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍如何使用MkDocs来轻松搞定Python项目文档，这无疑是Python工程的重要部分。</p>
+</blockquote>
+<h3 id="引言">引言</h3>
+<p>在学习Python第三方模块时，我们尝尝会阅读它们的官方文档，这能让我们快速掌握它们，同时也是这些第三方模块最为重要的参考资料。</p>
+<p>比如，大名鼎鼎的<code>scrapy</code>模块，其官方文档（<code>readthedocs</code>风格）界面（网址为:
+<a target="_blank" rel="noopener" href="https://scapy.readthedocs.io/en/latest/"
+class="uri">https://scapy.readthedocs.io/en/latest/</a>）如下：</p>
+<figure>
+<img src="https://s2.loli.net/2024/04/03/bf5qDjVoGCSyswv.png" srcset="/img/loading.gif" lazyload
+alt="scrapy官方文档" />
+<figcaption aria-hidden="true">scrapy官方文档</figcaption>
+</figure>
+<p>又比如，最近大火的<code>Pydantic</code>和<code>FastAPI</code>模块都采用改了MkDocs工具来构建其官方文档，风格为<code>material</code>。<code>Pydantic</code>的界面（网址为:
+）如下：</p>
+<figure>
+<img src="https://s2.loli.net/2024/04/03/OFzek7jQ9bKtTs3.png" srcset="/img/loading.gif" lazyload
+alt="Pydantic官方文档" />
+<figcaption aria-hidden="true">Pydantic官方文档</figcaption>
+</figure>
+<p>那么，什么是<code>MkDocs</code>呢？</p>
+<p><code>MkDocs</code>是一个快速、简单且华丽的静态站点生成器，适用于构建项目文档。文档源文件是用
+Markdown 编写的，并使用单个 YAML
+配置文件进行配置。使用<code>MkDocs</code>，我们将会很方便地给Python项目来生成一个项目文档。</p>
+<p>本文将会通过Python的docstring和Google代码注释风格，并结合<code>MkDocs</code>来生成Python项目文档，并部署至Github平台。</p>
+<p>在这之前，我们需要安装的Python模块如下：</p>
+<pre><code class="hljs">mkdocs==1.5.3
+mkdocs-material==9.5.17
+mkdocstrings==0.24.1
+mkdocstrings-python==1.9.0</code></pre>
+<p>我们使用的项目为文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486274&amp;idx=1&amp;sn=45bb873eb1a60c874be9f3d6d8a730a2&amp;chksm=fcb9b2d2cbce3bc4435d38d87481f5081b7f45a3b9cc92e05445e3dc53734b4308a6f41b15c5&amp;token=1354542875&amp;lang=zh_CN#rd">使用Hatchling轻松实现Python项目打包</a>中的Python项目<code>package_python_project</code>，网址为:
+<a target="_blank" rel="noopener" href="https://github.com/percent4/package_python_project"
+class="uri">https://github.com/percent4/package_python_project</a> .</p>
+<h3 id="docstring和doctest">docstring和doctest</h3>
+<p>我们对项目中的<code>src/token_counter/token_count.py</code>添加docstring和符合Google代码注释风格的注释，同时在注释中添加Examples，使之能用doctest进行简单测试。</p>
+<p>改造后的脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @place: Pudong, Shanghai</span><br><span class="hljs-comment"># @file: token_count.py</span><br><span class="hljs-comment"># @time: 2024/1/22 17:45</span><br><span class="hljs-string">&quot;&quot;&quot;TokenCounter</span><br><span class="hljs-string"></span><br><span class="hljs-string">to use TokenCounter, you shoule use:</span><br><span class="hljs-string"></span><br><span class="hljs-string">from token_counter.token_count import TokenCounter</span><br><span class="hljs-string"></span><br><span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-keyword">import</span> tiktoken<br><br><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span>, <span class="hljs-type">Union</span><br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">TokenCounter</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;The class is for count tokens in user input.</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, model: <span class="hljs-built_in">str</span> = <span class="hljs-string">&quot;gpt-3.5-turbo&quot;</span></span>):<br>        <span class="hljs-string">&quot;&quot;&quot;`__init__` method</span><br><span class="hljs-string"></span><br><span class="hljs-string">        the `__init__` method of the class</span><br><span class="hljs-string"></span><br><span class="hljs-string">        Notes:</span><br><span class="hljs-string">            the model name now only support OpenAI GPT models</span><br><span class="hljs-string"></span><br><span class="hljs-string">        Args:</span><br><span class="hljs-string">            model: the name of models, e.g. `gpt-3.5-turbo`</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        self.model = model<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">count</span>(<span class="hljs-params">self, _<span class="hljs-built_in">input</span>: <span class="hljs-type">Union</span>[<span class="hljs-type">List</span>[<span class="hljs-built_in">str</span>], <span class="hljs-built_in">str</span>]</span>) -&gt; <span class="hljs-type">Union</span>[<span class="hljs-type">List</span>[<span class="hljs-built_in">int</span>], <span class="hljs-built_in">int</span>]:<br>        <span class="hljs-string">&quot;&quot;&quot;count the tokens of _input in string or list of string format</span><br><span class="hljs-string"></span><br><span class="hljs-string">        count the tokens of _input using OpenAI tiktoken module, the model is `gpt-3.5-turbo`</span><br><span class="hljs-string">        by default. if the model is not supported, then use `cl100k_base` as backup.</span><br><span class="hljs-string"></span><br><span class="hljs-string">        Args:</span><br><span class="hljs-string">            _input: the input string or list of string</span><br><span class="hljs-string"></span><br><span class="hljs-string">        Examples:</span><br><span class="hljs-string">            &gt;&gt;&gt; token_counter = TokenCounter()</span><br><span class="hljs-string">            &gt;&gt;&gt; token_counter.count(&quot;who are you?&quot;)</span><br><span class="hljs-string">            4</span><br><span class="hljs-string">            &gt;&gt;&gt; token_counter.count([&quot;who are you?&quot;, &quot;How&#x27;s it going on?&quot;])</span><br><span class="hljs-string">            [4, 6]</span><br><span class="hljs-string"></span><br><span class="hljs-string">        Raises:</span><br><span class="hljs-string">            NotImplementedError: if `model` is not in the list</span><br><span class="hljs-string"></span><br><span class="hljs-string">        Returns:</span><br><span class="hljs-string">            the number of token of a string or the list of token of each string in list</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        <span class="hljs-keyword">try</span>:<br>            encoding = tiktoken.encoding_for_model(self.model)<br>        <span class="hljs-keyword">except</span> KeyError:<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Warning: model not found. Using cl100k_base encoding.&quot;</span>)<br>            encoding = tiktoken.get_encoding(<span class="hljs-string">&quot;cl100k_base&quot;</span>)<br><br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(_<span class="hljs-built_in">input</span>, <span class="hljs-built_in">list</span>):<br>            token_count_list = []<br>            <span class="hljs-keyword">for</span> text <span class="hljs-keyword">in</span> _<span class="hljs-built_in">input</span>:<br>                token_count_list.append(<span class="hljs-built_in">len</span>(encoding.encode(text)))<br>            <span class="hljs-keyword">return</span> token_count_list<br>        <span class="hljs-keyword">elif</span> <span class="hljs-built_in">isinstance</span>(_<span class="hljs-built_in">input</span>, <span class="hljs-built_in">str</span>):<br>            <span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(encoding.encode(_<span class="hljs-built_in">input</span>))<br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-keyword">raise</span> NotImplementedError(<span class="hljs-string">f&quot;not support data type for <span class="hljs-subst">&#123;<span class="hljs-built_in">type</span>(_<span class="hljs-built_in">input</span>)&#125;</span>, please use str or List[str].&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>对这个脚本使用doctest进行简单测试，命令为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">python3 -m doctest token_count.py -v<br></code></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs bash">Trying:<br>    token_counter = TokenCounter()<br>Expecting nothing<br>ok<br>Trying:<br>    token_counter.count(<span class="hljs-string">&quot;who are you?&quot;</span>)<br>Expecting:<br>    4<br>ok<br>Trying:<br>    token_counter.count([<span class="hljs-string">&quot;who are you?&quot;</span>, <span class="hljs-string">&quot;How&#x27;s it going on?&quot;</span>])<br>Expecting:<br>    [4, 6]<br>ok<br>3 items had no tests:<br>    token_count<br>    token_count.TokenCounter<br>    token_count.TokenCounter.__init__<br>1 items passed all tests:<br>   3 tests <span class="hljs-keyword">in</span> token_count.TokenCounter.count<br>3 tests <span class="hljs-keyword">in</span> 4 items.<br>3 passed and 0 failed.<br>Test passed.<br></code></pre></td></tr></table></figure>
+<h3 id="项目文档生成">项目文档生成</h3>
+<p>切换正题。我们运行命令<code>mkdocs new .</code>后，就会在当前目录下生成docs文件夹和mkdocs.yml配置文件。</p>
+<p>在docs文件夹下，我们可以使用Markdown格式来编写.md文件，作为项目文档的素材。这里，笔者创建三个文档：</p>
+<ul>
+<li>index.md</li>
+<li>reference.md</li>
+<li>tutorials.md</li>
+</ul>
+<p>index.md的文件内容如下：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs markdown"><span class="hljs-section"># Welcome to Token Counter Docs</span><br><br>This document is about my personal project for token counter.<br><br><span class="hljs-section">## Tutorials</span><br><br>You can see more detail about the project in [<span class="hljs-string">tutorial</span>](<span class="hljs-link">tutorials.md</span>), which serve as the project tutorial.<br><br>The source code can be found on Github, the website is [<span class="hljs-string">https://github.com/percent4/package_python_project</span>](<span class="hljs-link">https://github.com/percent4/package_python_project</span>) .<br><br><span class="hljs-section">## Project overview</span><br><br>::: src.token<span class="hljs-emphasis">_counter</span><br><span class="hljs-emphasis"></span><br><span class="hljs-emphasis">## Others</span><br><span class="hljs-emphasis"></span><br><span class="hljs-emphasis">The project is useful for Python project with packaging and documentation.</span><br><span class="hljs-emphasis"></span><br><span class="hljs-emphasis"></span><br></code></pre></td></tr></table></figure>
+<p>reference.md文件内容如下：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs markdown"><span class="hljs-section">## Reference</span><br><br><span class="hljs-bullet">1.</span> openai/tiktoken: [<span class="hljs-string">https://github.com/openai/tiktoken</span>](<span class="hljs-link">https://github.com/openai/tiktoken</span>)<br></code></pre></td></tr></table></figure>
+<p>tutorials.md文件内容如下：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs markdown">This path the project documentation focuses on the realize of <span class="hljs-strong">**TokenCounter**</span> Class.<br>Now it only support the models of OpenAI GPT mode, such as <span class="hljs-code">`gpt-3.5-turbo`</span>.<br><br>::: src.token<span class="hljs-emphasis">_counter.token_</span>count<br></code></pre></td></tr></table></figure>
+<p>其中:::是Mkdocs工具特有语法，表示引入Python脚本或模块。</p>
+<p>同时，我们对<code>mkdocs.yml</code>进行配置，定义好主题（theme）、插件（plugins）和导航栏（nav）等，参考如下：</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs yml"><span class="hljs-attr">site_name:</span> <span class="hljs-string">Token</span> <span class="hljs-string">Counter</span> <span class="hljs-string">Docs</span><br><br><span class="hljs-attr">theme:</span><br>  <span class="hljs-attr">name:</span> <span class="hljs-string">&quot;material&quot;</span><br>  <span class="hljs-attr">features:</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">navigation.tabs</span><br>  <span class="hljs-attr">palette:</span><br>    <span class="hljs-comment"># Palette toggle for light mode</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-attr">scheme:</span> <span class="hljs-string">default</span><br>      <span class="hljs-attr">toggle:</span><br>        <span class="hljs-attr">icon:</span> <span class="hljs-string">material/lightbulb</span><br>        <span class="hljs-attr">name:</span> <span class="hljs-string">Switch</span> <span class="hljs-string">to</span> <span class="hljs-string">dark</span> <span class="hljs-string">mode</span><br><br>    <span class="hljs-comment"># Palette toggle for dark mode</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-attr">scheme:</span> <span class="hljs-string">slate</span><br>      <span class="hljs-attr">toggle:</span><br>        <span class="hljs-attr">icon:</span> <span class="hljs-string">material/lightbulb-outline</span><br>        <span class="hljs-attr">name:</span> <span class="hljs-string">Switch</span> <span class="hljs-string">to</span> <span class="hljs-string">light</span> <span class="hljs-string">mode</span><br><br><span class="hljs-attr">plugins:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">search:</span><br>      <span class="hljs-attr">lang:</span> <span class="hljs-string">en</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">mkdocstrings:</span><br>      <span class="hljs-attr">handlers:</span><br>        <span class="hljs-attr">python:</span><br>          <span class="hljs-attr">paths:</span> [<span class="hljs-string">src</span>]<br><br><span class="hljs-attr">nav:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">Index:</span> <span class="hljs-string">index.md</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">Tutorial:</span> <span class="hljs-string">tutorials.md</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">Reference:</span> <span class="hljs-string">reference.md</span><br><br></code></pre></td></tr></table></figure>
+<p>这里需要稍微说明下，插件<code>mkdocstrings</code>会提取Python代码中的docstring用来生成文档，这无疑是非常方便的。</p>
+<p>在终端输入<code>mkdocs serve</code>命令，即可通过http://127.0.0.1:8000/访问项目文档，效果展示如下：</p>
+<figure>
+<img src="https://s2.loli.net/2024/04/03/Koi367BbUSTsRxq.png" srcset="/img/loading.gif" lazyload
+alt="首页" />
+<figcaption aria-hidden="true">首页</figcaption>
+</figure>
+<figure>
+<img src="https://s2.loli.net/2024/04/03/NI9otFVCp4cAB2u.png" srcset="/img/loading.gif" lazyload
+alt="查看Tutorial页面的代码说明1" />
+<figcaption aria-hidden="true">查看Tutorial页面的代码说明1</figcaption>
+</figure>
+<figure>
+<img src="https://s2.loli.net/2024/04/03/FGqby9guflIUv3i.png" srcset="/img/loading.gif" lazyload
+alt="查看Tutorial页面的代码说明2" />
+<figcaption aria-hidden="true">查看Tutorial页面的代码说明2</figcaption>
+</figure>
+<p>在这个项目文档中，还能很方便地查看Python源码。</p>
+<p>以上生成的项目文档风格为<code>material</code>。如果我们想切换为<code>readthedocs</code>风格，只需要在配置文件中将theme的name改成<code>readthedocs</code>，但这种风格会丢失一些东西，毕竟不如<code>material</code>支持得那么全面。</p>
+<figure>
+<img src="https://s2.loli.net/2024/04/03/fLaqFCXPupTUsA3.png" srcset="/img/loading.gif" lazyload
+alt="readthedocs风格的文档首页" />
+<figcaption aria-hidden="true">readthedocs风格的文档首页</figcaption>
+</figure>
+<figure>
+<img src="https://s2.loli.net/2024/04/03/McNxqhvsEYUIQ8Z.png" srcset="/img/loading.gif" lazyload
+alt="readthedocs风格的文档Tutorial页面" />
+<figcaption
+aria-hidden="true">readthedocs风格的文档Tutorial页面</figcaption>
+</figure>
+<h3 id="部署">部署</h3>
+<p>上述项目文档只在本地可查看。如果需要部署项目文档，有两种方法：</p>
+<ul>
+<li>打包成静态文件夹：运行<code>mkdocs build</code>，将文档打包成site静态文件夹，可部署在任何你想要的服务器上面。</li>
+<li>部署在Github上：运行<code>mkdocs gh-deploy</code>，稍待片刻，你的项目文档即可访问：https://percent4.github.io/package_python_project/
+, 此时项目文档的代码在gh-pages分支。</li>
+</ul>
+<h3 id="参考文献">参考文献</h3>
+<ol type="1">
+<li>MkDocs: <a
+target="_blank" rel="noopener" href="https://www.mkdocs.org/">https://www.mkdocs.org/</a></li>
+<li>Build Your Python Project Documentation With MkDocs: <a
+target="_blank" rel="noopener" href="https://realpython.com/python-project-documentation-with-mkdocs/">https://realpython.com/python-project-documentation-with-mkdocs/</a></li>
+<li>mkdocs 文档生成,Python自文档快速入门: <a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/BEMAKE/p/mkdocsTutorials.html">https://www.cnblogs.com/BEMAKE/p/mkdocsTutorials.html</a></li>
+<li>有mkdocs还在手写文档?大人时代变啦！: <a
+target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV12z4y1c7EN/?vd_source=a4c50cd24d995647f23d6cecd9f64502">https://www.bilibili.com/video/BV12z4y1c7EN/?vd_source=a4c50cd24d995647f23d6cecd9f64502</a></li>
+</ol>
+<p>欢迎关注我的公众号<strong>NLP奇幻之旅</strong>，原创技术文章第一时间推送。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+<p>欢迎关注我的知识星球“<strong>自然语言处理奇幻之旅</strong>”，笔者正在努力构建自己的技术社区。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Python/" class="category-chain-item">Python</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Python/" class="print-no-link">#Python</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>使用MkDocs轻松搞定Python项目文档</div>
+      <div>https://percent4.github.io/使用MkDocs轻松搞定Python项目文档/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年4月3日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93%E5%85%A5%E9%97%A8%EF%BC%88%E4%B8%80%EF%BC%89%E6%96%87%E6%9C%AC%E7%9B%B8%E4%BC%BC%E6%80%A7%E6%90%9C%E7%B4%A2/" title="向量数据库入门（一）文本相似性搜索">
+                        <span class="hidden-mobile">向量数据库入门（一）文本相似性搜索</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
