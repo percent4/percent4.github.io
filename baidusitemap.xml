@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://percent4.github.io/NLP%EF%BC%88%E5%85%AB%E5%8D%81%E5%85%AB%EF%BC%89%E4%BD%BF%E7%94%A8LLaVA%E6%A8%A1%E5%9E%8B%E5%AE%9E%E7%8E%B0%E4%BB%A5%E6%96%87%E6%90%9C%E5%9B%BE%E5%92%8C%E4%BB%A5%E5%9B%BE%E6%90%9C%E5%9B%BE/</loc>
+    <lastmod>2024-04-03</lastmod>
+  </url>
+  <url>
+    <loc>https://percent4.github.io/NLP%EF%BC%88%E5%85%AB%E5%8D%81%E4%B8%83%EF%BC%89CLIP%E6%A8%A1%E5%9E%8B%E5%85%A5%E9%97%A8/</loc>
+    <lastmod>2024-04-03</lastmod>
+  </url>
+  <url>
     <loc>https://percent4.github.io/BCE-BGE-ME-JINA-AI%E7%9A%84Embedding%E6%A8%A1%E5%9E%8B%E5%8F%AC%E5%9B%9E%E6%95%88%E6%9E%9C%E5%AF%B9%E6%AF%94/</loc>
     <lastmod>2024-02-04</lastmod>
   </url>

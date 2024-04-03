@@ -1,0 +1,986 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将介绍CLIP模型，以及CLIP模型的简单使用和它在CIFAR-10数据集上的实验结果复现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（八十七）CLIP模型入门">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E5%85%AB%E5%8D%81%E4%B8%83%EF%BC%89CLIP%E6%A8%A1%E5%9E%8B%E5%85%A5%E9%97%A8/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将介绍CLIP模型，以及CLIP模型的简单使用和它在CIFAR-10数据集上的实验结果复现。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/openai/CLIP/main/CLIP.png">
+<meta property="og:image" content="https://static.jixieshi.cn/upload/goods/2022042210295380594_BIG.png">
+<meta property="og:image" content="https://s2.loli.net/2024/02/22/oCuQG5FOBUf2iNE.png">
+<meta property="og:image" content="https://s2.loli.net/2024/02/22/26AqDtVFGf9k5Qg.png">
+<meta property="og:image" content="https://s2.loli.net/2024/02/24/bKZXkpsIWj3rROq.png">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg">
+<meta property="article:published_time" content="2024-04-03T15:41:37.000Z">
+<meta property="article:modified_time" content="2024-04-03T15:43:07.338Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="CLIP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/openai/CLIP/main/CLIP.png">
+  
+  
+  
+  <title>NLP（八十七）CLIP模型入门 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（八十七）CLIP模型入门"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-04-03 23:41" pubdate>
+          星期三, 四月 3日 2024, 11:41 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          10k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          84 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（八十七）CLIP模型入门</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将介绍CLIP模型，以及CLIP模型的简单使用和它在CIFAR-10数据集上的实验结果复现。</p>
+</blockquote>
+<p>从这篇文章开始，我们将进入一个崭新的世界：<code>多模态（Multi-Modal）模型</code>。</p>
+<h3 id="简介">简介</h3>
+<p><code>CLIP</code>（Contrastive Language-Image Pre-Training）是<code>OpenAI</code>在2021年初发布的多模态预训练神经网络模型，用于匹配图像和文本。该模型的关键创新之一是将图像和文本映射到统一的向量空间，通过对比学习的方式进行预训练，使得模型能够直接在向量空间中计算图像和文本之间的相似性，无需额外的中间表示。</p>
+<p><code>CLIP</code>模型训练分为三个阶段：</p>
+<ul>
+<li>对比式预训练阶段：使用图像-文本对进行对比学习训练；</li>
+<li>从标签文本创建数据集分类器：提取预测类别文本特征；</li>
+<li>用于零样本预测：进行零样本推理预测。</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/openai/CLIP/main/CLIP.png" srcset="/img/loading.gif" lazyload alt="CLIP模型训练三阶段"></p>
+<p><code>CLIP</code>的设计灵感在于将图像和文本映射到共享的向量空间，使得模型能够理解它们之间的语义关系。这种共享向量空间使得<code>CLIP</code>实现了无监督的联合学习，可用于各种视觉和语言任务。<br>
+在训练完成后，<code>CLIP</code>可用于多种任务，如<strong>分类图像</strong>、<strong>生成文本描述</strong>、<strong>检索图像</strong>等。它具有出色的zero-shot学习能力，只需简单的线性分类器（Linear Probe）或最近邻搜索（KNN）即可完成任务，无需额外训练或微调。</p>
+<h3 id="简单使用">简单使用</h3>
+<p>使用<code>CLIP</code>模型可以很方便地实现零样本图片分类（Zero Shot Image Classification），广泛效果好，且图片类别（labels）可以自由定义。从这种意义上来讲，它改变了以前CV界关于图片分类的范式，是真正意义上的创新。</p>
+<h4 id="应用入门">应用入门</h4>
+<p>以下是使用Hugging Face来使用CLIP模型实现零样本图片分类的Python代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> PIL <span class="hljs-keyword">import</span> Image<br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> CLIPProcessor, CLIPModel<br><br>model_path = <span class="hljs-string">&quot;/data-ai/usr/lmj/models/clip-vit-base-patch32&quot;</span><br>model = CLIPModel.from_pretrained(model_path)<br>processor = CLIPProcessor.from_pretrained(model_path)<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python">url = <span class="hljs-string">&quot;https://static.jixieshi.cn/upload/goods/2022042210295380594_BIG.png&quot;</span><br>image = Image.<span class="hljs-built_in">open</span>(requests.get(url, stream=<span class="hljs-literal">True</span>).raw)<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">image<br></code></pre></td></tr></table></figure>
+<p><img src="https://static.jixieshi.cn/upload/goods/2022042210295380594_BIG.png" srcset="/img/loading.gif" lazyload alt="png"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python">text = [<span class="hljs-string">&quot;a photo of a computer&quot;</span>, <span class="hljs-string">&quot;a photo of a mouse&quot;</span>, <span class="hljs-string">&quot;a photo of a keyboard&quot;</span>, <span class="hljs-string">&quot;a photo of a cellphone&quot;</span>]<br>inputs = processor(text=text, images=image, return_tensors=<span class="hljs-string">&quot;pt&quot;</span>, padding=<span class="hljs-literal">True</span>)<br>outputs = model(**inputs)<br>logits_per_image = outputs.logits_per_image<br>logits_per_image<br></code></pre></td></tr></table></figure>
+<pre><code class="hljs">tensor([[23.6426, 20.7598, 28.2721, 17.9425]], grad_fn=&lt;TBackward0&gt;)
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">probs = logits_per_image.softmax(dim=<span class="hljs-number">1</span>)<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">probs.detach().numpy().tolist()<br></code></pre></td></tr></table></figure>
+<pre><code class="hljs">[[0.009659518487751484,
+  0.000540732522495091,
+  0.9897673726081848,
+  3.2318232115358114e-05]]
+</code></pre>
+<h4 id="可视化应用">可视化应用</h4>
+<p>以下是使用Gradio工具来构建零样本图片分类的Python代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br><span class="hljs-keyword">import</span> gradio <span class="hljs-keyword">as</span> gr<br><span class="hljs-keyword">from</span> PIL <span class="hljs-keyword">import</span> Image<br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> CLIPProcessor, CLIPModel<br><br><br>model_path = <span class="hljs-string">&quot;./models/clip-vit-base-patch32&quot;</span><br>model = CLIPModel.from_pretrained(model_path)<br>processor = CLIPProcessor.from_pretrained(model_path)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;load model...&quot;</span>)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">image_predict</span>(<span class="hljs-params">image_url, prompts</span>):<br>    image = Image.<span class="hljs-built_in">open</span>(requests.get(image_url, stream=<span class="hljs-literal">True</span>).raw)<br>    labels = prompts.split(<span class="hljs-string">&#x27;,&#x27;</span>)<br>    inputs = processor(text=labels, images=image, return_tensors=<span class="hljs-string">&quot;pt&quot;</span>, padding=<span class="hljs-literal">True</span>)<br>    outputs = model(**inputs)<br>    logits_per_image = outputs.logits_per_image<br>    probs = logits_per_image.softmax(dim=<span class="hljs-number">1</span>).detach().numpy().tolist()[<span class="hljs-number">0</span>]<br>    <span class="hljs-keyword">return</span> image, gr.BarPlot(<br>        value=pd.DataFrame(<br>            &#123;<br>                <span class="hljs-string">&quot;label&quot;</span>: labels,<br>                <span class="hljs-string">&quot;prob&quot;</span>: probs,<br>            &#125;<br>        ),<br>        x=<span class="hljs-string">&quot;label&quot;</span>,<br>        y=<span class="hljs-string">&quot;prob&quot;</span>,<br>        width=<span class="hljs-number">400</span>,<br>        color=<span class="hljs-string">&#x27;label&#x27;</span>,<br>        title=<span class="hljs-string">&quot;Zero Shot Image Classification&quot;</span>,<br>        tooltip=[<span class="hljs-string">&quot;label&quot;</span>, <span class="hljs-string">&quot;prob&quot;</span>],<br>        y_lim=[<span class="hljs-number">0</span>, <span class="hljs-number">1</span>]<br>    )<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    <span class="hljs-keyword">with</span> gr.Blocks() <span class="hljs-keyword">as</span> demo:<br>        <span class="hljs-keyword">with</span> gr.Row():<br>            <span class="hljs-keyword">with</span> gr.Column():<br>                image_urls = gr.TextArea(lines=<span class="hljs-number">1</span>, placeholder=<span class="hljs-string">&quot;Enter image urls&quot;</span>, label=<span class="hljs-string">&quot;Images&quot;</span>)<br>                prompt = gr.TextArea(lines=<span class="hljs-number">3</span>, placeholder=<span class="hljs-string">&quot;Enter labels, separated by comma&quot;</span>, label=<span class="hljs-string">&quot;Labels&quot;</span>)<br>            <span class="hljs-keyword">with</span> gr.Column():<br>                search_image = gr.Image(<span class="hljs-built_in">type</span>=<span class="hljs-string">&#x27;pil&#x27;</span>)<br>                plot = gr.BarPlot()<br>                submit = gr.Button(<span class="hljs-string">&quot;Classify&quot;</span>)<br>        submit.click(fn=image_predict,<br>                     inputs=[image_urls, prompt],<br>                     outputs=[search_image, plot])<br>    demo.launch(server_name=<span class="hljs-string">&quot;0.0.0.0&quot;</span>, server_port=<span class="hljs-number">50073</span>)<br><br></code></pre></td></tr></table></figure>
+<p>效果图如下：</p>
+<p><img src="https://s2.loli.net/2024/02/22/oCuQG5FOBUf2iNE.png" srcset="/img/loading.gif" lazyload alt="zs_image_classification_clip.png"></p>
+<p><img src="https://s2.loli.net/2024/02/22/26AqDtVFGf9k5Qg.png" srcset="/img/loading.gif" lazyload alt="zs_image_classification_clip2.png"></p>
+<h3 id="在CIFAR-10的结果复现">在CIFAR-10的结果复现</h3>
+<p>在CLIP论文中，给出了它在27个传统CV领域的数据集上的表现，本文仅复现CLIP模型在CIFAR-10数据集的效果。</p>
+<p>CIFAR-10是一个带有标签的数据集，由10类32×32的彩色图像组成。数据集共有60,000张图像，每类6,000张，其中50,000张用于训练，10,000张用于测试。CIFAR-10数据集由Alex Krizhevsky, Vinod Nair, Geoffrey Hinton创建，用于识别常见物体。每个图像都是RGB格式的，每个类别内的图像数量相等，但训练批次内的图像数量可能不同。数据集支持Python、Matlab和C语言版本，并且已经预先分割成了5个训练批次和1个测试批次。其官方访问网址为：<a target="_blank" rel="noopener" href="https://www.cs.toronto.edu/~kriz/cifar.html">https://www.cs.toronto.edu/~kriz/cifar.html</a></p>
+<h4 id="Zero-Shot-Image-Classification">Zero Shot Image Classification</h4>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> datasets <span class="hljs-keyword">import</span> load_dataset<br><br>cifar_10_test = load_dataset(<span class="hljs-string">&#x27;cifar10&#x27;</span>, split=<span class="hljs-string">&#x27;test&#x27;</span>)<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> cifar_10_test.select(<span class="hljs-built_in">range</span>(<span class="hljs-number">5</span>)):<br>    <span class="hljs-built_in">print</span>(_)<br></code></pre></td></tr></table></figure>
+<pre><code class="hljs">&#123;'img': &lt;PIL.PngImagePlugin.PngImageFile image mode=RGB size=32x32 at 0x7F5891C2B1F0&gt;, 'label': 3&#125;
+&#123;'img': &lt;PIL.PngImagePlugin.PngImageFile image mode=RGB size=32x32 at 0x7F5890261420&gt;, 'label': 8&#125;
+&#123;'img': &lt;PIL.PngImagePlugin.PngImageFile image mode=RGB size=32x32 at 0x7F5CACB33670&gt;, 'label': 8&#125;
+&#123;'img': &lt;PIL.PngImagePlugin.PngImageFile image mode=RGB size=32x32 at 0x7F5890261420&gt;, 'label': 0&#125;
+&#123;'img': &lt;PIL.PngImagePlugin.PngImageFile image mode=RGB size=32x32 at 0x7F5CACB33640&gt;, 'label': 6&#125;
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">labels = cifar_10_test.features[<span class="hljs-string">&#x27;label&#x27;</span>].names<br>label_id_dict = <span class="hljs-built_in">dict</span>(<span class="hljs-built_in">zip</span>(labels, <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(labels))))<br>id_label_dict = <span class="hljs-built_in">dict</span>(<span class="hljs-built_in">zip</span>(<span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(labels)), labels))<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">labels<br></code></pre></td></tr></table></figure>
+<pre><code class="hljs">['airplane',
+ 'automobile',
+ 'bird',
+ 'cat',
+ 'deer',
+ 'dog',
+ 'frog',
+ 'horse',
+ 'ship',
+ 'truck']
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> PIL <span class="hljs-keyword">import</span> Image<br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> CLIPProcessor, CLIPModel, CLIPImageProcessor, AutoTokenizer<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">prompt = [<span class="hljs-string">f&quot;a photo of a <span class="hljs-subst">&#123;label&#125;</span>&quot;</span> <span class="hljs-keyword">for</span> label <span class="hljs-keyword">in</span> labels]<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">prompt<br></code></pre></td></tr></table></figure>
+<pre><code class="hljs">['a photo of a airplane',
+ 'a photo of a automobile',
+ 'a photo of a bird',
+ 'a photo of a cat',
+ 'a photo of a deer',
+ 'a photo of a dog',
+ 'a photo of a frog',
+ 'a photo of a horse',
+ 'a photo of a ship',
+ 'a photo of a truck']
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">model_path = <span class="hljs-string">&quot;./clip-vit-base-patch32&quot;</span><br>model = CLIPModel.from_pretrained(model_path)<br>processor = CLIPProcessor.from_pretrained(model_path)<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">model.config<br></code></pre></td></tr></table></figure>
+<pre><code class="hljs">CLIPConfig &#123;
+  &quot;_name_or_path&quot;: &quot;./clip-vit-base-patch32&quot;,
+  &quot;architectures&quot;: [
+    &quot;CLIPModel&quot;
+  ],
+  &quot;initializer_factor&quot;: 1.0,
+  &quot;logit_scale_init_value&quot;: 2.6592,
+  &quot;model_type&quot;: &quot;clip&quot;,
+  &quot;projection_dim&quot;: 512,
+  &quot;text_config&quot;: &#123;
+    &quot;bos_token_id&quot;: 0,
+    &quot;dropout&quot;: 0.0,
+    &quot;eos_token_id&quot;: 2,
+    &quot;model_type&quot;: &quot;clip_text_model&quot;
+  &#125;,
+  &quot;transformers_version&quot;: &quot;4.36.2&quot;,
+  &quot;vision_config&quot;: &#123;
+    &quot;dropout&quot;: 0.0,
+    &quot;model_type&quot;: &quot;clip_vision_model&quot;
+  &#125;
+&#125;
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_image_predict_label</span>(<span class="hljs-params">images</span>):<br>    inputs = processor(text=prompt, images=images, return_tensors=<span class="hljs-string">&quot;pt&quot;</span>, padding=<span class="hljs-literal">True</span>)<br>    outputs = model(**inputs)<br>    logits_per_image = outputs.logits_per_image<br>    probs = logits_per_image.softmax(dim=<span class="hljs-number">1</span>)<br>    label_ids = np.argmax(probs.detach().numpy(), axis=<span class="hljs-number">1</span>).tolist()<br>    <span class="hljs-keyword">return</span> [id_label_dict[label_id] <span class="hljs-keyword">for</span> label_id <span class="hljs-keyword">in</span> label_ids]<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python">images = [_[<span class="hljs-string">&#x27;img&#x27;</span>] <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> cifar_10_test.select(<span class="hljs-built_in">range</span>(<span class="hljs-number">5</span>))]<br>test_labels = get_image_predict_label(images=images)<br></code></pre></td></tr></table></figure>
+<pre><code class="hljs">['cat', 'ship', 'ship', 'airplane', 'frog']
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> sklearn.metrics <span class="hljs-keyword">import</span> classification_report<br><span class="hljs-keyword">from</span> tqdm <span class="hljs-keyword">import</span> tqdm<br><span class="hljs-keyword">import</span> time<br><br>y_true = []<br>y_pred = []<br><br>s_time = time.time()<br>batch_size = <span class="hljs-number">32</span><br>start = <span class="hljs-number">0</span><br>end = batch_size<br><span class="hljs-keyword">while</span> start &lt; <span class="hljs-built_in">len</span>(cifar_10_test):<br>    sample = cifar_10_test[start:end]<br>    img_list, label_id_list = sample[<span class="hljs-string">&#x27;img&#x27;</span>], sample[<span class="hljs-string">&#x27;label&#x27;</span>]<br>    y_true.extend([id_label_dict[label_id] <span class="hljs-keyword">for</span> label_id <span class="hljs-keyword">in</span> label_id_list])<br>    y_pred.extend(get_image_predict_label(images=img_list))<br>    start = end<br>    end += batch_size<br>    <span class="hljs-built_in">print</span>(start, end)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;cost time: &#x27;</span>, time.time() - s_time)<br></code></pre></td></tr></table></figure>
+<pre><code class="hljs">cost time:  123.75668239593506
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-built_in">print</span>(classification_report(y_true, y_pred, target_names=labels, digits=<span class="hljs-number">4</span>))<br></code></pre></td></tr></table></figure>
+<pre><code class="hljs">              precision    recall  f1-score   support
+
+    airplane     0.9504    0.9010    0.9251      1000
+  automobile     0.8785    0.9760    0.9247      1000
+        bird     0.8124    0.8880    0.8485      1000
+         cat     0.8190    0.8600    0.8390      1000
+        deer     0.9341    0.7650    0.8411      1000
+         dog     0.8508    0.8840    0.8671      1000
+        frog     0.9699    0.7740    0.8610      1000
+       horse     0.8127    0.9760    0.8869      1000
+        ship     0.9446    0.9550    0.9498      1000
+       truck     0.9688    0.9010    0.9337      1000
+
+    accuracy                         0.8880     10000
+   macro avg     0.8941    0.8880    0.8877     10000
+weighted avg     0.8941    0.8880    0.8877     10000
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt<br><span class="hljs-keyword">from</span> sklearn.metrics <span class="hljs-keyword">import</span> confusion_matrix, ConfusionMatrixDisplay<br>cm = confusion_matrix(y_true, y_pred, labels=labels)<br>disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)<br>disp.plot(xticks_rotation=<span class="hljs-string">&quot;vertical&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p><img src="https://s2.loli.net/2024/02/24/bKZXkpsIWj3rROq.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p>在<code>clip-vit-base-patch32</code>模型上的accuracy为0.8880，在<code>clip-vit-large-patch14</code>模型上的accuracy为0.9531.</p>
+<h4 id="Linear-Probe-Image-Classification">Linear Probe Image Classification</h4>
+<p>linear probe指的是用训练好的模型先提取特征，然后用一个线性分类器来有监督训练。</p>
+<p>以下是Linear Probe Image Classification的Python代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> datasets <span class="hljs-keyword">import</span> load_dataset<br><br>cifar_10 = load_dataset(<span class="hljs-string">&#x27;cifar10&#x27;</span>)<br>labels = cifar_10[<span class="hljs-string">&#x27;train&#x27;</span>].features[<span class="hljs-string">&#x27;label&#x27;</span>].names<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> PIL <span class="hljs-keyword">import</span> Image<br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoProcessor, CLIPModel<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">model_path = <span class="hljs-string">&quot;./clip-vit-base-patch32&quot;</span><br>model = CLIPModel.from_pretrained(model_path)<br>processor = AutoProcessor.from_pretrained(model_path)<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> tqdm <span class="hljs-keyword">import</span> trange<br><br><span class="hljs-comment"># get image feature</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_sample</span>(<span class="hljs-params">partition: <span class="hljs-built_in">str</span></span>):<br>    num = <span class="hljs-built_in">len</span>(cifar_10[partition])<br>    batch_size = <span class="hljs-number">20</span><br>    images, label_ids = np.empty(shape=(num, <span class="hljs-number">512</span>), dtype=np.float32), np.empty(shape=(num, <span class="hljs-number">1</span>), dtype=np.int8)<br>    data = cifar_10[partition]<br>    <span class="hljs-keyword">for</span> n <span class="hljs-keyword">in</span> trange(<span class="hljs-number">0</span>, num, batch_size):<br>        batch_images, batch_label_ids = data[n:n+batch_size][<span class="hljs-string">&#x27;img&#x27;</span>], [[_] <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> data[n:n+batch_size][<span class="hljs-string">&#x27;label&#x27;</span>]]<br>        label_ids[n:n+batch_size, :] = batch_label_ids<br>        inputs = processor(images=batch_images, return_tensors=<span class="hljs-string">&quot;pt&quot;</span>)<br>        image_features = model.get_image_features(**inputs).detach().numpy()<br>        images[n:n+batch_size, :] = image_features<br>    <span class="hljs-keyword">return</span> images, label_ids.ravel()<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">train_images, train_labels = get_sample(<span class="hljs-string">&#x27;train&#x27;</span>)<br></code></pre></td></tr></table></figure>
+<pre><code class="hljs">100%|██████████| 2500/2500 [09:46&lt;00:00,  4.26it/s]
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">test_images, test_labels = get_sample(<span class="hljs-string">&#x27;test&#x27;</span>)<br></code></pre></td></tr></table></figure>
+<pre><code class="hljs">100%|██████████| 500/500 [01:57&lt;00:00,  4.26it/s]
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> sklearn.linear_model <span class="hljs-keyword">import</span> LogisticRegression<br><br>clf = LogisticRegression(max_iter=<span class="hljs-number">1000</span>, random_state=<span class="hljs-number">0</span>, C=<span class="hljs-number">0.316</span>).fit(train_images, train_labels)<br>pred_result = clf.predict(test_images)<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> sklearn.metrics <span class="hljs-keyword">import</span> classification_report<br><br><span class="hljs-built_in">print</span>(classification_report(test_labels, pred_result, target_names=labels, digits=<span class="hljs-number">4</span>))<br></code></pre></td></tr></table></figure>
+<pre><code class="hljs">              precision    recall  f1-score   support
+
+    airplane     0.9631    0.9660    0.9646      1000
+  automobile     0.9750    0.9760    0.9755      1000
+        bird     0.9412    0.9280    0.9345      1000
+         cat     0.8924    0.9040    0.8982      1000
+        deer     0.9266    0.9340    0.9303      1000
+         dog     0.9291    0.9170    0.9230      1000
+        frog     0.9467    0.9600    0.9533      1000
+       horse     0.9757    0.9630    0.9693      1000
+        ship     0.9770    0.9780    0.9775      1000
+       truck     0.9750    0.9750    0.9750      1000
+
+    accuracy                         0.9501     10000
+   macro avg     0.9502    0.9501    0.9501     10000
+weighted avg     0.9502    0.9501    0.9501     10000
+</code></pre>
+<p>以<code>clip-vit-base-patch32</code>模型为基础，linear probe模型在CIFAR-10数据集上的accuracy为0.9501，比Zero Shot提升约6个百分点。</p>
+<h3 id="总结">总结</h3>
+<p>本文主要介绍了OpenAI开源的CLIP模型，以及CLIP模型的简单使用，并且在CIFAR-10数据集上复现了Zero Shot以及Linear Probe的实验结果。<br>
+本文所使用的Python代码均已公开在Github网站，网址为: <a target="_blank" rel="noopener" href="https://github.com/percent4/clip_learning">https://github.com/percent4/clip_learning</a> .<br>
+本文作为笔者入门多模态模型的第一篇文章，如有不当之处，还请读者批评指正。</p>
+<h3 id="参考文献">参考文献</h3>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://bbs.huaweicloud.com/blogs/371319">CLIP：多模态领域革命者</a></li>
+<li><a target="_blank" rel="noopener" href="https://huggingface.co/docs/transformers/model_doc/clip">CLIP in Hugging Face</a></li>
+<li><a target="_blank" rel="noopener" href="https://openai.com/research/clip">OpenAI Clip</a></li>
+</ol>
+<p>欢迎关注我的公众号<strong>NLP奇幻之旅</strong>，原创技术文章第一时间推送。</p>
+<center>
+    <img src="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+<p>欢迎关注我的知识星球“<strong>自然语言处理奇幻之旅</strong>”，笔者正在努力构建自己的技术社区。</p>
+<center>
+    <img src="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/CLIP/" class="print-no-link">#CLIP</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（八十七）CLIP模型入门</div>
+      <div>https://percent4.github.io/NLP（八十七）CLIP模型入门/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年4月3日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E5%85%AB%E5%8D%81%E5%85%AB%EF%BC%89%E4%BD%BF%E7%94%A8LLaVA%E6%A8%A1%E5%9E%8B%E5%AE%9E%E7%8E%B0%E4%BB%A5%E6%96%87%E6%90%9C%E5%9B%BE%E5%92%8C%E4%BB%A5%E5%9B%BE%E6%90%9C%E5%9B%BE/" title="NLP（八十八）使用LLaVA模型实现以文搜图和以图搜图">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NLP（八十八）使用LLaVA模型实现以文搜图和以图搜图</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/BCE-BGE-ME-JINA-AI%E7%9A%84Embedding%E6%A8%A1%E5%9E%8B%E5%8F%AC%E5%9B%9E%E6%95%88%E6%9E%9C%E5%AF%B9%E6%AF%94/" title="BCE,BGE-ME,JINA_AI的Embedding模型召回效果对比">
+                        <span class="hidden-mobile">BCE,BGE-ME,JINA_AI的Embedding模型召回效果对比</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
