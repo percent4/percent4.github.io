@@ -1,0 +1,944 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍如何使用Qwen1.5-7B模型来生成微博新闻标题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（九十二）大模型时代下的微博新闻标题生成">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E4%B9%9D%E5%8D%81%E4%BA%8C%EF%BC%89%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%97%B6%E4%BB%A3%E4%B8%8B%E7%9A%84%E5%BE%AE%E5%8D%9A%E6%96%B0%E9%97%BB%E6%A0%87%E9%A2%98%E7%94%9F%E6%88%90/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍如何使用Qwen1.5-7B模型来生成微博新闻标题。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg">
+<meta property="article:published_time" content="2024-05-03T09:40:09.000Z">
+<meta property="article:modified_time" content="2024-05-03T09:41:20.879Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="大模型">
+<meta property="article:tag" content="标题生成">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+  
+  
+  
+  <title>NLP（九十二）大模型时代下的微博新闻标题生成 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（九十二）大模型时代下的微博新闻标题生成"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-05-03 17:40" pubdate>
+          星期五, 五月 3日 2024, 5:40 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          42 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（九十二）大模型时代下的微博新闻标题生成</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍如何使用Qwen1.5-7B模型来生成微博新闻标题。</p>
+</blockquote>
+<p>在BERT模型时代，文本生成是一项很难做且效果有限的NLG任务。笔者那时使用<code>Chinese UniLM</code>模型来生成微博新闻标题，Github项目的参考网址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/UniLM_Chinese_DEMO"
+class="uri">https://github.com/percent4/UniLM_Chinese_DEMO</a> 。</p>
+<p>在如今的大模型时代，文本生成已经是一个常规的任务，微调起来比较简单，且效果一般都很好。</p>
+<p>在本文中，我们将借助最近很火的模型微调项目<code>LLaMA-Factory</code>，使用阿里开源的大模型<code>Qwen1.5-7B</code>来完成微博新闻标题生成任务，看看大模型的标题生成效果。</p>
+<h3 id="模型微调">模型微调</h3>
+<p>我们使用微博新闻数据集进行模型微调，其中训练集约54w个样本，测试集约13w个样本。借助<code>LLaMA-Factory</code>，我们可以很轻松地完成<code>Qwen1.5-7B</code>在这个数据集上的微调。</p>
+<p>我们将数据组织成instruction-tuning形式，即<code>instruction, input, output</code>的格式，示例样本如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;instruction&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;为下面的文本生成一个合适的中文短标题。&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;input&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;中国工程院院士邬贺铨介绍，利用大数据资料可以分析人类用不同语言想表达出的意思。微软正准备开发26种语言翻译的手机，将来你打电话讲中文，海外朋友听到的就是已经翻译过的英文。大数据让未来生活充满无限可能，网友：急问，未来还有多远？未来可能不用苦苦学外语了 &quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;output&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;[话筒]未来可能不用苦苦学外语了&quot;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<p>将训练数据和测试数据加入至<code>LLaMA-Factory</code>下的data目录，并在<code>data/dataset_info.json</code>文件中加入数据集信息：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-attr">&quot;weibo_sum_train&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;file_name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;weibo_train_data.json&quot;</span><br><span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br><span class="hljs-attr">&quot;weibo_sum_test&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;file_name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;weibo_test_data.json&quot;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<p>使用<code>LLaMA-Factory</code>对<code>Qwen1.5-7B</code>模型进行SFT，命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs bash">CUDA_VISIBLE_DEVICES=0 <span class="hljs-built_in">nohup</span> python src/train_bash.py \<br>    --stage sft \<br>    --do_train True \<br>    --model_name_or_path /models/Qwen1.5-7B \<br>    --finetuning_type lora \<br>    --template qwen \<br>    --dataset weibo_sum_train \<br>    --use_unsloth \<br>    --cutoff_len 1024 \<br>    --learning_rate 5e-05 \<br>    --num_train_epochs 1.0 \<br>    --max_samples 1000000 \<br>    --per_device_train_batch_size 16 \<br>    --per_device_eval_batch_size 16 \<br>    --gradient_accumulation_steps 4 \<br>    --lr_scheduler_type cosine \<br>    --max_grad_norm 1.0 \<br>    --logging_steps 1000 \<br>    --save_steps 1000 \<br>    --eval_steps 1000 \<br>    --evaluation_strategy steps \<br>    --warmup_steps 1000 \<br>    --output_dir saves/qwen15_7b/lora \<br>    --bf16 True \<br>    --lora_rank 8 \<br>    --lora_dropout 0.1 \<br>    --lora_target q_proj,v_proj \<br>    --val_size 0.2 \<br>    --load_best_model_at_end True \<br>    --plot_loss True \<br>    --report_to <span class="hljs-string">&quot;tensorboard&quot;</span> &amp;<br></code></pre></td></tr></table></figure>
+<h3 id="模型测试">模型测试</h3>
+<p>模型微调完毕后，我们将在saves目录下找到训练好的模型文件，我们使用<code>checkpoint-6000</code>的结果，在全量测试集上进行评估，命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs bash">CUDA_VISIBLE_DEVICES=0 <span class="hljs-built_in">nohup</span> python src/train_bash.py \<br>    --stage sft \<br>    --do_predict \<br>    --model_name_or_path /models/Qwen1.5-7B \<br>    --adapter_name_or_path saves/qwen15_7b/lora/checkpoint-6000 \<br>    --dataset weibo_sum_test \<br>    --template qwen \<br>    --finetuning_type lora \<br>    --output_dir saves/qwen15_7b/lora/output \<br>    --per_device_eval_batch_size 16 \<br>    --max_samples 1000000 \<br>    --predict_with_generate \<br>    --fp16 &amp;<br></code></pre></td></tr></table></figure>
+<p>整个评估结果耗时约3.25个小时，评估指标如下:</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs json">predict_bleu<span class="hljs-number">-4</span>             =    <span class="hljs-number">26.5542</span><br>predict_rouge<span class="hljs-number">-1</span>            =    <span class="hljs-number">39.8288</span><br>predict_rouge<span class="hljs-number">-2</span>            =    <span class="hljs-number">23.0813</span><br>predict_rouge-l            =    <span class="hljs-number">37.2813</span><br>predict_runtime            = <span class="hljs-number">3</span><span class="hljs-punctuation">:</span><span class="hljs-number">16</span><span class="hljs-punctuation">:</span><span class="hljs-number">46.63</span><br>predict_samples_per_second =     <span class="hljs-number">11.517</span><br>predict_steps_per_second   =       <span class="hljs-number">0.72</span><br></code></pre></td></tr></table></figure>
+<p>我们再使用<code>UniLM_Chinese_DEMO</code>中的评估脚本来进行计算，与之前<code>Chinese UniLM</code>模型的评估结果进行对比，如下表：</p>
+<table>
+<thead>
+<tr class="header">
+<th>指标名称</th>
+<th>Chinese UniLM指标</th>
+<th>Qwen1.5-7B指标</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>rouge-1</td>
+<td>0.3981</td>
+<td>0.4064</td>
+</tr>
+<tr class="even">
+<td>rouge-2</td>
+<td>0.2406</td>
+<td>0.2326</td>
+</tr>
+<tr class="odd">
+<td>rouge-l</td>
+<td>0.3867</td>
+<td>0.3893</td>
+</tr>
+</tbody>
+</table>
+<p>从上表中，我们可以看到，我们使用<code>Qwen1.5-7B</code>模型对80%的数据集仅仅微调了一轮，其评估指标就优于之前<code>Chinese UniLM</code>模型了。</p>
+<h3 id="新样本测试">新样本测试</h3>
+<p>我们对训练好的模型，观察下他们在全新的数据上的表现结果。</p>
+<ul>
+<li>例子1</li>
+</ul>
+<blockquote>
+<p>文章：河北省蠡县留史村74岁的村民张国忠，农闲时间用1万多双筷子搭出了天坛等古建筑。张国忠制作过程不用图纸，全凭个人想象和手感。（记者
+李继伟） L新华视点的微博视频 原标题：老大爷用1万多双筷子搭出天坛 Chinese
+UniLM生成标题：图看中国·用筷子搭建天坛
+Qwen1.5-7B生成标题：74岁老人用1万多双筷子搭出天坛</p>
+</blockquote>
+<ul>
+<li>例子2</li>
+</ul>
+<blockquote>
+<p>文章：今天，#国家法律法规数据库#正式开通。国家法律法规数据库收录了宪法和现行有效法律275件，法律解释25件，有关法律问题和重大问题的决定147件，行政法规609件，地方性法规、自治条例和单行条例、经济特区法规16000余件，司法解释637件，涵盖了中国特色社会主义法律体系最主要的内容。戳→O网页链接或登录微信小程序“国家法律法规数据库”，即可进行访问。周知！（总台央视记者吴玮
+杨光 王鹏） 原标题：国家法律法规数据库正式开通 Chinese
+UniLM生成标题：国家法律法规数据库正式开通
+Qwen1.5-7B生成标题：国家法律法规数据库正式开通</p>
+</blockquote>
+<ul>
+<li>例子3</li>
+</ul>
+<blockquote>
+<p>文章：宁夏气象台2021年01月11日15时45分发布大风蓝色预警信号:预计今天夜间到明天白天，贺兰山沿山、石嘴山市北部、银川市东南部、中卫市南部、固原市北部和吴忠市大部有5级左右偏北风，部分地区阵风7到9级并伴有沙尘天气，请相关部门和广大群众注意做好防风、防火、防沙工作。
+原标题：【新天气】阵风7到9级并伴有沙尘！宁夏气象台发布大风蓝色预警...
+Chinese UniLM生成标题：宁夏发布大风蓝色预警
+Qwen1.5-7B生成标题：宁夏气象台发布大风蓝色预警</p>
+</blockquote>
+<ul>
+<li>例子4</li>
+</ul>
+<blockquote>
+<p>文章：近日，上海海关所属邮局海关工作人员在进行X光机查验时，发现一个申报品名为“牙科耗材”的海外进境邮件包裹影像异常，工作人员随即开箱查验，从中查获活体蚂蚁406只。蚂蚁体长约2厘米，每只都单独放置于一个EP（环氧树脂）管中。<span
+class="citation" data-cites="021视频">@021视频</span> L021视频的微博视频
+原标题：上海海关查获406只活体蚂蚁 Chinese
+UniLM生成标题：上海海关查获活体蚂蚁406只
+Qwen1.5-7B生成标题：上海海关查获406只活体蚂蚁</p>
+</blockquote>
+<ul>
+<li>例子5</li>
+</ul>
+<blockquote>
+<p>文章：权志龙近日被一名网民举报违反了首尔市颁布的防疫规定。昨天有媒体爆料权志龙与BLACKPINK成员JENNIE交往并公布了一组照片，这组照片中有一张权志龙在大街上拉下口罩抽烟的照片而引发争议，不久后就有网民在首尔市政府网站举报了权志龙没有遵守防疫相关规定。该网民表示，根据首尔市政府颁发的防疫规定，抽烟时虽然可以摘下口罩但应该去指定的吸烟区并与他人保持两米以上的距离，吸烟后要及时佩戴口罩，权志龙在大街上将口罩拉下抽烟的行为已经违反了相关规定。
+原标题：权志龙被举报违反防疫规定 Chinese
+UniLM生成标题：权志龙被举报违反防疫规定
+Qwen1.5-7B生成标题：权志龙被举报违反防疫规定</p>
+</blockquote>
+<ul>
+<li>例子6</li>
+</ul>
+<blockquote>
+<p>文章：24日，A股连续第三个交易日下跌，#沪指跌破3600点#关口，跌幅1.99%。白酒股、周期股、抱团股纷纷大幅下挫。受股市持续下跌影响，很多投资者反映基金收益率下降，#基金大跌#冲上热搜。你买基金了吗？最近收益率咋样？（谢艺观）
+原标题：A股持续下跌，你的基金跌了多少？ Chinese
+UniLM生成标题：基金大跌，你买基金了吗？
+Qwen1.5-7B生成标题：A股持续下跌，基金收益率咋样？</p>
+</blockquote>
+<ul>
+<li>例子7</li>
+</ul>
+<blockquote>
+<p>文章：近日，上海交通大学医学院附属新华医院李斐教授领衔的团队，与复旦大学类脑智能科学与技术研究院冯建峰教授、罗强副研究员团队、英国剑桥大学Barbara
+J Sahakian教授团队等合作，在Science
+Bulletin杂志上发表在线最新研究成果：将布美他尼“老药新用”，可有效干预小年龄自闭症患儿。布美他尼是儿科临床广泛使用的利尿剂，研究发现，经过3个月的布美他尼干预，3-6岁自闭症患儿的社交沟通障碍、感知觉障碍等核心症状有明显改善，用药安全有效。但由于自闭症可能存在病因异质性，不同自闭症患者对布美他尼治疗效果存在差别。这一研究成果有望填补自闭症药物治疗领域的空白。
+原标题：老药新用！上海发现低龄自闭症患儿新药：或填补自闭症药物治疗空白
+Chinese UniLM生成标题：研究成果：可有效干预小年龄自闭症患儿
+Qwen1.5-7B生成标题：布美他尼“老药新用”：有望成为小年龄自闭症患儿的治疗新选择</p>
+</blockquote>
+<p>可以看到，在这些例子中，<code>Qwen1.5-7B</code>模型生成的微博新闻标题优于<code>Chinese UniLM</code>模型生成的标题。</p>
+<h3 id="参考文献">参考文献</h3>
+<ol type="1">
+<li>UniLM_Chinese_DEMO: <a
+target="_blank" rel="noopener" href="https://github.com/percent4/UniLM_Chinese_DEMO"
+class="uri">https://github.com/percent4/UniLM_Chinese_DEMO</a></li>
+<li>LLaMA-Factory: <a target="_blank" rel="noopener" href="https://github.com/hiyouga/LLaMA-Factory"
+class="uri">https://github.com/hiyouga/LLaMA-Factory</a></li>
+<li>Google Gemma 2B 微调实战（IT科技新闻标题生成）: <a
+target="_blank" rel="noopener" href="https://ganymedenil.com/2024/03/24/Google-Gemma-2B-fine-tuning-practice-IT-technology-news-headline-generation.html"
+class="uri">https://ganymedenil.com/2024/03/24/Google-Gemma-2B-fine-tuning-practice-IT-technology-news-headline-generation.html</a></li>
+<li>How to fine-tune Google Gemma with ChatML and Hugging Face TRL: <a
+target="_blank" rel="noopener" href="https://www.philschmid.de/fine-tune-google-gemma"
+class="uri">https://www.philschmid.de/fine-tune-google-gemma</a></li>
+</ol>
+<p>欢迎关注我的公众号<strong>NLP奇幻之旅</strong>，原创技术文章第一时间推送。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+<p>欢迎关注我的知识星球“<strong>自然语言处理奇幻之旅</strong>”，笔者正在努力构建自己的技术社区。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" class="print-no-link">#大模型</a>
+      
+        <a href="/tags/%E6%A0%87%E9%A2%98%E7%94%9F%E6%88%90/" class="print-no-link">#标题生成</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（九十二）大模型时代下的微博新闻标题生成</div>
+      <div>https://percent4.github.io/NLP（九十二）大模型时代下的微博新闻标题生成/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年5月3日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%B9%9D%E5%8D%81%E4%B8%89%EF%BC%89%E4%BD%BF%E7%94%A8HuggingFace-TRL%E5%BE%AE%E8%B0%83Qwen1-5-7B%E6%A8%A1%E5%9E%8B%EF%BC%88SFT%EF%BC%89/" title="NLP（九十三）使用HuggingFace-TRL微调Qwen1.5-7B模型（SFT）">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NLP（九十三）使用HuggingFace-TRL微调Qwen1.5-7B模型（SFT）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/%E4%BD%BF%E7%94%A8ElasticSearch%E5%AE%9E%E7%8E%B0%E6%96%87%E6%9C%AC%E7%9B%B8%E4%BC%BC%E6%80%A7%E6%90%9C%E7%B4%A2/" title="使用ElasticSearch实现文本相似性搜索">
+                        <span class="hidden-mobile">使用ElasticSearch实现文本相似性搜索</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

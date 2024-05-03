@@ -1,0 +1,962 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍Text to SQL相关的概念，如何使用大模型SFT实现Text to SQL，最后介绍Text to SQL的应用场景。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（九十五）Text-to-SQL入门">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E4%B9%9D%E5%8D%81%E4%BA%94%EF%BC%89Text-to-SQL%E5%85%A5%E9%97%A8/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍Text to SQL相关的概念，如何使用大模型SFT实现Text to SQL，最后介绍Text to SQL的应用场景。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2024/04/13/b4MTVKCXqJpD8o3.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/13/nRF62Mm43OwkLhx.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/13/HnPiqwJQhdrfo7m.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/13/luLm78q9NUnBOvQ.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/13/QOb1AWIHsDiZ74R.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/13/eWz7VYNTA8wqrnR.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/13/eT5Dd4OBigoSztI.png">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg">
+<meta property="article:published_time" content="2024-05-03T09:44:30.000Z">
+<meta property="article:modified_time" content="2024-05-03T09:45:39.298Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="Text to SQL">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2024/04/13/b4MTVKCXqJpD8o3.png">
+  
+  
+  
+  <title>NLP（九十五）Text-to-SQL入门 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（九十五）Text-to-SQL入门"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-05-03 17:44" pubdate>
+          星期五, 五月 3日 2024, 5:44 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          13k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          105 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（九十五）Text-to-SQL入门</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍Text to SQL相关的概念，如何使用大模型SFT实现Text to
+SQL，最后介绍Text to SQL的应用场景。</p>
+</blockquote>
+<blockquote>
+<p>开头一句古诗词：扬子江头杨柳春，杨花愁杀渡江人。数声风笛离亭晚，君向潇湘我向秦。（唐·郑谷
+《淮上与友人别》）</p>
+</blockquote>
+<h3 id="引言">引言</h3>
+<p>Text to SQL，又被称为Natural Language to
+SQL(简称NL2SQL)，指的是将自然语言描述转化为数据库的SQL查询语句。由于数据库在我们日常工作生活中随处可见，因此Text
+to SQL技术也获得业界和学术界的不少研究与关注。</p>
+<p>举个例子，比如在问题“What's the population of New York
+city?”，那么我们在相关的某张表格（比如city表）中，对应的SQL语句应当为“SELECT
+POPULATION FROM city WHERE name = "New
+York"”，此时数据库应当能执行该SQL语句。</p>
+<p>常见的Text to SQL数据集有<code>WIKISQL</code>, <code>Spider</code>,
+<code>ATIS</code>,
+<code>GeoQuery</code>。以往已经有不少的NLP或者机器学习相关的技术涉及Text
+to SQL，但效果都比较一般。</p>
+<p>接下来，我们将会介绍如何使用大模型SFT技术来实现Text to
+SQL，看看大模型的表现。</p>
+<h3 id="sft">SFT</h3>
+<p>我们使用HuggingFace上的<code>b-mc2/sql-create-context</code>数据集，该数据集只有78,577条训练数据，无测试集数据，字段为answer,
+question,
+context，其中answer为最终产生的SQL语句，question为用户问题，context为数据库表格创建语句。</p>
+<p>比如其中在一个样本中，question为<code>How many heads of the departments are older than 56 ?</code>,
+context为<code>CREATE TABLE head (age INTEGER)</code>,
+answer为<code>SELECT COUNT(*) FROM head WHERE age &gt; 56</code>。</p>
+<p>我们使用谷歌开源的<code>Gemma-7B</code>模型对改数据集进行指令微调。以上述样本为例，对应的指令格式为：</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs livescript"><span class="hljs-string">\nBelow</span> <span class="hljs-keyword">is</span> an instruction <span class="hljs-literal">that</span> describes a task.Write a response <span class="hljs-literal">that</span> appropriately completes the request.<span class="hljs-string">\n###</span> Instruction: How many heads <span class="hljs-keyword">of</span> the departments are older than <span class="hljs-number">56</span> ?<span class="hljs-string">\n###</span> Database Schema:<span class="hljs-string">\nCREATE</span> TABLE head (age INTEGER)<span class="hljs-string">\n###</span> Response:<span class="hljs-string">\nSELECT</span> COUNT(*) FROM head WHERE age &gt; <span class="hljs-number">56</span><span class="hljs-string">\n&lt;eos&gt;\n</span><br></code></pre></td></tr></table></figure>
+<p>其中<eos>为Gemma-7B模型的结束标志符。</p>
+<p>使用<code>trl</code>可以很方面地对<code>Gemma-7B</code>模型进行SFT，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> datasets <span class="hljs-keyword">import</span> load_dataset<br><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">from</span> peft <span class="hljs-keyword">import</span> LoraConfig<br><span class="hljs-keyword">from</span> trl <span class="hljs-keyword">import</span> SFTTrainer<br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> TrainingArguments<br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig<br><br><span class="hljs-comment"># Hugging Face model id</span><br>model_id = <span class="hljs-string">&quot;/data-ai/usr/lmj/models/gemma-7b&quot;</span><br><br><span class="hljs-comment"># BitsAndBytesConfig int-4 config</span><br>bnb_config = BitsAndBytesConfig(<br>    load_in_4bit=<span class="hljs-literal">True</span>, bnb_4bit_use_double_quant=<span class="hljs-literal">True</span>, bnb_4bit_quant_type=<span class="hljs-string">&quot;nf4&quot;</span>, bnb_4bit_compute_dtype=torch.bfloat16<br>)<br><br><span class="hljs-comment"># Load model and tokenizer</span><br>model = AutoModelForCausalLM.from_pretrained(<br>    model_id,<br>    device_map=<span class="hljs-string">&quot;auto&quot;</span>,<br>    torch_dtype=torch.bfloat16,<br>    quantization_config=bnb_config<br>)<br>tokenizer = AutoTokenizer.from_pretrained(model_id)<br>tokenizer.padding_side = <span class="hljs-string">&#x27;right&#x27;</span><br><br>train_dataset = load_dataset(<span class="hljs-string">&quot;json&quot;</span>, data_files=<span class="hljs-string">&quot;sql-create-context.json&quot;</span>)[<span class="hljs-string">&#x27;train&#x27;</span>]<br><span class="hljs-built_in">print</span>(train_dataset[<span class="hljs-number">0</span>])<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;train size: <span class="hljs-subst">&#123;<span class="hljs-built_in">len</span>(train_dataset)&#125;</span>&quot;</span>)<br><br><span class="hljs-comment"># LoRA config based on QLoRA paper &amp; Sebastian Raschka experiment</span><br>peft_config = LoraConfig(<br>        lora_alpha=<span class="hljs-number">16</span>,<br>        lora_dropout=<span class="hljs-number">0.05</span>,<br>        r=<span class="hljs-number">64</span>,<br>        bias=<span class="hljs-string">&quot;none&quot;</span>,<br>        target_modules=[<span class="hljs-string">&quot;q_proj&quot;</span>, <span class="hljs-string">&quot;k_proj&quot;</span>, <span class="hljs-string">&quot;v_proj&quot;</span>, <span class="hljs-string">&quot;o_proj&quot;</span>,<span class="hljs-string">&quot;gate_proj&quot;</span>],<br>        task_type=<span class="hljs-string">&quot;CAUSAL_LM&quot;</span>, <br>)<br><br>args = TrainingArguments(<br>    output_dir=<span class="hljs-string">&quot;output&quot;</span>,                    <span class="hljs-comment"># directory to save and repository id</span><br>    num_train_epochs=<span class="hljs-number">2</span>,                     <span class="hljs-comment"># number of training epochs</span><br>    per_device_train_batch_size=<span class="hljs-number">8</span>,          <span class="hljs-comment"># batch size per device during training</span><br>    gradient_accumulation_steps=<span class="hljs-number">4</span>,          <span class="hljs-comment"># number of steps before performing a backward/update pass</span><br>    gradient_checkpointing=<span class="hljs-literal">True</span>,            <span class="hljs-comment"># use gradient checkpointing to save memory</span><br>    optim=<span class="hljs-string">&quot;paged_adamw_8bit&quot;</span>,              <br>    save_strategy=<span class="hljs-string">&quot;epoch&quot;</span>,<br>    logging_strategy=<span class="hljs-string">&quot;steps&quot;</span>,<br>    logging_steps=<span class="hljs-number">10</span>,                       <span class="hljs-comment"># log every 10 steps</span><br>    bf16=<span class="hljs-literal">True</span>,                              <span class="hljs-comment"># use bfloat16 precision</span><br>    learning_rate=<span class="hljs-number">1e-4</span>,                     <span class="hljs-comment"># learning rate, based on QLoRA paper</span><br>    max_grad_norm=<span class="hljs-number">0.3</span>,                      <span class="hljs-comment"># max gradient norm based on QLoRA paper</span><br>    warmup_ratio=<span class="hljs-number">0.1</span>,                      <span class="hljs-comment"># warmup ratio based on QLoRA paper</span><br>    lr_scheduler_type=<span class="hljs-string">&quot;constant&quot;</span>,           <span class="hljs-comment"># use constant learning rate scheduler</span><br>    push_to_hub=<span class="hljs-literal">False</span>,                       <span class="hljs-comment"># push model to hub</span><br>    report_to=<span class="hljs-string">&quot;tensorboard&quot;</span>,                <span class="hljs-comment"># report metrics to tensorboard</span><br>)<br><br>max_seq_length = <span class="hljs-number">1024</span><br><br>trainer = SFTTrainer(<br>    model=model,<br>    args=args,<br>    train_dataset=train_dataset,<br>    peft_config=peft_config,<br>    max_seq_length=max_seq_length,<br>    tokenizer=tokenizer,<br>    packing=<span class="hljs-literal">False</span>,<br>    dataset_text_field=<span class="hljs-string">&quot;text&quot;</span><br>)<br><br><br>trainer.train()<br>trainer.save_model()<br></code></pre></td></tr></table></figure>
+<p>训练完后，我们使用下面的脚本进行新样本的预测，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoModelForCausalLM, AutoTokenizer<br><br>peft_model_id = <span class="hljs-string">&quot;./output/checkpoint-4911&quot;</span><br>model = AutoModelForCausalLM.from_pretrained(peft_model_id, device_map=<span class="hljs-string">&quot;cuda&quot;</span>)<br>tokenizer = AutoTokenizer.from_pretrained(<span class="hljs-string">&quot;/data-ai/usr/lmj/models/gemma-7b&quot;</span>)<br><br><br><span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>    question = <span class="hljs-built_in">input</span>(<span class="hljs-string">&quot;enter a question: &quot;</span>)<br>    context = <span class="hljs-built_in">input</span>(<span class="hljs-string">&quot;enter database schema: &quot;</span>)<br>    input_text = <span class="hljs-string">f&quot;&quot;&quot;</span><br><span class="hljs-string">Below is an instruction that describes a task.Write a response that appropriately completes the request.</span><br><span class="hljs-string">### Instruction: <span class="hljs-subst">&#123;question&#125;</span></span><br><span class="hljs-string">### Database Schema:</span><br><span class="hljs-string"><span class="hljs-subst">&#123;context&#125;</span></span><br><span class="hljs-string">### Response:</span><br><span class="hljs-string">&quot;&quot;&quot;</span><br>    encoding = tokenizer(input_text, return_tensors=<span class="hljs-string">&quot;pt&quot;</span>).to(<span class="hljs-string">&quot;cuda&quot;</span>)<br>    outputs = model.generate(**encoding, max_new_tokens=<span class="hljs-number">100</span>, temperature=<span class="hljs-number">0.1</span>, do_sample=<span class="hljs-literal">True</span>)<br>    generated_ids = outputs[:, encoding.input_ids.shape[<span class="hljs-number">1</span>]:]<br>    generated_texts = tokenizer.batch_decode(generated_ids, skip_special_tokens=<span class="hljs-literal">True</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Instruction: &quot;</span>, input_text)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;SQL: &quot;</span>, generated_texts[<span class="hljs-number">0</span>].strip())<br></code></pre></td></tr></table></figure>
+<p>为了验证改模型的效果，我们在新样本进行测试。</p>
+<ul>
+<li>例子1</li>
+</ul>
+<p>直接从SQL测验网站进行测试，第一个例子为：</p>
+<figure>
+<img src="https://s2.loli.net/2024/04/13/b4MTVKCXqJpD8o3.png" srcset="/img/loading.gif" lazyload
+alt="测试题例子1" />
+<figcaption aria-hidden="true">测试题例子1</figcaption>
+</figure>
+<p>模型生成的SQL语句为：<code>SELECT * FROM CITY WHERE COUNTRYCODE = "USA" AND POPULATION &gt; 100000</code>，成功运行！</p>
+<figure>
+<img src="https://s2.loli.net/2024/04/13/nRF62Mm43OwkLhx.png" srcset="/img/loading.gif" lazyload
+alt="生成的SQL语句执行成功1" />
+<figcaption aria-hidden="true">生成的SQL语句执行成功1</figcaption>
+</figure>
+<ul>
+<li>例子2</li>
+</ul>
+<p>第二个例子为：</p>
+<figure>
+<img src="https://s2.loli.net/2024/04/13/HnPiqwJQhdrfo7m.png" srcset="/img/loading.gif" lazyload
+alt="nl2sql_3.png" />
+<figcaption aria-hidden="true">nl2sql_3.png</figcaption>
+</figure>
+<p>生成的SQL语句为<code>SELECT CITY, STATE FROM STATION</code>，也能执行成功！</p>
+<ul>
+<li>例子3</li>
+</ul>
+<p>上述的两个较为简单，我们再来看个复杂点的例子。第三个例子为：</p>
+<figure>
+<img src="https://s2.loli.net/2024/04/13/luLm78q9NUnBOvQ.png" srcset="/img/loading.gif" lazyload
+alt="nl2sql_4.png" />
+<figcaption aria-hidden="true">nl2sql_4.png</figcaption>
+</figure>
+<p>生成的SQL语句为<code>SELECT CITY FROM STATION WHERE SUBSTR(CITY, -1) NOT IN ('A', 'E', 'I', 'O', 'U') GROUP BY CITY</code>，竟然能执行成功！</p>
+<ul>
+<li>例子4</li>
+</ul>
+<p>第四例子为两个表格，需要对表格进行join，如下：</p>
+<figure>
+<img src="https://s2.loli.net/2024/04/13/QOb1AWIHsDiZ74R.png" srcset="/img/loading.gif" lazyload
+alt="nl2sql_5.png" />
+<figcaption aria-hidden="true">nl2sql_5.png</figcaption>
+</figure>
+<p>生成的SQL语句为<code>SELECT T1.NAME FROM CITY AS T1 JOIN COUNTRY AS T2 ON T1.COUNTRYCODE = T2.CODE WHERE T2.CONTINENT = 'Africa'</code>，竟然能执行成功！</p>
+<p>以上只是找了几个比较好的例子，实际上还是有很多生成的SQL语句无法通过测试的。</p>
+<p>在实际的Text to SQL应用场景中，需要调整system
+prompt，对指令进行更加详细的描述，比较加入表格、字段描述。同时，还需要质量更高、更贴近业务场景的训练数据，以及合适的大模型等，需要保证生成的SQL语句的可执行准确率。</p>
+<h3 id="表格问答应用">表格问答应用</h3>
+<p>我们举个例子，来说明Text to
+SQL和大模型结合起来使用，在表格问答场景中能有更好的表现。</p>
+<p>Mysql中的users表的描述:</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs gherkin">+-------------+--------------+------+-----+---------+----------------+<br>|<span class="hljs-string"> Field       </span>|<span class="hljs-string"> Type         </span>|<span class="hljs-string"> Null </span>|<span class="hljs-string"> Key </span>|<span class="hljs-string"> Default </span>|<span class="hljs-string"> Extra          </span>|<br>+-------------+--------------+------+-----+---------+----------------+<br>|<span class="hljs-string"> id          </span>|<span class="hljs-string"> int          </span>|<span class="hljs-string"> NO   </span>|<span class="hljs-string"> PRI </span>|<span class="hljs-string"> NULL    </span>|<span class="hljs-string"> auto_increment </span>|<br>|<span class="hljs-string"> name        </span>|<span class="hljs-string"> varchar(256) </span>|<span class="hljs-string"> NO   </span>|<span class="hljs-string">     </span>|<span class="hljs-string"> NULL    </span>|<span class="hljs-string">                </span>|<br>|<span class="hljs-string"> age         </span>|<span class="hljs-string"> int          </span>|<span class="hljs-string"> YES  </span>|<span class="hljs-string">     </span>|<span class="hljs-string"> NULL    </span>|<span class="hljs-string">                </span>|<br>|<span class="hljs-string"> place       </span>|<span class="hljs-string"> varchar(256) </span>|<span class="hljs-string"> NO   </span>|<span class="hljs-string">     </span>|<span class="hljs-string"> NULL    </span>|<span class="hljs-string">                </span>|<br>|<span class="hljs-string"> insert_time </span>|<span class="hljs-string"> datetime     </span>|<span class="hljs-string"> YES  </span>|<span class="hljs-string">     </span>|<span class="hljs-string"> NULL    </span>|<span class="hljs-string">                </span>|<br>+-------------+--------------+------+-----+---------+----------------+<br></code></pre></td></tr></table></figure>
+<p>表格中的所有数据:</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs gherkin">+----+---------------+------+-------+---------------------+<br>|<span class="hljs-string"> id </span>|<span class="hljs-string"> name          </span>|<span class="hljs-string"> age  </span>|<span class="hljs-string"> place </span>|<span class="hljs-string"> insert_time         </span>|<br>+----+---------------+------+-------+---------------------+<br>|<span class="hljs-string">  1 </span>|<span class="hljs-string"> Jack          </span>|<span class="hljs-string">   25 </span>|<span class="hljs-string"> USA   </span>|<span class="hljs-string"> 2023-12-23 23:48:48 </span>|<br>|<span class="hljs-string">  2 </span>|<span class="hljs-string"> Green         </span>|<span class="hljs-string">   26 </span>|<span class="hljs-string"> UK    </span>|<span class="hljs-string"> 2023-12-23 23:48:58 </span>|<br>|<span class="hljs-string">  3 </span>|<span class="hljs-string"> Alex          </span>|<span class="hljs-string">   31 </span>|<span class="hljs-string"> GER   </span>|<span class="hljs-string"> 2023-12-23 23:49:03 </span>|<br>|<span class="hljs-string">  4 </span>|<span class="hljs-string"> Chen          </span>|<span class="hljs-string">   52 </span>|<span class="hljs-string"> CHN   </span>|<span class="hljs-string"> 2023-12-23 23:49:08 </span>|<br>|<span class="hljs-string">  5 </span>|<span class="hljs-string"> Zhang         </span>|<span class="hljs-string">   42 </span>|<span class="hljs-string"> CHN   </span>|<span class="hljs-string"> 2023-12-23 23:49:13 </span>|<br>|<span class="hljs-string">  6 </span>|<span class="hljs-string"> ElasticSearch </span>|<span class="hljs-string">   12 </span>|<span class="hljs-string"> USA   </span>|<span class="hljs-string"> 2023-12-24 00:41:20 </span>|<br>|<span class="hljs-string">  7 </span>|<span class="hljs-string"> Kibana        </span>|<span class="hljs-string">   24 </span>|<span class="hljs-string"> USA   </span>|<span class="hljs-string"> 2023-12-24 00:41:37 </span>|<br>|<span class="hljs-string">  8 </span>|<span class="hljs-string"> Logstash      </span>|<span class="hljs-string">   36 </span>|<span class="hljs-string"> USA   </span>|<span class="hljs-string"> 2023-12-24 00:42:41 </span>|<br>+----+---------------+------+-------+---------------------+<br></code></pre></td></tr></table></figure>
+<p>我们考虑以下四个问题：</p>
+<ul>
+<li>How old is Chen?</li>
+<li>Who is the oldest person and its age and place?</li>
+<li>How many persons come from USA and what are their names and
+age?</li>
+<li>Return the top 5 oldest person in descending order with their name
+and age.</li>
+<li>what are the names that begins with J or E?</li>
+</ul>
+<p>使用<code>LlamaIndex</code>工具中的Text-to-SQL
+QueryEngine对上述四个问题进行问答。代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @place: Pudong, Shanghai</span><br><span class="hljs-comment"># @file: nl2sql_test.py</span><br><span class="hljs-comment"># @time: 2024/1/12 22:09</span><br><span class="hljs-comment"># llama-index == 0.9.30</span><br><span class="hljs-comment"># SQLAlchemy==2.0.20</span><br><span class="hljs-comment"># PyMySQL == 1.1.0</span><br><span class="hljs-keyword">from</span> sqlalchemy <span class="hljs-keyword">import</span> create_engine, text<br><br><span class="hljs-keyword">from</span> llama_index <span class="hljs-keyword">import</span> SQLDatabase, ServiceContext<br><span class="hljs-keyword">from</span> llama_index.llms <span class="hljs-keyword">import</span> OpenAI<br><span class="hljs-keyword">from</span> llama_index.indices.struct_store.sql_query <span class="hljs-keyword">import</span> NLSQLTableQueryEngine<br><br><span class="hljs-keyword">from</span> llama_index.indices.struct_store.sql_query <span class="hljs-keyword">import</span> (<br>    SQLTableRetrieverQueryEngine,<br>)<br><span class="hljs-keyword">from</span> llama_index.objects <span class="hljs-keyword">import</span> (<br>    SQLTableNodeMapping,<br>    ObjectIndex,<br>    SQLTableSchema,<br>)<br><span class="hljs-keyword">from</span> llama_index <span class="hljs-keyword">import</span> VectorStoreIndex<br><span class="hljs-keyword">from</span> llama_index.retrievers <span class="hljs-keyword">import</span> NLSQLRetriever<br><span class="hljs-keyword">from</span> llama_index.query_engine <span class="hljs-keyword">import</span> RetrieverQueryEngine<br><br>llm = OpenAI(temperature=<span class="hljs-number">0.1</span>, model=<span class="hljs-string">&quot;gpt-3.5-turbo&quot;</span>)<br>service_context = ServiceContext.from_defaults(llm=llm)<br><br>engine = create_engine(<span class="hljs-string">&quot;mysql+pymysql://root:root@localhost:3306/orm_test&quot;</span>)<br>sql_database = SQLDatabase(engine, include_tables=[<span class="hljs-string">&quot;users&quot;</span>])<br><br><span class="hljs-comment"># text-to-sql query engine, simple example</span><br>query_engine = NLSQLTableQueryEngine(<br>    sql_database=sql_database,<br>    tables=[<span class="hljs-string">&quot;users&quot;</span>]<br>)<br>query_str = <span class="hljs-string">&quot;How old is Chen?&quot;</span><br>response = query_engine.query(query_str)<br><span class="hljs-built_in">print</span>(response)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;*&#x27;</span> * <span class="hljs-number">30</span>, end=<span class="hljs-string">&#x27;\n\n&#x27;</span>)<br><br><span class="hljs-comment"># total size of table schema overflows context window size</span><br><span class="hljs-comment"># then use SQLTableNodeMapping</span><br><span class="hljs-comment"># set Logging to DEBUG for more detailed outputs</span><br>table_node_mapping = SQLTableNodeMapping(sql_database)<br>table_schema_objs = [<br>    (SQLTableSchema(table_name=<span class="hljs-string">&quot;users&quot;</span>))<br>]  <span class="hljs-comment"># add a SQLTableSchema for each table</span><br><br>obj_index = ObjectIndex.from_objects(<br>    table_schema_objs,<br>    table_node_mapping,<br>    VectorStoreIndex,<br>)<br>query_engine = SQLTableRetrieverQueryEngine(<br>    sql_database, obj_index.as_retriever(similarity_top_k=<span class="hljs-number">1</span>)<br>)<br><br>response = query_engine.query(<span class="hljs-string">&quot;Who is the oldest person and its age and place?&quot;</span>)<br><span class="hljs-built_in">print</span>(response)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;*&#x27;</span> * <span class="hljs-number">30</span>, end=<span class="hljs-string">&#x27;\n\n&#x27;</span>)<br><br>response = query_engine.query(<span class="hljs-string">&quot;How many persons come from USA and what are their names and age?&quot;</span>)<br><span class="hljs-built_in">print</span>(response.metadata)<br><span class="hljs-built_in">print</span>(response.metadata[<span class="hljs-string">&#x27;result&#x27;</span>])<br><span class="hljs-built_in">print</span>(response)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;*&#x27;</span> * <span class="hljs-number">30</span>, end=<span class="hljs-string">&#x27;\n\n&#x27;</span>)<br><br><span class="hljs-comment"># manually set context text</span><br>city_stats_text = (<br>    <span class="hljs-string">&quot;This table gives information regarding the persons and their age and place.\n&quot;</span><br>    <span class="hljs-string">&quot;The insert time means when the record was inserted into this table.&quot;</span><br>)<br><br>table_node_mapping = SQLTableNodeMapping(sql_database)<br>table_schema_objs = [<br>    (SQLTableSchema(table_name=<span class="hljs-string">&quot;users&quot;</span>, context_str=city_stats_text))<br>]<br><br><span class="hljs-comment"># text-to-sql retriever</span><br><span class="hljs-comment"># SQL Retriever</span><br><span class="hljs-comment"># default retrieval (return_raw=True)</span><br>nl_sql_retriever = NLSQLRetriever(<br>    sql_database, tables=[<span class="hljs-string">&quot;users&quot;</span>], return_raw=<span class="hljs-literal">True</span><br>)<br><br>results = nl_sql_retriever.retrieve(<br>    <span class="hljs-string">&quot;Return the top 5 oldest person in descending order with their name and age.&quot;</span><br>)<br><br><span class="hljs-keyword">for</span> n <span class="hljs-keyword">in</span> results:<br>    <span class="hljs-built_in">print</span>(n)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;*&#x27;</span> * <span class="hljs-number">30</span>, end=<span class="hljs-string">&#x27;\n\n&#x27;</span>)<br><br><span class="hljs-comment"># default retrieval (return_raw=False)</span><br>nl_sql_retriever = NLSQLRetriever(<br>    sql_database, tables=[<span class="hljs-string">&quot;users&quot;</span>], return_raw=<span class="hljs-literal">False</span><br>)<br>results = nl_sql_retriever.retrieve(<br>    <span class="hljs-string">&quot;Return the top 5 oldest person in descending order with their name and age.&quot;</span><br>)<br><br><span class="hljs-comment"># <span class="hljs-doctag">NOTE:</span> all the content is in the metadata</span><br><span class="hljs-keyword">for</span> n <span class="hljs-keyword">in</span> results:<br>    <span class="hljs-built_in">print</span>(n, n.metadata)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;*&#x27;</span> * <span class="hljs-number">30</span>, end=<span class="hljs-string">&#x27;\n\n&#x27;</span>)<br><br><span class="hljs-comment"># compose SQL Retriever with RetrieverQueryEngine to synthesize a response</span><br>nl_sql_retriever = NLSQLRetriever(<br>    sql_database, tables=[<span class="hljs-string">&quot;users&quot;</span>], return_raw=<span class="hljs-literal">True</span><br>)<br>query_engine = RetrieverQueryEngine.from_args(nl_sql_retriever)<br>queries = [<span class="hljs-string">&quot;Return the top 5 oldest person in descending order with their name and age.&quot;</span>,<br>           <span class="hljs-string">&quot;what are the names that begins with J or E?&quot;</span>]<br><span class="hljs-keyword">for</span> query <span class="hljs-keyword">in</span> queries:<br>    response = query_engine.query(query)<br>    <span class="hljs-built_in">print</span>(response)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;*&#x27;</span> * <span class="hljs-number">30</span>, end=<span class="hljs-string">&#x27;\n\n&#x27;</span>)<br></code></pre></td></tr></table></figure>
+<p>对应的输出答案为（中间有部分省略）：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs markdown">Chen is 52 years old.<br><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span>**<br>The oldest person is Chen, who is 52 years old and is from China.<br><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span>**<br>There are four persons from the USA in the database. Their names are Jack, ElasticSearch, Kibana, and Logstash, and their ages are 25, 12, 24, and 36 respectively.<br><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span>**<br>The top 5 oldest people in descending order with their names and ages are:<br><span class="hljs-bullet">1.</span> Chen, 52<br><span class="hljs-bullet">2.</span> Zhang, 42<br><span class="hljs-bullet">3.</span> Logstash, 36<br><span class="hljs-bullet">4.</span> Alex, 31<br><span class="hljs-bullet">5.</span> Green, 26<br><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span><span class="hljs-strong">****</span>**<br>The names that begin with J or E are ElasticSearch and Jack.<br></code></pre></td></tr></table></figure>
+<p>看来Text to SQL对于表格问答场景有很大帮助。</p>
+<h3 id="补充">补充</h3>
+<p>对于上述表格问答应用中的5个问题，我们使用<code>Gemma-7B</code>微调的Text
+to SQL模型进行回答，生成的SQL语句如下：</p>
+<ul>
+<li>SELECT age FROM users WHERE place = 'Chen'</li>
+<li>SELECT id, name, age, place FROM users ORDER BY age DESC LIMIT
+1</li>
+<li>SELECT id, name, age FROM users WHERE place = 'USA' ORDER BY
+insert_time</li>
+<li>SELECT id, name, age FROM users ORDER BY age DESC LIMIT 5</li>
+<li>SELECT name FROM users WHERE name LIKE 'J%' OR name LIKE 'E%'</li>
+</ul>
+<p>将它们在MySQL中进行执行，结果如下：</p>
+<figure>
+<img src="https://s2.loli.net/2024/04/13/eWz7VYNTA8wqrnR.png" srcset="/img/loading.gif" lazyload
+alt="MySQL执行结果" />
+<figcaption aria-hidden="true">MySQL执行结果</figcaption>
+</figure>
+<p>所有的语句都可以执行，但第一条语句是错误的，不过只需将place改成name即可执行成功。</p>
+<p>有了上述的SQL执行结果，我们将上述表格问答中的第三个例子进行Prompt
+Engineer，如下：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs gherkin"><span class="hljs-variable">&lt;The background information follows&gt;</span>:<br><br>table `users` in Mysql:<br><br>+-------------+--------------+------+-----+---------+----------------+<br>|<span class="hljs-string"> Field       </span>|<span class="hljs-string"> Type         </span>|<span class="hljs-string"> Null </span>|<span class="hljs-string"> Key </span>|<span class="hljs-string"> Default </span>|<span class="hljs-string"> Extra          </span>|<br>+-------------+--------------+------+-----+---------+----------------+<br>|<span class="hljs-string"> id          </span>|<span class="hljs-string"> int          </span>|<span class="hljs-string"> NO   </span>|<span class="hljs-string"> PRI </span>|<span class="hljs-string"> NULL    </span>|<span class="hljs-string"> auto_increment </span>|<br>|<span class="hljs-string"> name        </span>|<span class="hljs-string"> varchar(256) </span>|<span class="hljs-string"> NO   </span>|<span class="hljs-string">     </span>|<span class="hljs-string"> NULL    </span>|<span class="hljs-string">                </span>|<br>|<span class="hljs-string"> age         </span>|<span class="hljs-string"> int          </span>|<span class="hljs-string"> YES  </span>|<span class="hljs-string">     </span>|<span class="hljs-string"> NULL    </span>|<span class="hljs-string">                </span>|<br>|<span class="hljs-string"> place       </span>|<span class="hljs-string"> varchar(256) </span>|<span class="hljs-string"> NO   </span>|<span class="hljs-string">     </span>|<span class="hljs-string"> NULL    </span>|<span class="hljs-string">                </span>|<br>|<span class="hljs-string"> insert_time </span>|<span class="hljs-string"> datetime     </span>|<span class="hljs-string"> YES  </span>|<span class="hljs-string">     </span>|<span class="hljs-string"> NULL    </span>|<span class="hljs-string">                </span>|<br>+-------------+--------------+------+-----+---------+----------------+<br><br>SQL execution result:<br><br>mysql&gt; SELECT id, name, age FROM users WHERE place = &#x27;USA&#x27; ORDER BY insert_time;<br><br>+----+---------------+------+<br>|<span class="hljs-string"> id </span>|<span class="hljs-string"> name          </span>|<span class="hljs-string"> age  </span>|<br>+----+---------------+------+<br>|<span class="hljs-string">  1 </span>|<span class="hljs-string"> Jack          </span>|<span class="hljs-string">   25 </span>|<br>|<span class="hljs-string">  6 </span>|<span class="hljs-string"> ElasticSearch </span>|<span class="hljs-string">   12 </span>|<br>|<span class="hljs-string">  7 </span>|<span class="hljs-string"> Kibana        </span>|<span class="hljs-string">   24 </span>|<br>|<span class="hljs-string">  8 </span>|<span class="hljs-string"> Logstash      </span>|<span class="hljs-string">   36 </span>|<br>+----+---------------+------+<br><br>Based on the background information, Answer the question: How many persons come from USA and what are their names and age?<br></code></pre></td></tr></table></figure>
+<p>看看GPT3.5模型的回答：</p>
+<p><img src="https://s2.loli.net/2024/04/13/eT5Dd4OBigoSztI.png" srcset="/img/loading.gif" lazyload /></p>
+<p>回答正确！</p>
+<p>以上仅仅是对<code>LlamaIndex</code>中使用Text to
+SQL技术的一种可能的实现方式的思考，故在此作为补充。</p>
+<h3 id="参考文献">参考文献</h3>
+<ol type="1">
+<li>一文了解Text-to-SQL: <a
+target="_blank" rel="noopener" href="https://www.jiqizhixin.com/articles/2019-12-27-11">https://www.jiqizhixin.com/articles/2019-12-27-11</a></li>
+<li>b-mc2/sql-create-context: <a
+target="_blank" rel="noopener" href="https://huggingface.co/datasets/b-mc2/sql-create-context?row=0">https://huggingface.co/datasets/b-mc2/sql-create-context?row=0</a></li>
+<li>Fine Tune small model Microsoft phi-2 to convert Natural Language To
+SQL: <a
+target="_blank" rel="noopener" href="https://medium.aiplanet.com/fine-tune-small-model-micphi-2-to-convert-natural-language-to-sql-32fc4f6ed40c">https://medium.aiplanet.com/fine-tune-small-model-micphi-2-to-convert-natural-language-to-sql-32fc4f6ed40c</a></li>
+<li>Text-to-SQL Guide (Query Engine + Retriever): <a
+target="_blank" rel="noopener" href="https://docs.llamaindex.ai/en/stable/examples/index_structs/struct_indices/SQLIndexDemo/">https://docs.llamaindex.ai/en/stable/examples/index_structs/struct_indices/SQLIndexDemo/</a></li>
+</ol>
+<center>
+<img src="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+<p>欢迎关注我的知识星球“<strong>自然语言处理奇幻之旅</strong>”，笔者正在努力构建自己的技术社区。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Text-to-SQL/" class="print-no-link">#Text to SQL</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（九十五）Text-to-SQL入门</div>
+      <div>https://percent4.github.io/NLP（九十五）Text-to-SQL入门/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年5月3日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/Python%E4%B8%AD%E7%9A%84%E6%B3%A8%E5%86%8C%E5%99%A8%E6%9C%BA%E5%88%B6/" title="Python中的注册器机制">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Python中的注册器机制</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%B9%9D%E5%8D%81%E5%9B%9B%EF%BC%89transformers%E6%A8%A1%E5%9D%97%E4%B8%AD%E7%9A%84DataCollator/" title="NLP（九十四）transformers模块中的DataCollator">
+                        <span class="hidden-mobile">NLP（九十四）transformers模块中的DataCollator</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

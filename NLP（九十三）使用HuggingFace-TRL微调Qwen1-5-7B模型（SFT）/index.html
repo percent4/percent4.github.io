@@ -1,0 +1,884 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍如何使用HuggingFace开源的&#96;trl&#96;模块来对阿里的通义千问模型&#96;Qwen1.5-7B&#96;进行微调（SFT），并分享笔者在SFT过程中遇到的坑。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（九十三）使用HuggingFace-TRL微调Qwen1.5-7B模型（SFT）">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E4%B9%9D%E5%8D%81%E4%B8%89%EF%BC%89%E4%BD%BF%E7%94%A8HuggingFace-TRL%E5%BE%AE%E8%B0%83Qwen1-5-7B%E6%A8%A1%E5%9E%8B%EF%BC%88SFT%EF%BC%89/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍如何使用HuggingFace开源的&#96;trl&#96;模块来对阿里的通义千问模型&#96;Qwen1.5-7B&#96;进行微调（SFT），并分享笔者在SFT过程中遇到的坑。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg">
+<meta property="article:published_time" content="2024-05-03T09:42:28.000Z">
+<meta property="article:modified_time" content="2024-05-03T09:45:39.293Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="大模型">
+<meta property="article:tag" content="SFT">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+  
+  
+  
+  <title>NLP（九十三）使用HuggingFace-TRL微调Qwen1.5-7B模型（SFT） - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（九十三）使用HuggingFace-TRL微调Qwen1.5-7B模型（SFT）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-05-03 17:42" pubdate>
+          星期五, 五月 3日 2024, 5:42 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          14k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          115 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（九十三）使用HuggingFace-TRL微调Qwen1.5-7B模型（SFT）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍如何使用HuggingFace开源的<code>trl</code>模块来对阿里的通义千问模型<code>Qwen1.5-7B</code>进行微调（SFT），并分享笔者在SFT过程中遇到的坑。</p>
+</blockquote>
+<p>笔者之前的文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247485454&amp;idx=1&amp;sn=efe98ac6bef1d06518958918405719ab&amp;chksm=fcb9b19ecbce3888a57b9c7c8bc7852a7e051774ee897f5caa0a03d3afb0adf1aedc5bc5c11b&amp;payreadticket=HN1U1wvLAMY4r46Kv0V6jYqKNlj7h_sf4sxs-pESKhocGXeknWxLfaf1uqp6p_f1iLdttTE#rd">NLP（六十三）使用Baichuan-7b模型微调人物关系分类任务</a>和<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486665&amp;idx=1&amp;sn=a377d65f1197d9b0661196d54940f9da&amp;chksm=fcb9b559cbce3c4f7e143be9e8692d04cf5bf3dee8290d58b3e8e8cf1de79fc856908c3e96cd&amp;token=1939794584&amp;lang=zh_CN#rd">NLP（九十二）大模型时代下的微博新闻标题生成</a>中分别介绍了如何使用大模型训练工具<code>firefly</code>和<code>LLaMA-Factory</code>来完成大模型微调（SFT阶段）。</p>
+<p>本文将会利用更加基础的HuggingFace开源的<code>trl</code>模块来实现大模型微调（SFT），这次我们自己来实现SFT！</p>
+<p><img
+src="https://huggingface.co/datasets/trl-internal-testing/example-images/resolve/main/images/trl_banner_dark.png" srcset="/img/loading.gif" lazyload /></p>
+<p><code>trl</code>模块是一个全栈模块，它为我们提供了一系列工具来通过强化学习训练
+Transformer语言模型，从Supervised Fine-tuning (SFT)、Reward Modeling
+(RM) 到Proximal Policy Optimization (PPO) 都能很好地支持。
+该模块已经与HuggingFace的transformers模块进行了高度集成。</p>
+<p><code>Qwen1.5-7B</code>是阿里在今天2月份发布的通义千问大模型的新版本，参数量为70亿，性能更好更强大。本文将会介绍如何使用<code>trl</code>模块对该模型进行微调（SFT）。我们以文本分类任务为例，数据集采用Sougou
+Mini分类数据集，共5个类别。</p>
+<p>本文将介绍两种形式的SFT：</p>
+<ul>
+<li>指令微调（Instruction Tuning）</li>
+<li>对话微调（Chat Tuning）</li>
+</ul>
+<h3 id="指令微调">指令微调</h3>
+<p>所谓指令微调，指的是数据以Instruction(指令)-Input(输入)-Output(输出)的形式进行组织，其中Input(输入)可以为空，格式如下：</p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs clean">### Instruction:<br>...<br><br>### Input:<br>...<br><br>### Output:<br>...<br><br></code></pre></td></tr></table></figure>
+<p>我们将文本分类任务的训练数据集加工成上述形式：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">[</span><br>    <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;text&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;### 指令:\n给定以下类别标签：[&#x27;体育&#x27;, &#x27;军事&#x27;, &#x27;教育&#x27;, &#x27;健康&#x27;, &#x27;汽车&#x27;]，请问下面的输入应当属于哪个类别？\n\n### 输入:\n届数比赛时间比赛地点参加国家和地区冠军亚军决赛成绩第一届1956-1957英国11美国丹麦6：1第二届1959-1960费城（美国）14美国英国5：2第三届1962-1963威尔明顿（美国）11美国英国4：3第四届1965-1966惠灵顿（新西兰）17日本美国5：2第五届1968-1969东京（日本）19日本印尼6：1第六届1971-1972东京（日本）17日本印尼6：1第七届1974-1975雅加达（印尼）14印尼日本5：2第八届1977-1978奥克兰（新西兰）16日本印尼5：2第九届1980-1981东京（日本）15日本印尼4：3第十届1983-1984吉隆坡（马来西亚）23中国印尼5：0第十一届1986雅加达（印尼）34中国印尼3：2第十二届1988吉隆坡（马来西亚）31中国韩国5：0第十三届1990东京（日本）42中国韩国3：2第十四届1992吉隆坡（马来西亚）44中国韩国3：2第十五届1994雅加达（印尼）44印尼中国3：2第十六届1996香港（中国）50印尼中国4：1第十七\n\n### 输出:\n体育\n&quot;</span><br>    <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;text&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;### 指令:\n给定以下类别标签：[&#x27;体育&#x27;, &#x27;军事&#x27;, &#x27;教育&#x27;, &#x27;健康&#x27;, &#x27;汽车&#x27;]，请问下面的输入应当属于哪个类别？\n\n### 输入:\n商品属性材质软橡胶带加浮雕工艺+合金彩色队徽吊牌规格162mm数量这一系列产品不限量发行图案软橡胶手机带上有浮雕的队名,配有全彩色合金队徽吊牌用途手机吊饰配件彩色精美纸卡包装.所属球队火箭队所属人物无特殊标志NBA商品介绍将NBA球队的队徽,结合时下最流行的手机吊饰用品,是球迷不可错过的时尚选择.吊饰使用彩色队徽吊牌及软像胶带.并在橡胶带上用球队的主要颜色用浮雕效果做出球队名称,产品都同时搭配彩色NBA标志吊牌,是同时兼具时尚和实用功能的NBA商品商品种类NBA标志手机吊饰及7支球队队徽手机吊饰共8款,(首批推出休士顿火箭队,洛杉矶湖人队,迈阿密热火队,圣安东尼奥马刺队,明尼苏达森林狼队,费城76人队,以及底特律活塞队),其他球队未来将陆续推出.\n\n### 输出:\n体育\n&quot;</span><br>    <span class="hljs-punctuation">&#125;</span><br>    ...<br><span class="hljs-punctuation">]</span><br></code></pre></td></tr></table></figure>
+<p><strong>注意</strong>：加工后的数据集只有text字段。</p>
+<p>使用<code>trl</code>模块对模型进行微调，PEFT方法采用Lora，训练脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> datasets <span class="hljs-keyword">import</span> load_dataset<br><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">from</span> peft <span class="hljs-keyword">import</span> LoraConfig<br><span class="hljs-keyword">from</span> trl <span class="hljs-keyword">import</span> SFTTrainer<br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> TrainingArguments<br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig<br><br><span class="hljs-comment"># Hugging Face model id</span><br>model_id = <span class="hljs-string">&quot;/data-ai/usr/lmj/models/Qwen1.5-7B&quot;</span><br><br><span class="hljs-comment"># BitsAndBytesConfig int-4 config</span><br>bnb_config = BitsAndBytesConfig(<br>    load_in_4bit=<span class="hljs-literal">True</span>, bnb_4bit_use_double_quant=<span class="hljs-literal">True</span>, bnb_4bit_quant_type=<span class="hljs-string">&quot;nf4&quot;</span>, bnb_4bit_compute_dtype=torch.bfloat16<br>)<br><br><span class="hljs-comment"># Load model and tokenizer</span><br>model = AutoModelForCausalLM.from_pretrained(<br>    model_id,<br>    device_map=<span class="hljs-string">&quot;auto&quot;</span>,<br>    torch_dtype=torch.bfloat16,<br>    quantization_config=bnb_config<br>)<br>tokenizer = AutoTokenizer.from_pretrained(model_id)<br>tokenizer.padding_side = <span class="hljs-string">&#x27;right&#x27;</span><br>tokenizer.pad_token = tokenizer.eos_token<br>tokenizer.pad_token_id = tokenizer.eos_token_id<br><br><br><span class="hljs-comment"># Load Dataset</span><br>train_dataset = load_dataset(<span class="hljs-string">&quot;json&quot;</span>, data_files=<span class="hljs-string">&quot;./data/sougou/train.json&quot;</span>)[<span class="hljs-string">&#x27;train&#x27;</span>]<br>test_dataset = load_dataset(<span class="hljs-string">&quot;json&quot;</span>, data_files=<span class="hljs-string">&quot;./data/sougou/test.json&quot;</span>)[<span class="hljs-string">&#x27;train&#x27;</span>]<br><span class="hljs-built_in">print</span>(train_dataset[<span class="hljs-number">0</span>])<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;train size: <span class="hljs-subst">&#123;<span class="hljs-built_in">len</span>(train_dataset)&#125;</span>, test size: <span class="hljs-subst">&#123;<span class="hljs-built_in">len</span>(test_dataset)&#125;</span>&quot;</span>)<br><br><span class="hljs-comment"># LoRA config based on QLoRA paper &amp; Sebastian Raschka experiment</span><br>peft_config = LoraConfig(<br>        lora_alpha=<span class="hljs-number">16</span>,<br>        lora_dropout=<span class="hljs-number">0.05</span>,<br>        r=<span class="hljs-number">64</span>,<br>        bias=<span class="hljs-string">&quot;none&quot;</span>,<br>        target_modules=[<span class="hljs-string">&quot;q_proj&quot;</span>, <span class="hljs-string">&quot;k_proj&quot;</span>, <span class="hljs-string">&quot;v_proj&quot;</span>, <span class="hljs-string">&quot;o_proj&quot;</span>,<span class="hljs-string">&quot;gate_proj&quot;</span>],<br>        task_type=<span class="hljs-string">&quot;CAUSAL_LM&quot;</span>, <br>)<br><br><br><span class="hljs-comment"># Using TrainingArguments</span><br>args = TrainingArguments(<br>    output_dir=<span class="hljs-string">&quot;output/sougou&quot;</span>, <span class="hljs-comment"># directory to save and repository id</span><br>    num_train_epochs=<span class="hljs-number">3</span>,                     <span class="hljs-comment"># number of training epochs</span><br>    per_device_train_batch_size=<span class="hljs-number">8</span>,          <span class="hljs-comment"># batch size per device during training</span><br>    per_device_eval_batch_size=<span class="hljs-number">8</span>,           <span class="hljs-comment"># batch size per device during training</span><br>    gradient_accumulation_steps=<span class="hljs-number">2</span>,          <span class="hljs-comment"># number of steps before performing a backward/update pass</span><br>    gradient_checkpointing=<span class="hljs-literal">True</span>,            <span class="hljs-comment"># use gradient checkpointing to save memory</span><br>    optim=<span class="hljs-string">&quot;paged_adamw_8bit&quot;</span>,               <span class="hljs-comment"># optimizer          </span><br>    save_strategy=<span class="hljs-string">&quot;epoch&quot;</span>,                  <span class="hljs-comment"># save by epoch</span><br>    evaluation_strategy=<span class="hljs-string">&quot;epoch&quot;</span>,            <span class="hljs-comment"># evaluate by rpoch</span><br>    logging_strategy=<span class="hljs-string">&quot;steps&quot;</span>,               <span class="hljs-comment"># log by step</span><br>    logging_steps=<span class="hljs-number">20</span>,                       <span class="hljs-comment"># log every 20 steps</span><br>    bf16=<span class="hljs-literal">True</span>,                              <span class="hljs-comment"># use bfloat16 precision</span><br>    learning_rate=<span class="hljs-number">2e-4</span>,                     <span class="hljs-comment"># learning rate, based on QLoRA paper</span><br>    max_grad_norm=<span class="hljs-number">0.3</span>,                      <span class="hljs-comment"># max gradient norm based on QLoRA paper</span><br>    warmup_ratio=<span class="hljs-number">0.1</span>,                       <span class="hljs-comment"># warmup ratio</span><br>    lr_scheduler_type=<span class="hljs-string">&quot;linear&quot;</span>,             <span class="hljs-comment"># use constant learning rate scheduler</span><br>    push_to_hub=<span class="hljs-literal">False</span>,                      <span class="hljs-comment"># push model to hub</span><br>    report_to=<span class="hljs-string">&quot;tensorboard&quot;</span>,                <span class="hljs-comment"># report metrics to tensorboard</span><br>)<br><br>max_seq_length = <span class="hljs-number">512</span><br><br>trainer = SFTTrainer(<br>    model=model,<br>    args=args,<br>    train_dataset=train_dataset,<br>    eval_dataset=test_dataset,<br>    peft_config=peft_config,<br>    dataset_text_field=<span class="hljs-string">&quot;text&quot;</span>,<br>    max_seq_length=max_seq_length,<br>    tokenizer=tokenizer,<br>    packing=<span class="hljs-literal">False</span><br>)<br><br><span class="hljs-comment"># start training, the model will be automatically saved to the hub and the output directory</span><br>trainer.train()<br><br><span class="hljs-comment"># save model</span><br>trainer.save_model()<br></code></pre></td></tr></table></figure>
+<p>训练完后，会在对应的otutput目录下生成adaper模型文件，我们加载该模型，并在测试集上进行评估，脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoModelForCausalLM, AutoTokenizer<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">format_instruction</span>(<span class="hljs-params">text</span>):<br>    string = <span class="hljs-string">f&quot;&quot;&quot;### 指令:</span><br><span class="hljs-string">给定以下类别标签：[&#x27;体育&#x27;, &#x27;军事&#x27;, &#x27;教育&#x27;, &#x27;健康&#x27;, &#x27;汽车&#x27;]，请问下面的输入应当属于哪个类别？</span><br><span class="hljs-string"></span><br><span class="hljs-string">### 输入:</span><br><span class="hljs-string"><span class="hljs-subst">&#123;text&#125;</span></span><br><span class="hljs-string"></span><br><span class="hljs-string">### 输出:</span><br><span class="hljs-string">&quot;&quot;&quot;</span><br>    <span class="hljs-keyword">return</span> string<br><br>peft_model_id = <span class="hljs-string">&quot;/data-ai/usr/lmj/code/qwen15_sft/output/sougou/checkpoint-750&quot;</span><br>model = AutoModelForCausalLM.from_pretrained(peft_model_id, device_map=<span class="hljs-string">&quot;cuda&quot;</span>)<br>tokenizer = AutoTokenizer.from_pretrained(<span class="hljs-string">&quot;/data-ai/usr/lmj/models/Qwen1.5-7B&quot;</span>)<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">predict</span>(<span class="hljs-params">text</span>):<br>    input_text = format_instruction(text=text)<br>    encoding = tokenizer(input_text, return_tensors=<span class="hljs-string">&quot;pt&quot;</span>).to(<span class="hljs-string">&quot;cuda&quot;</span>)<br>    outputs = model.generate(**encoding, max_new_tokens=<span class="hljs-number">10</span>, temperature=<span class="hljs-number">0.1</span>, do_sample=<span class="hljs-literal">True</span>, pad_token_id=tokenizer.eos_token_id)<br>    generated_ids = outputs[:, encoding.input_ids.shape[<span class="hljs-number">1</span>]:]<br>    generated_texts = tokenizer.batch_decode(generated_ids, skip_special_tokens=<span class="hljs-literal">False</span>)<br>    <span class="hljs-keyword">return</span> generated_texts[<span class="hljs-number">0</span>].split(<span class="hljs-string">&#x27;\n&#x27;</span>)[<span class="hljs-number">0</span>]<br><br><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br><br>df = pd.read_csv(<span class="hljs-string">&quot;./data/sougou/test.csv&quot;</span>)<br><br>true_labels, pred_labels = [], []<br><span class="hljs-keyword">for</span> i, row <span class="hljs-keyword">in</span> df.iterrows():<br>    text, label = row[<span class="hljs-string">&quot;content&quot;</span>], row[<span class="hljs-string">&quot;label&quot;</span>]<br>    predict_label = predict(text=text[:<span class="hljs-number">450</span>])<br>    true_labels.append(label)<br>    pred_labels.append(predict_label)<br>    <span class="hljs-built_in">print</span>(i, label, <span class="hljs-built_in">repr</span>(predict_label))<br>    <br><span class="hljs-keyword">from</span> sklearn.metrics <span class="hljs-keyword">import</span> classification_report<br><span class="hljs-built_in">print</span>(classification_report(y_true=true_labels, y_pred=pred_labels, digits=<span class="hljs-number">4</span>))<br></code></pre></td></tr></table></figure>
+<p>结果如下：</p>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs crystal">              precision    recall  f1-score   support<br><br>          体育     <span class="hljs-number">0.9898</span>    <span class="hljs-number">0.9798</span>    <span class="hljs-number">0.9848</span>        <span class="hljs-number">99</span><br>          健康     <span class="hljs-number">0.9340</span>    <span class="hljs-number">1.0000</span>    <span class="hljs-number">0.9659</span>        <span class="hljs-number">99</span><br>          军事     <span class="hljs-number">1.0000</span>    <span class="hljs-number">1.0000</span>    <span class="hljs-number">1.0000</span>        <span class="hljs-number">99</span><br>          教育     <span class="hljs-number">1.0000</span>    <span class="hljs-number">0.9293</span>    <span class="hljs-number">0.9634</span>        <span class="hljs-number">99</span><br>          汽车     <span class="hljs-number">0.9800</span>    <span class="hljs-number">0.9899</span>    <span class="hljs-number">0.9849</span>        <span class="hljs-number">99</span><br><br>    accuracy                         <span class="hljs-number">0.9798</span>       <span class="hljs-number">495</span><br>   <span class="hljs-function"><span class="hljs-keyword">macro</span> <span class="hljs-title">avg</span></span>     <span class="hljs-number">0.9808</span>    <span class="hljs-number">0.9798</span>    <span class="hljs-number">0.9798</span>       <span class="hljs-number">495</span><br>weighted avg     <span class="hljs-number">0.9808</span>    <span class="hljs-number">0.9798</span>    <span class="hljs-number">0.9798</span>       <span class="hljs-number">495</span><br></code></pre></td></tr></table></figure>
+<p>细心的读者可能注意到，我们在使用训练好的大模型进行生成预测的时候，对生成结果进行了后处理<code>generated_texts[0].split('\n')[0]</code>，即只取换行符前面的部分，这是因为大模型生成了10个新的token。</p>
+<p>此时，我们还不能完全控制大模型的生成行为，但它总体上遵循了我们的数据指令，只是我们无法知道什么是生成预测的结标志束，只好以换行符为标志。</p>
+<h3 id="对话微调">对话微调</h3>
+<p>为了改善上述训练后模型的行为，我们使用<code>对话微调</code>，即使用对话模板来加工训练数据。</p>
+<p>在transformers中的tokenizer中引入了<code>apply_chat_template</code>方法，我们来看个简单的例子：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoTokenizer<br>model_id = <span class="hljs-string">&quot;./models/Qwen1.5-7B&quot;</span><br>tokenizer = AutoTokenizer.from_pretrained(model_id)<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;默认模板: &quot;</span>)<br><span class="hljs-built_in">print</span>(tokenizer.default_chat_template)<br>chat = [&#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;你好吗?&quot;</span>&#125;,<br>        &#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;我很好。&quot;</span>&#125;]<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;对话格式: &quot;</span>)<br><span class="hljs-built_in">print</span>(tokenizer.apply_chat_template(chat, tokenize=<span class="hljs-literal">False</span>))<br></code></pre></td></tr></table></figure>
+<p>输出如下：</p>
+<figure class="highlight twig"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs twig"><span class="hljs-template-tag">&#123;%</span> <span class="hljs-name">for</span> message <span class="hljs-keyword">in</span> messages <span class="hljs-template-tag">%&#125;</span><span class="hljs-template-variable">&#123;&#123;<span class="hljs-string">&#x27;&lt;|im_start|&gt;&#x27;</span> + message[<span class="hljs-string">&#x27;role&#x27;</span>] + <span class="hljs-string">&#x27;</span></span><br><span class="hljs-string"><span class="hljs-template-variable">&#x27;</span> + message[<span class="hljs-string">&#x27;content&#x27;</span>] + <span class="hljs-string">&#x27;&lt;|im_end|&gt;&#x27;</span> + <span class="hljs-string">&#x27;</span></span><br><span class="hljs-string"><span class="hljs-template-variable">&#x27;</span>&#125;&#125;</span><span class="hljs-template-tag">&#123;%</span> <span class="hljs-name">endfor</span> <span class="hljs-template-tag">%&#125;</span><span class="hljs-template-tag">&#123;%</span> <span class="hljs-name">if</span> add_generation_prompt <span class="hljs-template-tag">%&#125;</span><span class="hljs-template-variable">&#123;&#123; <span class="hljs-string">&#x27;&lt;|im_start|&gt;assistant</span></span><br><span class="hljs-string"><span class="hljs-template-variable">&#x27;</span> &#125;&#125;</span><span class="hljs-template-tag">&#123;%</span> <span class="hljs-name">endif</span> <span class="hljs-template-tag">%&#125;</span><span class="language-xml"></span><br><span class="language-xml">对话格式: </span><br><span class="language-xml">&lt;|im_start|&gt;system</span><br><span class="language-xml">You are a helpful assistant&lt;|im_end|&gt;</span><br><span class="language-xml">&lt;|im_start|&gt;user</span><br><span class="language-xml">你好吗?&lt;|im_end|&gt;</span><br><span class="language-xml">&lt;|im_start|&gt;user</span><br><span class="language-xml">我很好。&lt;|im_end|&gt;</span><br></code></pre></td></tr></table></figure>
+<p>可以看到<code>Qwen1.5-7B</code>模型的默认对话模板为GPT3.5模型的ChatML格式（无BOS/EOS这两个token）。</p>
+<p>我们将数据加工成对话形式，如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">[</span><br>    <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;messages&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>            <span class="hljs-punctuation">&#123;</span><br>                <span class="hljs-attr">&quot;role&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;user&quot;</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-attr">&quot;content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;届数比赛时间比赛地点参加国家和地区冠军亚军决赛成绩第一届1956-1957英国11美国丹麦6：1第二届1959-1960费城（美国）14美国英国5：2第三届1962-1963威尔明顿（美国）11美国英国4：3第四届1965-1966惠灵顿（新西兰）17日本美国5：2第五届1968-1969东京（日本）19日本印尼6：1第六届1971-1972东京（日本）17日本印尼6：1第七届1974-1975雅加达（印尼）14印尼日本5：2第八届1977-1978奥克兰（新西兰）16日本印尼5：2第九届1980-1981东京（日本）15日本印尼4：3第十届1983-1984吉隆坡（马来西亚）23中国印尼5：0第十一届1986雅加达（印尼）34中国印尼3：2第十二届1988吉隆坡（马来西亚）31中国韩国5：0第十三届1990东京（日本）42中国韩国3：2第十四届1992吉隆坡（马来西亚）44中国韩国3：2第十五届1994雅加达（印尼）44印尼中国3：2第十六届1996香港（中国）50印尼中国4：1第十七&quot;</span><br>            <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-punctuation">&#123;</span><br>                <span class="hljs-attr">&quot;role&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;assistant&quot;</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-attr">&quot;content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;体育&quot;</span><br>            <span class="hljs-punctuation">&#125;</span><br>        <span class="hljs-punctuation">]</span><br>    <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>    ...<br><span class="hljs-punctuation">]</span><br></code></pre></td></tr></table></figure>
+<p>训练脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> datasets <span class="hljs-keyword">import</span> load_dataset<br><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">from</span> peft <span class="hljs-keyword">import</span> LoraConfig<br><span class="hljs-keyword">from</span> trl <span class="hljs-keyword">import</span> SFTTrainer<br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> TrainingArguments<br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig<br><br><span class="hljs-comment"># Hugging Face model id</span><br>model_id = <span class="hljs-string">&quot;/data-ai/usr/lmj/models/Qwen1.5-7B&quot;</span><br><br><span class="hljs-comment"># BitsAndBytesConfig int-4 config</span><br>bnb_config = BitsAndBytesConfig(<br>    load_in_4bit=<span class="hljs-literal">True</span>, bnb_4bit_use_double_quant=<span class="hljs-literal">True</span>, bnb_4bit_quant_type=<span class="hljs-string">&quot;nf4&quot;</span>, bnb_4bit_compute_dtype=torch.bfloat16<br>)<br><br><span class="hljs-comment"># Load model and tokenizer</span><br>model = AutoModelForCausalLM.from_pretrained(<br>    model_id,<br>    device_map=<span class="hljs-string">&quot;auto&quot;</span>,<br>    torch_dtype=torch.bfloat16,<br>    quantization_config=bnb_config<br>)<br>tokenizer = AutoTokenizer.from_pretrained(model_id)<br>tokenizer.padding_side = <span class="hljs-string">&#x27;right&#x27;</span><br>tokenizer.pad_token = tokenizer.eos_token<br>tokenizer.pad_token_id = tokenizer.eos_token_id<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">formatting_prompts_func</span>(<span class="hljs-params">samples</span>):<br>    output_texts = []<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(samples[<span class="hljs-string">&#x27;messages&#x27;</span>])):<br>        text = tokenizer.apply_chat_template(samples[<span class="hljs-string">&#x27;messages&#x27;</span>][i], tokenize=<span class="hljs-literal">False</span>)<br>        output_texts.append(text)<br>    <span class="hljs-keyword">return</span> output_texts<br><br>train_dataset = load_dataset(<span class="hljs-string">&quot;json&quot;</span>, data_files=<span class="hljs-string">&quot;./data/sougou/train_chat.json&quot;</span>)[<span class="hljs-string">&#x27;train&#x27;</span>]<br>test_dataset = load_dataset(<span class="hljs-string">&quot;json&quot;</span>, data_files=<span class="hljs-string">&quot;./data/sougou/test_chat.json&quot;</span>)[<span class="hljs-string">&#x27;train&#x27;</span>]<br><span class="hljs-built_in">print</span>(train_dataset[<span class="hljs-number">0</span>])<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;train size: <span class="hljs-subst">&#123;<span class="hljs-built_in">len</span>(train_dataset)&#125;</span>, test size: <span class="hljs-subst">&#123;<span class="hljs-built_in">len</span>(test_dataset)&#125;</span>&quot;</span>)<br><br><span class="hljs-comment"># LoRA config based on QLoRA paper &amp; Sebastian Raschka experiment</span><br>peft_config = LoraConfig(<br>        lora_alpha=<span class="hljs-number">16</span>,<br>        lora_dropout=<span class="hljs-number">0.05</span>,<br>        r=<span class="hljs-number">64</span>,<br>        bias=<span class="hljs-string">&quot;none&quot;</span>,<br>        target_modules=[<span class="hljs-string">&quot;q_proj&quot;</span>, <span class="hljs-string">&quot;k_proj&quot;</span>, <span class="hljs-string">&quot;v_proj&quot;</span>, <span class="hljs-string">&quot;o_proj&quot;</span>,<span class="hljs-string">&quot;gate_proj&quot;</span>],<br>        task_type=<span class="hljs-string">&quot;CAUSAL_LM&quot;</span>, <br>)<br><br>args = TrainingArguments(<br>    output_dir=<span class="hljs-string">&quot;output/sougou&quot;</span>,<br>    num_train_epochs=<span class="hljs-number">3</span>,                <br>    per_device_train_batch_size=<span class="hljs-number">8</span>,      <br>    per_device_eval_batch_size=<span class="hljs-number">8</span>,       <br>    gradient_accumulation_steps=<span class="hljs-number">2</span>,         <br>    gradient_checkpointing=<span class="hljs-literal">True</span>,       <br>    optim=<span class="hljs-string">&quot;paged_adamw_8bit&quot;</span>,              <br>    save_strategy=<span class="hljs-string">&quot;epoch&quot;</span>,<br>    evaluation_strategy=<span class="hljs-string">&quot;epoch&quot;</span>,<br>    logging_strategy=<span class="hljs-string">&quot;steps&quot;</span>,<br>    logging_steps=<span class="hljs-number">20</span>,                   <br>    bf16=<span class="hljs-literal">True</span>,                            <br>    learning_rate=<span class="hljs-number">2e-4</span>,                  <br>    max_grad_norm=<span class="hljs-number">0.3</span>,                  <br>    warmup_ratio=<span class="hljs-number">0.1</span>,                      <br>    lr_scheduler_type=<span class="hljs-string">&quot;constant&quot;</span>,            <br>    push_to_hub=<span class="hljs-literal">False</span>,                       <br>    report_to=<span class="hljs-string">&quot;tensorboard&quot;</span>,                <br>)<br><br>max_seq_length = <span class="hljs-number">512</span><br><br>trainer = SFTTrainer(<br>    model=model,<br>    args=args,<br>    train_dataset=train_dataset,<br>    eval_dataset=test_dataset,<br>    peft_config=peft_config,<br>    max_seq_length=max_seq_length,<br>    tokenizer=tokenizer,<br>    packing=<span class="hljs-literal">False</span>,<br>    formatting_func=formatting_prompts_func<br>)<br><br><span class="hljs-comment"># start training, the model will be automatically saved to the hub and the output directory</span><br>trainer.train()<br><br><span class="hljs-comment"># save model</span><br>trainer.save_model()<br></code></pre></td></tr></table></figure>
+<p>该训练脚本的区别在于我们将数据加工成了对话形式，使用tokenizer.apply_chat_template方法。</p>
+<p>对训练好的模型进行预测(<strong>注意generate函数的参数</strong>)：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> datasets <span class="hljs-keyword">import</span> load_dataset<br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoModelForCausalLM, AutoTokenizer<br><br>peft_model_id = <span class="hljs-string">&quot;/data-ai/usr/lmj/code/qwen15_sft/output/sougou/checkpoint-750&quot;</span><br>model = AutoModelForCausalLM.from_pretrained(peft_model_id, device_map=<span class="hljs-string">&quot;cuda&quot;</span>)<br>tokenizer = AutoTokenizer.from_pretrained(<span class="hljs-string">&quot;/data-ai/usr/lmj/models/Qwen1.5-7B&quot;</span>)<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">predict</span>(<span class="hljs-params">text</span>):<br>    eos_token_id = tokenizer(<span class="hljs-string">&quot;&lt;|im_end|&gt;&quot;</span>,add_special_tokens=<span class="hljs-literal">False</span>)[<span class="hljs-string">&quot;input_ids&quot;</span>][<span class="hljs-number">0</span>]<br>    encoding = tokenizer(text, return_tensors=<span class="hljs-string">&quot;pt&quot;</span>).to(<span class="hljs-string">&quot;cuda&quot;</span>)<br>    outputs = model.generate(**encoding, max_new_tokens=<span class="hljs-number">10</span>, temperature=<span class="hljs-number">0.1</span>, do_sample=<span class="hljs-literal">True</span>, eos_token_id=eos_token_id, pad_token_id=tokenizer.eos_token_id)<br>    generated_ids = outputs[:, encoding.input_ids.shape[<span class="hljs-number">1</span>]:]<br>    generated_texts = tokenizer.batch_decode(generated_ids, skip_special_tokens=<span class="hljs-literal">True</span>)<br>    <span class="hljs-keyword">return</span> generated_texts[<span class="hljs-number">0</span>]<br><br><br>dataset = load_dataset(<span class="hljs-string">&quot;json&quot;</span>, data_files=<span class="hljs-string">&quot;./data/sougou/test_chat.json&quot;</span>)[<span class="hljs-string">&#x27;train&#x27;</span>]<br><br>true_labels, pred_labels = [], []<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(dataset)):<br>    message = dataset[i][<span class="hljs-string">&quot;messages&quot;</span>][:<span class="hljs-number">1</span>]<br>    true_label = dataset[i][<span class="hljs-string">&quot;messages&quot;</span>][<span class="hljs-number">1</span>][<span class="hljs-string">&quot;content&quot;</span>]<br>    true_labels.append(true_label)<br>    text = tokenizer.apply_chat_template(message, tokenize=<span class="hljs-literal">False</span>, add_generation_prompt=<span class="hljs-literal">True</span>)<br>    pred_label = predict(text=text)<br>    pred_labels.append(pred_label)<br>    <span class="hljs-built_in">print</span>(i, true_label, pred_label)<br>    <br><span class="hljs-keyword">from</span> sklearn.metrics <span class="hljs-keyword">import</span> classification_report<br><span class="hljs-built_in">print</span>(classification_report(y_true=true_labels, y_pred=pred_labels, digits=<span class="hljs-number">4</span>))<br><br></code></pre></td></tr></table></figure>
+<p>此时我们设置了预测生成时的eos_token_id，这样我们就能控制大模型生成的行为了，即生成的文本只有文本分类任务的类别，这就达到了我们的目标。</p>
+<h3 id="总结">总结</h3>
+<p>本文是笔者对于想要使用更基础的模块进行SFT的一次尝试，也是笔者一直想要努力的方向：掌握ChatGPT3.5模型的整体训练流程。</p>
+<p>SFT看上去简单，但实际自己调试起来，还是有不少坑的。</p>
+<p>笔者后续将会将SFT阶段进行整理，形成开源项目，方便大家使用，不过其实<code>firefly</code>和<code>LLaMA-Factory</code>也已经非常好用啦~</p>
+<h3 id="推荐阅读">推荐阅读</h3>
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247485454&amp;idx=1&amp;sn=efe98ac6bef1d06518958918405719ab&amp;chksm=fcb9b19ecbce3888a57b9c7c8bc7852a7e051774ee897f5caa0a03d3afb0adf1aedc5bc5c11b&amp;payreadticket=HN1U1wvLAMY4r46Kv0V6jYqKNlj7h_sf4sxs-pESKhocGXeknWxLfaf1uqp6p_f1iLdttTE#rd">NLP（六十三）使用Baichuan-7b模型微调人物关系分类任务</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486665&amp;idx=1&amp;sn=a377d65f1197d9b0661196d54940f9da&amp;chksm=fcb9b559cbce3c4f7e143be9e8692d04cf5bf3dee8290d58b3e8e8cf1de79fc856908c3e96cd&amp;token=1939794584&amp;lang=zh_CN#rd">NLP（九十二）大模型时代下的微博新闻标题生成</a></li>
+</ul>
+<h3 id="参考文献">参考文献</h3>
+<ol type="1">
+<li>TRL - Transformer Reinforcement Learning: <a
+target="_blank" rel="noopener" href="https://huggingface.co/docs/trl/index#trl---transformer-reinforcement-learning">https://huggingface.co/docs/trl/index#trl---transformer-reinforcement-learning</a></li>
+<li>Supervised Fine-tuning Trainer: <a
+target="_blank" rel="noopener" href="https://huggingface.co/docs/trl/sft_trainer">https://huggingface.co/docs/trl/sft_trainer</a></li>
+<li>Templates for Chat Models: <a
+target="_blank" rel="noopener" href="https://huggingface.co/docs/transformers/chat_templating">https://huggingface.co/docs/transformers/chat_templating</a></li>
+<li>How to fine-tune Google Gemma with ChatML and Hugging Face TRL: <a
+target="_blank" rel="noopener" href="https://www.philschmid.de/fine-tune-google-gemma">https://www.philschmid.de/fine-tune-google-gemma</a></li>
+<li>Google Gemma 2B 微调实战（IT科技新闻标题生成）: <a
+target="_blank" rel="noopener" href="https://ganymedenil.com/2024/03/24/Google-Gemma-2B-fine-tuning-practice-IT-technology-news-headline-generation.html">https://ganymedenil.com/2024/03/24/Google-Gemma-2B-fine-tuning-practice-IT-technology-news-headline-generation.html</a></li>
+</ol>
+<center>
+<img src="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+<p>欢迎关注我的知识星球“<strong>自然语言处理奇幻之旅</strong>”，笔者正在努力构建自己的技术社区。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" class="print-no-link">#大模型</a>
+      
+        <a href="/tags/SFT/" class="print-no-link">#SFT</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（九十三）使用HuggingFace-TRL微调Qwen1.5-7B模型（SFT）</div>
+      <div>https://percent4.github.io/NLP（九十三）使用HuggingFace-TRL微调Qwen1-5-7B模型（SFT）/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年5月3日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%B9%9D%E5%8D%81%E5%9B%9B%EF%BC%89transformers%E6%A8%A1%E5%9D%97%E4%B8%AD%E7%9A%84DataCollator/" title="NLP（九十四）transformers模块中的DataCollator">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NLP（九十四）transformers模块中的DataCollator</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%B9%9D%E5%8D%81%E4%BA%8C%EF%BC%89%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%97%B6%E4%BB%A3%E4%B8%8B%E7%9A%84%E5%BE%AE%E5%8D%9A%E6%96%B0%E9%97%BB%E6%A0%87%E9%A2%98%E7%94%9F%E6%88%90/" title="NLP（九十二）大模型时代下的微博新闻标题生成">
+                        <span class="hidden-mobile">NLP（九十二）大模型时代下的微博新闻标题生成</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

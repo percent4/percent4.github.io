@@ -1,0 +1,968 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍地理位置及其可视化（即地图）在ElasticSearch中的使用方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ElasticSearch中的地图可视化">
+<meta property="og:url" content="https://percent4.github.io/ElasticSearch%E4%B8%AD%E7%9A%84%E5%9C%B0%E5%9B%BE%E5%8F%AF%E8%A7%86%E5%8C%96/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍地理位置及其可视化（即地图）在ElasticSearch中的使用方法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2024/04/26/uFSThrRveIOKjMU.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/26/tkeaLdDNq8sj1Uv.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/27/zWtqbFoPSD8Kh9x.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/27/9KUkOJzrGtb4xsZ.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/27/5aR8pjiOLlPnsu2.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/27/KLS6yvN8zHIVcma.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/27/eEKmRiVLQzYucHh.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/27/mBLIcMNu6vCnFsO.png">
+<meta property="og:image" content="https://s2.loli.net/2024/04/27/njsFC69v8HIOykJ.png">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg">
+<meta property="article:published_time" content="2024-05-03T09:50:38.000Z">
+<meta property="article:modified_time" content="2024-05-03T09:51:43.251Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="ElasticSearch">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2024/04/26/uFSThrRveIOKjMU.png">
+  
+  
+  
+  <title>ElasticSearch中的地图可视化 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="ElasticSearch中的地图可视化"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-05-03 17:50" pubdate>
+          星期五, 五月 3日 2024, 5:50 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          42 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">ElasticSearch中的地图可视化</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍地理位置及其可视化（即地图）在ElasticSearch中的使用方法。</p>
+</blockquote>
+<p>ElasticSearch中支持的数据类型是非常丰富的，其中涉及地理相关的主要有两类数据类型：<code>geo_point</code>和<code>geo_shape</code>，其中<code>geo_point</code>为地理位置点的经度和纬度，<code>geo_shape</code>用来描述多边形等形状，即地理围栏。</p>
+<p>本文不用详细介绍这两种数据类型的使用方法，而是通过介绍一系列的应用来体验下ElasticSearch中的地理相关的功能，算是ElasticSearch
+Geo的初步入门。</p>
+<p>本文将会包含以下的应用场景：</p>
+<ul>
+<li>地理位置</li>
+<li>地理形状</li>
+<li>距离计算</li>
+<li>地理围栏</li>
+<li>旅行地图</li>
+<li>分级统计图</li>
+<li>热力图</li>
+</ul>
+<h3 id="创建地图图层">创建地图图层</h3>
+<p>打开Kibana -&gt;
+Maps，可以看到在Kibana中已经存在默认的世界地图。为了使用方便起见，我们使用高德提供的地图。</p>
+<p>删除默认的世界地图，在basemap图层上选择<code>Remove layer</code>。添加新的图层，选择<code>Add layer</code>，再选择<code>Tile Map Service</code>，在输入框中我们输入高德地图的瓦片地图网址：</p>
+<blockquote>
+<p>http://wprd04.is.autonavi.com/appmaptile?x={x}&amp;y={y}&amp;z={z}&amp;lang=zh_cn&amp;size=1&amp;scl=1&amp;style=7</p>
+</blockquote>
+<p>这样，我们就使用高德地图来替代原来的世界地图。</p>
+<h3 id="地理位置">地理位置</h3>
+<p>在ElasticSearch中创建<code>my_locations</code>索引，mapping结构如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;my_locations&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;mappings&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>      <span class="hljs-attr">&quot;properties&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;location&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>          <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;geo_point&quot;</span><br>        <span class="hljs-punctuation">&#125;</span><br>      <span class="hljs-punctuation">&#125;</span><br>    <span class="hljs-punctuation">&#125;</span><br>  <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<p>笔者插入一个刚出上海江苏路地铁站时打卡的地理位置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">POST my_locations/_bulk<br>&#123; <span class="hljs-string">&quot;index&quot;</span> : &#123; <span class="hljs-string">&quot;_id&quot;</span> : <span class="hljs-string">&quot;1&quot;</span> &#125; &#125;<br>&#123; <span class="hljs-string">&quot;location&quot;</span> : [ 121.42666666666666, 31.22138888888889 ] &#125;<br></code></pre></td></tr></table></figure>
+<p>在Kibana -&gt; Maps -&gt; Add layer -&gt; Documents -&gt; Data
+view选择my_locations，在这之前需创建Data
+view指向my_locations索引，得到该地理位置的显示地图：</p>
+<figure>
+<img src="https://s2.loli.net/2024/04/26/uFSThrRveIOKjMU.png" srcset="/img/loading.gif" lazyload
+alt="地理位置点的展示" />
+<figcaption aria-hidden="true">地理位置点的展示</figcaption>
+</figure>
+<p>可以看到，这与打卡时的位置产生了偏移，这就是定位中常见的“漂移现象”。</p>
+<h3 id="地理形状">地理形状</h3>
+<p>在ElasticSearch中创建<code>my_shape</code>索引，mapping结构如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;my_shape&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;mappings&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>      <span class="hljs-attr">&quot;properties&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;location&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>          <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;geo_shape&quot;</span><br>        <span class="hljs-punctuation">&#125;</span><br>      <span class="hljs-punctuation">&#125;</span><br>    <span class="hljs-punctuation">&#125;</span><br>  <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<p>插入一个矩形区域（格式为<code>[[minLon, maxLat], [maxLon, minLat]]</code>）：</p>
+<figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs prolog"><span class="hljs-symbol">POST</span> my_shape/<span class="hljs-symbol">_doc</span>/<span class="hljs-number">1</span><br>&#123;<br>  <span class="hljs-string">&quot;location&quot;</span> : &#123;<br>    <span class="hljs-string">&quot;type&quot;</span> : <span class="hljs-string">&quot;envelope&quot;</span>,<br>    <span class="hljs-string">&quot;coordinates&quot;</span> : [ [<span class="hljs-number">121.42</span>, <span class="hljs-number">31.23</span>], [<span class="hljs-number">121.43</span>, <span class="hljs-number">31.22</span>] ]<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>在Maps中查看，如下图：</p>
+<figure>
+<img src="https://s2.loli.net/2024/04/26/tkeaLdDNq8sj1Uv.png" srcset="/img/loading.gif" lazyload
+alt="地理形状查看" />
+<figcaption aria-hidden="true">地理形状查看</figcaption>
+</figure>
+<h3 id="距离计算">距离计算</h3>
+<p>虽然ElasticSearch本身并不支持计算两个地理位置之间的距离，但我们还是可以通过查询语句（DSL）的方式来得到两个地理位置点之间的距离。</p>
+<p>我们在高德地图API上得到江苏路地铁站的经度为121.43，纬度为31.22，计算与之前打卡点之间的距离（即漂移距离）：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs css">POST my_locations/_search  <br>&#123;  <br>  &quot;query&quot;: &#123;  <br>    &quot;bool&quot;: &#123;  <br>      &quot;must&quot;: &#123;  <br>        &quot;match_all&quot;: &#123;&#125;  <br>      &#125;,  <br>      &quot;<span class="hljs-attribute">filter</span>&quot;: &#123;  <br>        &quot;geo_distance&quot;: &#123;  <br>          &quot;distance&quot;: <span class="hljs-string">&quot;10km&quot;</span>,  <br>          <span class="hljs-string">&quot;location&quot;</span>: &#123;  <br>            &quot;lat&quot;: <span class="hljs-number">31.22</span>,  <br>            <span class="hljs-string">&quot;lon&quot;</span>: <span class="hljs-number">121.43</span>  <br>          &#125;  <br>        &#125;  <br>      &#125;  <br>    &#125;  <br>  &#125;,<br>  &quot;sort&quot;: [<br>    <span class="hljs-string">&quot;_score&quot;</span>,<br>    &#123;<br>      &quot;_geo_distance&quot;: &#123;<br>        &quot;location&quot;: &#123; <br>          &quot;lat&quot;:  <span class="hljs-number">31.22</span>,<br>          <span class="hljs-string">&quot;lon&quot;</span>: <span class="hljs-number">121.43</span><br>        &#125;,<br>        &quot;<span class="hljs-attribute">order</span>&quot;:         <span class="hljs-string">&quot;asc&quot;</span>,<br>        <span class="hljs-string">&quot;unit&quot;</span>:          <span class="hljs-string">&quot;km&quot;</span>, <br>        <span class="hljs-string">&quot;distance_type&quot;</span>: <span class="hljs-string">&quot;plane&quot;</span> <br>      &#125;<br>    &#125;<br>  ]<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>返回结果如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br><span class="hljs-attr">&quot;hits&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>      <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;_index&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;my_locations&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;_score&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;_source&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>          <span class="hljs-attr">&quot;location&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>            <span class="hljs-number">121.42666666666666</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-number">31.22138888888889</span><br>          <span class="hljs-punctuation">]</span><br>        <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;sort&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>          <span class="hljs-number">1</span><span class="hljs-punctuation">,</span><br>          <span class="hljs-number">0.35259640248252205</span><br>        <span class="hljs-punctuation">]</span><br>      <span class="hljs-punctuation">&#125;</span><br>    <span class="hljs-punctuation">]</span><br> <span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<p>可以发现两个点之间的距离约为0.35km。</p>
+<figure>
+<img src="https://s2.loli.net/2024/04/27/zWtqbFoPSD8Kh9x.png" srcset="/img/loading.gif" lazyload
+alt="计算两个地理位置之间的距离" />
+<figcaption aria-hidden="true">计算两个地理位置之间的距离</figcaption>
+</figure>
+<h3 id="地理围栏">地理围栏</h3>
+<p>ElasticSeach还可以很方便地查看某个行政区划的形状，即地理围栏。</p>
+<p>我们从网上下载澳门特别行政区的地理围栏数据（GeoJSON格式），以及黑沙海滩和澳门大学横琴校区的经纬度，分别为(113.574729,
+22.116535), (113.548951, 22.126188)。</p>
+<p>在Maps中导入澳门的GeoJSON格式文件以及上述两个地理位置点，在地图上展示如下：</p>
+<figure>
+<img src="https://s2.loli.net/2024/04/27/9KUkOJzrGtb4xsZ.png" srcset="/img/loading.gif" lazyload
+alt="澳门地理围栏及地理位置显示" />
+<figcaption aria-hidden="true">澳门地理围栏及地理位置显示</figcaption>
+</figure>
+<p>上述的GeoJSON文件，显示为澳门的地理围栏。从地图中还可以看出，黑沙海滩在澳门行政区内部，而澳门大学横琴校区在澳门行政区外部。</p>
+<p>因此，我们可以通过地理围栏数据来校验某个地理位置是否位于其内部。</p>
+<h3 id="旅行地图">旅行地图</h3>
+<p>在文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247484682&amp;idx=1&amp;sn=7805d4149684829fcdbf1324a6e11aeb&amp;chksm=fcb9bc9acbce358cbd0cec06493fbd384b844dd25143e7209dc2523c7c067d1b60e34d1ff62a&amp;token=641507273&amp;lang=zh_CN#rd">Python之绘制个人足迹地图</a>中，笔者介绍了如何使用Python与Echarts模块来实现个人足迹地图。</p>
+<p>在本文中，我们将使用Kibana中的Maps来实现个人足迹地图。</p>
+<p>我们的省市地理围栏数据来自Github上的<code>GeoMapData_CN</code>项目，访问网址为
+https://github.com/lyhmyd1211/GeoMapData_CN
+,里面有中国各省市区县的地理围栏数据。</p>
+<p>我们使用简单的Python程序从上述数据集中加工出个人的旅行足迹省和市，在Kibana中绘制地图。</p>
+<ul>
+<li>个人足迹省份</li>
+</ul>
+<figure>
+<img src="https://s2.loli.net/2024/04/27/5aR8pjiOLlPnsu2.png" srcset="/img/loading.gif" lazyload
+alt="个人足迹省份" />
+<figcaption aria-hidden="true">个人足迹省份</figcaption>
+</figure>
+<ul>
+<li>个人足迹城市</li>
+</ul>
+<figure>
+<img src="https://s2.loli.net/2024/04/27/KLS6yvN8zHIVcma.png" srcset="/img/loading.gif" lazyload
+alt="个人足迹城市" />
+<figcaption aria-hidden="true">个人足迹城市</figcaption>
+</figure>
+<h3 id="分级统计图">分级统计图</h3>
+<p>我们以中国大学分布数据来绘制分级统计图。</p>
+<p>中国大学分布的数据来自于Github上的<code>The-Location-Data-of-Schools-in-China</code>项目，访问网址为：<a
+target="_blank" rel="noopener" href="https://github.com/pg7go/The-Location-Data-of-Schools-in-China">https://github.com/pg7go/The-Location-Data-of-Schools-in-China</a>
+，一共有8084所大学。</p>
+<p>我们对数据集进行加工，得到每所大学所在省份的ISO-3166-2-CN代码。</p>
+<p>在Kibana -&gt; Maps -&gt; Add layer -&gt;
+Choropleth(分级统计图)中，选择China
+Provinces，使用iso-3166-2-code，在data view中选择对应的字段。</p>
+<p>绘制各省份的高校数量统计图如下：</p>
+<figure>
+<img src="https://s2.loli.net/2024/04/27/eEKmRiVLQzYucHh.png" srcset="/img/loading.gif" lazyload
+alt="各省份的高校数量分级统计图" />
+<figcaption aria-hidden="true">各省份的高校数量分级统计图</figcaption>
+</figure>
+<p><strong>注意</strong>：使用ISO-3166-2-CN代码，在显示地图时，部分区域显示不准确，比如中国西藏的藏南地区应当属于中国。请读者注意辨别区分，不要受此误解。港澳台数据未记录在内。</p>
+<h3 id="热力图">热力图</h3>
+<p>在上述的中国大学数据绘制热力图。</p>
+<p>在Kibana -&gt; Maps -&gt; Heat
+Map中，注意Metrics中Aggregation字段选择unique
+count，这样显示的中国大学分布热力图如下：</p>
+<figure>
+<img src="https://s2.loli.net/2024/04/27/mBLIcMNu6vCnFsO.png" srcset="/img/loading.gif" lazyload
+alt="中国大学分布热力图" />
+<figcaption aria-hidden="true">中国大学分布热力图</figcaption>
+</figure>
+<p>我们再来看下长三角的大学分布热力图：</p>
+<figure>
+<img src="https://s2.loli.net/2024/04/27/njsFC69v8HIOykJ.png" srcset="/img/loading.gif" lazyload
+alt="长三角的大学分布热力图" />
+<figcaption aria-hidden="true">长三角的大学分布热力图</figcaption>
+</figure>
+<p>从上面对热力图看出看出来，长三角区域的大学主要分布在上海、南京、杭州、合肥等城市，其中以上海市最为密集。</p>
+<h3 id="总结">总结</h3>
+<p>本文没有太多介绍ElasticSearch中的地理相关的数据类型及其查询语句，而是重点介绍了Kibana中的可视化功能，尤其是地图显示。</p>
+<p>本文围绕Kibana的地图可视化，介绍了地理位置、地理形状、距离计算、地理围栏、旅行地图、分级统计图、热力图等功能，使用起来确实非常方便，功能强大且丰富。</p>
+<p>笔者一直对地理比较感兴趣，这次使用ElasticSearch与Kibana实现了一些常见的地图显示功能，希望能给读者带来一些启发~</p>
+<h3 id="参考文献">参考文献</h3>
+<ol type="1">
+<li>Elasticsearch：如何制作 GeoJSON 文件并进行地理位置搜索: <a
+target="_blank" rel="noopener" href="https://elasticstack.blog.csdn.net/article/details/115727243"
+class="uri">https://elasticstack.blog.csdn.net/article/details/115727243</a></li>
+<li>3.2.1.3.Geo地理数据类型: <a
+target="_blank" rel="noopener" href="https://xiaoxiami.gitbook.io/elasticsearch/ji-chu/mapping/zi-duan-de-shu-ju-lei-xing/3213geodi-li-shu-ju-lei-xing">https://xiaoxiami.gitbook.io/elasticsearch/ji-chu/mapping/zi-duan-de-shu-ju-lei-xing/3213geodi-li-shu-ju-lei-xing</a></li>
+<li>阿里云Kibana Maps接入高德地图: <a
+target="_blank" rel="noopener" href="https://help.aliyun.com/zh/es/use-cases/kibana-maps-access-to-gaud-maps">https://help.aliyun.com/zh/es/use-cases/kibana-maps-access-to-gaud-maps</a></li>
+<li>GeoMapData_CN in Github: <a
+target="_blank" rel="noopener" href="https://github.com/lyhmyd1211/GeoMapData_CN">https://github.com/lyhmyd1211/GeoMapData_CN</a></li>
+<li>Python之绘制个人足迹地图: <a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247484682&amp;idx=1&amp;sn=7805d4149684829fcdbf1324a6e11aeb&amp;chksm=fcb9bc9acbce358cbd0cec06493fbd384b844dd25143e7209dc2523c7c067d1b60e34d1ff62a&amp;token=641507273&amp;lang=zh_CN#rd">https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247484682&amp;idx=1&amp;sn=7805d4149684829fcdbf1324a6e11aeb&amp;chksm=fcb9bc9acbce358cbd0cec06493fbd384b844dd25143e7209dc2523c7c067d1b60e34d1ff62a&amp;token=641507273&amp;lang=zh_CN#rd</a></li>
+<li>The-Location-Data-of-Schools-in-China in Github: <a
+target="_blank" rel="noopener" href="https://github.com/pg7go/The-Location-Data-of-Schools-in-China">https://github.com/pg7go/The-Location-Data-of-Schools-in-China</a></li>
+</ol>
+欢迎关注我的公众号<strong>NLP奇幻之旅</strong>，原创技术文章第一时间推送。
+<center>
+<img src="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+<p>欢迎关注我的知识星球“<strong>自然语言处理奇幻之旅</strong>”，笔者正在努力构建自己的技术社区。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" class="category-chain-item">数据库</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/ElasticSearch/" class="print-no-link">#ElasticSearch</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>ElasticSearch中的地图可视化</div>
+      <div>https://percent4.github.io/ElasticSearch中的地图可视化/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年5月3日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%B9%9D%E5%8D%81%E4%B8%83%EF%BC%89%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%95%B0%E5%AD%A6%E8%A7%A3%E9%A2%98%E8%83%BD%E5%8A%9B%E7%9A%84%E5%88%9D%E6%AD%A5%E6%8E%A2%E7%B4%A2/" title="NLP（九十七）大模型数学解题能力的初步探索">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NLP（九十七）大模型数学解题能力的初步探索</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%B9%9D%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8LLaMA-Factory%E5%AE%9E%E7%8E%B0function-calling/" title="NLP（九十六）使用LLaMA-Factory实现function-calling">
+                        <span class="hidden-mobile">NLP（九十六）使用LLaMA-Factory实现function-calling</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

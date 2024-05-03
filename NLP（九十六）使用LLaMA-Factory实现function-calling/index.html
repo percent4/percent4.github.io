@@ -1,0 +1,892 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍如何使用LLaMa-Factory这个大模型微调框架，对Qwen1.5-4B模型进行微调，实现function calling功能，使得大模型具有工具调用能力。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（九十六）使用LLaMA-Factory实现function-calling">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E4%B9%9D%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8LLaMA-Factory%E5%AE%9E%E7%8E%B0function-calling/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍如何使用LLaMa-Factory这个大模型微调框架，对Qwen1.5-4B模型进行微调，实现function calling功能，使得大模型具有工具调用能力。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg">
+<meta property="article:published_time" content="2024-05-03T09:49:47.000Z">
+<meta property="article:modified_time" content="2024-05-03T09:50:23.915Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="LLaMA-Factory">
+<meta property="article:tag" content="function-calling">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+  
+  
+  
+  <title>NLP（九十六）使用LLaMA-Factory实现function-calling - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（九十六）使用LLaMA-Factory实现function-calling"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-05-03 17:49" pubdate>
+          星期五, 五月 3日 2024, 5:49 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          11k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          95 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（九十六）使用LLaMA-Factory实现function-calling</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍如何使用LLaMa-Factory这个大模型微调框架，对Qwen1.5-4B模型进行微调，实现function
+calling功能，使得大模型具有工具调用能力。</p>
+</blockquote>
+<p>在文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486050&amp;idx=1&amp;sn=d8a0b0542e3d777b3a8adaa08f7de626&amp;chksm=fcb9b3f2cbce3ae485a7440349e789c64f18a49cc4ea8d5ac84f3c5cc9184f663051943ad0fd&amp;token=195775715&amp;lang=zh_CN#rd">NLP（七十九）函数调用（function
+calling）</a>中，笔者介绍了在OpenAI的GPT3.5及GPT-4模型中如何使用大模型的函数调用（<code>function calling</code>）功能，这样我们就能让大模型调用成千上万的工具API，赋予大模型更多的外部知识，使得大模型能力变得更加强大。</p>
+<p>在本文中，我们将使用LLaMa-Factory微调框架，对Qwen1.5-4B模型进行微调，自己动手来实现function
+calling功能。</p>
+<h3 id="如何微调大模型的function-calling能力">如何微调大模型的function
+calling能力？</h3>
+<p>LLaMa-Factory官网开发人员已经在文章<a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/678989191">单卡 3 小时训练专属大模型
+Agent：基于 LLaMA Factory
+实战</a>中给出了如何使用该框架的WebUI界面来轻松实现大模型的工具调用能力。</p>
+<p>我们在这里亲自动手实现下。</p>
+<p>首先，训练数据集是关键，我们在这里使用Glaive
+AI生成的工具调用数据集，也可以在HuggingFace找到function
+calling相关的数据集，盖数据集包含用户(human)、模型（gpt）、工具调用（function_call）和工具调用结果（observation）四种不同角色，以及工具列表(tools)字段。同时，我们还选择了alpaca_gpt4_en、alpaca_gpt4_zh
+和 oaast_sft_zh这三种数据集，以增强大模型的通用对话能力。</p>
+<p>其中一条样本为：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;conversations&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>    <span class="hljs-punctuation">&#123;</span><br>      <span class="hljs-attr">&quot;from&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;human&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;value&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;I saw a dress that I liked. It was originally priced at $200 but it&#x27;s on sale for 20% off. Can you tell me how much it will cost after the discount?&quot;</span><br>    <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-punctuation">&#123;</span><br>      <span class="hljs-attr">&quot;from&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;function_call&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;value&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&#123;\&quot;name\&quot;: \&quot;calculate_discount\&quot;, \&quot;arguments\&quot;: &#123;\&quot;original_price\&quot;: 200, \&quot;discount_percentage\&quot;: 20&#125;&#125;&quot;</span><br>    <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-punctuation">&#123;</span><br>      <span class="hljs-attr">&quot;from&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;observation&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;value&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&#123;\&quot;discounted_price\&quot;: 160&#125;&quot;</span><br>    <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-punctuation">&#123;</span><br>      <span class="hljs-attr">&quot;from&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;gpt&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;value&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;The dress will cost you $160 after the 20% discount.&quot;</span><br>    <span class="hljs-punctuation">&#125;</span><br>  <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;tools&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;[&#123;\&quot;name\&quot;: \&quot;calculate_discount\&quot;, \&quot;description\&quot;: \&quot;Calculate the discounted price\&quot;, \&quot;parameters\&quot;: &#123;\&quot;type\&quot;: \&quot;object\&quot;, \&quot;properties\&quot;: &#123;\&quot;original_price\&quot;: &#123;\&quot;type\&quot;: \&quot;number\&quot;, \&quot;description\&quot;: \&quot;The original price of the item\&quot;&#125;, \&quot;discount_percentage\&quot;: &#123;\&quot;type\&quot;: \&quot;number\&quot;, \&quot;description\&quot;: \&quot;The percentage of discount\&quot;&#125;&#125;, \&quot;required\&quot;: [\&quot;original_price\&quot;, \&quot;discount_percentage\&quot;]&#125;&#125;]&quot;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<p>其加工成对话样本后的格式如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs bash">&lt;|im_start|&gt;system<br>You are a helpful assistant.You have access to the following tools:<br>&gt; Tool Name: calculate_discount<br>Tool Description: Calculate the discounted price<br>Tool Args:<br>  - original_price (number, required): The original price of the item<br>  - discount_percentage (number, required): The percentage of discount<br><br>Use the following format <span class="hljs-keyword">if</span> using a tool:<br>Action: tool name (one of [calculate_discount]).```<br>Action Input: the input to the tool, <span class="hljs-keyword">in</span> a JSON format representing the kwargs (e.g. ```&#123;<span class="hljs-string">&quot;input&quot;</span>: <span class="hljs-string">&quot;hello world&quot;</span>, <span class="hljs-string">&quot;num_beams&quot;</span>: 5&#125;```).```<br>&lt;|im_end|&gt;<br>&lt;|im_start|&gt;user<br>I saw a dress that I liked. It was originally priced at <span class="hljs-variable">$200</span> but it<span class="hljs-string">&#x27;s on sale for 20% off. Can you tell me how much it will cost after the discount?&lt;|im_end|&gt;</span><br><span class="hljs-string">&lt;|im_start|&gt;assistant</span><br><span class="hljs-string">Action: calculate_discount</span><br><span class="hljs-string">Action Input: &#123;&quot;original_price&quot;: 200, &quot;discount_percentage&quot;: 20&#125;&lt;|im_end|&gt;</span><br><span class="hljs-string">&lt;|im_start|&gt;user</span><br><span class="hljs-string">&#123;&quot;discounted_price&quot;: 160&#125;&lt;|im_end|&gt;</span><br><span class="hljs-string">&lt;|im_start|&gt;assistant</span><br><span class="hljs-string">The dress will cost you $160 after the 20% discount.&lt;|im_end|&gt;</span><br></code></pre></td></tr></table></figure>
+<p>微调的基座模型选择<code>Qwen1.5-4B</code>，每个数据集最大样本量为50000，训练2轮，训练命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs bash">python src/train_bash.py     \<br>--stage sft     \<br>--do_train True     \<br>--model_name_or_path /models/Qwen1.5-4B     \<br>--finetuning_type lora     \<br>--template qwen     \<br>--dataset_dir data     \<br>--dataset glaive_toolcall,alpaca_gpt4_en,alpaca_gpt4_zh,oaast_sft_zh     \<br>--cutoff_len 1024     \<br>--learning_rate 5e-05     \<br>--num_train_epochs 2.0     \<br>--max_samples 50000     \<br>--per_device_train_batch_size 2     \<br>--gradient_accumulation_steps 4     \<br>--lr_scheduler_type cosine     \<br>--max_grad_norm 1.0     \<br>--logging_steps 100     \<br>--save_steps 1000     \<br>--warmup_steps 0     \<br>--optim adamw_torch     \<br>--report_to none     \<br>--output_dir saves/Qwen1.5-4B/lora/train_2024-04-20-15-30-29     \<br>--fp16 True     \<br>--lora_rank 8     \<br>--lora_alpha 16     \<br>--lora_dropout 0.1     \<br>--lora_target all     \<br>--plot_loss True<br></code></pre></td></tr></table></figure>
+<p>在笔者的GPU上大约训练了14个小时（同时还在运行其它任务）。训练完后，将lora部分的参数与原始模型进行合并，形成新的训练后的模型（<code>Qwen1.5-4B-agent</code>），此时，新模型已经具有了function
+calling的调用能力。</p>
+<h3
+id="测试微调后的大模型的function-calling">测试微调后的大模型的function
+calling</h3>
+<p>我们来测试下训练后的大模型的function
+calling的能力。模型服务的部署命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">python -m llmtuner.api.app --model_name_or_path /models/Qwen1.5-4B-agent --template qwen<br></code></pre></td></tr></table></figure>
+<p>笔者找了三个API工具来进行测试，它们的作用分别为<code>生活垃圾分类</code>，<code>邮政编码查询</code>，<code>歌曲信息查询</code>，API具体的入参、出参可以参考网址为：<a
+target="_blank" rel="noopener" href="https://apifox.com/apidoc/shared-faff130e-7aa3-42da-9f93-574b16c8acda。"
+class="uri">https://apifox.com/apidoc/shared-faff130e-7aa3-42da-9f93-574b16c8acda。</a></p>
+<p>测试脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @place: Pudong, Shanghai</span><br><span class="hljs-comment"># @file: llama_factory_agent_test.py</span><br><span class="hljs-comment"># @time: 2024/4/21 10:26</span><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">from</span> openai <span class="hljs-keyword">import</span> OpenAI<br><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">Sequence</span><br><span class="hljs-keyword">import</span> requests<br><br>os.environ[<span class="hljs-string">&quot;OPENAI_BASE_URL&quot;</span>] = <span class="hljs-string">&quot;http://localhost:50079/v1&quot;</span><br>os.environ[<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>] = <span class="hljs-string">&quot;0&quot;</span><br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_rubbish_category</span>(<span class="hljs-params">keyword</span>):<br>    url = <span class="hljs-string">f&quot;https://api.timelessq.com/garbage?keyword=<span class="hljs-subst">&#123;keyword&#125;</span>&quot;</span><br>    response = requests.request(<span class="hljs-string">&quot;GET&quot;</span>, url)<br>    output_str_list = []<br>    <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> response.json()[<span class="hljs-string">&#x27;data&#x27;</span>]:<br>        output_str_list.append(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;item[<span class="hljs-string">&#x27;name&#x27;</span>]&#125;</span>: <span class="hljs-subst">&#123;item[<span class="hljs-string">&#x27;categroy&#x27;</span>]&#125;</span>&quot;</span>)<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;\n&#x27;</span>.join(output_str_list)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_song_information</span>(<span class="hljs-params">keyword</span>):<br>    url = <span class="hljs-string">f&quot;https://api.timelessq.com/music/tencent/search?keyword=<span class="hljs-subst">&#123;keyword&#125;</span>&quot;</span><br>    response = requests.request(<span class="hljs-string">&quot;GET&quot;</span>, url)<br>    song_infor = response.json()[<span class="hljs-string">&#x27;data&#x27;</span>][<span class="hljs-string">&#x27;list&#x27;</span>][<span class="hljs-number">0</span>]<br>    singer = <span class="hljs-string">&#x27;&#x27;</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> song_infor[<span class="hljs-string">&#x27;singer&#x27;</span>] <span class="hljs-keyword">else</span> song_infor[<span class="hljs-string">&#x27;singer&#x27;</span>][<span class="hljs-number">0</span>][<span class="hljs-string">&#x27;name&#x27;</span>]<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">f&quot;歌曲: <span class="hljs-subst">&#123;keyword&#125;</span>\n歌手: <span class="hljs-subst">&#123;singer&#125;</span>\n时长: <span class="hljs-subst">&#123;song_infor[<span class="hljs-string">&#x27;interval&#x27;</span>]&#125;</span>秒\n专辑名称: <span class="hljs-subst">&#123;song_infor[<span class="hljs-string">&#x27;albumname&#x27;</span>]&#125;</span>&quot;</span><br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_cartoon_information</span>(<span class="hljs-params">title</span>):<br>    url = <span class="hljs-string">f&quot;https://api.timelessq.com/bangumi?title=<span class="hljs-subst">&#123;title&#125;</span>&quot;</span><br>    response = requests.request(<span class="hljs-string">&quot;GET&quot;</span>, url)<br>    data = response.json()[<span class="hljs-string">&#x27;data&#x27;</span>][<span class="hljs-number">0</span>]<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">f&quot;标题: <span class="hljs-subst">&#123;data[<span class="hljs-string">&#x27;title&#x27;</span>]&#125;</span>\n类型：<span class="hljs-subst">&#123;data[<span class="hljs-string">&#x27;type&#x27;</span>]&#125;</span>\n语言：<span class="hljs-subst">&#123;data[<span class="hljs-string">&#x27;lang&#x27;</span>]&#125;</span>\n出品方：<span class="hljs-subst">&#123;data[<span class="hljs-string">&#x27;officialSite&#x27;</span>]&#125;</span>\n上映时间：<span class="hljs-subst">&#123;data[<span class="hljs-string">&#x27;begin&#x27;</span>]&#125;</span>\n完结事件：<span class="hljs-subst">&#123;data[<span class="hljs-string">&#x27;end&#x27;</span>]&#125;</span>&quot;</span><br><br><br>tool_map = &#123;<span class="hljs-string">&quot;get_rubbish_category&quot;</span>: get_rubbish_category,<br>            <span class="hljs-string">&quot;get_song_information&quot;</span>: get_song_information,<br>            <span class="hljs-string">&quot;get_cartoon_information&quot;</span>: get_cartoon_information&#125;<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    client = OpenAI()<br>    tools = [<br>        &#123;<br>            <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;function&quot;</span>,<br>            <span class="hljs-string">&quot;function&quot;</span>: &#123;<br>                            <span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;get_rubbish_category&quot;</span>,<br>                            <span class="hljs-string">&quot;description&quot;</span>: <span class="hljs-string">&quot;适用于生活垃圾分类时，判断物品属于哪种类型的垃圾？&quot;</span>,<br>                            <span class="hljs-string">&quot;parameters&quot;</span>: &#123;<br>                                <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;object&quot;</span>,<br>                                <span class="hljs-string">&quot;properties&quot;</span>: &#123;<br>                                    <span class="hljs-string">&quot;keyword&quot;</span>: &#123;<br>                                        <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;string&quot;</span>,<br>                                        <span class="hljs-string">&quot;description&quot;</span>: <span class="hljs-string">&quot;物品名称，用于垃圾分类&quot;</span>,<br>                                    &#125;,<br>                                &#125;,<br>                                <span class="hljs-string">&quot;required&quot;</span>: [<span class="hljs-string">&quot;keyword&quot;</span>],<br>                            &#125;<br>                        &#125;<br>        &#125;,<br>        &#123;<br>            <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;function&quot;</span>,<br>            <span class="hljs-string">&quot;function&quot;</span>: &#123;<br>                            <span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;get_cartoon_information&quot;</span>,<br>                            <span class="hljs-string">&quot;description&quot;</span>: <span class="hljs-string">&quot;根据用户提供的动漫标题，查询该动漫的相关信息。&quot;</span>,<br>                            <span class="hljs-string">&quot;parameters&quot;</span>: &#123;<br>                                <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;object&quot;</span>,<br>                                <span class="hljs-string">&quot;properties&quot;</span>: &#123;<br>                                    <span class="hljs-string">&quot;title&quot;</span>: &#123;<br>                                        <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;string&quot;</span>,<br>                                        <span class="hljs-string">&quot;description&quot;</span>: <span class="hljs-string">&quot;动漫&quot;</span>,<br>                                    &#125;,<br>                                &#125;,<br>                                <span class="hljs-string">&quot;required&quot;</span>: [<span class="hljs-string">&quot;title&quot;</span>],<br>                            &#125;<br>                        &#125;<br>        &#125;,<br>        &#123;<br>            <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;function&quot;</span>,<br>            <span class="hljs-string">&quot;function&quot;</span>: &#123;<br>                            <span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;get_song_information&quot;</span>,<br>                            <span class="hljs-string">&quot;description&quot;</span>: <span class="hljs-string">&quot;根据用户提供的歌曲名称，查询歌曲相关信息，包括歌手、时长、专辑名称等。&quot;</span>,<br>                            <span class="hljs-string">&quot;parameters&quot;</span>: &#123;<br>                                <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;object&quot;</span>,<br>                                <span class="hljs-string">&quot;properties&quot;</span>: &#123;<br>                                    <span class="hljs-string">&quot;keyword&quot;</span>: &#123;<br>                                        <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;string&quot;</span>,<br>                                        <span class="hljs-string">&quot;description&quot;</span>: <span class="hljs-string">&quot;歌曲名称&quot;</span>,<br>                                    &#125;,<br>                                &#125;,<br>                                <span class="hljs-string">&quot;required&quot;</span>: [<span class="hljs-string">&quot;keyword&quot;</span>],<br>                            &#125;<br>                        &#125;<br>        &#125;<br>    ]<br><br>    messages = []<br>    messages.append(&#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;system&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;你是一个有用的小助手，请调用下面的工具来回答用户的问题，参考工具输出进行回答。&quot;</span>&#125;)<br>    <span class="hljs-comment"># messages.append(&#123;&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;鸡蛋壳属于哪种类型的垃圾？&quot;&#125;)</span><br>    <span class="hljs-comment"># messages.append(&#123;&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;爱在西元前是谁唱的，来自哪张专辑？&quot;&#125;)</span><br>    messages.append(&#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;动漫《棋魂》是哪个国家的，什么时候上映的？&quot;</span>&#125;)<br>    result = client.chat.completions.create(messages=messages, model=<span class="hljs-string">&quot;Qwen1.5-4B-agent&quot;</span>, tools=tools)<br>    tool_call = result.choices[<span class="hljs-number">0</span>].message.tool_calls[<span class="hljs-number">0</span>].function<br>    <span class="hljs-built_in">print</span>(tool_call)<br>    name, arguments = tool_call.name, json.loads(tool_call.arguments)<br>    messages.append(&#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;function&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: json.dumps(&#123;<span class="hljs-string">&quot;name&quot;</span>: name, <span class="hljs-string">&quot;argument&quot;</span>: arguments&#125;, ensure_ascii=<span class="hljs-literal">False</span>)&#125;)<br>    tool_result = tool_map[name](**arguments)<br>    messages.append(&#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;tool&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;工具输出结果为: &quot;</span> + tool_result&#125;)<br>    <span class="hljs-keyword">for</span> msg <span class="hljs-keyword">in</span> messages:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;---&gt;&#x27;</span>, msg)<br>    result = client.chat.completions.create(messages=messages, model=<span class="hljs-string">&quot;Qwen1.5-4B-agent&quot;</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Answer: &quot;</span>, result.choices[<span class="hljs-number">0</span>].message.content)<br></code></pre></td></tr></table></figure>
+<p>测试结果如下：</p>
+<ul>
+<li>问题: 鸡蛋壳属于哪种类型的垃圾？</li>
+</ul>
+<p>输出:</p>
+<pre><code class="hljs">---&gt; &#123;&#39;role&#39;: &#39;system&#39;, &#39;content&#39;: &#39;你是一个有用的小助手，请调用下面的工具来回答用户的问题，参考工具输出进行回答。&#39;&#125;
+---&gt; &#123;&#39;role&#39;: &#39;user&#39;, &#39;content&#39;: &#39;鸡蛋壳属于哪种类型的垃圾？&#39;&#125;
+---&gt; &#123;&#39;role&#39;: &#39;function&#39;, &#39;content&#39;: &#39;&#123;&quot;name&quot;: &quot;get_rubbish_category&quot;, &quot;argument&quot;: &#123;&quot;keyword&quot;: &quot;鸡蛋壳&quot;&#125;&#125;&#39;&#125;
+---&gt; &#123;&#39;role&#39;: &#39;tool&#39;, &#39;content&#39;: &#39;工具输出结果为: 熟鸡蛋壳: 湿垃圾\n生鸡蛋壳: 湿垃圾\n鸡蛋壳: 湿垃圾\n包裹着鸡蛋壳的餐巾纸: 干垃圾&#39;&#125;
+Answer:  鸡蛋壳属于湿垃圾。</code></pre>
+<ul>
+<li>问题: 爱在西元前是谁唱的，来自哪张专辑？</li>
+</ul>
+<p>输出:</p>
+<pre><code class="hljs">---&gt; &#123;&#39;role&#39;: &#39;system&#39;, &#39;content&#39;: &#39;你是一个有用的小助手，请调用下面的工具来回答用户的问题，参考工具输出进行回答。&#39;&#125;
+---&gt; &#123;&#39;role&#39;: &#39;user&#39;, &#39;content&#39;: &#39;爱在西元前是谁唱的，来自哪张专辑？&#39;&#125;
+---&gt; &#123;&#39;role&#39;: &#39;function&#39;, &#39;content&#39;: &#39;&#123;&quot;name&quot;: &quot;get_song_information&quot;, &quot;argument&quot;: &#123;&quot;keyword&quot;: &quot;爱在西元前&quot;&#125;&#125;&#39;&#125;
+---&gt; &#123;&#39;role&#39;: &#39;tool&#39;, &#39;content&#39;: &#39;工具输出结果为: 歌曲: 爱在西元前\n歌手: 周杰伦\n时长: 234秒\n专辑名称: 范特西&#39;&#125;
+Answer:  歌曲《爱在西元前》的演唱者是周杰伦，来自专辑《范特西》。</code></pre>
+<ul>
+<li>问题: 动漫《棋魂》是哪个国家的，什么时候上映的？</li>
+</ul>
+<p>输出:</p>
+<pre><code class="hljs">---&gt; &#123;&#39;role&#39;: &#39;system&#39;, &#39;content&#39;: &#39;你是一个有用的小助手，请调用下面的工具来回答用户的问题，参考工具输出进行回答。&#39;&#125;
+---&gt; &#123;&#39;role&#39;: &#39;user&#39;, &#39;content&#39;: &#39;动漫《棋魂》是哪个国家的，什么时候上映的？&#39;&#125;
+---&gt; &#123;&#39;role&#39;: &#39;function&#39;, &#39;content&#39;: &#39;&#123;&quot;name&quot;: &quot;get_cartoon_information&quot;, &quot;argument&quot;: &#123;&quot;title&quot;: &quot;棋魂&quot;&#125;&#125;&#39;&#125;
+---&gt; &#123;&#39;role&#39;: &#39;tool&#39;, &#39;content&#39;: &#39;工具输出结果为: 标题: ヒカルの碁\n类型：tv\n语言：ja\n出品方：http://www.tv-tokyo.co.jp/anime/hikaru/\n上映时间：2001-10-10T10:27:00.000Z\n完结事件：2003-03-26T10:55:00.000Z&#39;&#125;
+Answer:  动漫《棋魂》是日本的，它于2001年10月10日上映。</code></pre>
+<h3 id="总结">总结</h3>
+<p>OpenAI模型的function
+calling能力无疑是让人惊讶的，但自己实现大模型的function
+calling能力也是值得开心的。</p>
+<p>本文重点介绍了如何使用LLaMa-Factory微调框架来自己实现function
+calling能力，并在测试中验证了大模型的工具调用能力。本文并无太多心意，只是笔者在实现大模型function
+calling能力的一次实战，也验证自己的一些想法。</p>
+<h3 id="参考文献">参考文献</h3>
+<ol type="1">
+<li>单卡 3 小时训练专属大模型 Agent：基于 LLaMA Factory 实战: <a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/678989191"
+class="uri">https://zhuanlan.zhihu.com/p/678989191</a></li>
+</ol>
+<p>欢迎关注我的公众号<strong>NLP奇幻之旅</strong>，原创技术文章第一时间推送。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+<p>欢迎关注我的知识星球“<strong>自然语言处理奇幻之旅</strong>”，笔者正在努力构建自己的技术社区。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/LLaMA-Factory/" class="print-no-link">#LLaMA-Factory</a>
+      
+        <a href="/tags/function-calling/" class="print-no-link">#function-calling</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（九十六）使用LLaMA-Factory实现function-calling</div>
+      <div>https://percent4.github.io/NLP（九十六）使用LLaMA-Factory实现function-calling/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年5月3日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/ElasticSearch%E4%B8%AD%E7%9A%84%E5%9C%B0%E5%9B%BE%E5%8F%AF%E8%A7%86%E5%8C%96/" title="ElasticSearch中的地图可视化">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">ElasticSearch中的地图可视化</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/Cython%E5%85%A5%E9%97%A8%EF%BC%88%E4%B8%80%EF%BC%89%E8%AE%A1%E7%AE%97%E6%96%90%E6%B3%A2%E9%82%A3%E5%A5%91%E6%95%B0%E5%88%97/" title="Cython入门（一）计算斐波那契数列">
+                        <span class="hidden-mobile">Cython入门（一）计算斐波那契数列</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
