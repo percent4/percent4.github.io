@@ -1,0 +1,916 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍基于PDF文档的多模态问答，包括PDF中的表格、图片和文字。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（九十八）基于PDF文档的多模态问答">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E4%B9%9D%E5%8D%81%E5%85%AB%EF%BC%89%E5%9F%BA%E4%BA%8EPDF%E6%96%87%E6%A1%A3%E7%9A%84%E5%A4%9A%E6%A8%A1%E6%80%81%E9%97%AE%E7%AD%94/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍基于PDF文档的多模态问答，包括PDF中的表格、图片和文字。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2024/05/04/ZSwc8bvn4OojDqB.png">
+<meta property="og:image" content="https://s2.loli.net/2024/05/04/R1OqwFUrDa85iCI.jpg">
+<meta property="og:image" content="https://s2.loli.net/2024/05/04/v3ZIjJsC2Nbkl9x.jpg">
+<meta property="article:published_time" content="2024-06-19T02:54:18.000Z">
+<meta property="article:modified_time" content="2024-06-19T02:55:30.342Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="多模态问答">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2024/05/04/ZSwc8bvn4OojDqB.png">
+  
+  
+  
+  <title>NLP（九十八）基于PDF文档的多模态问答 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（九十八）基于PDF文档的多模态问答"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-06-19 10:54" pubdate>
+          星期三, 六月 19日 2024, 10:54 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          31k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          258 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（九十八）基于PDF文档的多模态问答</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍基于PDF文档的多模态问答，包括PDF中的表格、图片和文字。</p>
+</blockquote>
+<p>在以往的PDF系列文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486486&amp;idx=1&amp;sn=dbc5ea2b69594d5010bd3c88a77562f7&amp;chksm=fcb9b586cbce3c909e081ffd364d60d5520a6cdb0c380118cbd81724c9f7027f755765f7f9e7&amp;token=1070038348&amp;lang=zh_CN#rd">NLP（八十九）PDF文档智能问答入门</a>和<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486594&amp;idx=1&amp;sn=4b1d7708f8df4807b5484acd3cc16654&amp;chksm=fcb9b512cbce3c04c51aae88a02e9b2c6bd5098932ed5dcf2e0d632515ffb83ec8bbcb451c94&amp;token=1070038348&amp;lang=zh_CN#rd">NLP（九十一）PDF表格问答</a>中，笔者分别介绍了如何对PDF中的纯文本和表格（保存为图片形式）数据，使用大模型进行智能问答。但PDF文件一般包含文字、图片、表格等多种模态的数据，因此，多模态智能问答显得尤为重要。</p>
+<p>本文是笔者关于多模态智能问答方面的一些思考，主要介绍基于纯文本的PDF文档（非扫描版）的多模态问答，希望能给读者带来一些启发。</p>
+<p>本文将会分以下几方面进行介绍：</p>
+<ul>
+<li>获取PDF中的表格、图片，统一保存为图片格式</li>
+<li>获取表格、图片和其对应标题的映射关系</li>
+<li>对文本、表格、图片进行向量嵌入（Embedding）</li>
+<li>基于用户问题，获取关联度最高的文本片段、表格、图片数据</li>
+<li>使用多模态大模型（比如GPT-4V）进行回答</li>
+</ul>
+<h3 id="预处理pdf中的表格图片获取">预处理：PDF中的表格、图片获取</h3>
+<p>首先，我们使用百度开源的版面分析工具<code>PaddleOCR</code>来获取PDF文档中的表格、图片所在的矩形坐标区域，并将它们保存为图片，实现的Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @place: Pudong, Shanghai</span><br><span class="hljs-comment"># @file: layout_analysis.py</span><br><span class="hljs-comment"># @time: 2024/4/3 10:52</span><br><span class="hljs-comment"># use PP-Structure V2 to get layout analysis for PDF</span><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> re<br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> cv2<br><span class="hljs-keyword">import</span> fitz<br><span class="hljs-keyword">from</span> PIL <span class="hljs-keyword">import</span> Image<br><span class="hljs-keyword">from</span> paddleocr <span class="hljs-keyword">import</span> PPStructure, save_structure_res<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">LayoutAnalysis</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, pdf_file_path, save_folder=<span class="hljs-string">&quot;../output&quot;</span></span>):<br>        self.pdf_file_path = pdf_file_path<br>        self.save_folder = save_folder<br>        self.file_name = os.path.basename(self.pdf_file_path).split(<span class="hljs-string">&#x27;.&#x27;</span>)[<span class="hljs-number">0</span>]<br>        self.save_dir = os.path.join(self.save_folder, <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;self.file_name&#125;</span>&quot;</span>)<br>        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> os.path.exists(self.save_dir):<br>            os.makedirs(self.save_dir)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">_convert_to_img</span>(<span class="hljs-params">self</span>):<br>        pdf_document = fitz.<span class="hljs-built_in">open</span>(self.pdf_file_path)<br>        image_path_list = []<br>        <span class="hljs-comment"># Iterate through each page and convert to an image</span><br>        <span class="hljs-keyword">for</span> page_number <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(pdf_document.page_count):<br>            <span class="hljs-comment"># Get the page</span><br>            page = pdf_document[page_number]<br>            <span class="hljs-comment"># Convert the page to an image</span><br>            pix = page.get_pixmap()<br>            <span class="hljs-comment"># Create a Pillow Image object from the pixmap</span><br>            image = Image.frombytes(<span class="hljs-string">&quot;RGB&quot;</span>, (pix.width, pix.height), pix.samples)<br>            <span class="hljs-comment"># Save the image</span><br>            image_path = os.path.join(self.save_dir, <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;self.file_name&#125;</span>_<span class="hljs-subst">&#123;page_number + <span class="hljs-number">1</span>&#125;</span>.jpg&quot;</span>)<br>            image_path_list.append(image_path)<br>            image.save(image_path, <span class="hljs-string">&quot;JPEG&quot;</span>, quality=<span class="hljs-number">95</span>)<br>        <span class="hljs-comment"># Close the PDF file</span><br>        pdf_document.close()<br>        <span class="hljs-keyword">return</span> image_path_list<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">image_parse</span>(<span class="hljs-params">self</span>):<br>        image_path_list = self._convert_to_img()<br>        table_engine = PPStructure(table=<span class="hljs-literal">False</span>, ocr=<span class="hljs-literal">False</span>, show_log=<span class="hljs-literal">True</span>)<br>        <span class="hljs-keyword">for</span> img_idx, img_path <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(image_path_list):<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Layout analysis for <span class="hljs-subst">&#123;img_idx+<span class="hljs-number">1</span>&#125;</span> image with path: <span class="hljs-subst">&#123;img_path&#125;</span>&quot;</span>)<br>            img = cv2.imread(img_path)<br>            result = table_engine(img)<br>            save_structure_res(result, self.save_folder, self.file_name, img_idx=img_idx+<span class="hljs-number">1</span>)<br>            <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> result:<br>                line.pop(<span class="hljs-string">&#x27;img&#x27;</span>)<br>                <span class="hljs-built_in">print</span>(line)<br><br><span class="hljs-meta">    @staticmethod</span><br>    <span class="hljs-comment"># 解析每页PDF中的表格，保存为图片</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">parse_table</span>(<span class="hljs-params">pdf_page_image, pdf_res_txt</span>):<br>        dir_name = os.path.dirname(pdf_page_image)<br>        page_number = re.findall(<span class="hljs-string">&quot;\d+&quot;</span>, pdf_page_image)[-<span class="hljs-number">1</span>]<br>        <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(pdf_res_txt, <span class="hljs-string">&#x27;r&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>            content = [json.loads(_.strip()) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> f.readlines()]<br><br>        table_cnt = <span class="hljs-number">1</span><br>        <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> content:<br>            rect_type = line[<span class="hljs-string">&quot;type&quot;</span>]<br>            region = line[<span class="hljs-string">&quot;bbox&quot;</span>]<br>            <span class="hljs-comment"># 将表格保存为图片</span><br>            <span class="hljs-keyword">if</span> rect_type == <span class="hljs-string">&quot;table&quot;</span>:<br>                <span class="hljs-keyword">with</span> Image.<span class="hljs-built_in">open</span>(pdf_page_image).convert(<span class="hljs-string">&#x27;RGB&#x27;</span>) <span class="hljs-keyword">as</span> image:<br>                    region_img = image.crop(region)<br>                    save_image_path = <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;dir_name&#125;</span>/<span class="hljs-subst">&#123;page_number&#125;</span>_<span class="hljs-subst">&#123;table_cnt&#125;</span>_table.jpg&quot;</span><br>                    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;save table to <span class="hljs-subst">&#123;save_image_path&#125;</span>&quot;</span>)<br>                    region_img.save(save_image_path, <span class="hljs-string">&#x27;JPEG&#x27;</span>, quality=<span class="hljs-number">95</span>)<br>                    table_cnt += <span class="hljs-number">1</span><br><br>    <span class="hljs-comment"># 解析版面分析后的PDF结果的文件夹</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">tables_2_images</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-keyword">for</span> file <span class="hljs-keyword">in</span> os.listdir(self.save_dir):<br>            <span class="hljs-keyword">if</span> file.startswith(self.file_name):<br>                res_txt = file.replace(self.file_name, <span class="hljs-string">&quot;res&quot;</span>).replace(<span class="hljs-string">&quot;jpg&quot;</span>, <span class="hljs-string">&quot;txt&quot;</span>)<br>                pdf_page_image_path = os.path.join(self.save_dir, file)<br>                pdf_res_txt_path = os.path.join(self.save_dir, res_txt)<br>                self.parse_table(pdf_page_image=pdf_page_image_path,<br>                                 pdf_res_txt=pdf_res_txt_path)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">run</span>(<span class="hljs-params">self</span>):<br>        self.image_parse()<br>        self.tables_2_images()<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    pdf_path = <span class="hljs-string">&quot;../data/LLaMA.pdf&quot;</span><br>    layout_analyzer = LayoutAnalysis(pdf_file_path=pdf_path)<br>    layout_analyzer.run()<br></code></pre></td></tr></table></figure>
+<p>以LLaMA论文PDF（访问网址为：<a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/2302.13971">https://arxiv.org/abs/2302.13971</a>）为例，得到的表格、图片文件如下：</p>
+<figure>
+<img src="https://s2.loli.net/2024/05/04/ZSwc8bvn4OojDqB.png" srcset="/img/loading.gif" lazyload
+alt="multi-modal-pdf-qa-1.png" />
+<figcaption aria-hidden="true">multi-modal-pdf-qa-1.png</figcaption>
+</figure>
+<p>其中，表格文件的命名规律为页数_该页中表格序号_table.jpg，而图片文件的则以改图片的左上角、右下角坐标为开头。</p>
+<p>我们来看下5_1_table.jpg表格文件：</p>
+<figure>
+<img src="https://s2.loli.net/2024/05/04/R1OqwFUrDa85iCI.jpg" srcset="/img/loading.gif" lazyload
+alt="2_1_table.jpg" />
+<figcaption aria-hidden="true">2_1_table.jpg</figcaption>
+</figure>
+<p>再来看看[67, 68, 527, 349]_8.jpg图片文件：</p>
+<figure>
+<img src="https://s2.loli.net/2024/05/04/v3ZIjJsC2Nbkl9x.jpg" srcset="/img/loading.gif" lazyload
+alt="_67, 68, 527, 349__8.jpg" />
+<figcaption aria-hidden="true">_67, 68, 527, 349__8.jpg</figcaption>
+</figure>
+<h3
+id="预处理获取表格图片对应的表格">预处理：获取表格、图片对应的表格</h3>
+<p>接下来，我们对上述预处理得到的表格、图片文件，获取它们各自对应的标题，实现的方法是将表格、图片文件所对应的矩形区域，与文本所在区域的中心点进行欧式距离计算，取最短距离所在的文本区域即为其标题。</p>
+<p><strong>注意</strong>：该匹配方法并不是最优的算法，因此这方面的匹配算法还有待提升。</p>
+<p>Python实现代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @place: Pudong, Shanghai</span><br><span class="hljs-comment"># @file: get_table_figure_caption.py</span><br><span class="hljs-comment"># @time: 2024/3/28 10:38</span><br><span class="hljs-comment"># use fitz to get table and its caption from pdf file</span><br><span class="hljs-keyword">import</span> math<br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> re<br><span class="hljs-keyword">from</span> operator <span class="hljs-keyword">import</span> itemgetter<br><span class="hljs-keyword">import</span> fitz<br><span class="hljs-comment"># 为图片或表格匹配对应的caption</span><br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">TableFigureMatch</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, pdf_file_path, save_folder=<span class="hljs-string">&quot;../output&quot;</span></span>):<br>        self.pdf_file_path = pdf_file_path<br>        self.save_folder = save_folder<br>        self.file_name = os.path.basename(self.pdf_file_path).split(<span class="hljs-string">&#x27;.&#x27;</span>)[<span class="hljs-number">0</span>]<br>        self.res_dir = os.path.join(self.save_folder, <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;self.file_name&#125;</span>&quot;</span>)<br><br>    <span class="hljs-comment"># get table or figure caption in each PDF page</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">get_caption_by_page</span>(<span class="hljs-params">self, data_type</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        :param data_type: str, data type from pdf, enumerate: table or figure</span><br><span class="hljs-string">        :return: page_dict_list: list[dict], data type dict in each page in list</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        <span class="hljs-keyword">assert</span> data_type <span class="hljs-keyword">in</span> [<span class="hljs-string">&#x27;table&#x27;</span>, <span class="hljs-string">&#x27;figure&#x27;</span>]<br>        doc = fitz.<span class="hljs-built_in">open</span>(self.pdf_file_path)<br>        page_number = doc.page_count<br>        page_dict_list = []<br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(page_number):<br>            table_page_dict = &#123;&#125;<br>            page = doc[i]<br>            page_dict = page.get_text(<span class="hljs-string">&quot;dict&quot;</span>, sort=<span class="hljs-literal">True</span>)<br>            <span class="hljs-keyword">for</span> block <span class="hljs-keyword">in</span> page_dict[<span class="hljs-string">&#x27;blocks&#x27;</span>]:<br>                bbox = block[<span class="hljs-string">&#x27;bbox&#x27;</span>]<br>                text_list = []<br>                <span class="hljs-keyword">if</span> <span class="hljs-string">&#x27;lines&#x27;</span> <span class="hljs-keyword">in</span> block:<br>                    <span class="hljs-keyword">for</span> spans <span class="hljs-keyword">in</span> block[<span class="hljs-string">&#x27;lines&#x27;</span>]:<br>                        <span class="hljs-keyword">for</span> span <span class="hljs-keyword">in</span> spans[<span class="hljs-string">&#x27;spans&#x27;</span>]:<br>                            text_list.append(span[<span class="hljs-string">&#x27;text&#x27;</span>])<br>                    text = <span class="hljs-string">&#x27; &#x27;</span>.join(text_list)<br>                    <span class="hljs-keyword">if</span> text.lower().startswith(data_type):<br>                        table_page_dict[<span class="hljs-string">&#x27;-&#x27;</span>.join([<span class="hljs-built_in">str</span>(x) <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> bbox])] = text<br>            page_dict_list.append(table_page_dict)<br>        doc.close()<br>        <span class="hljs-keyword">return</span> page_dict_list<br><br><span class="hljs-meta">    @staticmethod</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">find_rect_center</span>(<span class="hljs-params">rect</span>):<br>        <span class="hljs-keyword">return</span> (rect[<span class="hljs-number">0</span>]+rect[<span class="hljs-number">2</span>])/<span class="hljs-number">2</span>, (rect[<span class="hljs-number">1</span>]+rect[<span class="hljs-number">3</span>])/<span class="hljs-number">2</span><br><br><span class="hljs-meta">    @staticmethod</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">get_euclid_distance</span>(<span class="hljs-params">x0, y0, x1, y1</span>):<br>        <span class="hljs-keyword">return</span> math.sqrt((x1 - x0) ** <span class="hljs-number">2</span> + (y1 - y0) ** <span class="hljs-number">2</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">find_neighbor_rect</span>(<span class="hljs-params">self, rect1, rect_list</span>):<br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(rect_list) == <span class="hljs-number">1</span>:<br>            <span class="hljs-keyword">return</span> rect_list[<span class="hljs-number">0</span>]<br>        center_x_rect1, center_y_rect1 = self.find_rect_center(rect1)<br>        center_rect_list = []<br>        <span class="hljs-keyword">for</span> rect <span class="hljs-keyword">in</span> rect_list:<br>            center_x, center_y = self.find_rect_center(rect)<br>            center_rect_list.append((center_x, center_y))<br><br>        distance_dict = &#123;&#125;<br>        <span class="hljs-keyword">for</span> i, center <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(center_rect_list):<br>            distance = self.get_euclid_distance(center_x_rect1, center_y_rect1, center[<span class="hljs-number">0</span>], center[<span class="hljs-number">1</span>])<br>            distance_dict[i] = distance<br>        distance_sort_list = <span class="hljs-built_in">sorted</span>(distance_dict.items(), key=itemgetter(<span class="hljs-number">1</span>))<br>        <span class="hljs-keyword">return</span> rect_list[distance_sort_list[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>]]<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">match_caption_by_page</span>(<span class="hljs-params">self, data_type</span>):<br>        data_type_caption_dict = &#123;&#125;<br>        page_dict_list = self.get_caption_by_page(data_type=data_type)<br>        <span class="hljs-keyword">for</span> file <span class="hljs-keyword">in</span> os.listdir(self.res_dir):<br>            <span class="hljs-keyword">if</span> file.startswith(<span class="hljs-string">&quot;res&quot;</span>):<br>                pg_num = <span class="hljs-built_in">int</span>(re.findall(<span class="hljs-string">&#x27;\d+&#x27;</span>, file)[<span class="hljs-number">0</span>])<br>                res_txt_file_path = os.path.join(self.res_dir, file)<br>                <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(res_txt_file_path, <span class="hljs-string">&#x27;r&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>                    content = [json.loads(_.strip()) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> f.readlines()]<br>                cnt = <span class="hljs-number">1</span><br>                <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> content:<br>                    rect_type, pdf_rect_bbox = line[<span class="hljs-string">&#x27;type&#x27;</span>], line[<span class="hljs-string">&#x27;bbox&#x27;</span>]<br>                    <span class="hljs-keyword">if</span> rect_type == data_type <span class="hljs-keyword">and</span> page_dict_list[pg_num-<span class="hljs-number">1</span>]:<br>                        caption_rect_list = [[<span class="hljs-built_in">float</span>(x) <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> _.split(<span class="hljs-string">&#x27;-&#x27;</span>)]<span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> page_dict_list[pg_num-<span class="hljs-number">1</span>].keys()]<br>                        neighbor_rect = self.find_neighbor_rect(rect1=pdf_rect_bbox, rect_list=caption_rect_list)<br>                        <span class="hljs-keyword">if</span> data_type == <span class="hljs-string">&#x27;table&#x27;</span>:<br>                            file_path = <span class="hljs-string">f&#x27;<span class="hljs-subst">&#123;pg_num&#125;</span>_<span class="hljs-subst">&#123;cnt&#125;</span>_table.jpg&#x27;</span><br>                            cnt += <span class="hljs-number">1</span><br>                        <span class="hljs-keyword">else</span>:<br>                            file_path = <span class="hljs-string">f&quot;[<span class="hljs-subst">&#123;<span class="hljs-string">&#x27;, &#x27;</span>.join([<span class="hljs-built_in">str</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> pdf_rect_bbox])&#125;</span>]_<span class="hljs-subst">&#123;pg_num&#125;</span>.jpg&quot;</span><br>                        data_type_caption_dict[file_path] = page_dict_list[pg_num-<span class="hljs-number">1</span>][<span class="hljs-string">&#x27;-&#x27;</span>.join([<span class="hljs-built_in">str</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> neighbor_rect])]<br>        <span class="hljs-keyword">return</span> data_type_caption_dict<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">run</span>(<span class="hljs-params">self</span>):<br>        data_type_dict = &#123;&#125;<br>        <span class="hljs-keyword">for</span> data_type <span class="hljs-keyword">in</span> [<span class="hljs-string">&#x27;table&#x27;</span>, <span class="hljs-string">&#x27;figure&#x27;</span>]:<br>            data_type_caption_dict = self.match_caption_by_page(data_type=data_type)<br>            data_type_dict.update(data_type_caption_dict)<br><br>        <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(os.path.join(self.res_dir, <span class="hljs-string">&quot;table_figure_caption.json&quot;</span>), <span class="hljs-string">&quot;w&quot;</span>) <span class="hljs-keyword">as</span> f:<br>            f.write(json.dumps(data_type_dict, ensure_ascii=<span class="hljs-literal">False</span>, indent=<span class="hljs-number">4</span>))<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    pdf_path = <span class="hljs-string">&#x27;../data/LLaMA.pdf&#x27;</span><br>    table_figure_matcher = TableFigureMatch(pdf_file_path=pdf_path)<br>    table_figure_matcher.run()<br></code></pre></td></tr></table></figure>
+<p>以LLaMA论文PDF为例，得到的表格、标题对应的标题映射JSON文件如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;3_1_table.jpg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Table 2:  Model sizes, architectures, and optimization hyper-parameters.&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;2_1_table.jpg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Table 1:  Pre-training data.  Data mixtures used for pre- training, for each subset we list the sampling propor- tion, number of epochs performed on the subset when training on 1.4T tokens, and disk size. The pre-training runs on 1T tokens have the same sampling proportion.&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;5_1_table.jpg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Table 6:  Reading Comprehension.  Zero-shot accu- racy.&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;5_2_table.jpg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Table 5: TriviaQA.  Zero-shot and few-shot exact match performance on the ﬁltered dev set.&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;4_1_table.jpg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Table 3:  Zero-shot performance on Common Sense Reasoning tasks.&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;4_2_table.jpg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Table 4:  NaturalQuestions.  Exact match performance.&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;6_1_table.jpg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Table 8:  Model performance for code generation. We report the pass@ score on HumanEval and MBPP. HumanEval generations are done in zero-shot and MBBP with 3-shot prompts similar to  Austin et al. ( 2021 ). The values marked with   ∗ are read from ﬁgures in  Chowdhery et al.  ( 2022 ).&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;6_2_table.jpg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Table 7:  Model performance on quantitative reason- ing datasets.  For majority voting, we use the same setup as Minerva, with  k  = 256  samples for MATH and  k  = 100  for GSM8k (Minerva 540B uses  k  = 64 for MATH and and  k  = 40  for GSM8k). LLaMA-65B outperforms Minerva 62B on GSM8k, although it has not been ﬁne-tuned on mathematical data.&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;7_1_table.jpg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Table 9:  Massive Multitask Language Understanding (MMLU).  Five-shot accuracy.&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;18_1_table.jpg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Table 16:  MMLU.  Detailed 5-shot results per domain on the test sets.&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;11_1_table.jpg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Table 15:  Carbon footprint of training different models in the same data center.  We follow  Wu et al.  ( 2022 ) to compute carbon emission of training OPT, BLOOM and our models in the same data center. For the power consumption of a A100-80GB, we take the thermal design power for NVLink systems, that is 400W. We take a PUE of 1.1 and a carbon intensity factor set at the national US average of 0.385 kg CO 2 e per KWh.&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;10_1_table.jpg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Table 13:  WinoGender.  Co-reference resolution ac- curacy for the LLaMA models, for different pronouns (“her/her/she” and “his/him/he”). We observe that our models obtain better performance on “their/them/some- one’ pronouns than on “her/her/she” and “his/him/he’, which is likely indicative of biases.&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;10_2_table.jpg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Table 14:  TruthfulQA.  We report the fraction of truth- ful and truthful*informative answers, as scored by spe- cially trained models via the OpenAI API. We follow the QA prompt style used in  Ouyang et al.  ( 2022 ), and report the performance of GPT-3 from the same paper.&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;9_1_table.jpg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Table 12:  CrowS-Pairs.  We compare the level of bi- ases contained in LLaMA-65B with OPT-175B and GPT3-175B. Higher score indicates higher bias.&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;8_1_table.jpg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Table 11:  RealToxicityPrompts.  We run a greedy de- coder on the 100k prompts from this benchmark. The “respectful” versions are prompts starting with “Com- plete the following sentence in a polite, respectful, and unbiased manner:”, and “Basic” is without it. Scores were obtained using the PerplexityAPI, with higher score indicating more toxic generations.&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;[305, 193, 526, 341]_3.jpg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Figure 1:  Training loss over train tokens for the 7B, 13B, 33B, and 65 models.  LLaMA-33B and LLaMA- 65B were trained on 1.4T tokens. The smaller models were trained on 1.0T tokens. All models are trained with a batch size of 4M tokens.&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;[72, 253, 504, 306]_17.jpg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Figure 3: Formatted dataset example for Natural Questions (left) &amp; TriviaQA (right).&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;[67, 68, 527, 349]_8.jpg&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Figure 2:  Evolution of performance on question answering and common sense reasoning during training.&quot;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<h3 id="获取embedding-文本表格图片">获取Embedding: 文本、表格、图片</h3>
+<p>接下面，开始正式进入多模态RAG(multi-modal-rag)。</p>
+<p>在多模态RAG中，我们需要对各种模态的数据进行向量嵌入，一般包括文本、表格、图片等。在上述的预处理过程中，我们已经得到了PDF文档中的表格、图片，而文字处理较为简单，我们需要得到它们的向量嵌入（Embedding）。</p>
+<p>我们使用的向量数据库为<code>Milvus</code>，创建的文本、图片的Schema（文本、图片分开储存）如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @place: Pudong, Shanghai</span><br><span class="hljs-comment"># @file: vector_db_schema.py</span><br><span class="hljs-comment"># @time: 2024/3/28 15:02</span><br><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">from</span> pymilvus <span class="hljs-keyword">import</span> MilvusClient, FieldSchema, CollectionSchema, DataType<br><br>image_collection_name = <span class="hljs-string">&quot;pdf_image_qa&quot;</span><br>text_collection_name = <span class="hljs-string">&quot;pdf_text_qa&quot;</span><br><span class="hljs-comment"># Connects to a server</span><br>client = MilvusClient(uri=<span class="hljs-string">&quot;http://localhost:19530&quot;</span>, db_name=<span class="hljs-string">&quot;default&quot;</span>)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">create_schema</span>(<span class="hljs-params">collect_name, fields, desc</span>):<br>    schema = CollectionSchema(fields, description=desc)<br>    index_params = client.prepare_index_params()<br>    index_params.add_index(<br>        field_name=<span class="hljs-string">&quot;embedding&quot;</span>,<br>        index_type=<span class="hljs-string">&quot;IVF_FLAT&quot;</span>,<br>        metric_type=<span class="hljs-string">&quot;IP&quot;</span>,<br>        params=&#123;<span class="hljs-string">&quot;nlist&quot;</span>: <span class="hljs-number">128</span>&#125;<br>    )<br>    client.create_collection(<br>        collection_name=collect_name,<br>        schema=schema,<br>        index_params=index_params<br>    )<br>    time.sleep(<span class="hljs-number">3</span>)<br>    res = client.get_load_state(<br>        collection_name=collect_name<br>    )<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;load state: &quot;</span>, res)<br><br><br><span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> client.has_collection(image_collection_name) <span class="hljs-keyword">and</span> <span class="hljs-keyword">not</span> client.has_collection(text_collection_name):<br>    <span class="hljs-comment"># Creates an image collection</span><br>    images_fields = [<br>        FieldSchema(name=<span class="hljs-string">&quot;id&quot;</span>, dtype=DataType.INT64, is_primary=<span class="hljs-literal">True</span>, auto_id=<span class="hljs-literal">True</span>),<br>        FieldSchema(name=<span class="hljs-string">&quot;pdf_path&quot;</span>, dtype=DataType.VARCHAR, max_length=<span class="hljs-number">100</span>),<br>        FieldSchema(name=<span class="hljs-string">&quot;data_type&quot;</span>, dtype=DataType.VARCHAR, max_length=<span class="hljs-number">20</span>),<br>        FieldSchema(name=<span class="hljs-string">&quot;text&quot;</span>, dtype=DataType.VARCHAR, max_length=<span class="hljs-number">1000</span>),<br>        FieldSchema(name=<span class="hljs-string">&quot;image_path&quot;</span>, dtype=DataType.VARCHAR, max_length=<span class="hljs-number">300</span>),<br>        FieldSchema(name=<span class="hljs-string">&quot;embedding&quot;</span>, dtype=DataType.FLOAT_VECTOR, dim=<span class="hljs-number">1024</span>)<br>    ]<br>    image_collection_desc = <span class="hljs-string">&quot;image embedding for pdf file&quot;</span><br>    create_schema(collect_name=image_collection_name, fields=images_fields, desc=image_collection_desc)<br>    <span class="hljs-comment"># Creates a text collection</span><br>    text_fields = [<br>        FieldSchema(name=<span class="hljs-string">&quot;id&quot;</span>, dtype=DataType.INT64, is_primary=<span class="hljs-literal">True</span>, auto_id=<span class="hljs-literal">True</span>),<br>        FieldSchema(name=<span class="hljs-string">&quot;pdf_path&quot;</span>, dtype=DataType.VARCHAR, max_length=<span class="hljs-number">100</span>),<br>        FieldSchema(name=<span class="hljs-string">&quot;text&quot;</span>, dtype=DataType.VARCHAR, max_length=<span class="hljs-number">3000</span>),<br>        FieldSchema(name=<span class="hljs-string">&quot;page_no&quot;</span>, dtype=DataType.INT64),<br>        FieldSchema(name=<span class="hljs-string">&quot;embedding&quot;</span>, dtype=DataType.FLOAT_VECTOR, dim=<span class="hljs-number">1536</span>)<br>    ]<br>    text_collection_desc = <span class="hljs-string">&quot;text embedding for pdf file&quot;</span><br>    create_schema(collect_name=text_collection_name, fields=text_fields, desc=text_collection_desc)<br><br>client.close()<br></code></pre></td></tr></table></figure>
+<p>其中图片Schema中的text字段为其对应的标题。</p>
+<p>接着，我们使用<code>BAAI/bge-visualized</code>模型来获取图片的Embedding，使用OpenAI的<code>text-embedding-ada-002</code>模型来获取文本片段的Embedding。</p>
+<p>首先，我们需要部署<code>BAAI/bge-visualized</code>模型推理服务，笔者在这里给出其中一种方案：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @place: Pudong, Shanghai</span><br><span class="hljs-comment"># @file: bge_v_embedding_server.py</span><br><span class="hljs-comment"># @time: 2024/4/2 21:50</span><br><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">from</span> FlagEmbedding.visual.modeling <span class="hljs-keyword">import</span> Visualized_BGE<br><span class="hljs-keyword">import</span> uvicorn<br><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI<br><span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel<br><span class="hljs-keyword">import</span> base64<br><span class="hljs-keyword">from</span> PIL <span class="hljs-keyword">import</span> Image<br><span class="hljs-keyword">from</span> io <span class="hljs-keyword">import</span> BytesIO<br><br>app = FastAPI()<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">MultiModal</span>(<span class="hljs-title class_ inherited__">BaseModel</span>):<br>    image_base64: <span class="hljs-built_in">str</span> = <span class="hljs-string">&quot;&quot;</span><br>    text: <span class="hljs-built_in">str</span> = <span class="hljs-string">&quot;&quot;</span><br><br><br>model = Visualized_BGE(model_name_bge=<span class="hljs-string">&quot;BAAI/bge-m3&quot;</span>, model_weight=<span class="hljs-string">&quot;./models/bge-visualized/Visualized_m3.pth&quot;</span>)<br>model.<span class="hljs-built_in">eval</span>()<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;model loaded!&quot;</span>)<br><br><br><span class="hljs-meta">@app.get(<span class="hljs-params"><span class="hljs-string">&#x27;/&#x27;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">home</span>():<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;hello world&#x27;</span><br><br><br><span class="hljs-meta">@app.post(<span class="hljs-params"><span class="hljs-string">&#x27;/mm_embedding&#x27;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_mm_embedding</span>(<span class="hljs-params">multi_modal: MultiModal</span>):<br>    <span class="hljs-keyword">if</span> multi_modal.image_base64:<br>        <span class="hljs-keyword">with</span> Image.<span class="hljs-built_in">open</span>(BytesIO(base64.b64decode(multi_modal.image_base64))) <span class="hljs-keyword">as</span> im:<br>            image_path = <span class="hljs-string">&#x27;tmp.png&#x27;</span><br>            im.save(image_path, <span class="hljs-string">&#x27;PNG&#x27;</span>)<br>        <span class="hljs-keyword">with</span> torch.no_grad():<br>            query_emb = model.encode(image=image_path, text=multi_modal.text)<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-keyword">with</span> torch.no_grad():<br>            query_emb = model.encode(text=multi_modal.text)<br>    <span class="hljs-built_in">print</span>(query_emb)<br>    <span class="hljs-keyword">return</span> &#123;<span class="hljs-string">&quot;embedding&quot;</span>: query_emb.tolist()[<span class="hljs-number">0</span>]&#125;<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    uvicorn.run(app, host=<span class="hljs-string">&#x27;0.0.0.0&#x27;</span>, port=<span class="hljs-number">50074</span>)<br></code></pre></td></tr></table></figure>
+<p>接着，我们来获取文本、表格、图片的向量嵌入并存入<code>Milvus</code>数据库中，Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @place: Pudong, Shanghai</span><br><span class="hljs-comment"># @file: get_mm_embedding.py</span><br><span class="hljs-comment"># @time: 2024/4/2 16:03</span><br><span class="hljs-comment"># 获取图片和表格的多模态embedding</span><br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> base64<br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> fitz<br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">from</span> pymilvus <span class="hljs-keyword">import</span> MilvusClient<br><span class="hljs-keyword">from</span> langchain.text_splitter <span class="hljs-keyword">import</span> RecursiveCharacterTextSplitter<br><br>load_dotenv()<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_image_base64_str</span>(<span class="hljs-params">image_path</span>):<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(image_path, <span class="hljs-string">&quot;rb&quot;</span>) <span class="hljs-keyword">as</span> image_file:<br>        data = base64.b64encode(image_file.read()).decode(<span class="hljs-string">&#x27;utf-8&#x27;</span>)<br>    <span class="hljs-keyword">return</span> data<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_multi_modal_embedding</span>(<span class="hljs-params">image_path=<span class="hljs-literal">None</span>, text=<span class="hljs-string">&quot;&quot;</span></span>):<br>    <span class="hljs-keyword">if</span> image_path <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>        <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(image_path, <span class="hljs-string">&quot;rb&quot;</span>) <span class="hljs-keyword">as</span> image_file:<br>            data = base64.b64encode(image_file.read()).decode(<span class="hljs-string">&#x27;utf-8&#x27;</span>)<br>    <span class="hljs-keyword">else</span>:<br>        data = <span class="hljs-string">&quot;&quot;</span><br><br>    url = <span class="hljs-string">&quot;http://localhost:50074/mm_embedding&quot;</span><br>    payload = json.dumps(&#123;<br>        <span class="hljs-string">&quot;image_base64&quot;</span>: data, <span class="hljs-string">&quot;text&quot;</span>: text<br>    &#125;)<br>    headers = &#123;<br>        <span class="hljs-string">&#x27;Content-Type&#x27;</span>: <span class="hljs-string">&#x27;application/json&#x27;</span><br>    &#125;<br>    response = requests.request(<span class="hljs-string">&quot;POST&quot;</span>, url, headers=headers, data=payload)<br>    <span class="hljs-keyword">return</span> response.json()[<span class="hljs-string">&#x27;embedding&#x27;</span>]<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_text_embedding</span>(<span class="hljs-params">text_chunks</span>):<br>    url = <span class="hljs-string">&quot;https://api.openai.com/v1/embeddings&quot;</span><br>    payload = json.dumps(&#123;<br>        <span class="hljs-string">&quot;model&quot;</span>: <span class="hljs-string">&quot;text-embedding-ada-002&quot;</span>,<br>        <span class="hljs-string">&quot;input&quot;</span>: text_chunks,<br>        <span class="hljs-string">&quot;encoding_format&quot;</span>: <span class="hljs-string">&quot;float&quot;</span><br>    &#125;)<br>    headers = &#123;<br>        <span class="hljs-string">&#x27;Content-Type&#x27;</span>: <span class="hljs-string">&#x27;application/json&#x27;</span>,<br>        <span class="hljs-string">&#x27;Authorization&#x27;</span>: <span class="hljs-string">f&#x27;Bearer <span class="hljs-subst">&#123;os.getenv(<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>)&#125;</span>&#x27;</span><br>    &#125;<br>    response = requests.request(<span class="hljs-string">&quot;POST&quot;</span>, url, headers=headers, data=payload)<br>    embedding = [_[<span class="hljs-string">&quot;embedding&quot;</span>] <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> response.json()[<span class="hljs-string">&#x27;data&#x27;</span>]]<br>    response.close()<br>    <span class="hljs-keyword">return</span> embedding<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">ImageEmbedding</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, pdf_file_path, milvus_client, save_folder=<span class="hljs-string">&quot;../output&quot;</span></span>):<br>        self.pdf_file_path = pdf_file_path<br>        self.save_folder = save_folder<br>        self.file_name = os.path.basename(self.pdf_file_path).split(<span class="hljs-string">&#x27;.&#x27;</span>)[<span class="hljs-number">0</span>]<br>        self.res_dir = os.path.join(self.save_folder, <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;self.file_name&#125;</span>&quot;</span>)<br>        self.milvus_client = milvus_client<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">run</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(os.path.join(self.res_dir, <span class="hljs-string">&quot;table_figure_caption.json&quot;</span>), <span class="hljs-string">&quot;r&quot;</span>) <span class="hljs-keyword">as</span> f:<br>            table_figure_caption_dict = json.loads(f.read())<br><br>        entities = []<br>        <span class="hljs-keyword">for</span> file <span class="hljs-keyword">in</span> os.listdir(self.res_dir):<br>            <span class="hljs-keyword">if</span> (file.startswith(<span class="hljs-string">&#x27;[&#x27;</span>) <span class="hljs-keyword">or</span> <span class="hljs-string">&#x27;table&#x27;</span> <span class="hljs-keyword">in</span> file) <span class="hljs-keyword">and</span> file.endswith(<span class="hljs-string">&#x27;jpg&#x27;</span>):<br>                file_path = os.path.join(self.res_dir, file)<br>                caption = table_figure_caption_dict.get(file, <span class="hljs-string">&quot;&quot;</span>)<br>                <span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;get embedding for <span class="hljs-subst">&#123;file_path&#125;</span> with caption: <span class="hljs-subst">&#123;caption&#125;</span>&#x27;</span>)<br>                image_embedding = get_multi_modal_embedding(image_path=file_path, text=caption)<br>                data_type = <span class="hljs-string">&quot;table&quot;</span> <span class="hljs-keyword">if</span> <span class="hljs-string">&quot;table&quot;</span> <span class="hljs-keyword">in</span> file <span class="hljs-keyword">else</span> <span class="hljs-string">&quot;image&quot;</span><br>                entities.append(&#123;<span class="hljs-string">&quot;pdf_path&quot;</span>: self.pdf_file_path,<br>                                 <span class="hljs-string">&quot;data_type&quot;</span>: data_type,<br>                                 <span class="hljs-string">&quot;text&quot;</span>: caption,<br>                                 <span class="hljs-string">&quot;image_path&quot;</span>: file_path,<br>                                 <span class="hljs-string">&quot;embedding&quot;</span>: image_embedding&#125;)<br><br>        <span class="hljs-comment"># Inserts vectors in the collection</span><br>        self.milvus_client.insert(<br>            collection_name=<span class="hljs-string">&quot;pdf_image_qa&quot;</span>,<br>            data=entities)<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">TextEmbedding</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, pdf_file_path, milvus_client</span>):<br>        self.pdf_file_path = pdf_file_path<br>        self.milvus_client = milvus_client<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">get_texts</span>(<span class="hljs-params">self</span>):<br>        text_list = []<br>        doc = fitz.<span class="hljs-built_in">open</span>(self.pdf_file_path)<br>        page_number = doc.page_count<br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(page_number):<br>            page = doc[i]<br>            text_list.append(page.get_text())<br>        doc.close()<br>        <span class="hljs-keyword">return</span> text_list<br><br><span class="hljs-meta">    @staticmethod</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">get_chunks</span>(<span class="hljs-params">text_list</span>):<br>        text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(<br>            chunk_size=<span class="hljs-number">300</span>, chunk_overlap=<span class="hljs-number">0</span>, encoding_name=<span class="hljs-string">&quot;cl100k_base&quot;</span><br>        )<br>        chunks = []<br>        <span class="hljs-keyword">for</span> page_no, text <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(text_list):<br>            <span class="hljs-keyword">for</span> chunk <span class="hljs-keyword">in</span> text_splitter.split_text(text):<br>                chunks.append((chunk, page_no + <span class="hljs-number">1</span>))<br>        <span class="hljs-keyword">return</span> chunks<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">run</span>(<span class="hljs-params">self</span>):<br>        text_list = self.get_texts()<br>        chunks = self.get_chunks(text_list=text_list)<br>        batch_size = <span class="hljs-number">10</span><br>        start_no = <span class="hljs-number">0</span><br>        chunk_embeddings = []<br>        <span class="hljs-keyword">while</span> start_no &lt; <span class="hljs-built_in">len</span>(chunks):<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;start no: <span class="hljs-subst">&#123;start_no&#125;</span>&quot;</span>)<br>            batch_chunk_embeddings = get_text_embedding(<br>                text_chunks=[_[<span class="hljs-number">0</span>] <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> chunks[start_no:start_no + batch_size]])<br>            chunk_embeddings.extend(batch_chunk_embeddings)<br>            start_no += batch_size<br>        entities = [&#123;<span class="hljs-string">&quot;pdf_path&quot;</span>: self.pdf_file_path,<br>                     <span class="hljs-string">&quot;text&quot;</span>: chunks[i][<span class="hljs-number">0</span>],<br>                     <span class="hljs-string">&quot;page_no&quot;</span>: chunks[i][<span class="hljs-number">1</span>],<br>                     <span class="hljs-string">&quot;embedding&quot;</span>: chunk_embeddings[i]&#125; <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(chunks))]<br>        self.milvus_client.insert(collection_name=<span class="hljs-string">&quot;pdf_text_qa&quot;</span>, data=entities)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    pdf_path = <span class="hljs-string">&#x27;../data/LLaMA.pdf&#x27;</span><br>    client = MilvusClient(uri=<span class="hljs-string">&quot;http://localhost:19530&quot;</span>, db_name=<span class="hljs-string">&quot;default&quot;</span>)<br>    my_image_embedding = ImageEmbedding(<br>        pdf_file_path=pdf_path, milvus_client=client)<br>    my_image_embedding.run()<br>    text_embedding = TextEmbedding(<br>        pdf_file_path=pdf_path,<br>        milvus_client=client)<br>    text_embedding.run()<br>    client.close()<br></code></pre></td></tr></table></figure>
+<h3
+id="召回获取与query相似性最高的文本表格和图片">召回：获取与query相似性最高的文本、表格和图片</h3>
+<p>针对用户的问题（query），我们利用向量相似度来得到与之最为接近的文本片段、表格和图片。在这里的图片召回中，我们有两路召回：其中一路为多模态Embedding模型；另一路为规则召回，取文本片段所在的页面中的图片，按文本相似度分数进行获取。最后，对两路召回的图片进行去重，并保证它们的数量不超过规定值，比如10。</p>
+<p>相关的召回阶段（Retrieval）的Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @place: Pudong, Shanghai</span><br><span class="hljs-comment"># @file: content_retrieval.py</span><br><span class="hljs-comment"># @time: 2024/4/2 16:42</span><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> json<br><br><span class="hljs-keyword">from</span> pymilvus <span class="hljs-keyword">import</span> MilvusClient<br><br><span class="hljs-keyword">from</span> get_mm_embedding <span class="hljs-keyword">import</span> get_multi_modal_embedding<br><span class="hljs-keyword">from</span> get_mm_embedding <span class="hljs-keyword">import</span> get_text_embedding<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">ContentRetrieval</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, query, milvus_client</span>):<br>        self.query = query<br>        self.milvus_client = milvus_client<br>        self.image_limit_number = <span class="hljs-number">10</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">image_retrieval_by_embedding</span>(<span class="hljs-params">self</span>):<br>        query_embedding = get_multi_modal_embedding(text=self.query)<br>        res = self.milvus_client.search(<br>            collection_name=<span class="hljs-string">&quot;pdf_image_qa&quot;</span>,<br>            data=[query_embedding],<br>            limit=<span class="hljs-number">5</span>,<br>            search_params=&#123;<span class="hljs-string">&quot;metric_type&quot;</span>: <span class="hljs-string">&quot;IP&quot;</span>, <span class="hljs-string">&quot;params&quot;</span>: &#123;&#125;&#125;,<br>            output_fields=[<span class="hljs-string">&#x27;data_type&#x27;</span>, <span class="hljs-string">&#x27;text&#x27;</span>, <span class="hljs-string">&#x27;image_path&#x27;</span>]<br>        )<br>        <span class="hljs-keyword">return</span> [_[<span class="hljs-string">&#x27;entity&#x27;</span>] <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> res[<span class="hljs-number">0</span>]]<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">text_retrieval</span>(<span class="hljs-params">self</span>):<br>        query_text_embedding = get_text_embedding(text_chunks=[self.query])<br>        res = self.milvus_client.search(<br>            collection_name=<span class="hljs-string">&quot;pdf_text_qa&quot;</span>,<br>            data=query_text_embedding,<br>            limit=<span class="hljs-number">10</span>,<br>            search_params=&#123;<span class="hljs-string">&quot;metric_type&quot;</span>: <span class="hljs-string">&quot;IP&quot;</span>, <span class="hljs-string">&quot;params&quot;</span>: &#123;&#125;&#125;,<br>            output_fields=[<span class="hljs-string">&#x27;text&#x27;</span>, <span class="hljs-string">&#x27;page_no&#x27;</span>, <span class="hljs-string">&#x27;pdf_path&#x27;</span>]<br>        )<br>        result = [_[<span class="hljs-string">&#x27;entity&#x27;</span>] <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> res[<span class="hljs-number">0</span>]]<br>        pdf_page_no_dict = &#123;&#125;<br>        <span class="hljs-keyword">for</span> record <span class="hljs-keyword">in</span> result:<br>            pdf_path = record[<span class="hljs-string">&#x27;pdf_path&#x27;</span>]<br>            <span class="hljs-keyword">if</span> pdf_path <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> pdf_page_no_dict:<br>                pdf_page_no_dict[pdf_path] = [record[<span class="hljs-string">&#x27;page_no&#x27;</span>]]<br>            <span class="hljs-keyword">else</span>:<br>                <span class="hljs-keyword">if</span> record[<span class="hljs-string">&#x27;page_no&#x27;</span>] <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> pdf_page_no_dict[pdf_path]:<br>                    pdf_page_no_dict[pdf_path].append(record[<span class="hljs-string">&#x27;page_no&#x27;</span>])<br>        <span class="hljs-keyword">return</span> pdf_page_no_dict, result<br><br><span class="hljs-meta">    @staticmethod</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">image_retrieval_by_text_page</span>(<span class="hljs-params">pdf_page_no_dict: <span class="hljs-built_in">dict</span></span>):<br>        additional_image_list = []<br>        <span class="hljs-keyword">for</span> pdf_path, page_no_set <span class="hljs-keyword">in</span> pdf_page_no_dict.items():<br>            file_name = os.path.basename(pdf_path).split(<span class="hljs-string">&#x27;.&#x27;</span>)[<span class="hljs-number">0</span>]<br>            output_dir = <span class="hljs-string">f&quot;../output/<span class="hljs-subst">&#123;file_name&#125;</span>&quot;</span><br>            <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(os.path.join(output_dir, <span class="hljs-string">&quot;table_figure_caption.json&quot;</span>), <span class="hljs-string">&quot;r&quot;</span>) <span class="hljs-keyword">as</span> f:<br>                table_figure_caption_dict = json.loads(f.read())<br>            <span class="hljs-keyword">for</span> page_no <span class="hljs-keyword">in</span> page_no_set:<br>                <span class="hljs-keyword">for</span> file <span class="hljs-keyword">in</span> os.listdir(output_dir):<br>                    image_path = os.path.join(output_dir, file)<br>                    <span class="hljs-keyword">if</span> file.startswith(<span class="hljs-string">&#x27;[&#x27;</span>) <span class="hljs-keyword">and</span> <span class="hljs-string">f&#x27;]_<span class="hljs-subst">&#123;page_no&#125;</span>.jpg&#x27;</span> <span class="hljs-keyword">in</span> file:<br>                        additional_image_list.append(&#123;<span class="hljs-string">&#x27;data_type&#x27;</span>: <span class="hljs-string">&#x27;image&#x27;</span>,<br>                                                      <span class="hljs-string">&#x27;image_path&#x27;</span>: image_path,<br>                                                      <span class="hljs-string">&#x27;text&#x27;</span>: table_figure_caption_dict.get(file, <span class="hljs-string">&quot;&quot;</span>)&#125;)<br>                    <span class="hljs-keyword">elif</span> <span class="hljs-string">&quot;table&quot;</span> <span class="hljs-keyword">in</span> file <span class="hljs-keyword">and</span> file.startswith(<span class="hljs-built_in">str</span>(page_no)):<br>                        additional_image_list.append(&#123;<span class="hljs-string">&#x27;data_type&#x27;</span>: <span class="hljs-string">&#x27;table&#x27;</span>,<br>                                                      <span class="hljs-string">&#x27;image_path&#x27;</span>: image_path,<br>                                                      <span class="hljs-string">&#x27;text&#x27;</span>: table_figure_caption_dict.get(file, <span class="hljs-string">&quot;&quot;</span>)&#125;)<br><br>        <span class="hljs-keyword">return</span> additional_image_list<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">run</span>(<span class="hljs-params">self</span>):<br>        image_embedding_result = self.image_retrieval_by_embedding()<br>        pdf_page_no_dict, text_result = self.text_retrieval()<br>        image_additional_result = self.image_retrieval_by_text_page(pdf_page_no_dict)<br>        <span class="hljs-comment"># 图片去重并限制数量</span><br>        <span class="hljs-keyword">for</span> img_item <span class="hljs-keyword">in</span> image_additional_result:<br>            <span class="hljs-keyword">if</span> img_item <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> image_embedding_result <span class="hljs-keyword">and</span> <span class="hljs-built_in">len</span>(image_embedding_result) &lt; self.image_limit_number:<br>                image_embedding_result.append(img_item)<br>        image_result = image_embedding_result[:self.image_limit_number]<br>        <span class="hljs-built_in">print</span>(text_result)<br>        <span class="hljs-built_in">print</span>(pdf_page_no_dict)<br>        <span class="hljs-built_in">print</span>(json.dumps(image_result))<br>        <span class="hljs-keyword">return</span> image_result, text_result<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    client = MilvusClient(uri=<span class="hljs-string">&quot;http://localhost:19530&quot;</span>, db_name=<span class="hljs-string">&quot;default&quot;</span>)<br>    my_query = <span class="hljs-string">&quot;What is LLaMA-7B&#x27;s zero-shot accuracy on RACE dataset?&quot;</span><br>    content_retriever = ContentRetrieval(query=my_query, milvus_client=client)<br>    content_retriever.run()<br>    client.close()<br></code></pre></td></tr></table></figure>
+<h3 id="qa-使用多模态模型进行智能问答">QA:
+使用多模态模型进行智能问答</h3>
+<p>最后，我们使用OpenAI的<code>GPT-4V</code>模型，使用上述召回的文本片段、表格、图片数据进行智能问答。这样，我们就试下了Multi-modal
+RAG，也就是多模态PDF文档的智能问答。</p>
+<p>问答部分的Python代码如下:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @place: Pudong, Shanghai</span><br><span class="hljs-comment"># @file: mm_doc_qa.py</span><br><span class="hljs-comment"># @time: 2024/4/2 17:01</span><br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> base64<br><br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><span class="hljs-keyword">from</span> pymilvus <span class="hljs-keyword">import</span> MilvusClient<br><br><span class="hljs-keyword">from</span> content_retrieval <span class="hljs-keyword">import</span> ContentRetrieval<br><br><br>load_dotenv()<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">MultiModelQA</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params"></span><br><span class="hljs-params">        self,</span><br><span class="hljs-params">        query: <span class="hljs-built_in">str</span>,</span><br><span class="hljs-params">        text_chunks: <span class="hljs-built_in">list</span>[<span class="hljs-built_in">str</span>],</span><br><span class="hljs-params">        images: <span class="hljs-built_in">list</span>[<span class="hljs-built_in">str</span>],</span><br><span class="hljs-params">        captions: <span class="hljs-built_in">list</span>[<span class="hljs-built_in">str</span>],</span><br><span class="hljs-params">    </span>):<br>        self.query = query<br>        self.images = images<br>        self.text_chunks = text_chunks<br>        self.captions = captions<br><br><span class="hljs-meta">    @staticmethod</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">encode_image</span>(<span class="hljs-params">image_path: <span class="hljs-built_in">str</span></span>):<br>        <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(image_path, <span class="hljs-string">&quot;rb&quot;</span>) <span class="hljs-keyword">as</span> image_file:<br>            <span class="hljs-keyword">return</span> base64.b64encode(image_file.read()).decode(<span class="hljs-string">&#x27;utf-8&#x27;</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">make_prompt</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-comment"># Getting the base64 string</span><br>        image_content = [<br>            &#123;<br>                <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;text&quot;</span>,<br>                <span class="hljs-string">&quot;text&quot;</span>: self.query<br>            &#125;,<br>        ]<br>        <span class="hljs-keyword">for</span> image <span class="hljs-keyword">in</span> self.images:<br>            base64_image = self.encode_image(image)<br>            image_content.append(&#123;<br>                <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;image_url&quot;</span>,<br>                <span class="hljs-string">&quot;image_url&quot;</span>: &#123;<br>                    <span class="hljs-string">&quot;url&quot;</span>: <span class="hljs-string">f&quot;data:image/jpeg;base64,<span class="hljs-subst">&#123;base64_image&#125;</span>&quot;</span><br>                &#125;<br>            &#125;)<br>        <span class="hljs-comment"># get caption desc</span><br>        seq_no_list = [<span class="hljs-string">&#x27;first&#x27;</span>, <span class="hljs-string">&#x27;second&#x27;</span>, <span class="hljs-string">&#x27;third&#x27;</span>, <span class="hljs-string">&#x27;forth&#x27;</span>, <span class="hljs-string">&#x27;fifth&#x27;</span>, <span class="hljs-string">&#x27;sixth&#x27;</span>, <span class="hljs-string">&#x27;seventh&#x27;</span>, <span class="hljs-string">&#x27;eighth&#x27;</span>, <span class="hljs-string">&#x27;ninth&#x27;</span>, <span class="hljs-string">&#x27;tenth&#x27;</span>]<br>        caption_list = []<br>        <span class="hljs-keyword">for</span> i, caption <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(self.captions):<br>            <span class="hljs-keyword">if</span> caption:<br>                caption_list.append(<span class="hljs-string">f&quot;The caption of <span class="hljs-subst">&#123;seq_no_list[i]&#125;</span> image is <span class="hljs-subst">&#123;caption&#125;</span>.&quot;</span>)<br>        caption_desc = <span class="hljs-string">&#x27;\n&#x27;</span>.join(caption_list)<br>        messages = [&#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;system&quot;</span>,<br>                     <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;You are a helpful assistant.&quot;</span>&#125;,<br>                    &#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>,<br>                     <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">f&quot;&lt;Text from PDF file&gt;:\n\n<span class="hljs-subst">&#123;<span class="hljs-string">&#x27;&#x27;</span>.join(self.text_chunks)&#125;</span>&quot;</span>&#125;,<br>                    &#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>,<br>                     <span class="hljs-string">&quot;content&quot;</span>: caption_desc&#125;,<br>                    &#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>,<br>                     <span class="hljs-string">&quot;content&quot;</span>: image_content&#125;]<br>        <span class="hljs-comment"># print(json.dumps(messages, ensure_ascii=False))</span><br>        <span class="hljs-keyword">return</span> messages<br><br><span class="hljs-meta">    @staticmethod</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">make_request</span>(<span class="hljs-params">messages</span>):<br>        <span class="hljs-comment"># make request</span><br>        headers = &#123;<br>            <span class="hljs-string">&quot;Content-Type&quot;</span>: <span class="hljs-string">&quot;application/json&quot;</span>,<br>            <span class="hljs-string">&quot;Authorization&quot;</span>: <span class="hljs-string">f&quot;Bearer <span class="hljs-subst">&#123;os.getenv(<span class="hljs-string">&#x27;OPENAI_API_KEY&#x27;</span>)&#125;</span>&quot;</span><br>        &#125;<br>        payload = &#123;<span class="hljs-string">&quot;model&quot;</span>: <span class="hljs-string">&quot;gpt-4-vision-preview&quot;</span>,<br>                   <span class="hljs-string">&quot;messages&quot;</span>: messages,<br>                   <span class="hljs-string">&quot;max_tokens&quot;</span>: <span class="hljs-number">500</span>&#125;<br><br>        response = requests.post(<br>            url=<span class="hljs-string">&quot;https://api.openai.com/v1/chat/completions&quot;</span>,<br>            headers=headers,<br>            json=payload)<br><br>        <span class="hljs-keyword">return</span> response.json()[<span class="hljs-string">&#x27;choices&#x27;</span>][<span class="hljs-number">0</span>][<span class="hljs-string">&#x27;message&#x27;</span>][<span class="hljs-string">&#x27;content&#x27;</span>]<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">run</span>(<span class="hljs-params">self</span>):<br>        messages = self.make_prompt()<br>        answer = self.make_request(messages=messages)<br>        <span class="hljs-keyword">return</span> answer<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    client = MilvusClient(uri=<span class="hljs-string">&quot;http://localhost:19530&quot;</span>, db_name=<span class="hljs-string">&quot;default&quot;</span>)<br>    my_query = <span class="hljs-string">&quot;What is LLaMA-7B&#x27;s zero-shot accuracy on RACE dataset?&quot;</span><br>    content_retriever = ContentRetrieval(query=my_query, milvus_client=client)<br>    image_result, text_result = content_retriever.run()<br>    retrieved_text_chunks = [_[<span class="hljs-string">&#x27;text&#x27;</span>] <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> text_result]<br>    retrieved_images = [_[<span class="hljs-string">&#x27;image_path&#x27;</span>] <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> image_result]<br>    retrieved_captions = [_[<span class="hljs-string">&#x27;text&#x27;</span>] <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> image_result]<br>    mm_qa = MultiModelQA(<br>        query=my_query,<br>        text_chunks=retrieved_text_chunks,<br>        images=retrieved_images,<br>        captions=retrieved_captions)<br>    doc_answer = mm_qa.run()<br>    <span class="hljs-built_in">print</span>(doc_answer)<br>    client.close()<br></code></pre></td></tr></table></figure>
+<h3 id="测试">测试</h3>
+<p>我们以LLAMA的PDF论文为例，进行多模态问答测试。</p>
+<p>首先是基于表格或图片（答案来自表格或图片）的问答：</p>
+<ul>
+<li>query: What is LLaMA-7B's zero-shot accuracy on RACE dataset?</li>
+</ul>
+<p>answer: <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs commandline">LLaMA-7B&#x27;s zero-shot accuracy on the RACE dataset is 61.1% for RACE-middle and 46.9% for RACE-high.<br></code></pre></td></tr></table></figure></p>
+<ul>
+<li>query: What is LLaMA model's average accuracy on MMLU dataset?</li>
+</ul>
+<p>answer: <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs commandline">The LLaMA model&#x27;s average accuracy on the Massive Multitask Language Understanding (MMLU) dataset is 63.4% as indicated in Table 9.<br><br>If you refer to the detailed results provided in Table 16, the average accuracy of the LLaMA 65B model specifically across all domains for the 5-shot setting is 63.4%.<br></code></pre></td></tr></table></figure></p>
+<ul>
+<li>query: LLaMA 7B zero-shot performance on PIQA, SIQA, BoolQ
+dataset</li>
+</ul>
+<p>answer: <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs commandline">The zero-shot performance of the LLaMA 7B model on various Common Sense Reasoning tasks, including PIQA, SIQA, and BoolQ, is presented in the last image that contains multiple tables. This particular performance can be found in the &quot;LLaMA 7B&quot; row of the &quot;0-shot&quot; column across different datasets.<br><br>For PIQA, the zero-shot performance of LLaMA 7B is 76.5. For SIQA, it is 79.8. For BoolQ, the model scores 48.9.<br><br>These numbers indicate how well the LLaMA 7B model can perform on these specific tasks without any fine-tuning or additional shots, relying solely on its pre-existing training and capabilities to infer answers.<br></code></pre></td></tr></table></figure></p>
+<ul>
+<li>query: pretraining data of LLaMA and their prop</li>
+</ul>
+<p>answer: <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs commandline">The pre-training data of LLaMA and their proportions from the various sources are as follows:<br><br>1. CommonCrawl: 67.0%<br>2. C4: 15.0%<br>3. Github: 4.5%<br>4. Wikipedia: 4.5%<br>5. Books: 4.5%<br>6. ArXiv: 2.5%<br>7. StackExchange: 2.0%<br><br>These sources were used for pre-training LLaMA models, with CommonCrawl being the largest proportion of the data used. The percentages indicate how much of each source was included in the mix of pre-training data.<br></code></pre></td></tr></table></figure></p>
+<p>接下来是基于纯文本（答案来自文本而不是表格、图片）的问答：</p>
+<ul>
+<li>query: What are mathematical reasoning benchmarks in this
+paper?</li>
+</ul>
+<p>answer: <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs commandline">The mathematical reasoning benchmarks mentioned in the text are MATH and GSM8k. The MATH dataset contains 12K middle school and high school mathematics problems, while the GSM8k is a set of middle school mathematical problems. The paper discusses evaluating models on these benchmarks and comparing model performance, specifically mentioning LLaMA model variants and their performance relative to other models such as PaLM and Minerva.<br></code></pre></td></tr></table></figure></p>
+<ul>
+<li>query: what is the use of TruthfulQA?</li>
+</ul>
+<p>answer: <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs commandline">TruthfulQA is a benchmark designed to measure the truthfulness of a model&#x27;s responses. Specifically, it evaluates the ability of a model to identify when a claim is true in the context of &quot;literal truth about the real world&quot; rather than claims that may only be considered true within a belief system or tradition. This means that TruthfulQA aims to help determine how effectively a model can distinguish valid information from misinformation or false claims, which can be indicative of the model&#x27;s potential to generate reliable or misleading content. It is used to assess the risks of models in generating misinformation and to improve the design of models to mitigate these risks. The benchmark typically includes a set of questions that a language model must answer, and the model&#x27;s responses are evaluated for both truthfulness and informativeness.<br></code></pre></td></tr></table></figure></p>
+<p>由此可见，这样的多模态RAG系统能够支持PDF文档的文本、表格、图片问答。</p>
+<h3 id="总结">总结</h3>
+<p>当然，以上仅是笔者关于多模态RAG的一个实现思路的演示，其效果还有待提升，尤其是在数据量庞大的情境下。现阶段，关于多模态RAG的思考大多数仅停留在理论或者简单实验阶段（比如LlamaIndex就给出了这样的例子），笔者的这篇文章是关于多模态RAG的一次尝试，希望能给大家带来一些启发~</p>
+<p>本文中的Python代码均已开源至Github，网址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/pdf-llm_series/tree/main/multi-modal-rag">https://github.com/percent4/pdf-llm_series/tree/main/multi-modal-rag</a></p>
+<h3 id="参考文章">参考文章</h3>
+<ol type="1">
+<li>Visualized BGE: <a
+target="_blank" rel="noopener" href="https://github.com/FlagOpen/FlagEmbedding/tree/master/FlagEmbedding/visual">https://github.com/FlagOpen/FlagEmbedding/tree/master/FlagEmbedding/visual</a></li>
+<li>Multi-modal in LlamaIndex: <a
+target="_blank" rel="noopener" href="https://docs.llamaindex.ai/en/stable/use_cases/multimodal/">https://docs.llamaindex.ai/en/stable/use_cases/multimodal/</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486486&amp;idx=1&amp;sn=dbc5ea2b69594d5010bd3c88a77562f7&amp;chksm=fcb9b586cbce3c909e081ffd364d60d5520a6cdb0c380118cbd81724c9f7027f755765f7f9e7&amp;token=1070038348&amp;lang=zh_CN#rd">NLP（八十九）PDF文档智能问答入门</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486594&amp;idx=1&amp;sn=4b1d7708f8df4807b5484acd3cc16654&amp;chksm=fcb9b512cbce3c04c51aae88a02e9b2c6bd5098932ed5dcf2e0d632515ffb83ec8bbcb451c94&amp;token=1070038348&amp;lang=zh_CN#rd">NLP（九十一）PDF表格问答</a></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%A4%9A%E6%A8%A1%E6%80%81%E9%97%AE%E7%AD%94/" class="print-no-link">#多模态问答</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（九十八）基于PDF文档的多模态问答</div>
+      <div>https://percent4.github.io/NLP（九十八）基于PDF文档的多模态问答/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年6月19日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/Huffman%E6%A0%91%E4%B8%8EHuffman%E7%BC%96%E7%A0%81%E7%9A%84Python%E5%AE%9E%E7%8E%B0/" title="Huffman树与Huffman编码的Python实现">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Huffman树与Huffman编码的Python实现</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%EF%BC%88BST%EF%BC%89%E7%9A%84Python%E5%AE%9E%E7%8E%B0/" title="二叉搜索树（BST）的Python实现">
+                        <span class="hidden-mobile">二叉搜索树（BST）的Python实现</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

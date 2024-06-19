@@ -1,0 +1,924 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍Huffman树和Huffman编码的实现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Huffman树与Huffman编码的Python实现">
+<meta property="og:url" content="https://percent4.github.io/Huffman%E6%A0%91%E4%B8%8EHuffman%E7%BC%96%E7%A0%81%E7%9A%84Python%E5%AE%9E%E7%8E%B0/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍Huffman树和Huffman编码的实现。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2024/05/06/Sg9xvE5cCOKlXJt.jpg">
+<meta property="og:image" content="https://s2.loli.net/2024/05/07/l86QhmxwDbrJUaF.png">
+<meta property="article:published_time" content="2024-06-19T02:56:00.000Z">
+<meta property="article:modified_time" content="2024-06-19T02:56:52.585Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="Huffman树">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2024/05/06/Sg9xvE5cCOKlXJt.jpg">
+  
+  
+  
+  <title>Huffman树与Huffman编码的Python实现 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Huffman树与Huffman编码的Python实现"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-06-19 10:56" pubdate>
+          星期三, 六月 19日 2024, 10:56 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          12k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          98 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Huffman树与Huffman编码的Python实现</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>在之前的文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247484088&amp;idx=1&amp;sn=e15a4e48baaaff20237979f7b52c52a6&amp;chksm=fcb9bb28cbce323e3d177bfaa71c72846593ff623b944ec8b67c2ccf18ed19ab9882160087ff&amp;token=321761101&amp;lang=zh_CN&amp;scene=21#wechat_redirect">二叉树的Python实现</a>和<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486835&amp;idx=1&amp;sn=7ab441ea125f42ab051fea96e280fb42&amp;chksm=fcb9b4e3cbce3df5155842a462f2caa7e1fd43e51901d4abc22f3a9125adcd1a05b0aa4d1be8&amp;token=116462792&amp;lang=zh_CN#rd">二叉搜索树（BST）的Python实现</a>中，笔者分别介绍了二叉树与二叉搜索树的Python实现。本文将在此基础上，介绍Huffman树和Huffman编码的实现。</p>
+<h3 id="huffman树">Huffman树</h3>
+<p>首先，我们先来看下什么是</p>
+<blockquote>
+<p>给定N个权值作为N个叶子结点，构造一棵二叉树，若该树的带权路径长度达到最小，称这样的二叉树为最优二叉树，也称为哈夫曼树(Huffman
+Tree)。哈夫曼树是带权路径长度最短的树，权值较大的结点离根较近。</p>
+</blockquote>
+<p>其中涉及到的概念如下：</p>
+<ul>
+<li>树的带权路径长度（WPL）：树中所有叶子结点的带权路径长度之和</li>
+<li>结点的带权路径长度：是指该结点到树根之间的路径长度与该结点上权的乘积</li>
+</ul>
+<p>我们来看个例子：</p>
+<p><img
+src="https://static.javatpoint.com/tutorial/daa/images/huffman-coding-algorithm2.png" srcset="/img/loading.gif" lazyload /></p>
+<p>叶子结点为a,b,c,d,e，图中这颗树的带权路径长度为</p>
+<blockquote>
+<p>4 * 2 + 4 * 2 + 2 * 3 + 3 * 3 + 7 *2 = 45</p>
+</blockquote>
+<p>那么，如何来构建<code>Huffman树</code>呢？</p>
+<p>Huffman树的构造(Huffman Algorithm)算法如下：</p>
+<ol type="1">
+<li>根据给定的n个权值{w1,w2,…,wn}构成二叉树集合F={T1,T2,…,Tn},其中每棵二叉树Ti中只有一个带权为wi的根结点,其左右子树为空；</li>
+<li>在F中选取两棵根结点权值最小的树作为左右子树构造一棵新的二叉树,且置新的二叉树的根结点的权值为左右子树根结点的权值之和；</li>
+<li>在F中删除这两棵树,同时将新的二叉树加入F中；</li>
+<li>重复2、3, 直到F只含有一棵树为止(得到哈夫曼树)。</li>
+</ol>
+<p>利用我们之前实现的二叉树代码（参考文章 <a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486835&amp;idx=1&amp;sn=7ab441ea125f42ab051fea96e280fb42&amp;chksm=fcb9b4e3cbce3df5155842a462f2caa7e1fd43e51901d4abc22f3a9125adcd1a05b0aa4d1be8&amp;token=116462792&amp;lang=zh_CN#rd">二叉搜索树（BST）的Python实现</a>
+中的二叉树实现代码），我们接着使用Python代码来实现<code>Huffman树</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> binary_tree <span class="hljs-keyword">import</span> BTree<br><br>values = [<span class="hljs-number">7</span>, <span class="hljs-number">19</span>, <span class="hljs-number">2</span>, <span class="hljs-number">6</span>, <span class="hljs-number">32</span>, <span class="hljs-number">3</span>, <span class="hljs-number">21</span>, <span class="hljs-number">10</span>]<br>tree_list = [BTree(i) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> values]<br><br><span class="hljs-keyword">while</span> <span class="hljs-built_in">len</span>(tree_list) != <span class="hljs-number">1</span>:<br>    <span class="hljs-comment"># 每个节点的数值</span><br>    values = [tree.data <span class="hljs-keyword">for</span> tree <span class="hljs-keyword">in</span> tree_list]<br>    <span class="hljs-comment"># 从Node_list取两个节点数值最小的节点，并删除这两个节点</span><br>    min_value_tree = tree_list.pop(values.index(<span class="hljs-built_in">min</span>(values)))<br>    values.pop(values.index(<span class="hljs-built_in">min</span>(values)))<br>    sec_min_value_tree = tree_list.pop(values.index(<span class="hljs-built_in">min</span>(values)))<br>    values.pop(values.index(<span class="hljs-built_in">min</span>(values)))<br><br>    <span class="hljs-comment"># 创建二叉树</span><br>    root_value = min_value_tree.data + sec_min_value_tree.data<br>    root = BTree(root_value)<br>    root.left = min_value_tree<br>    root.right = sec_min_value_tree<br><br>    <span class="hljs-comment"># 在原来的Node_list中添加新的root节点</span><br>    tree_list.append(root)<br><br>root.print_tree(label=<span class="hljs-literal">True</span>)<br><span class="hljs-comment"># 前序遍历，中，左，右</span><br>root.pre_order()<br><span class="hljs-built_in">print</span>()<br><span class="hljs-comment"># 中序遍历，左，中，右</span><br>root.in_order()<br><span class="hljs-built_in">print</span>()<br><span class="hljs-comment"># 后序遍历，左，右，中</span><br>root.post_order()<br><span class="hljs-built_in">print</span>()<br><span class="hljs-comment"># 层次遍历</span><br><span class="hljs-built_in">print</span>(root.level_order())<br></code></pre></td></tr></table></figure>
+<p>构建的Huffman树如下：</p>
+<figure>
+<img src="https://s2.loli.net/2024/05/06/Sg9xvE5cCOKlXJt.jpg" srcset="/img/loading.gif" lazyload
+alt="huffman tree" />
+<figcaption aria-hidden="true">huffman tree</figcaption>
+</figure>
+<p>输出结果为：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">100</span> <span class="hljs-number">40</span> <span class="hljs-number">19</span> <span class="hljs-number">21</span> <span class="hljs-number">60</span> <span class="hljs-number">28</span> <span class="hljs-number">11</span> <span class="hljs-number">5</span> <span class="hljs-number">2</span> <span class="hljs-number">3</span> <span class="hljs-number">6</span> <span class="hljs-number">17</span> <span class="hljs-number">7</span> <span class="hljs-number">10</span> <span class="hljs-number">32</span> <br><span class="hljs-attribute">19</span> <span class="hljs-number">40</span> <span class="hljs-number">21</span> <span class="hljs-number">100</span> <span class="hljs-number">2</span> <span class="hljs-number">5</span> <span class="hljs-number">3</span> <span class="hljs-number">11</span> <span class="hljs-number">6</span> <span class="hljs-number">28</span> <span class="hljs-number">7</span> <span class="hljs-number">17</span> <span class="hljs-number">10</span> <span class="hljs-number">60</span> <span class="hljs-number">32</span> <br><span class="hljs-attribute">19</span> <span class="hljs-number">21</span> <span class="hljs-number">40</span> <span class="hljs-number">2</span> <span class="hljs-number">3</span> <span class="hljs-number">5</span> <span class="hljs-number">6</span> <span class="hljs-number">11</span> <span class="hljs-number">7</span> <span class="hljs-number">10</span> <span class="hljs-number">17</span> <span class="hljs-number">28</span> <span class="hljs-number">32</span> <span class="hljs-number">60</span> <span class="hljs-number">100</span> <span class="hljs-meta"></span><br><span class="hljs-meta">[[100], [40, 60], [19, 21, 28, 32], [11, 17], [5, 6, 7, 10], [2, 3]]</span><br></code></pre></td></tr></table></figure>
+<h3 id="huffman编码">Huffman编码</h3>
+<p>Huffman树的一个重要应用是Huffman编码，而Huffman编码常用于数据解压缩。</p>
+<h4 id="huffman-coding">Huffman coding</h4>
+<p>在实际使用Huffman数进行编码过程中，我们可以考虑对基本的文字单位（比如字母、汉字或者NLP中的token）按出现次数作为结点权重，去构建一颗Huffman树。此时，在这棵树中，以左子树路径为0，以右子树路径为1。</p>
+<p>这样我们就能得到叶子结点的编码，此时该编码为<code>前缀编码</code>（任何一个字符的编码都不能是另一个字符编码的前缀）。</p>
+<p>我们来看下面的例子（以字符串``为例）：</p>
+<p>首先我们对<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486835&amp;idx=1&amp;sn=7ab441ea125f42ab051fea96e280fb42&amp;chksm=fcb9b4e3cbce3df5155842a462f2caa7e1fd43e51901d4abc22f3a9125adcd1a05b0aa4d1be8&amp;token=116462792&amp;lang=zh_CN#rd">二叉搜索树（BST）的Python实现</a>中的二叉树进行改成，新增获取叶子结点方法以及二叉树可视化方法修改（将标签L,
+R改为0, 1），如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># @file: binary_tree.py</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">BTree</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-comment"># 初始化</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, data=<span class="hljs-literal">None</span>, left=<span class="hljs-literal">None</span>, right=<span class="hljs-literal">None</span></span>):<br>        self.data = data    <span class="hljs-comment"># 数据域</span><br>        self.left = left    <span class="hljs-comment"># 左子树</span><br>        self.right = right  <span class="hljs-comment"># 右子树</span><br>        self.dot = Digraph(comment=<span class="hljs-string">&#x27;Binary Tree&#x27;</span>)<br>        <br>    ...<br>    <br>    <span class="hljs-comment"># 获取叶子节点</span><br><span class="hljs-meta">    @property</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">leaves</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-keyword">if</span> self.data <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>            <span class="hljs-keyword">return</span> []<br>        <span class="hljs-keyword">if</span> self.left <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">and</span> self.right <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>            <span class="hljs-keyword">return</span> [self]<br>        <span class="hljs-keyword">return</span> self.left.leaves + self.right.leaves<br><br>    <span class="hljs-comment"># 利用Graphviz进行二叉树的可视化</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">print_tree</span>(<span class="hljs-params">self, save_path=<span class="hljs-string">&#x27;./Binary_Tree.gv&#x27;</span>, label=<span class="hljs-literal">False</span></span>):<br><br>        <span class="hljs-comment"># colors for labels of nodes</span><br>        colors = [<span class="hljs-string">&#x27;skyblue&#x27;</span>, <span class="hljs-string">&#x27;tomato&#x27;</span>, <span class="hljs-string">&#x27;orange&#x27;</span>, <span class="hljs-string">&#x27;purple&#x27;</span>, <span class="hljs-string">&#x27;green&#x27;</span>, <span class="hljs-string">&#x27;yellow&#x27;</span>, <span class="hljs-string">&#x27;pink&#x27;</span>, <span class="hljs-string">&#x27;red&#x27;</span>]<br><br>        <span class="hljs-comment"># 绘制以某个节点为根节点的二叉树</span><br>        <span class="hljs-keyword">def</span> <span class="hljs-title function_">print_node</span>(<span class="hljs-params">node, node_tag</span>):<br>            <span class="hljs-comment"># 节点颜色</span><br>            color = sample(colors,<span class="hljs-number">1</span>)[<span class="hljs-number">0</span>]<br>            <span class="hljs-keyword">if</span> node.left <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>                left_tag = <span class="hljs-built_in">str</span>(uuid.uuid1())            <span class="hljs-comment"># 左节点的数据</span><br>                self.dot.node(left_tag, <span class="hljs-built_in">str</span>(node.left.data), style=<span class="hljs-string">&#x27;filled&#x27;</span>, color=color)    <span class="hljs-comment"># 左节点</span><br>                label_string = <span class="hljs-string">&#x27;0&#x27;</span> <span class="hljs-keyword">if</span> label <span class="hljs-keyword">else</span> <span class="hljs-string">&#x27;&#x27;</span>    <span class="hljs-comment"># 是否在连接线上写上标签，表明为左子树</span><br>                self.dot.edge(node_tag, left_tag, label=label_string)   <span class="hljs-comment"># 左节点与其父节点的连线</span><br>                print_node(node.left, left_tag)<br><br>            <span class="hljs-keyword">if</span> node.right <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>                right_tag = <span class="hljs-built_in">str</span>(uuid.uuid1())<br>                self.dot.node(right_tag, <span class="hljs-built_in">str</span>(node.right.data), style=<span class="hljs-string">&#x27;filled&#x27;</span>, color=color)<br>                label_string = <span class="hljs-string">&#x27;1&#x27;</span> <span class="hljs-keyword">if</span> label <span class="hljs-keyword">else</span> <span class="hljs-string">&#x27;&#x27;</span>  <span class="hljs-comment"># 是否在连接线上写上标签，表明为右子树</span><br>                self.dot.edge(node_tag, right_tag, label=label_string)<br>                print_node(node.right, right_tag)<br><br>        <span class="hljs-comment"># 如果树非空</span><br>        <span class="hljs-keyword">if</span> self.data <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>            root_tag = <span class="hljs-built_in">str</span>(uuid.uuid1())                <span class="hljs-comment"># 根节点标签</span><br>            self.dot.node(root_tag, <span class="hljs-built_in">str</span>(self.data), style=<span class="hljs-string">&#x27;filled&#x27;</span>, color=sample(colors,<span class="hljs-number">1</span>)[<span class="hljs-number">0</span>])     <span class="hljs-comment"># 创建根节点</span><br>            print_node(self, root_tag)<br><br>        self.dot.render(save_path)      <span class="hljs-comment"># 保存文件为指定文件</span><br></code></pre></td></tr></table></figure>
+<p>Huffman编码示例：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> binary_tree <span class="hljs-keyword">import</span> BTree<br><span class="hljs-keyword">from</span> collections <span class="hljs-keyword">import</span> Counter<br><br><span class="hljs-comment"># string字符串至少含有两个不同的字符</span><br>string = <span class="hljs-string">&#x27;ABCACCDAEAE&#x27;</span><br>counter_dict = Counter(string)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;各字符出现次数：&#x27;</span>, counter_dict)<br><br><br><span class="hljs-comment"># 返回一个数组的最小值，及其对应的下标</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">min_and_index</span>(<span class="hljs-params">array</span>):<br>    f_minimum = <span class="hljs-built_in">float</span>(<span class="hljs-string">&#x27;inf&#x27;</span>)<br>    flag = <span class="hljs-literal">None</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(array)):<br>        <span class="hljs-keyword">if</span> array[i] &lt; f_minimum:<br>            f_minimum = array[i]<br>            flag = i<br><br>    <span class="hljs-keyword">return</span> f_minimum, flag<br><br><br><span class="hljs-comment"># create Huffman Tree</span><br>tree_list = [BTree(i) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> counter_dict.values()]<br><br><span class="hljs-keyword">while</span> <span class="hljs-built_in">len</span>(tree_list) != <span class="hljs-number">1</span>:<br>    <span class="hljs-comment"># 每个节点的数值</span><br>    values = [tree.data <span class="hljs-keyword">for</span> tree <span class="hljs-keyword">in</span> tree_list]<br><br>    <span class="hljs-comment"># 从Node_list取两个节点数值最小的节点，并删除这两个节点</span><br>    _, index = min_and_index(values)<br>    min_value_node = tree_list.pop(index)<br>    values.pop(index)<br>    _, index = min_and_index(values)<br>    sec_min_value_node = tree_list.pop(index)<br>    values.pop(index)<br><br>    <span class="hljs-comment"># 创建二叉树</span><br>    root_value = min_value_node.data + sec_min_value_node.data<br>    root = BTree(root_value)<br>    root.left = min_value_node<br>    root.right = sec_min_value_node<br><br>    <span class="hljs-comment"># 在原来的Node_list中添加新的root节点</span><br>    tree_list.append(root)<br>    values.append(root)<br><br>root.print_tree(label=<span class="hljs-literal">True</span>)<br><br><span class="hljs-comment"># print(root.leaves)</span><br><br><span class="hljs-comment"># Huffman Coding</span><br>queue = [root]<br><br><span class="hljs-comment"># node_dict: 节点及其对应的Huffman编码组成的字典</span><br>node_dict = &#123;root: <span class="hljs-string">&#x27;&#x27;</span>&#125;<br><span class="hljs-keyword">while</span> queue:<br>    node = queue.pop(<span class="hljs-number">0</span>)<br>    <span class="hljs-keyword">if</span> node.left <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>        queue.append(node.left)<br>        node_dict[node.left] = node_dict[node] + <span class="hljs-string">&#x27;0&#x27;</span><br>    <span class="hljs-keyword">if</span> node.right <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>        queue.append(node.right)<br>        node_dict[node.right] = node_dict[node] + <span class="hljs-string">&#x27;1&#x27;</span><br><br><span class="hljs-comment"># 叶子节点及其对应的Huffman编码</span><br><span class="hljs-keyword">for</span> node <span class="hljs-keyword">in</span> root.leaves:<br>    <span class="hljs-built_in">print</span>(node.data, <span class="hljs-string">&#x27;---&gt;&#x27;</span>, node_dict[node])<br><br><span class="hljs-comment"># code_dict: 单个字符及其对应的Huffman编码</span><br>code_dict = &#123;&#125;<br><span class="hljs-keyword">for</span> char <span class="hljs-keyword">in</span> counter_dict.keys():<br>    <span class="hljs-keyword">for</span> node <span class="hljs-keyword">in</span> root.leaves:<br>        <span class="hljs-keyword">if</span> counter_dict[char] == node.data <span class="hljs-keyword">and</span> node_dict[node] <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> code_dict.values():<br>            code_dict[char] = node_dict[node]<br>            <span class="hljs-keyword">break</span><br><br><span class="hljs-built_in">print</span>(code_dict)<br></code></pre></td></tr></table></figure>
+<p>输出的结果为:</p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs clean">各字符出现次数： Counter(&#123;<span class="hljs-string">&#x27;A&#x27;</span>: <span class="hljs-number">4</span>, <span class="hljs-string">&#x27;C&#x27;</span>: <span class="hljs-number">3</span>, <span class="hljs-string">&#x27;E&#x27;</span>: <span class="hljs-number">2</span>, <span class="hljs-string">&#x27;B&#x27;</span>: <span class="hljs-number">1</span>, <span class="hljs-string">&#x27;D&#x27;</span>: <span class="hljs-number">1</span>&#125;)<br><span class="hljs-number">2</span> ---&gt; <span class="hljs-number">00</span><br><span class="hljs-number">1</span> ---&gt; <span class="hljs-number">010</span><br><span class="hljs-number">1</span> ---&gt; <span class="hljs-number">011</span><br><span class="hljs-number">3</span> ---&gt; <span class="hljs-number">10</span><br><span class="hljs-number">4</span> ---&gt; <span class="hljs-number">11</span><br>&#123;<span class="hljs-string">&#x27;A&#x27;</span>: <span class="hljs-string">&#x27;11&#x27;</span>, <span class="hljs-string">&#x27;B&#x27;</span>: <span class="hljs-string">&#x27;010&#x27;</span>, <span class="hljs-string">&#x27;C&#x27;</span>: <span class="hljs-string">&#x27;10&#x27;</span>, <span class="hljs-string">&#x27;D&#x27;</span>: <span class="hljs-string">&#x27;011&#x27;</span>, <span class="hljs-string">&#x27;E&#x27;</span>: <span class="hljs-string">&#x27;00&#x27;</span>&#125;<br></code></pre></td></tr></table></figure>
+<p>构建的Huffman树如下图：</p>
+<figure>
+<img src="https://s2.loli.net/2024/05/07/l86QhmxwDbrJUaF.png" srcset="/img/loading.gif" lazyload
+alt="构建的Huffman树" />
+<figcaption aria-hidden="true">构建的Huffman树</figcaption>
+</figure>
+<p>由上可知，对于各个字符的编码方式为：A=11, B=010, C=10, D=011,
+E=00.</p>
+<p>观察上述的编码方式可知，这种编码方式是前缀编码（每个字母都是叶子结点，没有一个叶子结点在另一个叶子结点的路径上），因此可以用来做字符串的编解码。而且在满足前缀编码的前提下，Huffman编码的编码效率是最高的，即所用的0-1字符数最少，这就是Huffman编码的魅力。</p>
+<p>这里，让我们停下脚步来想一想字符串编解码的问题。一种常见的编解码方式为等长编码，比如对于字符串<code>ABCACCDAEAE</code>，共5个字母，因此如果使用0-1编码的话，每个字符需使用3位编码，此时整个字符串需用11
+* 3 = 33位编码，这种编码方式效率并不是最高的。</p>
+<p>我们来看看Huffman编码的结果：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> math <span class="hljs-keyword">import</span> floor, log2<br><br><span class="hljs-comment"># 对原字符串进行Huffman编码</span><br>coded_string = <span class="hljs-string">&#x27;&#x27;</span><br><span class="hljs-keyword">for</span> char <span class="hljs-keyword">in</span> string:<br>    coded_string += code_dict[char]<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;压缩后的字符串为%s.&#x27;</span> % coded_string)<br><br><span class="hljs-comment"># 一般方法的编码位数</span><br><span class="hljs-keyword">if</span> <span class="hljs-built_in">bin</span>(<span class="hljs-built_in">len</span>(counter_dict)).count(<span class="hljs-string">&#x27;1&#x27;</span>) == <span class="hljs-number">1</span> <span class="hljs-keyword">or</span> <span class="hljs-built_in">len</span>(counter_dict) == <span class="hljs-number">1</span>:<br>    bites = floor(log2(<span class="hljs-built_in">len</span>(counter_dict)))<br><span class="hljs-keyword">else</span>:<br>    bites = floor(log2(<span class="hljs-built_in">len</span>(counter_dict))) + <span class="hljs-number">1</span><br><br><span class="hljs-comment"># print(bites)</span><br><span class="hljs-comment"># 一般方法的编码的总位数</span><br>original_code_bites = <span class="hljs-built_in">len</span>(string) * bites<br><span class="hljs-comment"># 计算压缩比</span><br>ratio = original_code_bites/<span class="hljs-built_in">len</span>(coded_string)<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;一般方法编码后的字符串长度为%s.&#x27;</span> % original_code_bites)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Huffman编码后的字符串长度为%s.&#x27;</span> % <span class="hljs-built_in">len</span>(coded_string))<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;压缩比为%s.&#x27;</span> % <span class="hljs-built_in">round</span>(ratio, <span class="hljs-number">3</span>))<br></code></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs prolog">&#123;<span class="hljs-string">&#x27;A&#x27;</span>: <span class="hljs-string">&#x27;11&#x27;</span>, <span class="hljs-string">&#x27;B&#x27;</span>: <span class="hljs-string">&#x27;010&#x27;</span>, <span class="hljs-string">&#x27;C&#x27;</span>: <span class="hljs-string">&#x27;10&#x27;</span>, <span class="hljs-string">&#x27;D&#x27;</span>: <span class="hljs-string">&#x27;011&#x27;</span>, <span class="hljs-string">&#x27;E&#x27;</span>: <span class="hljs-string">&#x27;00&#x27;</span>&#125;<br>压缩后的字符串为<span class="hljs-number">110101011101001111001100.</span><br>一般方法编码后的字符串长度为<span class="hljs-number">33.</span><br><span class="hljs-symbol">Huffman</span>编码后的字符串长度为<span class="hljs-number">24.</span><br>压缩比为<span class="hljs-number">1.375</span>.<br></code></pre></td></tr></table></figure>
+<p>而对于字符串'BCDEFGhHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'+'A'*10000000，其压缩比达到惊人的6.0。</p>
+<h4 id="huffman-decoding">Huffman decoding</h4>
+<p>有了Huffman编码，自然也需要对编码后的字符串进行解码。Huffman解码的思想是十分简单的，因为是前缀编码，对于编码后的字符串后，从头开始遍历，直到碰到叶子结点暂停，这样解码出一个字符，如此循环，直到编码后字符串结尾。</p>
+<p>我们写一个示例的Huffman解码的Python代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python">code_dict = &#123;<span class="hljs-string">&#x27;A&#x27;</span>: <span class="hljs-string">&#x27;11&#x27;</span>, <span class="hljs-string">&#x27;B&#x27;</span>: <span class="hljs-string">&#x27;010&#x27;</span>, <span class="hljs-string">&#x27;C&#x27;</span>: <span class="hljs-string">&#x27;10&#x27;</span>, <span class="hljs-string">&#x27;D&#x27;</span>: <span class="hljs-string">&#x27;011&#x27;</span>, <span class="hljs-string">&#x27;E&#x27;</span>: <span class="hljs-string">&#x27;00&#x27;</span>&#125;<br>secret_string = <span class="hljs-string">&quot;110101011101001111001100&quot;</span><br><br><span class="hljs-comment"># Huffman Decoding</span><br>decoded_string = <span class="hljs-string">&#x27;&#x27;</span><br><span class="hljs-keyword">while</span> secret_string:<br>    <span class="hljs-keyword">for</span> char, code <span class="hljs-keyword">in</span> code_dict.items():<br>        <span class="hljs-keyword">if</span> secret_string.startswith(code):<br>            decoded_string += char<br>            secret_string = secret_string[<span class="hljs-built_in">len</span>(code):]<br>            <span class="hljs-keyword">break</span><br><br><span class="hljs-built_in">print</span>(decoded_string)<br></code></pre></td></tr></table></figure>
+<p>输出结果为<code>ABCACCDAEAE</code>。</p>
+<p>注意观察，这样的解码代码效率是比较低的，使用了双重循环，对于长字符串的解码，效率是很低的。我们在本文的<code>txt文件压缩实战</code>部分来演示如何使用<code>bitarray</code>模块来提升Huffman解码效率，从而提升文件的编/解码效率。</p>
+<h3 id="其它用途">其它用途</h3>
+<p>Huffman树和Huffman编码还有其他用途，其中之一便是刚才讲述过的文件编解码。其它用途列举如下：</p>
+<ul>
+<li>判别条件</li>
+</ul>
+<p>对于如下的分类判别树（if-else条件）：</p>
+<p><img
+src="https://images0.cnblogs.com/blog2015/682679/201504/052142271163043.png" srcset="/img/loading.gif" lazyload /></p>
+<p>如果学生的总成绩数据有10000条，则5％的数据需 1 次比较，15％的数据需 2
+次比较，40％的数据需 3 次比较，40％的数据需 4 次比较，因此 10000
+个数据比较的次数为：</p>
+<blockquote>
+<p>10000 (5％＋2×15％＋3×40％＋4×40％)＝31500次</p>
+</blockquote>
+<p>而如果使用Huffman数，则可将判别次数减少至22000次，这样可以提升判别树的效率。</p>
+<ul>
+<li>word2vec</li>
+</ul>
+<p>在NLP中的word2vec算法（一种用于获取词向量的算法）中，对从隐藏层到输出的softmax层这里的计算量进行了改进。为了避免要计算所有词的softmax概率，word2vec采样了霍夫曼树来代替从隐藏层到输出softmax层的映射。</p>
+<p>这是Huffman树在NLP领域中的一个精彩应用！</p>
+<h3 id="txt文件压缩实战">txt文件压缩实战</h3>
+<p>ok，讲了这么多，我们来看看Huffman编码在文件压缩领域中的作用（也是它的主战场）了。</p>
+<p>在这里，我们使用Python中的<code>bitarray</code>模块来提升Huffman编/解码的效率。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">from</span> binary_tree <span class="hljs-keyword">import</span> BTree<br><span class="hljs-keyword">from</span> collections <span class="hljs-keyword">import</span> Counter<br><span class="hljs-keyword">from</span> bitarray <span class="hljs-keyword">import</span> bitarray<br><br><span class="hljs-comment"># string字符串至少含有两个不同的字符</span><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;test2.txt&#x27;</span>, <span class="hljs-string">&#x27;r&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>    string = f.read()<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;原始文件中的前100个字符：&#x27;</span>, string[:<span class="hljs-number">100</span>])<br>counter_dict = Counter(string)<br><span class="hljs-built_in">print</span>(counter_dict)<br><br><br><span class="hljs-comment"># 返回一个数组的最小值，及其对应的下标</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">min_and_index</span>(<span class="hljs-params">array</span>):<br>    f_minimum = <span class="hljs-built_in">float</span>(<span class="hljs-string">&#x27;inf&#x27;</span>)<br>    flag = <span class="hljs-literal">None</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(array)):<br>        <span class="hljs-keyword">if</span> array[i] &lt; f_minimum:<br>            f_minimum = array[i]<br>            flag = i<br><br>    <span class="hljs-keyword">return</span> f_minimum, flag<br><br><br><span class="hljs-comment"># create Huffman Tree</span><br>tree_list = [BTree(i) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> counter_dict.values()]<br><br><span class="hljs-keyword">while</span> <span class="hljs-built_in">len</span>(tree_list) != <span class="hljs-number">1</span>:<br>    <span class="hljs-comment"># 每个节点的数值</span><br>    values = [tree.data <span class="hljs-keyword">for</span> tree <span class="hljs-keyword">in</span> tree_list]<br><br>    <span class="hljs-comment"># 从Node_list取两个节点数值最小的节点，并删除这两个节点</span><br>    _, index = min_and_index(values)<br>    min_value_node = tree_list.pop(index)<br>    values.pop(index)<br>    _, index = min_and_index(values)<br>    sec_min_value_node = tree_list.pop(index)<br>    values.pop(index)<br><br>    <span class="hljs-comment"># 创建二叉树</span><br>    root_value = min_value_node.data + sec_min_value_node.data<br>    root = BTree(root_value)<br>    root.left = min_value_node<br>    root.right = sec_min_value_node<br><br>    <span class="hljs-comment"># 在原来的Node_list中添加新的root节点</span><br>    tree_list.append(root)<br>    values.append(root)<br><br><span class="hljs-comment"># Huffman Coding</span><br>queue = [root]<br><br><span class="hljs-comment"># node_dict: 节点及其对应的Huffman编码组成的字典</span><br>node_dict = &#123;root: <span class="hljs-string">&#x27;&#x27;</span>&#125;<br><span class="hljs-keyword">while</span> queue:<br>    node = queue.pop(<span class="hljs-number">0</span>)<br>    <span class="hljs-keyword">if</span> node.left <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>        queue.append(node.left)<br>        node_dict[node.left] = node_dict[node] + <span class="hljs-string">&#x27;0&#x27;</span><br>    <span class="hljs-keyword">if</span> node.right <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>        queue.append(node.right)<br>        node_dict[node.right] = node_dict[node] + <span class="hljs-string">&#x27;1&#x27;</span><br><br><span class="hljs-comment"># code_dict: 单个字符及其对应的Huffman编码</span><br>code_dict = &#123;&#125;<br><span class="hljs-keyword">for</span> char <span class="hljs-keyword">in</span> counter_dict.keys():<br>    <span class="hljs-keyword">for</span> node <span class="hljs-keyword">in</span> root.leaves:<br>        <span class="hljs-keyword">if</span> counter_dict[char] == node.data <span class="hljs-keyword">and</span> node_dict[node] <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> code_dict.values():<br>            code_dict[char] = node_dict[node]<br>            <span class="hljs-keyword">break</span><br><br><span class="hljs-comment"># 对原字符串进行Huffman编码</span><br>coded_string = <span class="hljs-string">&#x27;&#x27;</span><br><span class="hljs-keyword">for</span> char <span class="hljs-keyword">in</span> string:<br>    coded_string += code_dict[char]<br><br><span class="hljs-comment"># write the result to a file</span><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;test2.bin&#x27;</span>, <span class="hljs-string">&#x27;wb&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>    bitarray(coded_string).tofile(f)<br><br><span class="hljs-comment"># write the code_dict to a json file</span><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;code_dict.json&#x27;</span>, <span class="hljs-string">&#x27;w&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>    json.dump(code_dict, f)<br></code></pre></td></tr></table></figure>
+<p>输出结果为（由于篇幅原因，<code>counter_dict</code>变量只显示了前几个字符）:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs stylus">原始文件中的前<span class="hljs-number">100</span>个字符： 凡人修仙传 第二千三百零一章-第二千三百五十章 第两千三百零一章 再见灵王 话音刚落，他也不等一干空鱼人再说什么，就一张口，喷出那颗山海珠。 此珠方一飞出，立刻迎风滴溜溜的转动而起，一抹艳丽霞光从上面<br><span class="hljs-function"><span class="hljs-title">Counter</span><span class="hljs-params">(&#123;<span class="hljs-string">&#x27;，&#x27;</span>: <span class="hljs-number">8278</span>, <span class="hljs-string">&#x27;一&#x27;</span>: <span class="hljs-number">5472</span>, <span class="hljs-string">&#x27;的&#x27;</span>: <span class="hljs-number">5226</span>, <span class="hljs-string">&#x27;。&#x27;</span>: <span class="hljs-number">4718</span>, <span class="hljs-string">&#x27; &#x27;</span>: <span class="hljs-number">3260</span>, <span class="hljs-string">&#x27;了&#x27;</span>: <span class="hljs-number">2659</span>, <span class="hljs-string">&#x27;不&#x27;</span>: <span class="hljs-number">1929</span>, <span class="hljs-string">&#x27;道&#x27;</span>: <span class="hljs-number">1545</span>, <span class="hljs-string">&#x27;是&#x27;</span>: <span class="hljs-number">1543</span>, <span class="hljs-string">&#x27;在&#x27;</span>: <span class="hljs-number">1362</span>, <span class="hljs-string">&#x27;这&#x27;</span>: <span class="hljs-number">1287</span>, <span class="hljs-string">&#x27;人&#x27;</span>: <span class="hljs-number">1284</span>, <span class="hljs-string">&#x27;”&#x27;</span>: <span class="hljs-number">1283</span>, <span class="hljs-string">&#x27;大&#x27;</span>: <span class="hljs-number">1270</span>&#125;)</span></span><br></code></pre></td></tr></table></figure>
+<p>原始文件<code>test2.txt</code>大小为<code>453K</code>，而编码后的<code>test2.bin</code>文件大小为<code>166K</code>，压缩效果较好。如果我们使用Linux中的<code>tar</code>命令:
+<code>tar -zcvf test2.tar.gz test2.txt</code>，压缩后的<code>test2.tar.gz</code>文件大小为<code>183K</code>。</p>
+<p>接下来，我们使用code_dict.json对test2.bin进行Huffman解码，示例代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">from</span> bitarray <span class="hljs-keyword">import</span> bitarray<br><br><span class="hljs-comment"># read json file</span><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;code_dict.json&#x27;</span>, <span class="hljs-string">&#x27;r&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>    code_dict = json.loads(f.read())<br><br>string = bitarray()<br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;test2.bin&#x27;</span>, <span class="hljs-string">&#x27;rb&#x27;</span>) <span class="hljs-keyword">as</span> fh:<br>    string.fromfile(fh)<br><br>secret_string = string[:<span class="hljs-built_in">len</span>(string) - <span class="hljs-number">8</span>] + bitarray(string[<span class="hljs-built_in">len</span>(string) - <span class="hljs-number">8</span>:].to01().strip(<span class="hljs-string">&#x27;0&#x27;</span>))<br>new_code_dict = &#123;key: bitarray(value) <span class="hljs-keyword">for</span> key, value <span class="hljs-keyword">in</span> code_dict.items()&#125;<br><br><span class="hljs-comment"># Huffman decoding effectively</span><br>dec = secret_string.decode(new_code_dict)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;编码文件解码后的前100个字符：&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>.join(dec)[:<span class="hljs-number">100</span>])<br></code></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs">编码文件解码后的前100个字符： 凡人修仙传 第二千三百零一章-第二千三百五十章 第两千三百零一章 再见灵王 话音刚落，他也不等一干空鱼人再说什么，就一张口，喷出那颗山海珠。 此珠方一飞出，立刻迎风滴溜溜的转动而起，一抹艳丽霞光从上面<br></code></pre></td></tr></table></figure>
+<p>与原始文件一致。</p>
+<h3 id="总结">总结</h3>
+<p>总结下，本文主要介绍了Huffman树和Huffman编码的原理和Python代码，并介绍了他们的用途，最后再介绍了txt文件压缩实战。</p>
+<h3 id="参考文献">参考文献</h3>
+<ol type="1">
+<li>霍夫曼编码: <a
+target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E9%9C%8D%E5%A4%AB%E6%9B%BC%E7%BC%96%E7%A0%81">https://zh.wikipedia.org/wiki/%E9%9C%8D%E5%A4%AB%E6%9B%BC%E7%BC%96%E7%A0%81</a></li>
+<li>哈夫曼（huffman）树和哈夫曼编码: <a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/kubixuesheng/p/4397798.html">https://www.cnblogs.com/kubixuesheng/p/4397798.html</a></li>
+<li>word2vec原理(二) 基于Hierarchical Softmax的模型: <a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/pinard/p/7243513.html">https://www.cnblogs.com/pinard/p/7243513.html</a></li>
+<li>Decoding a Huffman code with a dictionary: <a
+target="_blank" rel="noopener" href="https://stackoverflow.com/questions/33089660/decoding-a-huffman-code-with-a-dictionary">https://stackoverflow.com/questions/33089660/decoding-a-huffman-code-with-a-dictionary</a></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Python/" class="category-chain-item">Python</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Huffman%E6%A0%91/" class="print-no-link">#Huffman树</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Huffman树与Huffman编码的Python实现</div>
+      <div>https://percent4.github.io/Huffman树与Huffman编码的Python实现/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年6月19日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%B9%9D%E5%8D%81%E4%B9%9D%EF%BC%89%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%95%B0%E5%AD%A6%E8%83%BD%E5%8A%9B%E5%BE%AE%E8%B0%83%E5%8F%8A%E6%B5%8B%E8%AF%84/" title="NLP（九十九）大模型的数学能力微调及测评">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NLP（九十九）大模型的数学能力微调及测评</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%B9%9D%E5%8D%81%E5%85%AB%EF%BC%89%E5%9F%BA%E4%BA%8EPDF%E6%96%87%E6%A1%A3%E7%9A%84%E5%A4%9A%E6%A8%A1%E6%80%81%E9%97%AE%E7%AD%94/" title="NLP（九十八）基于PDF文档的多模态问答">
+                        <span class="hidden-mobile">NLP（九十八）基于PDF文档的多模态问答</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

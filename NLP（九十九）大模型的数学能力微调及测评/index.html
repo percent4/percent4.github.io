@@ -1,0 +1,954 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍如何构建数学解题方面数据集，以及对大模型进行微调，并进行数学能力测评。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（九十九）大模型的数学能力微调及测评">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E4%B9%9D%E5%8D%81%E4%B9%9D%EF%BC%89%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%95%B0%E5%AD%A6%E8%83%BD%E5%8A%9B%E5%BE%AE%E8%B0%83%E5%8F%8A%E6%B5%8B%E8%AF%84/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍如何构建数学解题方面数据集，以及对大模型进行微调，并进行数学能力测评。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2024/05/23/KCPWiIkdh6sybxw.png">
+<meta property="og:image" content="https://s2.loli.net/2024/05/23/vz3LMpG6b8HT5e7.png">
+<meta property="og:image" content="https://s2.loli.net/2024/05/23/bZzN1CgSfLnwkTs.png">
+<meta property="og:image" content="https://s2.loli.net/2024/05/23/LvsqVcwUzekRBfD.webp">
+<meta property="og:image" content="https://s2.loli.net/2024/05/23/986E1j7RkTG4iYe.png">
+<meta property="og:image" content="https://s2.loli.net/2024/05/23/wRHXC1YSP6O9nse.png">
+<meta property="og:image" content="https://s2.loli.net/2024/05/23/2Xfw9zOynoVNGUM.png">
+<meta property="og:image" content="https://s2.loli.net/2024/05/23/3G97jKSRgcPTWlq.png">
+<meta property="og:image" content="https://s2.loli.net/2024/05/23/OfUs6h3VmLw8pgc.png">
+<meta property="article:published_time" content="2024-06-19T02:57:17.000Z">
+<meta property="article:modified_time" content="2024-06-19T02:57:59.420Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="大模型">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2024/05/23/KCPWiIkdh6sybxw.png">
+  
+  
+  
+  <title>NLP（九十九）大模型的数学能力微调及测评 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（九十九）大模型的数学能力微调及测评"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-06-19 10:57" pubdate>
+          星期三, 六月 19日 2024, 10:57 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          6.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          57 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（九十九）大模型的数学能力微调及测评</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍如何构建数学解题方面数据集，以及对大模型进行微调，并进行数学能力测评。</p>
+</blockquote>
+<h3 id="引言">引言</h3>
+<p>在文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486824&amp;idx=1&amp;sn=fd6b36cf78aead227359606a7270516d&amp;chksm=fcb9b4f8cbce3dee332335092f576c703ccdc55598cf45cb7f483f822ba5c72590019384d12a&amp;token=679632047&amp;lang=zh_CN#rd">NLP（九十七）大模型数学解题能力的初步探索</a>中，笔者介绍了对大模型数学解题能力的初步探索，并演示了在微调大约500个样本后，大模型已经初步具备了数学解题的能力。</p>
+<p>本文将是上述文章的进一步探索，重点在于如何构造模型训练数据集以及大模型的数学能力测评。</p>
+<p>笔者的思路是，首先通过大模型给出数学题的解题思路和解题步骤，然后借助其Python代码生成能力，获得最终答案，即所谓的（<code>Program of Thoughts Prompting</code>,
+<code>POT</code>）。我们可以先看个例子：</p>
+<figure>
+<img src="https://s2.loli.net/2024/05/23/KCPWiIkdh6sybxw.png" srcset="/img/loading.gif" lazyload
+alt="LLM with POT" />
+<figcaption aria-hidden="true">LLM with POT</figcaption>
+</figure>
+<p>观察上面的例子，我们可以看到：大模型在解决数学题目的时候，先给出了思考过程，然后是解题步骤，再生成Python代码，执行完Python代码，就能得到最终的正确答案，这就是POT的一个例子，也是笔者希望大模型在解数学题时所执行的完整过程。</p>
+<p>从中，我们发现，大模型的分析过程与Python代码是POT的关键步骤，这样能克服大模型不擅长数学计算的缺点，从而提升大模型的数学能力。</p>
+<p>在文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486824&amp;idx=1&amp;sn=fd6b36cf78aead227359606a7270516d&amp;chksm=fcb9b4f8cbce3dee332335092f576c703ccdc55598cf45cb7f483f822ba5c72590019384d12a&amp;token=679632047&amp;lang=zh_CN#rd">NLP（九十七）大模型数学解题能力的初步探索</a>中，笔者也给出了十三个大模型解数学题的例子，都达到了不错的效果。</p>
+<h3 id="数据集">数据集</h3>
+<p>接下来谈谈数据集的构造。任何模型，都依赖于高质量的训练数据，因此，构建高质量训练集，是保证模型效果的前提与关键点。</p>
+<p>笔者构建大模型数学解题数据集的方法如下：</p>
+<ol type="1">
+<li>使用Prompt Engineering（提示工程），让GPT-4生成数学题</li>
+<li>使用Gradio构建web服务，利用Few-Shot，人工采集数据并使用GPT-4解题，最后人工检查确认</li>
+<li>自动化生成：给定数学题和答案，借助GPT-4及Few-Shot，自动化生成数据集</li>
+</ol>
+<p><code>方案1</code>在文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486824&amp;idx=1&amp;sn=fd6b36cf78aead227359606a7270516d&amp;chksm=fcb9b4f8cbce3dee332335092f576c703ccdc55598cf45cb7f483f822ba5c72590019384d12a&amp;token=679632047&amp;lang=zh_CN#rd">NLP（九十七）大模型数学解题能力的初步探索</a>中已有介绍，缺点是生成数据不够丰富，效果不够理想，重复数据较多，仍需人工检查，比较费时费力。</p>
+<p><code>方案2</code>需要大量的人工介入，费时费力，但能保证数学题的丰富度，解题质量，可以作为自动化生成方案（即<code>方案3</code>）的补充，会灵活一些。</p>
+<p><code>方案3</code>依赖于现有的数学方面的数据集，需要事先给定数学题和答案，然后利用Few-Shot来约束大模型生成的内容，保证大模型回答的正确性。这种方案可以自动化大规模生成，人工介入极少，且能保证解题质量，缺点是数学习题的丰富度依赖于现成数据集，而这方面的数据集现阶段比较稀缺。</p>
+<p>目前，笔者已生成方案1的数据共451条，方案2数据330条，方案3数据1621条，总计2402条数据，且仍在持续更新中。</p>
+<p>这里不再详述方案2和3，后面有机会专门介绍。数据集已经开源至Github，网址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/llm_math_solver"
+class="uri">https://github.com/percent4/llm_math_solver</a> .</p>
+<p>样例数据如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">[</span><br>    <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;conversations&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>            <span class="hljs-punctuation">&#123;</span><br>                <span class="hljs-attr">&quot;from&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;human&quot;</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-attr">&quot;value&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;题目：苹果的价格是每公斤3元，小明买了2.5公斤的苹果，他一共需要支付多少钱？&quot;</span><br>            <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-punctuation">&#123;</span><br>                <span class="hljs-attr">&quot;from&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;gpt&quot;</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-attr">&quot;value&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;首先给出思考过程：这是一个简单的乘法问题，其中涉及到的是单价和数量的乘积计算。我们需要用苹果的单价乘以小明购买的苹果的重量来找出总金额。\n计算总金额的公式是： \\[ 总金额 = 单价 \\times 数量 \\] 在这个具体例子中，苹果的单价为3元每公斤，小明购买了2.5公斤。\n生成的Python代码如下：\n```python\ndef total_cost(price_per_kg, weight):\n    return price_per_kg * weight\n\n# 苹果的单价（每公斤）\nprice_per_kg = 3\n\n# 小明购买的苹果重量（公斤）\nweight = 2.5\n\n# 计算总金额\ncost = total_cost(price_per_kg, weight)\nprint(&#x27;小明需要支付的总金额为:&#x27;, cost)\n```\n&quot;</span><br>            <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-punctuation">&#123;</span><br>                <span class="hljs-attr">&quot;from&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;human&quot;</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-attr">&quot;value&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;现在将上面的代码复制到Python环境中运行，我们应得到小明需要支付的总金额。运行结果将告诉我们具体的金额数值。 运行以上代码，输出会是： ```小明需要支付的总金额为: 7.5```&quot;</span><br>            <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-punctuation">&#123;</span><br>                <span class="hljs-attr">&quot;from&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;gpt&quot;</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-attr">&quot;value&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;因此，小明购买2.5公斤苹果，总共需要支付\boxed&#123;7.5&#125;元。&quot;</span><br>            <span class="hljs-punctuation">&#125;</span><br>        <span class="hljs-punctuation">]</span><br>    <span class="hljs-punctuation">&#125;</span><br>    ...<br><span class="hljs-punctuation">]</span><br></code></pre></td></tr></table></figure>
+<h3 id="模型微调">模型微调</h3>
+<p>我们使用<code>LLaMA-Factory</code>框架对上述数据集进行微调（SFT），使用的基座模型为<code>Qwen1.5-32B</code>模型，微调方式为LoRa,
+对话模版使用qwen, 这里不再过多给出细节。</p>
+<p>训练完毕后导出模型为Qwen1.5-32B-math，使用下面的命令启动训练后模型的推理服务（兼容OpenAI的API服务）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">CUDA_VISIBLE_DEVICES=0 API_PORT=8000 llamafactory-cli api examples/inference/qwen.yaml<br></code></pre></td></tr></table></figure>
+<p>其中qwen.yaml文件配置如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">model_name_or_path:</span> <span class="hljs-string">./models/Qwen1.5-32B-math</span><br><span class="hljs-attr">template:</span> <span class="hljs-string">qwen</span><br><span class="hljs-attr">infer_backend:</span> <span class="hljs-string">vllm</span><br><span class="hljs-attr">vllm_enforce_eager:</span> <span class="hljs-literal">true</span><br></code></pre></td></tr></table></figure>
+<h3 id="数学能力测评">数学能力测评</h3>
+<p>在大模型浪潮的初期，评价大模型的表现一般会采用各种benchmark。而常见的大模型的数学能力测评的benchmark上，所使用的测评数据集为<code>GSM8K</code>和<code>MATH</code>。</p>
+<blockquote>
+<p>GSM8K是大小为8.5K的小学数学数据集，涉及基本算术运算，需要2-8个步骤才能解决，包含7.5K训练集和1K测试集。GSM8K每道题的答案包含完整的解题过程，有助于CoT训练。</p>
+</blockquote>
+<blockquote>
+<p>MATH是一个包含12500个高中数学竞赛的问题（7500个用于训练，5000个用于测试）的数据集，以文本模式的Latex格式呈现。MATH中的每个问题都有一个完整的逐步解决方案，有助于CoT训练。</p>
+</blockquote>
+<p>当然，现阶段涌现出了更多的测评数据集，比如：<code>GAOKAO(Math)</code>,
+<code>AGIEval</code>, <code>MathQA</code>, <code>Arith3K</code>,
+<code>TAL-SCQ5K-CN</code>等等，后续有机会将专门介绍大模型的数据能力benchmark.
+本文将聚焦在<code>GSM8K</code>和<code>MATH</code>这两个数据集。</p>
+<p>我们来看看<code>Qwen1.5</code>官方网站给出的测评结果：</p>
+<p><img src="https://s2.loli.net/2024/05/23/vz3LMpG6b8HT5e7.png" srcset="/img/loading.gif" lazyload /></p>
+<p>以及0-1万物最新模型给出的测评结果：</p>
+<p><img src="https://s2.loli.net/2024/05/23/bZzN1CgSfLnwkTs.png" srcset="/img/loading.gif" lazyload /></p>
+<p>最后是GPT-4o及其同类模型的测评结果：</p>
+<p><img src="https://s2.loli.net/2024/05/23/LvsqVcwUzekRBfD.webp" srcset="/img/loading.gif" lazyload /></p>
+<p><code>GPT-4o</code>模型在难度很大的MATH数据集上的测评结果已经达到了惊人的76.6%，这是非常亮眼的表现，遥遥领先！</p>
+<h3 id="gsm8k测评">GSM8K测评</h3>
+<p>回归正题，让我们看看我们微调后的<code>Qwen1.5-32B-math</code>模型的测评结果，首先是<code>GSM8K</code>数据集。</p>
+<p>数据集的测评比较困难，在<code>GSM8K</code>数据集中，测试数据的正确答案在
+####
+后面，而且一般为整数。而我们微调后的模型，在最后生成的回答中，将正确答案用包围起来，这是参考<code>MATH</code>数据集而标注的样式，这样我们可以直接对比两者的结果，从而给出准确率。</p>
+<p><code>GSM8K</code>数据集的测试集共1319条，我们使用上述的模型推理服务，对这些样本进行预测，得到预测文件。</p>
+<p>但有些测评样本的最终答案并没有使用包围起，因此我们需要人工再次确认这些样本。笔者写了一个gradio构建的web页面，用于人工确认，Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># Human Evaluation for GSM8K</span><br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> gradio <span class="hljs-keyword">as</span> gr<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">read_samples</span>():<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;eval_result.json&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>) <span class="hljs-keyword">as</span> f:<br>        data = f.readlines()<br><br>    content = []<br>    cnt = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> sample <span class="hljs-keyword">in</span> data:<br>        sample_dict = json.loads(sample.strip())<br>        <span class="hljs-keyword">if</span> <span class="hljs-string">&#x27;\\boxed&#x27;</span> <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> sample_dict[<span class="hljs-string">&#x27;pred_answer&#x27;</span>]:<br>            cnt += <span class="hljs-number">1</span><br>            content.append([cnt, sample_dict[<span class="hljs-string">&#x27;question&#x27;</span>],<br>                            sample_dict[<span class="hljs-string">&#x27;answer&#x27;</span>].split(<span class="hljs-string">&#x27;####&#x27;</span>)[-<span class="hljs-number">1</span>].strip(),<br>                            sample_dict[<span class="hljs-string">&#x27;pred_answer&#x27;</span>],<br>                            <span class="hljs-number">0</span>])<br>    <span class="hljs-keyword">return</span> content<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_human_eval</span>(<span class="hljs-params">df</span>):<br>    <span class="hljs-comment"># get model evaluation</span><br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;eval_result.json&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>) <span class="hljs-keyword">as</span> f:<br>        data = f.readlines()<br><br>    model_true_cnt = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> sample <span class="hljs-keyword">in</span> data:<br>        sample_dict = json.loads(sample.strip())<br>        <span class="hljs-keyword">if</span> <span class="hljs-string">&#x27;\\boxed&#x27;</span> <span class="hljs-keyword">in</span> sample_dict[<span class="hljs-string">&#x27;pred_answer&#x27;</span>] <span class="hljs-keyword">and</span> sample_dict[<span class="hljs-string">&#x27;is_correct&#x27;</span>]:<br>            model_true_cnt += <span class="hljs-number">1</span><br>    <span class="hljs-comment"># get human evaluation</span><br>    human_true_cnt = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> i, row <span class="hljs-keyword">in</span> df.iterrows():<br>        <span class="hljs-keyword">if</span> row[<span class="hljs-string">&#x27;Human Evaluation&#x27;</span>]:<br>            human_true_cnt += <span class="hljs-number">1</span><br>    <span class="hljs-keyword">return</span> (<span class="hljs-string">f&quot;Update <span class="hljs-subst">&#123;human_true_cnt&#125;</span> samples with human evaluation, \n&quot;</span><br>            <span class="hljs-string">f&quot;Total Accuracy: <span class="hljs-subst">&#123;model_true_cnt + human_true_cnt&#125;</span>/<span class="hljs-subst">&#123;<span class="hljs-built_in">len</span>(data)&#125;</span> = <span class="hljs-subst">&#123;(model_true_cnt + human_true_cnt)/<span class="hljs-built_in">len</span>(data)&#125;</span>&quot;</span>)<br><br><br><span class="hljs-keyword">with</span> gr.Blocks() <span class="hljs-keyword">as</span> demo:<br>    <span class="hljs-keyword">with</span> gr.Column():<br>        <span class="hljs-keyword">with</span> gr.Row():<br>            table = gr.DataFrame(label=<span class="hljs-string">&#x27;Table&#x27;</span>,<br>                                 value=read_samples(),<br>                                 headers=[<span class="hljs-string">&#x27;No.&#x27;</span>, <span class="hljs-string">&#x27;Question&#x27;</span>, <span class="hljs-string">&#x27;Answer&#x27;</span>, <span class="hljs-string">&#x27;Prediction&#x27;</span>, <span class="hljs-string">&#x27;Human Evaluation&#x27;</span>],<br>                                 interactive=<span class="hljs-literal">True</span>,<br>                                 wrap=<span class="hljs-literal">True</span>)<br>        <span class="hljs-keyword">with</span> gr.Row():<br>            output = gr.Textbox(label=<span class="hljs-string">&#x27;Human Evaluation&#x27;</span>)<br>            submit = gr.Button(<span class="hljs-string">&quot;Search&quot;</span>)<br><br>        submit.click(fn=get_human_eval,<br>                     inputs=table,<br>                     outputs=output)<br><br>demo.launch()<br></code></pre></td></tr></table></figure>
+<p>页面如下：</p>
+<figure>
+<img src="https://s2.loli.net/2024/05/23/986E1j7RkTG4iYe.png" srcset="/img/loading.gif" lazyload
+alt="GSM8K人工确认页面" />
+<figcaption aria-hidden="true">GSM8K人工确认页面</figcaption>
+</figure>
+<p>一般，这些需要人工再次确认的样本为10来条。</p>
+<p>笔者按照这种方式测评了两次，准确率分为为 <code>79.68%</code> 和
+<code>79.4%</code>。</p>
+<h3 id="math测评">MATH测评</h3>
+<p><strong>MATH</strong>数据集的测评难度较大，一方面其测试集为5000条，题目本身难度大，另一方面，虽然其最终答案用包围起来，与我们微调后的模型一致，但最终答案表述一般比较多变，形式多样，有分数，根式，多项式，整数，小数等等。</p>
+<p>在其官网Github项目 <code>hendrycks/math</code>
+中，提供了用于判断两个最终答案是否相等的代码脚本
+<strong>math_equivalence.py</strong> ，网址为：<a
+target="_blank" rel="noopener" href="https://github.com/hendrycks/math/blob/main/modeling/math_equivalence.py"
+class="uri">https://github.com/hendrycks/math/blob/main/modeling/math_equivalence.py</a>
+. 笔者对其稍加改造，引入分数与小数是否相等的判断（误差为10^-6）。</p>
+<p>使用新的判断标准，测试集上的准确率为39.02%。但这仍然避免不了，有些预测答案与最终答案相等，却被误判了，这是因为笔者构建微调数据集时，执行Python代码得到的是float浮点数，而最终答案一般为分数，根式，或者含pi的表达式等等各种形式，因此，我们还是需要人工确认。</p>
+<p>同样地，我们使用Gradio构建人工确认页面，其代码、思路与之前的GSM8K人工确认页面类似，这里不再赘述，有兴趣的读者可参考本文最后给出的Github项目网址。</p>
+<p>经过人工再次确认，最终的准确率调整为 <code>43.58%</code> 。
+这个结果，超过原生的<code>Qwen1.5-32B</code>模型约7.5个百分点，超过了<code>Qwen1.5-72B</code>模型、<code>Yi-1.5-34B</code>、<code>LLama-3-70B</code>等一种模型，这无疑是对笔者的一个重大激励。但该模型与顶尖的GPT-4o模型仍有非常大的差距！</p>
+<p>为了后续的大模型数学解题能力的提升需要，我们需要对这个测评结果进行一些可视化分数，方便我们后续的分析与对比。</p>
+<ul>
+<li>不同Level回答正确占总的回答正确的占比</li>
+</ul>
+<p><img src="https://s2.loli.net/2024/05/23/wRHXC1YSP6O9nse.png" srcset="/img/loading.gif" lazyload /></p>
+<ul>
+<li>不同Type回答正确占总的回答正确的的占比</li>
+</ul>
+<p><img src="https://s2.loli.net/2024/05/23/2Xfw9zOynoVNGUM.png" srcset="/img/loading.gif" lazyload /></p>
+<ul>
+<li>不同Type回答正确率条形图</li>
+</ul>
+<p><img src="https://s2.loli.net/2024/05/23/3G97jKSRgcPTWlq.png" srcset="/img/loading.gif" lazyload /></p>
+<ul>
+<li>不同Level回答正确率条形图</li>
+</ul>
+<p><img src="https://s2.loli.net/2024/05/23/OfUs6h3VmLw8pgc.png" srcset="/img/loading.gif" lazyload /></p>
+<p>从上述统计图中，我们可以得到很多结论：</p>
+<ul>
+<li>以回答准确率来说，在Level中以Level
+3的贡献最大，在Type中以Algebra的贡献最大。</li>
+<li>微调后的模型，以Type而言，在Algebra和Prealgebra表现较好，超过了60%，而Precalculus和Intermediate
+Algebra表现较差，不足30%。</li>
+<li>微调后的模型，随着Level的上升，其准确率呈阶梯式下降规律，由此可见不同Level的题目对大模型回答准确率的影响。</li>
+<li>...</li>
+</ul>
+<h3 id="总结">总结</h3>
+<p>本文介绍了如何构建数学解题方面的数据集，以及对大模型进行微调和在<code>GSM8K</code>和<code>MATH</code>数据集上进行测评。</p>
+<p>本文凝聚了笔者近一段时间的研究心血，也是后续探索大模型解题能力方向的一个阶段。个人的一点感受是：初步感受大模型的数学解题能力时是非常享受且很有乐趣的一件事，但到后面为了benchmark进行测评时，则是较为痛苦的事情。但你又不能忽视这些benchmark，毕竟，它们是大模型数学能力的重要评估手段。希望后续在这方面有大的提升。</p>
+<p>本文给出的数据集、测评方案、Python代码，均已开源至Github，欢迎大家访问~</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/percent4/llm_math_solver"
+class="uri">https://github.com/percent4/llm_math_solver</a></p>
+<h3 id="参考文献">参考文献</h3>
+<ol type="1">
+<li>Program of Thoughts Prompting: Disentangling Computation from
+Reasoning for Numerical Reasoning Tasks: <a
+target="_blank" rel="noopener" href="https://openreview.net/forum?id=YfZ4ZPt8zd"
+class="uri">https://openreview.net/forum?id=YfZ4ZPt8zd</a></li>
+<li>GSM8K: <a target="_blank" rel="noopener" href="https://matheval.ai/dataset/gsm8k/"
+class="uri">https://matheval.ai/dataset/gsm8k/</a></li>
+<li>MATH: <a target="_blank" rel="noopener" href="https://matheval.ai/dataset/math/"
+class="uri">https://matheval.ai/dataset/math/</a></li>
+<li><code>Qwen1.5</code>官方网站: <a
+target="_blank" rel="noopener" href="https://qwenlm.github.io/zh/blog/qwen1.5/"
+class="uri">https://qwenlm.github.io/zh/blog/qwen1.5/</a></li>
+<li>Hello GPT-4o: <a target="_blank" rel="noopener" href="https://openai.com/index/hello-gpt-4o/"
+class="uri">https://openai.com/index/hello-gpt-4o/</a></li>
+<li>零一万物官网: <a target="_blank" rel="noopener" href="https://www.lingyiwanwu.com/"
+class="uri">https://www.lingyiwanwu.com/</a></li>
+<li>MathEval 测评数据集: <a target="_blank" rel="noopener" href="https://matheval.ai/dataset/"
+class="uri">https://matheval.ai/dataset/</a></li>
+<li>Measuring Mathematical Problem Solving With the MATH Dataset: <a
+target="_blank" rel="noopener" href="https://github.com/hendrycks/math"
+class="uri">https://github.com/hendrycks/math</a></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" class="print-no-link">#大模型</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（九十九）大模型的数学能力微调及测评</div>
+      <div>https://percent4.github.io/NLP（九十九）大模型的数学能力微调及测评/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年6月19日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/subprocess%E6%A8%A1%E5%9D%97%E4%BD%BF%E7%94%A8%E4%BB%8B%E7%BB%8D/" title="subprocess模块使用介绍">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">subprocess模块使用介绍</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/Huffman%E6%A0%91%E4%B8%8EHuffman%E7%BC%96%E7%A0%81%E7%9A%84Python%E5%AE%9E%E7%8E%B0/" title="Huffman树与Huffman编码的Python实现">
+                        <span class="hidden-mobile">Huffman树与Huffman编码的Python实现</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

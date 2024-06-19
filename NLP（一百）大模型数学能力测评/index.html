@@ -1,0 +1,942 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将介绍基于LLaMA-Factory对Yi-1.5-34B模型在自建数学数据集上进行微调，并对该模型在GSM8K和MATH数据集上进行测评，全面展示大模型数学能力测评方法和结果。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（一百）大模型数学能力测评">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E4%B8%80%E7%99%BE%EF%BC%89%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%95%B0%E5%AD%A6%E8%83%BD%E5%8A%9B%E6%B5%8B%E8%AF%84/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将介绍基于LLaMA-Factory对Yi-1.5-34B模型在自建数学数据集上进行微调，并对该模型在GSM8K和MATH数据集上进行测评，全面展示大模型数学能力测评方法和结果。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2024/05/30/PsFQrenXECHmMo8.png">
+<meta property="og:image" content="https://s2.loli.net/2024/05/23/bZzN1CgSfLnwkTs.png">
+<meta property="og:image" content="https://s2.loli.net/2024/05/30/RBgrMP53jNGEk92.png">
+<meta property="og:image" content="https://s2.loli.net/2024/05/30/cnwqmgEQVMstkBf.png">
+<meta property="og:image" content="https://s2.loli.net/2024/05/30/JRF3LqlvGXxaTYU.png">
+<meta property="og:image" content="https://s2.loli.net/2024/05/30/AhVQdaNEmfBSxKi.png">
+<meta property="og:image" content="https://s2.loli.net/2024/05/30/pDO5ZjETuicJ8y9.png">
+<meta property="article:published_time" content="2024-06-19T02:59:39.000Z">
+<meta property="article:modified_time" content="2024-06-19T03:00:19.804Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="大模型">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2024/05/30/PsFQrenXECHmMo8.png">
+  
+  
+  
+  <title>NLP（一百）大模型数学能力测评 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（一百）大模型数学能力测评"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-06-19 10:59" pubdate>
+          星期三, 六月 19日 2024, 10:59 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          28k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          235 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（一百）大模型数学能力测评</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将介绍基于LLaMA-Factory对Yi-1.5-34B模型在自建数学数据集上进行微调，并对该模型在GSM8K和MATH数据集上进行测评，全面展示大模型数学能力测评方法和结果。</p>
+</blockquote>
+<h3 id="引言">引言</h3>
+<p>在文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486824&amp;idx=1&amp;sn=fd6b36cf78aead227359606a7270516d&amp;chksm=fcb9b4f8cbce3dee332335092f576c703ccdc55598cf45cb7f483f822ba5c72590019384d12a&amp;token=679632047&amp;lang=zh_CN#rd">NLP（九十七）大模型数学解题能力的初步探索</a>中，笔者介绍了对大模型数学解题能力的初步探索，并演示了在微调大约500个样本后，大模型已经初步具备了数学解题的能力。</p>
+<p>在文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486889&amp;idx=1&amp;sn=27c1a40d3af462f43a80a1ed401843f6&amp;chksm=fcb9b439cbce3d2fd73e753618e0b32027314648eb13dc8b48bb9e713ad5313777c1ef27ce46&amp;token=390124673&amp;lang=zh_CN#rd">NLP（九十九）大模型的数学能力微调及测评</a>中，笔者介绍了如何构建数学解题方面数据集（共2402条数据），以及对Qwen1.5-32B模型进行微调，并进行该微调模型的数学能力测评。</p>
+<p>在本文中，笔者已将训练数据集扩充至3480条，关于数据集的构建，在文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486889&amp;idx=1&amp;sn=27c1a40d3af462f43a80a1ed401843f6&amp;chksm=fcb9b439cbce3d2fd73e753618e0b32027314648eb13dc8b48bb9e713ad5313777c1ef27ce46&amp;token=390124673&amp;lang=zh_CN#rd">NLP（九十九）大模型的数学能力微调及测评</a>中已经略有提及。该数据集主要基于POT和COT的范式进行构建，后续将专门写文章来进行详细介绍。训练数据集已经开源至Github，访问网址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/llm_math_solver/blob/main/data_systhesis/data/train_data.json">https://github.com/percent4/llm_math_solver/blob/main/data_systhesis/data/train_data.json</a>
+.</p>
+<p>对该数据集使用<code>LLaMA-Factory</code>框架，对零一万物最新开源的<code>Yi-1.5-34B</code>模型进行微调，并将该微调模型导出为<code>Yi-1.5-34B-math</code>模型，使用下面的命令进行模型推理服务（单卡即可胜任模型推理）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">CUDA_VISIBLE_DEVICES=0 API_PORT=8000 <span class="hljs-built_in">nohup</span> llamafactory-cli api examples/inference/yi15.yaml &amp;<br></code></pre></td></tr></table></figure>
+<p>其中<code>yi15.yaml</code>文件配置如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">model_name_or_path:</span> <span class="hljs-string">/models/Yi-1.5-34B-math</span><br><span class="hljs-attr">template:</span> <span class="hljs-string">yi</span><br><span class="hljs-attr">infer_backend:</span> <span class="hljs-string">vllm</span><br><span class="hljs-attr">vllm_enforce_eager:</span> <span class="hljs-literal">true</span><br></code></pre></td></tr></table></figure>
+<p>接下来，我们将会对<code>GSM8K</code>和<code>MATH</code>数据集进行测评，并详细介绍测评的流程及结果。</p>
+<h3 id="gsm8k测评">GSM8K测评</h3>
+<p><code>GSM8K</code>数据集的测试集共1319条，我们使用上述的模型推理服务，对这些样本进行预测，得到预测文件。</p>
+<p><code>GSM8K</code>测试集的测评脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> re<br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> subprocess<br><span class="hljs-keyword">from</span> rich.progress <span class="hljs-keyword">import</span> track<br><span class="hljs-keyword">from</span> openai <span class="hljs-keyword">import</span> OpenAI<br><span class="hljs-keyword">import</span> logging<br><span class="hljs-keyword">from</span> retry <span class="hljs-keyword">import</span> retry<br><span class="hljs-keyword">from</span> random <span class="hljs-keyword">import</span> choices<br><br>logging.basicConfig(level = logging.INFO, <span class="hljs-built_in">format</span>=<span class="hljs-string">&#x27;%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s&#x27;</span>)<br>logger = logging.getLogger(__name__)<br><br>os.environ[<span class="hljs-string">&quot;OPENAI_BASE_URL&quot;</span>] = <span class="hljs-string">&quot;http://localhost:8000/v1&quot;</span><br>os.environ[<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>] = <span class="hljs-string">&quot;0&quot;</span><br>client = OpenAI()<br><br>execution_desc = [<span class="hljs-string">&quot;运行以上代码，输出会是： &quot;</span>,<br>                  <span class="hljs-string">&quot;现在将上面的代码复制到Python环境中运行，运行结果为：&quot;</span>,<br>                  <span class="hljs-string">&quot;执行上述Python代码，运行结果将是：&quot;</span>,<br>                  <span class="hljs-string">&quot;上面的Python代码执行结果为：&quot;</span>,<br>                  <span class="hljs-string">&quot;运行上述代码，我们可以得到题目要求的答案。输出结果将是：&quot;</span>]<br><br><br><span class="hljs-meta">@retry(<span class="hljs-params">exceptions=Exception, tries=<span class="hljs-number">3</span>, delay=<span class="hljs-number">2</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">question_answer</span>(<span class="hljs-params">query</span>):<br>    messages = [&#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;system&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;你是一个数学解题大师，请解决下面的数学题，给出思考过程，必要时需要给出解题过程中的Python代码。正确答案的数值用\\boxed&#123;&#125;包围起来，最终的答案以因此开头，不要讲多余的废话。&quot;</span>&#125;]<br>    messages.append(&#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">f&quot;题目：<span class="hljs-subst">&#123;query&#125;</span>&quot;</span>&#125;)<br>    result = client.chat.completions.create(messages=messages,<br>                                            model=<span class="hljs-string">&quot;Yi-1.5-34B-Chat-math&quot;</span>,<br>                                            temperature=<span class="hljs-number">0.0</span>,<br>                                            stream=<span class="hljs-literal">True</span>)<br>    reply_message = <span class="hljs-string">&quot;&quot;</span><br>    <span class="hljs-keyword">for</span> chunk <span class="hljs-keyword">in</span> result:<br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">hasattr</span>(chunk, <span class="hljs-string">&quot;choices&quot;</span>) <span class="hljs-keyword">and</span> chunk.choices[<span class="hljs-number">0</span>].delta.content:<br>            reply_message += chunk.choices[<span class="hljs-number">0</span>].delta.content<br><br>    <span class="hljs-comment"># find python code and execute the code</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-string">&#x27;```python&#x27;</span> <span class="hljs-keyword">in</span> reply_message <span class="hljs-keyword">and</span> <span class="hljs-string">&#x27;\n```&#x27;</span> <span class="hljs-keyword">in</span> reply_message:<br>        messages.append(&#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;assistant&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&#x27;```&#x27;</span>.join(reply_message.split(<span class="hljs-string">&#x27;```&#x27;</span>)[:-<span class="hljs-number">1</span>]) + <span class="hljs-string">&#x27;```&#x27;</span>&#125;)<br>        python_code_string = re.findall(<span class="hljs-string">r&#x27;```python\n(.*?)\n```&#x27;</span>, reply_message, re.S)[<span class="hljs-number">0</span>]<br>        python_file_path = <span class="hljs-string">&#x27;temp.py&#x27;</span><br>        <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(python_file_path, <span class="hljs-string">&#x27;w&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>            f.write(python_code_string)<br>        python_code_run = subprocess.run([<span class="hljs-string">&#x27;python3&#x27;</span>, python_file_path], stdout=subprocess.PIPE)<br>        <span class="hljs-keyword">if</span> python_code_run.returncode:<br>            <span class="hljs-keyword">raise</span> RuntimeError(<span class="hljs-string">&quot;生成的Python代码无法运行！&quot;</span>)<br>        python_code_execution = python_code_run.stdout.decode(<span class="hljs-string">&#x27;utf-8&#x27;</span>)<br>        os.remove(python_file_path)<br>        code_reply_str = choices(execution_desc, k=<span class="hljs-number">1</span>)[<span class="hljs-number">0</span>]<br>        code_reply = <span class="hljs-string">f&quot;\n<span class="hljs-subst">&#123;code_reply_str&#125;</span>```<span class="hljs-subst">&#123;python_code_execution.strip()&#125;</span>```\n&quot;</span><br>        reply_message += code_reply<br>        messages.append(&#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: code_reply&#125;)<br>        result = client.chat.completions.create(messages=messages,<br>                                                model=<span class="hljs-string">&quot;Yi-1.5-34B-Chat-math&quot;</span>,<br>                                                temperature=<span class="hljs-number">0.0</span>,<br>                                                stream=<span class="hljs-literal">True</span>)<br>        <br>        final_reply = <span class="hljs-string">&quot;&quot;</span><br>        <span class="hljs-keyword">for</span> chunk <span class="hljs-keyword">in</span> result:<br>            <span class="hljs-keyword">if</span> <span class="hljs-built_in">hasattr</span>(chunk, <span class="hljs-string">&quot;choices&quot;</span>) <span class="hljs-keyword">and</span> chunk.choices[<span class="hljs-number">0</span>].delta.content:<br>                reply_message += chunk.choices[<span class="hljs-number">0</span>].delta.content<br>                final_reply += chunk.choices[<span class="hljs-number">0</span>].delta.content<br>        <span class="hljs-keyword">return</span> final_reply<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-keyword">return</span> reply_message<br><br><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;gsm8k_test.jsonl&#x27;</span>, <span class="hljs-string">&#x27;r&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>    content = f.readlines()<br><br>total_cnt = <span class="hljs-number">0</span><br>correct_cnt = <span class="hljs-number">0</span><br><span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> track(content):<br>    question, answer = json.loads(line.strip())[<span class="hljs-string">&#x27;question&#x27;</span>], json.loads(line.strip())[<span class="hljs-string">&#x27;answer&#x27;</span>]<br>    true_answer_number = answer.split(<span class="hljs-string">&#x27;####&#x27;</span>)[-<span class="hljs-number">1</span>].strip().replace(<span class="hljs-string">&#x27;,&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>)<br>    <span class="hljs-keyword">try</span>:<br>        pred_answer = question_answer(question)<br>    <span class="hljs-keyword">except</span> Exception:<br>        pred_answer = <span class="hljs-string">&#x27;ERROR&#x27;</span><br>    <span class="hljs-keyword">if</span> re.findall(<span class="hljs-string">r&#x27;\\boxed\&#123;.+?&#125;&#x27;</span>, pred_answer) <span class="hljs-keyword">and</span> re.findall(<span class="hljs-string">&#x27;\d+&#x27;</span>, re.findall(<span class="hljs-string">r&#x27;\\boxed\&#123;.+?&#125;&#x27;</span>, pred_answer)[-<span class="hljs-number">1</span>].replace(<span class="hljs-string">&#x27;,&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>)):<br>        pred_answer_number = re.findall(<span class="hljs-string">&#x27;\d+&#x27;</span>, re.findall(<span class="hljs-string">r&#x27;\\boxed\&#123;.+?&#125;&#x27;</span>, pred_answer)[-<span class="hljs-number">1</span>].replace(<span class="hljs-string">&#x27;,&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>))[<span class="hljs-number">0</span>]<br>    <span class="hljs-keyword">else</span>:<br>        pred_answer_number = <span class="hljs-string">&#x27;&#x27;</span><br>    total_cnt += <span class="hljs-number">1</span><br>    logger.info(<span class="hljs-string">&quot;*&quot;</span> * <span class="hljs-number">50</span>)<br>    logger.info(<span class="hljs-string">&#x27;--- &#123;&#125; &#123;&#125; &#123;&#125;&#x27;</span>.<span class="hljs-built_in">format</span>(true_answer_number, pred_answer_number, <span class="hljs-built_in">repr</span>(pred_answer)))<br>    <span class="hljs-keyword">if</span> true_answer_number == pred_answer_number:<br>        correct_cnt += <span class="hljs-number">1</span><br>        <br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;eval_result_yi_15_34b.json&#x27;</span>, <span class="hljs-string">&#x27;a&#x27;</span>, encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>        f.write(json.dumps(&#123;<span class="hljs-string">&quot;is_correct&quot;</span>: true_answer_number == pred_answer_number, <span class="hljs-string">&quot;question&quot;</span>: question, <span class="hljs-string">&quot;answer&quot;</span>: answer, <span class="hljs-string">&quot;pred_answer&quot;</span>: pred_answer&#125;, ensure_ascii=<span class="hljs-literal">False</span>)+<span class="hljs-string">&quot;\n&quot;</span>)<br><br>    logger.info(<span class="hljs-string">&#x27;--- &#123;&#125; &#123;&#125; &#123;&#125;&#x27;</span>.<span class="hljs-built_in">format</span>(total_cnt, correct_cnt, correct_cnt/total_cnt))<br>    <br></code></pre></td></tr></table></figure>
+<p>对于测试样本，微调模型会预测解题过程，如果预测结果中包含Python代码，则使用正则表达式提取出被<code>python\n(...)\n</code>所包围的Python代码字符串，保存为Python脚本，使用<code>subprocess</code>模块执行Python脚本，如果代码执行报错或者超时（有可能为死循环），则会重试预测解题过程，这样最多尝试3次。</p>
+<p>在<code>GSM8K</code>数据集中，测试数据的正确答案在 ####
+后面，而且一般为整数。而我们微调后的模型，在最后生成的回答中，将正确答案用包围起来，这样我们可以直接对比两者的结果，从而给出初步准确率。</p>
+<p>但部分测试样本的最终答案并没有使用包围起来或者有报错（预测结果为<code>ERROR</code>），因此我们需要人工再次确认这些样本。笔者写了一个gradio构建的web页面，用于人工确认，Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> gradio <span class="hljs-keyword">as</span> gr<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">read_samples</span>():<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;eval_result_yi_15_34b.json&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>) <span class="hljs-keyword">as</span> f:<br>        data = f.readlines()<br><br>    content = []<br>    cnt = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> sample <span class="hljs-keyword">in</span> data:<br>        sample_dict = json.loads(sample.strip())<br>        <span class="hljs-keyword">if</span> <span class="hljs-string">&#x27;\\boxed&#x27;</span> <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> sample_dict[<span class="hljs-string">&#x27;pred_answer&#x27;</span>]:<br>            cnt += <span class="hljs-number">1</span><br>            content.append([cnt, sample_dict[<span class="hljs-string">&#x27;question&#x27;</span>],<br>                            sample_dict[<span class="hljs-string">&#x27;answer&#x27;</span>].split(<span class="hljs-string">&#x27;####&#x27;</span>)[-<span class="hljs-number">1</span>].strip(),<br>                            sample_dict[<span class="hljs-string">&#x27;pred_answer&#x27;</span>],<br>                            <span class="hljs-number">0</span>])<br>    <span class="hljs-keyword">return</span> content<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_human_eval</span>(<span class="hljs-params">df</span>):<br>    <span class="hljs-comment"># get model evaluation</span><br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;eval_result_yi_15_34b.json&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>) <span class="hljs-keyword">as</span> f:<br>        data = f.readlines()<br><br>    model_true_cnt = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> sample <span class="hljs-keyword">in</span> data:<br>        sample_dict = json.loads(sample.strip())<br>        <span class="hljs-keyword">if</span> <span class="hljs-string">&#x27;\\boxed&#x27;</span> <span class="hljs-keyword">in</span> sample_dict[<span class="hljs-string">&#x27;pred_answer&#x27;</span>] <span class="hljs-keyword">and</span> sample_dict[<span class="hljs-string">&#x27;is_correct&#x27;</span>]:<br>            model_true_cnt += <span class="hljs-number">1</span><br>    <span class="hljs-comment"># get human evaluation</span><br>    human_true_cnt = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> i, row <span class="hljs-keyword">in</span> df.iterrows():<br>        <span class="hljs-keyword">if</span> row[<span class="hljs-string">&#x27;Human Evaluation&#x27;</span>]:<br>            human_true_cnt += <span class="hljs-number">1</span><br>    <span class="hljs-keyword">return</span> (<span class="hljs-string">f&quot;Update <span class="hljs-subst">&#123;human_true_cnt&#125;</span> samples with human evaluation, \n&quot;</span><br>            <span class="hljs-string">f&quot;Total Accuracy: <span class="hljs-subst">&#123;model_true_cnt + human_true_cnt&#125;</span>/<span class="hljs-subst">&#123;<span class="hljs-built_in">len</span>(data)&#125;</span> = <span class="hljs-subst">&#123;(model_true_cnt + human_true_cnt)/<span class="hljs-built_in">len</span>(data)&#125;</span>&quot;</span>)<br><br><br><span class="hljs-keyword">with</span> gr.Blocks() <span class="hljs-keyword">as</span> demo:<br>    <span class="hljs-keyword">with</span> gr.Column():<br>        <span class="hljs-keyword">with</span> gr.Row():<br>            table = gr.DataFrame(label=<span class="hljs-string">&#x27;Table&#x27;</span>,<br>                                 value=read_samples(),<br>                                 headers=[<span class="hljs-string">&#x27;No.&#x27;</span>, <span class="hljs-string">&#x27;Question&#x27;</span>, <span class="hljs-string">&#x27;Answer&#x27;</span>, <span class="hljs-string">&#x27;Prediction&#x27;</span>, <span class="hljs-string">&#x27;Human Evaluation&#x27;</span>],<br>                                 interactive=<span class="hljs-literal">True</span>,<br>                                 wrap=<span class="hljs-literal">True</span>)<br>        <span class="hljs-keyword">with</span> gr.Row():<br>            output = gr.Textbox(label=<span class="hljs-string">&#x27;Human Evaluation&#x27;</span>)<br>            submit = gr.Button(<span class="hljs-string">&quot;Search&quot;</span>)<br><br>        submit.click(fn=get_human_eval,<br>                     inputs=table,<br>                     outputs=output)<br><br>demo.launch()<br></code></pre></td></tr></table></figure>
+<p>人工确认页面如下图：</p>
+<figure>
+<img src="https://s2.loli.net/2024/05/30/PsFQrenXECHmMo8.png" srcset="/img/loading.gif" lazyload
+alt="GSM8K测评——人工确认页面" />
+<figcaption aria-hidden="true">GSM8K测评——人工确认页面</figcaption>
+</figure>
+<p>经过人工再次确认后，我们就能得到微调模型在<code>GSM8K</code>测试集上的准确率了。</p>
+<p>笔者按照这种方式测评方式对<code>GSM8K</code>测试集进行了两次测评，准确率均为
+<code>83.47%</code>，这其中预测出错的样本共8个。</p>
+<h3 id="math测评">MATH测评</h3>
+<p><img
+src="https://raw.githubusercontent.com/hendrycks/math/main/dataset_comparison.png" srcset="/img/loading.gif" lazyload /></p>
+<h4 id="模型预测">模型预测</h4>
+<p><code>MATH</code>数据集的测试集共5000条，我们使用上述的模型推理服务，对这些样本进行预测，得到预测文件，推理过程较为漫长，在笔者单卡A100上需要大概1半天的时间。</p>
+<p>预测脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> re<br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> subprocess<br><span class="hljs-keyword">from</span> rich.progress <span class="hljs-keyword">import</span> track<br><span class="hljs-keyword">from</span> openai <span class="hljs-keyword">import</span> OpenAI<br><span class="hljs-keyword">import</span> logging<br><span class="hljs-keyword">from</span> retry <span class="hljs-keyword">import</span> retry<br><span class="hljs-keyword">from</span> random <span class="hljs-keyword">import</span> choices<br><br>logging.basicConfig(level = logging.INFO, <span class="hljs-built_in">format</span>=<span class="hljs-string">&#x27;%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s&#x27;</span>)<br>logger = logging.getLogger(__name__)<br><br>os.environ[<span class="hljs-string">&quot;OPENAI_BASE_URL&quot;</span>] = <span class="hljs-string">&quot;http://localhost:8000/v1&quot;</span><br>os.environ[<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>] = <span class="hljs-string">&quot;0&quot;</span><br>client = OpenAI()<br><br>execution_desc = [<span class="hljs-string">&quot;运行以上代码，输出会是： &quot;</span>,<br>                  <span class="hljs-string">&quot;现在将上面的代码复制到Python环境中运行，运行结果为：&quot;</span>,<br>                  <span class="hljs-string">&quot;执行上述Python代码，运行结果将是：&quot;</span>,<br>                  <span class="hljs-string">&quot;上面的Python代码执行结果为：&quot;</span>,<br>                  <span class="hljs-string">&quot;运行上述代码，我们可以得到题目要求的答案。输出结果将是：&quot;</span>]<br><br><span class="hljs-meta">@retry(<span class="hljs-params">exceptions=Exception, tries=<span class="hljs-number">3</span>, delay=<span class="hljs-number">2</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">question_answer</span>(<span class="hljs-params">query</span>):<br>    messages = [&#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;system&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;你是一个数学解题大师，请解决下面的数学题，给出思考过程，必要时需要给出解题过程中的Python代码。正确答案的数值用\\boxed&#123;&#125;包围起来，最终的答案以因此开头，不要讲多余的废话。&quot;</span>&#125;]<br>    messages.append(&#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">f&quot;题目：<span class="hljs-subst">&#123;query&#125;</span>&quot;</span>&#125;)<br>    result = client.chat.completions.create(messages=messages, <br>                                            model=<span class="hljs-string">&quot;Yi-1.5-34B-math&quot;</span>,<br>                                            temperature=<span class="hljs-number">0.2</span>,<br>                                            stream=<span class="hljs-literal">True</span>)<br>    reply_message = <span class="hljs-string">&quot;&quot;</span><br>    <span class="hljs-keyword">for</span> chunk <span class="hljs-keyword">in</span> result:<br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">hasattr</span>(chunk, <span class="hljs-string">&quot;choices&quot;</span>) <span class="hljs-keyword">and</span> chunk.choices[<span class="hljs-number">0</span>].delta.content:<br>            reply_message += chunk.choices[<span class="hljs-number">0</span>].delta.content<br><br>    <span class="hljs-comment"># find python code and execute the code</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-string">&#x27;```python&#x27;</span> <span class="hljs-keyword">in</span> reply_message <span class="hljs-keyword">and</span> <span class="hljs-string">&#x27;\n```&#x27;</span> <span class="hljs-keyword">in</span> reply_message:<br>        messages.append(&#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;assistant&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: reply_message&#125;)<br>        python_code_string = re.findall(<span class="hljs-string">r&#x27;```python\n(.*?)\n```&#x27;</span>, reply_message, re.S)[<span class="hljs-number">0</span>]<br>        python_file_path = <span class="hljs-string">&#x27;temp.py&#x27;</span><br>        <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(python_file_path, <span class="hljs-string">&#x27;w&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>            f.write(python_code_string)<br>        python_code_run = subprocess.run([<span class="hljs-string">&#x27;python3&#x27;</span>, python_file_path], stdout=subprocess.PIPE, timeout=<span class="hljs-number">10</span>)<br>        <span class="hljs-keyword">if</span> python_code_run.returncode:<br>            <span class="hljs-keyword">raise</span> RuntimeError(<span class="hljs-string">&quot;生成的Python代码无法运行！&quot;</span>)<br>        python_code_execution = python_code_run.stdout.decode(<span class="hljs-string">&#x27;utf-8&#x27;</span>)<br>        os.remove(python_file_path)<br>        code_reply_str = choices(execution_desc, k=<span class="hljs-number">1</span>)[<span class="hljs-number">0</span>]<br>        code_reply = <span class="hljs-string">f&quot;\n<span class="hljs-subst">&#123;code_reply_str&#125;</span>```<span class="hljs-subst">&#123;python_code_execution.strip()&#125;</span>```\n&quot;</span><br>        reply_message += code_reply<br>        messages.append(&#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: code_reply&#125;)<br>        result = client.chat.completions.create(messages=messages, <br>                                            model=<span class="hljs-string">&quot;Yi-1.5-34B-math&quot;</span>,<br>                                            temperature=<span class="hljs-number">0.2</span>,<br>                                            stream=<span class="hljs-literal">True</span>)<br>        <br>        final_reply = <span class="hljs-string">&quot;&quot;</span><br>        <span class="hljs-keyword">for</span> chunk <span class="hljs-keyword">in</span> result:<br>            <span class="hljs-keyword">if</span> <span class="hljs-built_in">hasattr</span>(chunk, <span class="hljs-string">&quot;choices&quot;</span>) <span class="hljs-keyword">and</span> chunk.choices[<span class="hljs-number">0</span>].delta.content:<br>                reply_message += chunk.choices[<span class="hljs-number">0</span>].delta.content<br>                final_reply += chunk.choices[<span class="hljs-number">0</span>].delta.content<br>        <span class="hljs-keyword">return</span> final_reply<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-keyword">return</span> reply_message<br><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;math_test.jsonl&#x27;</span>, <span class="hljs-string">&#x27;r&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>    content = f.readlines()<br><br>samples = []<br>i = <span class="hljs-number">1</span><br><span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> track(content):<br>    data = json.loads(line.strip())<br>    question, answer = data[<span class="hljs-string">&#x27;problem&#x27;</span>], data[<span class="hljs-string">&#x27;solution&#x27;</span>]<br>    <span class="hljs-keyword">try</span>:<br>        pred_answer = question_answer(question)<br>    <span class="hljs-keyword">except</span>:<br>        pred_answer = <span class="hljs-string">&quot;ERROR&quot;</span><br>    data.update(&#123;<span class="hljs-string">&quot;predict_answer&quot;</span>: pred_answer&#125;)<br>    logger.info(<span class="hljs-string">&quot;*&quot;</span> * <span class="hljs-number">50</span>)<br>    logger.info(<span class="hljs-string">&#x27;--- &#123;&#125; true: &#123;&#125;&#x27;</span>.<span class="hljs-built_in">format</span>(i, <span class="hljs-built_in">repr</span>(answer)))<br>    logger.info(<span class="hljs-string">&#x27;--- &#123;&#125; pred: &#123;&#125;&#x27;</span>.<span class="hljs-built_in">format</span>(i, <span class="hljs-built_in">repr</span>(pred_answer)))<br>    i += <span class="hljs-number">1</span><br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;math_eval_result.json&#x27;</span>, <span class="hljs-string">&#x27;a&#x27;</span>, encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>        f.write(json.dumps(data, ensure_ascii=<span class="hljs-literal">False</span>)+<span class="hljs-string">&quot;\n&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>可以看到，该预测脚本与上述的<code>GSM8K</code>测评大致相同，只是缺少了准确率统计步骤。这是因为，<code>MATH</code>测试集的最终答案虽然用包围起来，但表达形式多样，且有些较为复杂，包含根式，分数，含pi表达式，多项式，区间等等。当然，微调模型的最终答案也用包围起来。</p>
+<p>因此，如何判定预测答案与标准答案是否一致，这是一件困难的事情。</p>
+<h4 id="答案一致判定">答案一致判定</h4>
+<p>在Github项目 <code>hendrycks/math</code>
+中，提供了用于判断两个最终答案是否相等的代码脚本
+<strong>math_equivalence.py</strong> ，网址为：<a
+target="_blank" rel="noopener" href="https://github.com/hendrycks/math/blob/main/modeling/math_equivalence.py"
+class="uri">https://github.com/hendrycks/math/blob/main/modeling/math_equivalence.py</a>
+.
+笔者对其稍加改造，引入分数与小数是否相等的判断（误差为10^-6），代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># @file: math_equivalence.py</span><br><br><span class="hljs-keyword">import</span> re<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">_fix_fracs</span>(<span class="hljs-params">string</span>):<br>    substrs = string.split(<span class="hljs-string">&quot;\\frac&quot;</span>)<br>    new_str = substrs[<span class="hljs-number">0</span>]<br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(substrs) &gt; <span class="hljs-number">1</span>:<br>        substrs = substrs[<span class="hljs-number">1</span>:]<br>        <span class="hljs-keyword">for</span> substr <span class="hljs-keyword">in</span> substrs:<br>            new_str += <span class="hljs-string">&quot;\\frac&quot;</span><br>            <span class="hljs-keyword">if</span> substr[<span class="hljs-number">0</span>] == <span class="hljs-string">&quot;&#123;&quot;</span>:<br>                new_str += substr<br>            <span class="hljs-keyword">else</span>:<br>                <span class="hljs-keyword">try</span>:<br>                    <span class="hljs-keyword">assert</span> <span class="hljs-built_in">len</span>(substr) &gt;= <span class="hljs-number">2</span><br>                <span class="hljs-keyword">except</span>:<br>                    <span class="hljs-keyword">return</span> string<br>                a = substr[<span class="hljs-number">0</span>]<br>                b = substr[<span class="hljs-number">1</span>]<br>                <span class="hljs-keyword">if</span> b != <span class="hljs-string">&quot;&#123;&quot;</span>:<br>                    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(substr) &gt; <span class="hljs-number">2</span>:<br>                        post_substr = substr[<span class="hljs-number">2</span>:]<br>                        new_str += <span class="hljs-string">&quot;&#123;&quot;</span> + a + <span class="hljs-string">&quot;&#125;&#123;&quot;</span> + b + <span class="hljs-string">&quot;&#125;&quot;</span> + post_substr<br>                    <span class="hljs-keyword">else</span>:<br>                        new_str += <span class="hljs-string">&quot;&#123;&quot;</span> + a + <span class="hljs-string">&quot;&#125;&#123;&quot;</span> + b + <span class="hljs-string">&quot;&#125;&quot;</span><br>                <span class="hljs-keyword">else</span>:<br>                    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(substr) &gt; <span class="hljs-number">2</span>:<br>                        post_substr = substr[<span class="hljs-number">2</span>:]<br>                        new_str += <span class="hljs-string">&quot;&#123;&quot;</span> + a + <span class="hljs-string">&quot;&#125;&quot;</span> + b + post_substr<br>                    <span class="hljs-keyword">else</span>:<br>                        new_str += <span class="hljs-string">&quot;&#123;&quot;</span> + a + <span class="hljs-string">&quot;&#125;&quot;</span> + b<br>    string = new_str<br>    <span class="hljs-keyword">return</span> string<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">_fix_a_slash_b</span>(<span class="hljs-params">string</span>):<br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(string.split(<span class="hljs-string">&quot;/&quot;</span>)) != <span class="hljs-number">2</span>:<br>        <span class="hljs-keyword">return</span> string<br>    a = string.split(<span class="hljs-string">&quot;/&quot;</span>)[<span class="hljs-number">0</span>]<br>    b = string.split(<span class="hljs-string">&quot;/&quot;</span>)[<span class="hljs-number">1</span>]<br>    <span class="hljs-keyword">try</span>:<br>        a = <span class="hljs-built_in">int</span>(a)<br>        b = <span class="hljs-built_in">int</span>(b)<br>        <span class="hljs-keyword">assert</span> string == <span class="hljs-string">&quot;&#123;&#125;/&#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(a, b)<br>        new_string = <span class="hljs-string">&quot;\\frac&#123;&quot;</span> + <span class="hljs-built_in">str</span>(a) + <span class="hljs-string">&quot;&#125;&#123;&quot;</span> + <span class="hljs-built_in">str</span>(b) + <span class="hljs-string">&quot;&#125;&quot;</span><br>        <span class="hljs-keyword">return</span> new_string<br>    <span class="hljs-keyword">except</span>:<br>        <span class="hljs-keyword">return</span> string<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">_remove_right_units</span>(<span class="hljs-params">string</span>):<br>    <span class="hljs-comment"># &quot;\\text&#123; &quot; only ever occurs (at least in the val set) when describing units</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-string">&quot;\\text&#123; &quot;</span> <span class="hljs-keyword">in</span> string:<br>        splits = string.split(<span class="hljs-string">&quot;\\text&#123; &quot;</span>)<br>        <span class="hljs-keyword">assert</span> <span class="hljs-built_in">len</span>(splits) == <span class="hljs-number">2</span><br>        <span class="hljs-keyword">return</span> splits[<span class="hljs-number">0</span>]<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-keyword">return</span> string<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">_fix_sqrt</span>(<span class="hljs-params">string</span>):<br>    <span class="hljs-keyword">if</span> <span class="hljs-string">&quot;\\sqrt&quot;</span> <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> string:<br>        <span class="hljs-keyword">return</span> string<br>    splits = string.split(<span class="hljs-string">&quot;\\sqrt&quot;</span>)<br>    new_string = splits[<span class="hljs-number">0</span>]<br>    <span class="hljs-keyword">for</span> split <span class="hljs-keyword">in</span> splits[<span class="hljs-number">1</span>:]:<br>        <span class="hljs-keyword">if</span> split[<span class="hljs-number">0</span>] != <span class="hljs-string">&quot;&#123;&quot;</span>:<br>            a = split[<span class="hljs-number">0</span>]<br>            new_substr = <span class="hljs-string">&quot;\\sqrt&#123;&quot;</span> + a + <span class="hljs-string">&quot;&#125;&quot;</span> + split[<span class="hljs-number">1</span>:]<br>        <span class="hljs-keyword">else</span>:<br>            new_substr = <span class="hljs-string">&quot;\\sqrt&quot;</span> + split<br>        new_string += new_substr<br>    <span class="hljs-keyword">return</span> new_string<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">_strip_string</span>(<span class="hljs-params">string</span>):<br>    <span class="hljs-comment"># linebreaks</span><br>    string = string.replace(<span class="hljs-string">&quot;\n&quot;</span>, <span class="hljs-string">&quot;&quot;</span>)<br>    <span class="hljs-comment"># print(string)</span><br><br>    <span class="hljs-comment"># remove inverse spaces</span><br>    string = string.replace(<span class="hljs-string">&quot;\\!&quot;</span>, <span class="hljs-string">&quot;&quot;</span>)<br>    <span class="hljs-comment"># print(string)</span><br><br>    <span class="hljs-comment"># replace \\ with \</span><br>    string = string.replace(<span class="hljs-string">&quot;\\\\&quot;</span>, <span class="hljs-string">&quot;\\&quot;</span>)<br>    <span class="hljs-comment"># print(string)</span><br><br>    <span class="hljs-comment"># replace tfrac and dfrac with frac</span><br>    string = string.replace(<span class="hljs-string">&quot;tfrac&quot;</span>, <span class="hljs-string">&quot;frac&quot;</span>)<br>    string = string.replace(<span class="hljs-string">&quot;dfrac&quot;</span>, <span class="hljs-string">&quot;frac&quot;</span>)<br>    <span class="hljs-comment"># print(string)</span><br><br>    <span class="hljs-comment"># remove \left and \right</span><br>    string = string.replace(<span class="hljs-string">&quot;\\left&quot;</span>, <span class="hljs-string">&quot;&quot;</span>)<br>    string = string.replace(<span class="hljs-string">&quot;\\right&quot;</span>, <span class="hljs-string">&quot;&quot;</span>)<br>    <span class="hljs-comment"># print(string)</span><br><br>    <span class="hljs-comment"># Remove circ (degrees)</span><br>    string = string.replace(<span class="hljs-string">&quot;^&#123;\\circ&#125;&quot;</span>, <span class="hljs-string">&quot;&quot;</span>)<br>    string = string.replace(<span class="hljs-string">&quot;^\\circ&quot;</span>, <span class="hljs-string">&quot;&quot;</span>)<br><br>    <span class="hljs-comment"># remove dollar signs</span><br>    string = string.replace(<span class="hljs-string">&quot;\\$&quot;</span>, <span class="hljs-string">&quot;&quot;</span>)<br><br>    <span class="hljs-comment"># remove units (on the right)</span><br>    string = _remove_right_units(string)<br><br>    <span class="hljs-comment"># remove percentage</span><br>    string = string.replace(<span class="hljs-string">&quot;\\%&quot;</span>, <span class="hljs-string">&quot;&quot;</span>)<br>    string = string.replace(<span class="hljs-string">&quot;\%&quot;</span>, <span class="hljs-string">&quot;&quot;</span>)<br><br>    <span class="hljs-comment"># &quot; 0.&quot; equivalent to &quot; .&quot; and &quot;&#123;0.&quot; equivalent to &quot;&#123;.&quot; Alternatively, add &quot;0&quot; if &quot;.&quot; is the start of the string</span><br>    string = string.replace(<span class="hljs-string">&quot; .&quot;</span>, <span class="hljs-string">&quot; 0.&quot;</span>)<br>    string = string.replace(<span class="hljs-string">&quot;&#123;.&quot;</span>, <span class="hljs-string">&quot;&#123;0.&quot;</span>)<br>    <span class="hljs-comment"># if empty, return empty string</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(string) == <span class="hljs-number">0</span>:<br>        <span class="hljs-keyword">return</span> string<br>    <span class="hljs-keyword">if</span> string[<span class="hljs-number">0</span>] == <span class="hljs-string">&quot;.&quot;</span>:<br>        string = <span class="hljs-string">&quot;0&quot;</span> + string<br>    <span class="hljs-comment"># remove .0, .00, .000 in float number</span><br>    <span class="hljs-keyword">if</span> re.<span class="hljs-keyword">match</span>(<span class="hljs-string">r&#x27;\d+\.0+$&#x27;</span>, string):<br>        string = string.split(<span class="hljs-string">&#x27;.&#x27;</span>)[<span class="hljs-number">0</span>]<br><br>    <span class="hljs-comment"># to consider: get rid of e.g. &quot;k = &quot; or &quot;q = &quot; at beginning</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(string.split(<span class="hljs-string">&quot;=&quot;</span>)) == <span class="hljs-number">2</span>:<br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(string.split(<span class="hljs-string">&quot;=&quot;</span>)[<span class="hljs-number">0</span>]) &lt;= <span class="hljs-number">2</span>:<br>            string = string.split(<span class="hljs-string">&quot;=&quot;</span>)[<span class="hljs-number">1</span>]<br><br>    <span class="hljs-comment"># fix sqrt3 --&gt; sqrt&#123;3&#125;</span><br>    string = _fix_sqrt(string)<br><br>    <span class="hljs-comment"># remove spaces</span><br>    string = string.replace(<span class="hljs-string">&quot; &quot;</span>, <span class="hljs-string">&quot;&quot;</span>)<br><br>    <span class="hljs-comment"># \frac1b or \frac12 --&gt; \frac&#123;1&#125;&#123;b&#125; and \frac&#123;1&#125;&#123;2&#125;, etc. Even works with \frac1&#123;72&#125; (but not \frac&#123;72&#125;1). Also does a/b --&gt; \\frac&#123;a&#125;&#123;b&#125;</span><br>    string = _fix_fracs(string)<br><br>    <span class="hljs-comment"># manually change 0.5 --&gt; \frac&#123;1&#125;&#123;2&#125;</span><br>    <span class="hljs-keyword">if</span> string == <span class="hljs-string">&quot;0.5&quot;</span>:<br>        string = <span class="hljs-string">&quot;\\frac&#123;1&#125;&#123;2&#125;&quot;</span><br><br>    <span class="hljs-comment"># <span class="hljs-doctag">NOTE:</span> X/Y changed to \frac&#123;X&#125;&#123;Y&#125; in dataset, but in simple cases fix in case the model output is X/Y</span><br>    string = _fix_a_slash_b(string)<br><br>    <span class="hljs-keyword">return</span> string<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">is_equiv</span>(<span class="hljs-params">str1, str2, verbose=<span class="hljs-literal">False</span></span>):<br>    <span class="hljs-keyword">if</span> str1 <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">and</span> str2 <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;WARNING: Both None&quot;</span>)<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span><br>    <span class="hljs-keyword">if</span> str1 <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">or</span> str2 <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span><br>    <span class="hljs-comment"># 分数与小数的转换，并比较是否正确</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-string">&#x27;frac&#x27;</span> <span class="hljs-keyword">in</span> str1 <span class="hljs-keyword">and</span> re.<span class="hljs-keyword">match</span>(<span class="hljs-string">r&#x27;\d+\.?\d*$&#x27;</span>, str2):<br>        result = re.findall(<span class="hljs-string">r&#x27;frac&#123;(.*?)&#125;&#123;(.*?)&#125;&#x27;</span>, str1)<br>        nominator, denominator = result[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>], result[<span class="hljs-number">0</span>][<span class="hljs-number">1</span>]<br>        true_value = <span class="hljs-built_in">float</span>(nominator) / <span class="hljs-built_in">float</span>(denominator)<br>        pred_value = <span class="hljs-built_in">float</span>(str2)<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">abs</span>(true_value - pred_value) &lt; <span class="hljs-number">1e-6</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-string">&#x27;frac&#x27;</span> <span class="hljs-keyword">in</span> str2 <span class="hljs-keyword">and</span> re.<span class="hljs-keyword">match</span>(<span class="hljs-string">r&#x27;\d+\.?\d*$&#x27;</span>, str1):<br>        result = re.findall(<span class="hljs-string">r&#x27;frac&#123;(.*?)&#125;&#123;(.*?)&#125;&#x27;</span>, str2)<br>        nominator, denominator = result[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>], result[<span class="hljs-number">0</span>][<span class="hljs-number">1</span>]<br>        true_value = <span class="hljs-built_in">float</span>(nominator) / <span class="hljs-built_in">float</span>(denominator)<br>        pred_value = <span class="hljs-built_in">float</span>(str1)<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">abs</span>(true_value - pred_value) &lt; <span class="hljs-number">1e-6</span><br><br>    <span class="hljs-keyword">try</span>:<br>        ss1 = _strip_string(str1)<br>        ss2 = _strip_string(str2)<br>        <span class="hljs-keyword">if</span> verbose:<br>            <span class="hljs-built_in">print</span>(ss1, ss2)<br>        <span class="hljs-keyword">return</span> ss1 == ss2<br>    <span class="hljs-keyword">except</span>:<br>        <span class="hljs-keyword">return</span> str1 == str2<br></code></pre></td></tr></table></figure>
+<p>对上述判定代码进行单元测试，测试脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> .math_equivalence <span class="hljs-keyword">import</span> is_equiv<br><span class="hljs-keyword">import</span> unittest<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">TestIsEquiv</span>(unittest.TestCase):<br><br>	<span class="hljs-keyword">def</span> <span class="hljs-title function_">test_fractions</span>(<span class="hljs-params">self</span>):<br>		test_in = <span class="hljs-string">&quot;\\tfrac&#123;1&#125;&#123;2&#125; + \\frac1&#123;72&#125;&quot;</span><br>		test_out = <span class="hljs-string">&quot;\\\\frac&#123;1&#125;&#123;2&#125; + 2/3&quot;</span><br>		self.assertFalse(is_equiv(test_in, test_out))<br><br>	<span class="hljs-keyword">def</span> <span class="hljs-title function_">test_order</span>(<span class="hljs-params">self</span>):<br>		test_in = <span class="hljs-string">&quot;10, 4, -2&quot;</span><br>		test_out = <span class="hljs-string">&quot;4, 10, -2&quot;</span><br>		self.assertFalse(is_equiv(test_in, test_out))<br><br>	<span class="hljs-keyword">def</span> <span class="hljs-title function_">test_order2</span>(<span class="hljs-params">self</span>):<br>		test_in = <span class="hljs-string">&quot;10, 4, 2&quot;</span><br>		test_out = <span class="hljs-string">&quot;4, 12, 2&quot;</span><br>		self.assertFalse(is_equiv(test_in, test_out))<br><br>	<span class="hljs-keyword">def</span> <span class="hljs-title function_">test_dfrac</span>(<span class="hljs-params">self</span>):<br>		test_in = <span class="hljs-string">&quot;\\tfrac&#123;1&#125;&#123;2&#125; +\\! \\frac1&#123;72&#125;&quot;</span><br>		test_out = <span class="hljs-string">&quot;\\\\dfrac&#123;1&#125;&#123;2&#125; +\\frac&#123;1&#125;&#123;72&#125;&quot;</span><br>		self.assertTrue(is_equiv(test_in, test_out))<br><br>	<span class="hljs-keyword">def</span> <span class="hljs-title function_">test_units</span>(<span class="hljs-params">self</span>):<br>		test_in = <span class="hljs-string">&quot;10\\text&#123; units&#125;&quot;</span><br>		test_out = <span class="hljs-string">&quot;10 &quot;</span><br>		self.assertTrue(is_equiv(test_in, test_out))<br><br>	<span class="hljs-keyword">def</span> <span class="hljs-title function_">test_units2</span>(<span class="hljs-params">self</span>):<br>		test_in = <span class="hljs-string">&quot;10\\text&#123; units&#125;&quot;</span><br>		test_out = <span class="hljs-string">&quot;100 &quot;</span><br>		self.assertFalse(is_equiv(test_in, test_out))<br><br>	<span class="hljs-keyword">def</span> <span class="hljs-title function_">test_dollars</span>(<span class="hljs-params">self</span>):<br>		test_in = <span class="hljs-string">&quot;10&quot;</span><br>		test_out = <span class="hljs-string">&quot;\\$10&quot;</span><br>		self.assertTrue(is_equiv(test_in, test_out))<br><br>	<span class="hljs-keyword">def</span> <span class="hljs-title function_">test_parentheses</span>(<span class="hljs-params">self</span>):<br>		test_in = <span class="hljs-string">&quot;\\left(x-2\\right)\\left(x+2\\right)&quot;</span><br>		test_out = <span class="hljs-string">&quot;(x-2)(x+2)&quot;</span><br>		self.assertTrue(is_equiv(test_in, test_out))<br><br>	<span class="hljs-keyword">def</span> <span class="hljs-title function_">test_decimals</span>(<span class="hljs-params">self</span>):<br>		test_in = <span class="hljs-string">&quot;0.1, 4, 2&quot;</span><br>		test_out = <span class="hljs-string">&quot;4, .1, 2&quot;</span><br>		self.assertFalse(is_equiv(test_in, test_out))<br><br>	<span class="hljs-keyword">def</span> <span class="hljs-title function_">test_decimals2</span>(<span class="hljs-params">self</span>):<br>		test_in = <span class="hljs-string">&quot;0.1&quot;</span><br>		test_out = <span class="hljs-string">&quot;.1&quot;</span><br>		self.assertTrue(is_equiv(test_in, test_out))<br><br>	<span class="hljs-keyword">def</span> <span class="hljs-title function_">test_percentage</span>(<span class="hljs-params">self</span>):<br>		test_in = <span class="hljs-string">&quot;10\\%&quot;</span><br>		test_out = <span class="hljs-string">&quot;10&quot;</span><br>		self.assertTrue(is_equiv(test_in, test_out))<br><br>	<span class="hljs-keyword">def</span> <span class="hljs-title function_">test_sqrt</span>(<span class="hljs-params">self</span>):<br>		test_in = <span class="hljs-string">&quot;10\\sqrt&#123;3&#125; + \\sqrt4&quot;</span><br>		test_out = <span class="hljs-string">&quot;10\\sqrt3 + \\sqrt&#123;4&#125;&quot;</span><br>		self.assertTrue(is_equiv(test_in, test_out))<br><br>	<span class="hljs-keyword">def</span> <span class="hljs-title function_">test_frac</span>(<span class="hljs-params">self</span>):<br>		test_in = <span class="hljs-string">&quot;\\frac34i&quot;</span><br>		test_out = <span class="hljs-string">&quot;\\frac&#123;3&#125;&#123;4&#125;i&quot;</span><br>		self.assertTrue(is_equiv(test_in, test_out))<br><br>	<span class="hljs-keyword">def</span> <span class="hljs-title function_">test_tfrac</span>(<span class="hljs-params">self</span>):<br>		test_in = <span class="hljs-string">&quot;\\tfrac83&quot;</span><br>		test_out = <span class="hljs-string">&quot;\\frac&#123;8&#125;&#123;3&#125;&quot;</span><br>		self.assertTrue(is_equiv(test_in, test_out))<br><br>	<span class="hljs-keyword">def</span> <span class="hljs-title function_">test_expression</span>(<span class="hljs-params">self</span>):<br>		test_in = <span class="hljs-string">&quot;5x - 7y + 11z + 4 = 0&quot;</span><br>		test_out = <span class="hljs-string">&quot;x + y - z + 2 = 0&quot;</span><br>		self.assertFalse(is_equiv(test_in, test_out))<br><br>	<span class="hljs-keyword">def</span> <span class="hljs-title function_">test_half</span>(<span class="hljs-params">self</span>):<br>		test_in = <span class="hljs-string">&quot;1/2&quot;</span><br>		test_out = <span class="hljs-string">&quot;\\frac&#123;1&#125;&#123;2&#125;&quot;</span><br>		self.assertTrue(is_equiv(test_in, test_out))<br><br>	<span class="hljs-keyword">def</span> <span class="hljs-title function_">test_frac_float</span>(<span class="hljs-params">self</span>):<br>		test_in = <span class="hljs-string">&quot;\\frac&#123;1&#125;&#123;83&#125;&quot;</span><br>		test_out = <span class="hljs-string">&quot;0.012048192771084338&quot;</span><br>		self.assertTrue(is_equiv(test_in, test_out))<br><br>	<span class="hljs-keyword">def</span> <span class="hljs-title function_">test_frac_float_2</span>(<span class="hljs-params">self</span>):<br>		test_in = <span class="hljs-string">&quot;\\frac&#123;1&#125;&#123;6&#125;&quot;</span><br>		test_out = <span class="hljs-string">&quot;0.166666666667&quot;</span><br>		self.assertTrue(is_equiv(test_in, test_out))<br><br>	<span class="hljs-keyword">def</span> <span class="hljs-title function_">test_frac_float_3</span>(<span class="hljs-params">self</span>):<br>		test_in = <span class="hljs-string">&quot;\\frac&#123;8&#125;&#123;45&#125;&quot;</span><br>		test_out = <span class="hljs-string">&quot;0.17777777778&quot;</span><br>		self.assertTrue(is_equiv(test_in, test_out))<br><br>	<span class="hljs-keyword">def</span> <span class="hljs-title function_">test_frac_float_4</span>(<span class="hljs-params">self</span>):<br>		test_in = <span class="hljs-string">&quot;0.015&quot;</span><br>		test_out = <span class="hljs-string">&quot;\\frac&#123;3&#125;&#123;200&#125;&quot;</span><br>		self.assertTrue(is_equiv(test_in, test_out))<br><br>	<span class="hljs-keyword">def</span> <span class="hljs-title function_">test_two_float</span>(<span class="hljs-params">self</span>):<br>		test_in = <span class="hljs-string">&quot;8&quot;</span><br>		test_out = <span class="hljs-string">&quot;8.000000&quot;</span><br>		self.assertTrue(is_equiv(test_in, test_out))<br><br>	<span class="hljs-keyword">def</span> <span class="hljs-title function_">test_case_1</span>(<span class="hljs-params">self</span>):<br>		test_in = <span class="hljs-string">&quot;4x+5&quot;</span><br>		test_out = <span class="hljs-string">&quot;4x + 5&quot;</span><br>		self.assertTrue(is_equiv(test_in, test_out))<br></code></pre></td></tr></table></figure>
+<p>使用命令<code>python3 -m unittest MATH/math_equivalence_test.py -v</code>运行上述单元测试，一共22个测试case，均测试通过。</p>
+<h4 id="初步准确率">初步准确率</h4>
+<p>利用上述答案一致判定方法，我们对微调模型预测后的文件进行初步的准确率统计，Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @file: math_eval_update.py</span><br><span class="hljs-comment"># 对模型评估后的结果加入是否正确的标记</span><br><span class="hljs-keyword">import</span> json<br><br><span class="hljs-keyword">from</span> math_equivalence <span class="hljs-keyword">import</span> is_equiv<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">last_boxed_only_string</span>(<span class="hljs-params">string</span>):<br>    idx = string.rfind(<span class="hljs-string">&quot;\\boxed&quot;</span>)<br>    <span class="hljs-keyword">if</span> idx &lt; <span class="hljs-number">0</span>:<br>        idx = string.rfind(<span class="hljs-string">&quot;\\fbox&quot;</span>)<br>        <span class="hljs-keyword">if</span> idx &lt; <span class="hljs-number">0</span>:<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">None</span><br><br>    i = idx<br>    right_brace_idx = <span class="hljs-literal">None</span><br>    num_left_braces_open = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">while</span> i &lt; <span class="hljs-built_in">len</span>(string):<br>        <span class="hljs-keyword">if</span> string[i] == <span class="hljs-string">&quot;&#123;&quot;</span>:<br>            num_left_braces_open += <span class="hljs-number">1</span><br>        <span class="hljs-keyword">if</span> string[i] == <span class="hljs-string">&quot;&#125;&quot;</span>:<br>            num_left_braces_open -= <span class="hljs-number">1</span><br>            <span class="hljs-keyword">if</span> num_left_braces_open == <span class="hljs-number">0</span>:<br>                right_brace_idx = i<br>                <span class="hljs-keyword">break</span><br>        i += <span class="hljs-number">1</span><br><br>    <span class="hljs-keyword">if</span> right_brace_idx == <span class="hljs-literal">None</span>:<br>        retval = <span class="hljs-literal">None</span><br>    <span class="hljs-keyword">else</span>:<br>        retval = string[idx:right_brace_idx + <span class="hljs-number">1</span>]<br><br>    <span class="hljs-keyword">return</span> retval<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">remove_boxed</span>(<span class="hljs-params">s</span>):<br>    left = <span class="hljs-string">&quot;\\boxed&#123;&quot;</span><br>    <span class="hljs-keyword">try</span>:<br>        <span class="hljs-keyword">assert</span> s[:<span class="hljs-built_in">len</span>(left)] == left<br>        <span class="hljs-keyword">assert</span> s[-<span class="hljs-number">1</span>] == <span class="hljs-string">&quot;&#125;&quot;</span><br>        <span class="hljs-keyword">return</span> s[<span class="hljs-built_in">len</span>(left):-<span class="hljs-number">1</span>]<br>    <span class="hljs-keyword">except</span>:<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">None</span><br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;math_eval_result.json&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> f:<br>        data = f.readlines()<br><br>    correct_cnt = <span class="hljs-number">0</span><br>    content = []<br>    <span class="hljs-keyword">for</span> i, line <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(data):<br>        is_correct = <span class="hljs-literal">False</span><br>        sample = json.loads(line.strip())<br>        true_answer, pred_answer = sample[<span class="hljs-string">&quot;solution&quot;</span>], sample[<span class="hljs-string">&quot;predict_answer&quot;</span>]<br>        <span class="hljs-keyword">try</span>:<br>            true_answer_str = remove_boxed(last_boxed_only_string(true_answer))<br>            pred_answer_str = remove_boxed(last_boxed_only_string(pred_answer))<br>            <span class="hljs-keyword">if</span> pred_answer_str <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">and</span> is_equiv(true_answer_str, pred_answer_str):<br>                correct_cnt += <span class="hljs-number">1</span><br>                is_correct = <span class="hljs-literal">True</span><br>            <span class="hljs-built_in">print</span>(i, true_answer_str, pred_answer_str, correct_cnt, i + <span class="hljs-number">1</span>, correct_cnt/(i+<span class="hljs-number">1</span>))<br>        <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>            <span class="hljs-built_in">print</span>(e)<br>        sample.update(&#123;<span class="hljs-string">&quot;is_correct&quot;</span>: is_correct&#125;)<br>        content.append(sample)<br><br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;math_eval_result_update.json&quot;</span>, <span class="hljs-string">&quot;w&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> f:<br>        <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> content:<br>            f.write(json.dumps(_, ensure_ascii=<span class="hljs-literal">False</span>) + <span class="hljs-string">&quot;\n&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>运行上述代码，得到初步准确率为<code>47.84%</code>。</p>
+<h4 id="人工确认">人工确认</h4>
+<p>当然，和<code>GSM8K</code>数据集一样，我们需要对两边答案不一致的预测样本进行人工确认，因为上述的数学答案一致判定并不能覆盖所有的场景。</p>
+<p>人工确认的Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @file: human_eval_server.py</span><br><span class="hljs-comment"># 对模型评估后的结果进行人工评估，使用gradio实现</span><br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> gradio <span class="hljs-keyword">as</span> gr<br><br><span class="hljs-keyword">from</span> math_eval_update <span class="hljs-keyword">import</span> last_boxed_only_string, remove_boxed<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">read_samples</span>():<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;math_eval_result_update.json&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>) <span class="hljs-keyword">as</span> f:<br>        data = f.readlines()<br><br>    content = []<br>    <span class="hljs-keyword">for</span> i, sample <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(data):<br>        sample_dict = json.loads(sample.strip())<br>        question, true_answer, pred_answer = sample_dict[<span class="hljs-string">&quot;problem&quot;</span>], sample_dict[<span class="hljs-string">&quot;solution&quot;</span>], sample_dict[<span class="hljs-string">&quot;predict_answer&quot;</span>]<br>        <span class="hljs-keyword">try</span>:<br>            true_answer_str = remove_boxed(last_boxed_only_string(true_answer))<br>            pred_answer_str = remove_boxed(last_boxed_only_string(pred_answer))<br>            <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> sample_dict[<span class="hljs-string">&quot;is_correct&quot;</span>] <span class="hljs-keyword">and</span> pred_answer_str:<br>                content.append([i, true_answer_str, pred_answer_str, <span class="hljs-number">0</span>])<br>        <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>            <span class="hljs-comment"># content.append([i, &#x27;&#x27;, &#x27;&#x27;, 0])</span><br>            <span class="hljs-keyword">continue</span><br>    <span class="hljs-keyword">return</span> content<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_human_eval</span>(<span class="hljs-params">df</span>):<br>    <span class="hljs-comment"># get model evaluation</span><br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;math_eval_result_update.json&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>) <span class="hljs-keyword">as</span> f:<br>        data = f.readlines()<br><br>    model_true_cnt = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> sample <span class="hljs-keyword">in</span> data:<br>        sample_dict = json.loads(sample.strip())<br>        <span class="hljs-keyword">if</span> sample_dict[<span class="hljs-string">&quot;is_correct&quot;</span>]:<br>            model_true_cnt += <span class="hljs-number">1</span><br>    <span class="hljs-comment"># get human evaluation</span><br>    human_true_cnt = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> i, row <span class="hljs-keyword">in</span> df.iterrows():<br>        <span class="hljs-keyword">if</span> row[<span class="hljs-string">&#x27;Human Evaluation&#x27;</span>]:<br>            human_true_cnt += <span class="hljs-number">1</span><br>    <span class="hljs-comment"># save human evaluation to json file</span><br>    final_result = [json.loads(line.strip()) <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> data]<br>    <span class="hljs-keyword">for</span> i, row <span class="hljs-keyword">in</span> df.iterrows():<br>        <span class="hljs-keyword">if</span> row[<span class="hljs-string">&#x27;Human Evaluation&#x27;</span>]:<br>            final_result[row[<span class="hljs-string">&#x27;No.&#x27;</span>]][<span class="hljs-string">&quot;is_correct&quot;</span>] = <span class="hljs-literal">True</span><br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;math_eval_result_final.json&quot;</span>, <span class="hljs-string">&quot;w&quot;</span>) <span class="hljs-keyword">as</span> g:<br>        <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> final_result:<br>            g.write(json.dumps(_, ensure_ascii=<span class="hljs-literal">False</span>) + <span class="hljs-string">&#x27;\n&#x27;</span>)<br><br>    <span class="hljs-keyword">return</span> (<span class="hljs-string">f&quot;Update <span class="hljs-subst">&#123;human_true_cnt&#125;</span> samples with human evaluation, \n&quot;</span><br>            <span class="hljs-string">f&quot;Total Accuracy: <span class="hljs-subst">&#123;model_true_cnt + human_true_cnt&#125;</span>/<span class="hljs-subst">&#123;<span class="hljs-built_in">len</span>(data)&#125;</span> = <span class="hljs-subst">&#123;(model_true_cnt + human_true_cnt)/<span class="hljs-built_in">len</span>(data)&#125;</span>&quot;</span>)<br><br><br><span class="hljs-keyword">with</span> gr.Blocks() <span class="hljs-keyword">as</span> demo:<br>    <span class="hljs-keyword">with</span> gr.Column():<br>        <span class="hljs-keyword">with</span> gr.Row():<br>            table = gr.DataFrame(label=<span class="hljs-string">&#x27;Table&#x27;</span>,<br>                                 value=read_samples(),<br>                                 headers=[<span class="hljs-string">&#x27;No.&#x27;</span>, <span class="hljs-string">&#x27;True_Answer_Number&#x27;</span>, <span class="hljs-string">&#x27;Pred_Answer_Number&#x27;</span>, <span class="hljs-string">&#x27;Human Evaluation&#x27;</span>],<br>                                 interactive=<span class="hljs-literal">True</span>,<br>                                 wrap=<span class="hljs-literal">True</span><br>                                 )<br>        <span class="hljs-keyword">with</span> gr.Row():<br>            output = gr.Textbox(label=<span class="hljs-string">&#x27;Human Evaluation&#x27;</span>)<br>            submit = gr.Button(<span class="hljs-string">&quot;Search&quot;</span>)<br><br>        submit.click(fn=get_human_eval,<br>                     inputs=table,<br>                     outputs=output)<br><br>demo.launch()<br></code></pre></td></tr></table></figure>
+<p>经人工确认，最终微调后的<code>Yi-1.5-34B-math</code>模型在<code>MATH</code>测试集上的准确率修正为<code>52.76%</code>，其中包含预测错误样本共89个。</p>
+<p>在<code>MATH</code>测试集的准确率方面，<code>Yi-1.5-34B-math</code>模型超过原生<code>Yi-1.5-34B</code>模型11.76个百分点，超过微调<code>Qwen1.5-32B-math</code>模型9.18个百分点，且非常接近初版GPT-4模型的准确率（52.90%）。</p>
+<p><img src="https://s2.loli.net/2024/05/23/bZzN1CgSfLnwkTs.png" srcset="/img/loading.gif" lazyload /></p>
+<figure>
+<img src="https://s2.loli.net/2024/05/30/RBgrMP53jNGEk92.png" srcset="/img/loading.gif" lazyload
+alt="MATH数据集 Leaderboard" />
+<figcaption aria-hidden="true">MATH数据集 Leaderboard</figcaption>
+</figure>
+<h3 id="指标汇总">指标汇总</h3>
+<p>不同模型经过微调的数学能力测评表如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>数据集</th>
+<th>GSM8K</th>
+<th>MATH</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>QWen1.5-32B</td>
+<td>79.68%</td>
+<td>43.58%</td>
+</tr>
+<tr class="even">
+<td>Yi-1.5-34B</td>
+<td>83.47%</td>
+<td>52.76%</td>
+</tr>
+</tbody>
+</table>
+<p><strong>注意</strong>：QWen1.5-32B 和 Yi-1.5-34B
+微调时的训练集大小不一致，分别为2402和3408，这一点差异需要指出，其余参数均一样。后续将对更多模型在一样的训练集上进行公平测试。</p>
+<p><code>MATH</code>数据集上的测评结果是更值得分析的，指标可视化脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @file: eval_visualization.py</span><br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> plotly.graph_objects <span class="hljs-keyword">as</span> go<br><span class="hljs-keyword">from</span> collections <span class="hljs-keyword">import</span> defaultdict<br><span class="hljs-keyword">from</span> random <span class="hljs-keyword">import</span> shuffle<br><span class="hljs-keyword">from</span> operator <span class="hljs-keyword">import</span> itemgetter<br><br><span class="hljs-comment"># 读取数据</span><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;math_eval_result_final.json&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> f:<br>    data = f.readlines()<br><br>type_dict = defaultdict(<span class="hljs-built_in">int</span>)<br>level_dict = defaultdict(<span class="hljs-built_in">int</span>)<br><span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> data:<br>    sample = json.loads(line.strip())<br>    <span class="hljs-keyword">if</span> sample[<span class="hljs-string">&#x27;is_correct&#x27;</span>]:<br>        type_dict[sample[<span class="hljs-string">&#x27;type&#x27;</span>]] += <span class="hljs-number">1</span><br>        level_dict[sample[<span class="hljs-string">&#x27;level&#x27;</span>]] += <span class="hljs-number">1</span><br><br><span class="hljs-comment"># 绘制类型的饼图</span><br>fig1 = go.Figure(data=go.Pie(labels=<span class="hljs-built_in">list</span>(type_dict.keys()), values=<span class="hljs-built_in">list</span>(type_dict.values())))<br>fig1.update_layout(<br>    title=<span class="hljs-string">&quot;Type Distribution of Correct Answers in MATH&quot;</span>,<br>    font=<span class="hljs-built_in">dict</span>(size=<span class="hljs-number">20</span>)<br>)<br><span class="hljs-comment"># fig1.show()</span><br><span class="hljs-comment"># 绘制Level的饼图</span><br>fig2 = go.Figure(data=go.Pie(labels=<span class="hljs-built_in">list</span>(level_dict.keys()), values=<span class="hljs-built_in">list</span>(level_dict.values())))<br>fig2.update_layout(<br>    title=<span class="hljs-string">&quot;Level Distribution of Correct Answers in MATH&quot;</span>,<br>    font=<span class="hljs-built_in">dict</span>(size=<span class="hljs-number">20</span>)<br>)<br><span class="hljs-comment"># fig2.show()</span><br><br><span class="hljs-comment"># 获取每个类型的正确率</span><br>type_cnt_dict = defaultdict(<span class="hljs-built_in">int</span>)<br>level_cnt_dict = defaultdict(<span class="hljs-built_in">int</span>)<br><span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> data:<br>    sample = json.loads(line.strip())<br>    type_cnt_dict[sample[<span class="hljs-string">&#x27;type&#x27;</span>] + <span class="hljs-string">&#x27;_total&#x27;</span>] += <span class="hljs-number">1</span><br>    level_cnt_dict[sample[<span class="hljs-string">&#x27;level&#x27;</span>] + <span class="hljs-string">&#x27;_total&#x27;</span>] += <span class="hljs-number">1</span><br>    <span class="hljs-keyword">if</span> sample[<span class="hljs-string">&#x27;is_correct&#x27;</span>]:<br>        type_cnt_dict[sample[<span class="hljs-string">&#x27;type&#x27;</span>] + <span class="hljs-string">&#x27;_correct&#x27;</span>] += <span class="hljs-number">1</span><br>        level_cnt_dict[sample[<span class="hljs-string">&#x27;level&#x27;</span>] + <span class="hljs-string">&#x27;_correct&#x27;</span>] += <span class="hljs-number">1</span><br><br>type_correct_ratio = &#123;key: type_cnt_dict[<span class="hljs-string">f&#x27;<span class="hljs-subst">&#123;key&#125;</span>_correct&#x27;</span>]/type_cnt_dict[<span class="hljs-string">f&#x27;<span class="hljs-subst">&#123;key&#125;</span>_total&#x27;</span>] <span class="hljs-keyword">for</span> key <span class="hljs-keyword">in</span> type_dict.keys()&#125;<br>level_correct_ratio = &#123;key: level_cnt_dict[<span class="hljs-string">f&#x27;<span class="hljs-subst">&#123;key&#125;</span>_correct&#x27;</span>]/level_cnt_dict[<span class="hljs-string">f&#x27;<span class="hljs-subst">&#123;key&#125;</span>_total&#x27;</span>] <span class="hljs-keyword">for</span> key <span class="hljs-keyword">in</span> level_dict.keys()&#125;<br>sorted_type_correct_ratio = &#123;k: <span class="hljs-built_in">round</span>(v, <span class="hljs-number">4</span>) <span class="hljs-keyword">for</span> k, v <span class="hljs-keyword">in</span> <span class="hljs-built_in">sorted</span>(type_correct_ratio.items(), key=itemgetter(<span class="hljs-number">1</span>), reverse=<span class="hljs-literal">True</span>)&#125;<br>sorted_level_correct_ratio = &#123;k: <span class="hljs-built_in">round</span>(v, <span class="hljs-number">4</span>) <span class="hljs-keyword">for</span> k, v <span class="hljs-keyword">in</span> <span class="hljs-built_in">sorted</span>(level_correct_ratio.items(), key=itemgetter(<span class="hljs-number">1</span>), reverse=<span class="hljs-literal">True</span>)&#125;<br><br><span class="hljs-comment"># 绘制类型的柱状图</span><br>colors = [<span class="hljs-string">&#x27;red&#x27;</span>, <span class="hljs-string">&#x27;blue&#x27;</span>, <span class="hljs-string">&#x27;green&#x27;</span>, <span class="hljs-string">&#x27;purple&#x27;</span>, <span class="hljs-string">&#x27;orange&#x27;</span>, <span class="hljs-string">&#x27;pink&#x27;</span>, <span class="hljs-string">&#x27;brown&#x27;</span>]<br>shuffle(colors)<br>fig3 = go.Figure(data=[go.Bar(x=<span class="hljs-built_in">list</span>(sorted_type_correct_ratio.keys()),<br>                              y=<span class="hljs-built_in">list</span>(sorted_type_correct_ratio.values()),<br>                              text=<span class="hljs-built_in">list</span>(sorted_type_correct_ratio.values()),<br>                              textposition=<span class="hljs-string">&#x27;auto&#x27;</span>,<br>                              marker=<span class="hljs-built_in">dict</span>(color=colors[:<span class="hljs-built_in">len</span>(type_dict.keys())]),<br>                              textfont=<span class="hljs-built_in">dict</span>(size=<span class="hljs-number">20</span>)<br>                              )])<br>fig3.update_layout(<br>    title=<span class="hljs-string">&quot;Type Correct Ratio of MATH&quot;</span>,<br>    xaxis_title=<span class="hljs-string">&quot;Type&quot;</span>,<br>    yaxis_title=<span class="hljs-string">&quot;Correct Ratio&quot;</span>,<br>    legend_title=<span class="hljs-string">&quot;Type&quot;</span>,<br>    font=<span class="hljs-built_in">dict</span>(size=<span class="hljs-number">20</span>)<br>)<br><span class="hljs-comment"># fig3.show()</span><br><span class="hljs-comment"># 绘制Level的柱状图</span><br>fig4 = go.Figure(data=[go.Bar(x=<span class="hljs-built_in">list</span>(sorted_level_correct_ratio.keys()),<br>                              y=<span class="hljs-built_in">list</span>(sorted_level_correct_ratio.values()),<br>                              text=<span class="hljs-built_in">list</span>(sorted_level_correct_ratio.values()),<br>                              textposition=<span class="hljs-string">&#x27;auto&#x27;</span>,<br>                              marker=<span class="hljs-built_in">dict</span>(color=colors[:<span class="hljs-built_in">len</span>(type_dict.keys())]),<br>                              textfont=<span class="hljs-built_in">dict</span>(size=<span class="hljs-number">20</span>)<br>                              )])<br>fig4.update_layout(<br>    title=<span class="hljs-string">&quot;Level Correct Ratio of MATH&quot;</span>,<br>    xaxis_title=<span class="hljs-string">&quot;Level&quot;</span>,<br>    yaxis_title=<span class="hljs-string">&quot;Correct Ratio&quot;</span>,<br>    legend_title=<span class="hljs-string">&quot;Level&quot;</span>,<br>    font=<span class="hljs-built_in">dict</span>(size=<span class="hljs-number">20</span>)<br>)<br>fig4.show()<br></code></pre></td></tr></table></figure>
+<ul>
+<li>不同Level回答正确占总的回答正确的占比</li>
+</ul>
+<p><img src="https://s2.loli.net/2024/05/30/cnwqmgEQVMstkBf.png" srcset="/img/loading.gif" lazyload /></p>
+<ul>
+<li>不同Type回答正确占总的回答正确的的占比</li>
+</ul>
+<p><img src="https://s2.loli.net/2024/05/30/JRF3LqlvGXxaTYU.png" srcset="/img/loading.gif" lazyload /></p>
+<ul>
+<li>不同Type回答正确率条形图</li>
+</ul>
+<p><img src="https://s2.loli.net/2024/05/30/AhVQdaNEmfBSxKi.png" srcset="/img/loading.gif" lazyload /></p>
+<ul>
+<li>不同Level回答正确率条形图</li>
+</ul>
+<p><img src="https://s2.loli.net/2024/05/30/pDO5ZjETuicJ8y9.png" srcset="/img/loading.gif" lazyload /></p>
+<h3 id="总结">总结</h3>
+<p>本文是大模型数学能力系列文章中的第三篇，旨在介绍如何基于LLaMA-Factory对Yi-1.5-34B模型在自建数学数据集上进行微调，并对该模型在GSM8K和MATH数据集上进行测评，全面展示大模型数学能力测评方法和结果。</p>
+<p>本文对应的测评Python代码已开源至Github，网址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/llm_math_solver">https://github.com/percent4/llm_math_solver</a>
+.</p>
+<p>后续笔者将会介绍如何构建大模型数学解题能力的训练集。</p>
+<h3 id="参考文献">参考文献</h3>
+<ol type="1">
+<li>llm-leaderboard: <a
+target="_blank" rel="noopener" href="https://www.vellum.ai/llm-leaderboard">https://www.vellum.ai/llm-leaderboard</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486824&amp;idx=1&amp;sn=fd6b36cf78aead227359606a7270516d&amp;chksm=fcb9b4f8cbce3dee332335092f576c703ccdc55598cf45cb7f483f822ba5c72590019384d12a&amp;token=679632047&amp;lang=zh_CN#rd">NLP（九十七）大模型数学解题能力的初步探索</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486889&amp;idx=1&amp;sn=27c1a40d3af462f43a80a1ed401843f6&amp;chksm=fcb9b439cbce3d2fd73e753618e0b32027314648eb13dc8b48bb9e713ad5313777c1ef27ce46&amp;token=390124673&amp;lang=zh_CN#rd">NLP（九十九）大模型的数学能力微调及测评</a></li>
+<li>MathEval 测评数据集: <a
+target="_blank" rel="noopener" href="https://matheval.ai/dataset/">https://matheval.ai/dataset/</a></li>
+<li>零一万物官网: <a
+target="_blank" rel="noopener" href="https://www.lingyiwanwu.com/">https://www.lingyiwanwu.com/</a></li>
+<li>hendrycks/math: <a
+target="_blank" rel="noopener" href="https://github.com/hendrycks/math">https://github.com/hendrycks/math</a></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" class="print-no-link">#大模型</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（一百）大模型数学能力测评</div>
+      <div>https://percent4.github.io/NLP（一百）大模型数学能力测评/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年6月19日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/%E4%BD%BF%E7%94%A8Python%E7%BC%96%E5%86%99%E7%AE%80%E5%8D%95%E5%AE%89%E5%8D%93%E5%BA%94%E7%94%A8/" title="使用Python编写简单安卓应用">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">使用Python编写简单安卓应用</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/subprocess%E6%A8%A1%E5%9D%97%E4%BD%BF%E7%94%A8%E4%BB%8B%E7%BB%8D/" title="subprocess模块使用介绍">
+                        <span class="hidden-mobile">subprocess模块使用介绍</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

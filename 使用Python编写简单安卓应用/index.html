@@ -1,0 +1,890 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍如何使用&#96;BeeWare&#96;模块和Python代码来开发安卓应用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Python编写简单安卓应用">
+<meta property="og:url" content="https://percent4.github.io/%E4%BD%BF%E7%94%A8Python%E7%BC%96%E5%86%99%E7%AE%80%E5%8D%95%E5%AE%89%E5%8D%93%E5%BA%94%E7%94%A8/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍如何使用&#96;BeeWare&#96;模块和Python代码来开发安卓应用。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2024/06/05/U3raDOjl1pcmYAG.png">
+<meta property="og:image" content="https://s2.loli.net/2024/06/05/EFa6jV9LmZredbM.jpg">
+<meta property="og:image" content="https://s2.loli.net/2024/06/05/4l1AyaOPRFHUKfw.jpg">
+<meta property="og:image" content="https://s2.loli.net/2024/06/05/3HieX96pzl57U2t.jpg">
+<meta property="article:published_time" content="2024-06-19T03:00:32.000Z">
+<meta property="article:modified_time" content="2024-06-19T03:01:36.879Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="Toga">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2024/06/05/U3raDOjl1pcmYAG.png">
+  
+  
+  
+  <title>使用Python编写简单安卓应用 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="使用Python编写简单安卓应用"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-06-19 11:00" pubdate>
+          星期三, 六月 19日 2024, 11:00 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          5.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          45 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">使用Python编写简单安卓应用</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍如何使用<code>BeeWare</code>模块和Python代码来开发安卓应用。</p>
+</blockquote>
+<p>一般，我们使用Java语言来开发安卓应用，开发体系成熟，工具繁多，流程规范。但对于不懂Java的人，该怎么使用Python语言来开发安卓应用呢？</p>
+<p>在Python中，也提供了一些工具可以用来开发安卓应用，比如<code>Kivy</code>,
+<code>BeeWare</code>等。</p>
+<p>本文将会介绍如何使用<code>BeeWare</code>工具来开发示例的安卓应用。</p>
+<h3 id="介绍">介绍</h3>
+<p><code>BeeWare</code>
+并不是一个单独的产品、工具或库，它是一系列工具和库的集合：每个工具和库都能协同工作，帮助您编写跨平台、具有本地图形用户界面的Python
+应用程序。它包括:</p>
+<ul>
+<li><p>Toga，一个跨平台的 widget (小部件，控件) 工具包;</p></li>
+<li><p>Briefcase，一个用于将Python项目打包为可分发的成品，可以发送给最终用户的工具;</p></li>
+<li><p>库（如 Rubicon ObjC），用于访问平台原生库的库;</p></li>
+<li><p>预编译的Python构建版本，可在官方Python安装程序不可用的平台上使用。</p></li>
+</ul>
+<p>在这个教程中，我们将使用所有这些工具，但作为用户，你只需要与前两个（Toga和Briefcase）互动。然而，每个工具也可以单独使用。例如，你可以使用Briefcase部署应用程序，而不使用Toga作为GUI工具包。</p>
+<p>BeeWare套件可用于：macOS、Windows、Linux；在移动平台如Android和iOS；以及Web上，实现了「一次编写，处处部署」，平台移植能力强。</p>
+<p>本文将会重点介绍如何使用BeeWare套件，将Python程序打包为Android
+App.</p>
+<h4 id="安装">安装</h4>
+<p>安装<code>briefcase</code>:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">pip install briefcase<br></code></pre></td></tr></table></figure>
+<h4 id="创建应用">创建应用</h4>
+<p>使用<code>briefcase new</code>创建一个应用，需要输入
+应用的正式名称（比如：TimeTeller）、应用程序名称、域名、项目名称等信息，一般选择默认配置即可。同时，安装<code>toga</code>模块，该模块可以支持IOS/安卓应用开发。</p>
+<p>创建的Python项目名称为<code>timeteller</code>，切换至该项目。此时项目结构如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ tree .<br>.<br>├── CHANGELOG<br>├── LICENSE<br>├── README.md<br>├── pyproject.toml<br>├── src<br>│   └── timeteller<br>│       ├── __init__.py<br>│       ├── __main__.py<br>│       ├── app.py<br>│       └── resources<br>│           └── README<br>└── tests<br>    ├── __init__.py<br>    ├── test_app.py<br>    └── timeteller.py<br><br>5 directories, 11 files<br></code></pre></td></tr></table></figure>
+<p><code>app.py</code>脚本用于实现安卓应用程序的功能，我们将代码调整如下，使其支持依据时区显示时间：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">The application for telling time</span><br><span class="hljs-string">&quot;&quot;&quot;</span><br><br><span class="hljs-keyword">import</span> toga<br><span class="hljs-keyword">from</span> toga.style <span class="hljs-keyword">import</span> Pack<br><span class="hljs-keyword">from</span> toga.style.pack <span class="hljs-keyword">import</span> COLUMN, ROW<br><span class="hljs-keyword">import</span> pytz<br><span class="hljs-keyword">import</span> datetime<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">TimeTeller</span>(toga.App):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">startup</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;Construct and show the Toga application.</span><br><span class="hljs-string"></span><br><span class="hljs-string">        Usually, you would add your application to a main content box.</span><br><span class="hljs-string">        We then create a main window (with a name matching the app), and</span><br><span class="hljs-string">        show the main window.</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        main_box = toga.Box()<br><br>        location_label = toga.Label(<span class="hljs-string">&quot;Your location: &quot;</span>, style=Pack(padding=(<span class="hljs-number">0</span>, <span class="hljs-number">5</span>)))<br>        self.location_input = toga.TextInput(style=Pack(flex=<span class="hljs-number">1</span>))<br>        location_box = toga.Box(style=Pack(direction=ROW, padding=<span class="hljs-number">5</span>))<br>        location_box.add(location_label)<br>        location_box.add(self.location_input)<br><br>        button = toga.Button(<span class="hljs-string">&quot;Tell Me Time!&quot;</span>, on_press=self.tell_time, style=Pack(padding=<span class="hljs-number">5</span>))<br>        main_box.add(location_box)<br>        main_box.add(button)<br><br>        self.main_window = toga.MainWindow(title=self.formal_name)<br>        self.main_window.content = main_box<br>        self.main_window.show()<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">tell_time</span>(<span class="hljs-params">self, widget</span>):<br>        location = self.location_input.value<br>        location_dict = &#123;<span class="hljs-string">&quot;上海&quot;</span>: <span class="hljs-string">&quot;Asia/Shanghai&quot;</span>,<br>                         <span class="hljs-string">&quot;Shanghai&quot;</span>: <span class="hljs-string">&quot;Asia/Shanghai&quot;</span>,<br>                         <span class="hljs-string">&quot;shanghai&quot;</span>: <span class="hljs-string">&quot;Asia/Shanghai&quot;</span>,<br>                         <span class="hljs-string">&quot;sh&quot;</span>: <span class="hljs-string">&quot;Asia/Shanghai&quot;</span>,<br>                         <span class="hljs-string">&quot;SH&quot;</span>: <span class="hljs-string">&quot;Asia/Shanghai&quot;</span>,<br>                         <span class="hljs-string">&quot;东京&quot;</span>: <span class="hljs-string">&quot;Asia/Tokyo&quot;</span>,<br>                         <span class="hljs-string">&quot;Tokyo&quot;</span>: <span class="hljs-string">&quot;Asia/Tokyo&quot;</span>,<br>                         <span class="hljs-string">&quot;tokyo&quot;</span>: <span class="hljs-string">&quot;Asia/Tokyo&quot;</span>,<br>                         <span class="hljs-string">&quot;伦敦&quot;</span>: <span class="hljs-string">&quot;Europe/London&quot;</span>,<br>                         <span class="hljs-string">&quot;London&quot;</span>: <span class="hljs-string">&quot;Europe/London&quot;</span>,<br>                         <span class="hljs-string">&quot;london&quot;</span>: <span class="hljs-string">&quot;Europe/London&quot;</span>,<br>                         <span class="hljs-string">&quot;纽约&quot;</span>: <span class="hljs-string">&quot;America/New_York&quot;</span>,<br>                         <span class="hljs-string">&quot;New York&quot;</span>: <span class="hljs-string">&quot;America/New_York&quot;</span>,<br>                         <span class="hljs-string">&quot;new york&quot;</span>: <span class="hljs-string">&quot;America/New_York&quot;</span>,<br>                         <span class="hljs-string">&quot;NY&quot;</span>: <span class="hljs-string">&quot;America/New_York&quot;</span>&#125;<br>        loc = location_dict.get(location, <span class="hljs-string">&quot;Asia/Shanghai&quot;</span>)<br>        self.main_window.info_dialog(<br>            location, datetime.datetime.now(tz=pytz.timezone(loc)).strftime(<span class="hljs-string">&quot;%Y-%m-%d %H:%M:%S %A&quot;</span>)<br>        )<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    <span class="hljs-keyword">return</span> TimeTeller()<br></code></pre></td></tr></table></figure>
+<h4 id="调试">调试</h4>
+<p>在Windows、MacOS或Linux系统中可以对上述应用程序进行用户界面调试，使用命令为：<code>briefcase dev</code>，界面如下：</p>
+<figure>
+<img src="https://s2.loli.net/2024/06/05/U3raDOjl1pcmYAG.png" srcset="/img/loading.gif" lazyload
+alt="GUI界面" />
+<figcaption aria-hidden="true">GUI界面</figcaption>
+</figure>
+<h4 id="配置调整">配置调整</h4>
+<p>在打包之前，有一点需要重点强调。我们的应用程序中，用到了Python的第三方模块<code>pytz</code>，因此在打包前需要将该模块加入至安卓配置中。对项目中的<code>pyproject.toml</code>文件内的[tool.briefcase.app.timeteller.android]配置进行修改，如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">[tool.briefcase.app.timeteller.android]<br>requires = [<br>    <span class="hljs-string">&quot;toga-android~=0.4.0&quot;</span>,<br>    <span class="hljs-string">&quot;pytz~=2023.3&quot;</span>,<br>]<br></code></pre></td></tr></table></figure>
+<p>如果在项目开发中没有用到Python第三方模块，则可略过上述配置过程，使用默认配置即可，但一般我们的Python项目都会用到第三方模块。</p>
+<h4 id="打包">打包</h4>
+<p>上述GUI界面功能验证OK，我们需要将上述项目打包为安卓应用。</p>
+<p>创建应用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">briefcase create android<br></code></pre></td></tr></table></figure>
+<p>构建安卓应用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">briefcase build android<br></code></pre></td></tr></table></figure>
+<p>打包时间为<code>12m 36s</code>，打包后的文件路径为： Built
+android-debug.apk
+，文件大小为40.4MB。初次打包时耗时较长，后续打包耗时会比较短，基本在一分钟内即可完成打包。本文是在自己的Mac电脑上打包的，当然也可以在Windows或Linux系统中打包。</p>
+<p>这样就得到了我们所需的安卓应用包，格式为apk，可以直接在手机上进行安装。</p>
+<p>创建完后，可以在电脑端使用安卓虚拟器进行应用测试。本文将略过这个步骤，直接在手机上安装该App，并进行功能测试。</p>
+<figure>
+<img src="https://s2.loli.net/2024/06/05/EFa6jV9LmZredbM.jpg" srcset="/img/loading.gif" lazyload
+alt="初始界面" />
+<figcaption aria-hidden="true">初始界面</figcaption>
+</figure>
+<figure>
+<img src="https://s2.loli.net/2024/06/05/4l1AyaOPRFHUKfw.jpg" srcset="/img/loading.gif" lazyload
+alt="时间显示界面" />
+<figcaption aria-hidden="true">时间显示界面</figcaption>
+</figure>
+<h3 id="其它例子">其它例子</h3>
+<p>在上述的例子中，我们创建了一个名为<code>TimeTeller</code>的应用程序，使用Python代码开发，利用<code>BeeWare</code>工具将其打包为安卓应用，并测试了功能实现是正常的。</p>
+<p>接下来，我们将开发一个<code>WordSegment</code>的安卓App，用于将用户输入的句子进行中文分词。打包的完整流程与之前类似，<code>app.py</code>实现代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">the application for Chinese Word segment.</span><br><span class="hljs-string">&quot;&quot;&quot;</span><br><br><span class="hljs-keyword">import</span> toga<br><span class="hljs-keyword">from</span> toga.style <span class="hljs-keyword">import</span> Pack<br><span class="hljs-keyword">from</span> toga.style.pack <span class="hljs-keyword">import</span> COLUMN, ROW<br><span class="hljs-keyword">import</span> jieba<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">WordSegment</span>(toga.App):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">startup</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;Construct and show the Toga application.</span><br><span class="hljs-string"></span><br><span class="hljs-string">        Usually, you would add your application to a main content box.</span><br><span class="hljs-string">        We then create a main window (with a name matching the app), and</span><br><span class="hljs-string">        show the main window.</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        main_box = toga.Box()<br><br>        sentence = toga.Label(<span class="hljs-string">&quot;句子: &quot;</span>, style=Pack(padding=(<span class="hljs-number">0</span>, <span class="hljs-number">10</span>)))<br>        self._<span class="hljs-built_in">input</span> = toga.TextInput(style=Pack(flex=<span class="hljs-number">1</span>))<br>        input_box = toga.Box(style=Pack(direction=ROW, padding=<span class="hljs-number">10</span>))<br>        input_box.add(sentence)<br>        input_box.add(self._<span class="hljs-built_in">input</span>)<br><br>        button = toga.Button(<span class="hljs-string">&quot;提交&quot;</span>, on_press=self.segment, style=Pack(padding=<span class="hljs-number">10</span>))<br>        main_box.add(input_box)<br>        main_box.add(button)<br><br>        self.main_window = toga.MainWindow(title=self.formal_name)<br>        self.main_window.content = main_box<br>        self.main_window.show()<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">segment</span>(<span class="hljs-params">self, widget</span>):<br>        self.main_window.info_dialog(<br>            <span class="hljs-string">&quot;分词结果&quot;</span>,<br>            <span class="hljs-string">&quot;/&quot;</span>.join(jieba.cut(self._<span class="hljs-built_in">input</span>.value, cut_all=<span class="hljs-literal">False</span>))<br>        )<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    <span class="hljs-keyword">return</span> WordSegment()<br><br></code></pre></td></tr></table></figure>
+<p>App效果如下：</p>
+<figure>
+<img src="https://s2.loli.net/2024/06/05/3HieX96pzl57U2t.jpg" srcset="/img/loading.gif" lazyload
+alt="中文分词应用" />
+<figcaption aria-hidden="true">中文分词应用</figcaption>
+</figure>
+<h3 id="总结">总结</h3>
+<p>本文介绍了如何使用<code>BeeWare</code>模块和Python代码来开发安卓应用，演示了<code>TimeTeller</code>应用程序的完整打包流程，并介绍了一个更有趣的应用：<code>WordSegment</code>（中文分词）应用。</p>
+<p>本文所演示的<code>TimeTeller</code>项目已上传至Github，网址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/TimeTeller_in_Android">https://github.com/percent4/TimeTeller_in_Android</a>
+.</p>
+<h3 id="参考文献">参考文献</h3>
+<ol type="1">
+<li>BeeWare 教程: https://docs.beeware.org/zh-cn/latest/index.html</li>
+<li>用 Python 编写安卓 APK
+，简单几步搞定：https://zhuanlan.zhihu.com/p/398126847</li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Python/" class="category-chain-item">Python</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Toga/" class="print-no-link">#Toga</a>
+      
+        <a href="/tags/Android/" class="print-no-link">#Android</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>使用Python编写简单安卓应用</div>
+      <div>https://percent4.github.io/使用Python编写简单安卓应用/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年6月19日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E9%9B%B6%E4%B8%80%EF%BC%89Embedding%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83%E5%AE%9E%E8%B7%B5/" title="NLP（一百零一）Embedding模型微调实践">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NLP（一百零一）Embedding模型微调实践</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%B8%80%E7%99%BE%EF%BC%89%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%95%B0%E5%AD%A6%E8%83%BD%E5%8A%9B%E6%B5%8B%E8%AF%84/" title="NLP（一百）大模型数学能力测评">
+                        <span class="hidden-mobile">NLP（一百）大模型数学能力测评</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,937 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍如何使用Sentence Transformers和AutoTrain对开源的Embedding模型&#96;bge-base-zh-v1.5&#96;进行微调，并验证Embedding模型微调后的效果。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（一百零一）Embedding模型微调实践">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E9%9B%B6%E4%B8%80%EF%BC%89Embedding%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83%E5%AE%9E%E8%B7%B5/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍如何使用Sentence Transformers和AutoTrain对开源的Embedding模型&#96;bge-base-zh-v1.5&#96;进行微调，并验证Embedding模型微调后的效果。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-06-19T03:01:47.000Z">
+<meta property="article:modified_time" content="2024-06-19T03:02:32.046Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="Embedding Model">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>NLP（一百零一）Embedding模型微调实践 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（一百零一）Embedding模型微调实践"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-06-19 11:01" pubdate>
+          星期三, 六月 19日 2024, 11:01 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          12k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          103 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（一百零一）Embedding模型微调实践</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍如何使用Sentence
+Transformers和AutoTrain对开源的Embedding模型<code>bge-base-zh-v1.5</code>进行微调，并验证Embedding模型微调后的效果。</p>
+</blockquote>
+<p>在RAG框架或者语义相似度计算任务时，Embedding模型是我们常常会打交道的模型。<code>Sentence Transformers</code>
+是一个 Python
+库，用于使用和训练各种应用的Embedding模型，例如检索增强生成
+(RAG)、语义搜索、语义文本相似度、释义挖掘 (paraphrase mining) 等等。其
+3.0 版本的更新是该工程自创建以来最大的一次，引入了一种新的训练方法。</p>
+<p>本文将会以智源研究院（BAAI）开源的Embedding模型<code>bge-base-zh-v1.5</code>作为基准模型，展示如何使用<code>Sentence Transformers</code>进行评估，并使用多种训练框架对其进行微调，验证微调后的模型效果会有所提升。</p>
+<h3 id="评估指标baseline">评估指标Baseline</h3>
+<p>我们在文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486199&amp;idx=1&amp;sn=f24175b05bdf5bc6dd42efed4d5acae8&amp;chksm=fcb9b367cbce3a711fabd1a56bb5b9d803aba2f42964b4e1f9a4dc6e2174f0952ddb9e1d4c55&amp;token=402005631&amp;lang=zh_CN#rd">NLP（八十二）RAG框架中的Retrieve算法评估</a>中，使用LlamaIndex框架对RAG流程中的各种Retrieve算法，包括Embedding模型召回，进行了评估，评估指标采用<code>Hit Rate</code>和<code>MRR</code>。本文将继续使用这篇文章中给出的数据集进行评估。</p>
+<p><code>Sentence Transformers</code>给出了便捷的Embedding模型召回效果的评估方法，我们在这里采用<code>InformationRetrievalEvaluator</code>评估器，评估指标使用<code>accuracy@5</code>,
+<code>accuracy@10</code>, <code>map@100</code>, <code>mrr@10</code>,
+<code>ndcg@10</code>等。</p>
+<p>示例评估代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @file: bge_base_zh_eval.py</span><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">from</span> pprint <span class="hljs-keyword">import</span> pprint<br><span class="hljs-keyword">from</span> sentence_transformers <span class="hljs-keyword">import</span> SentenceTransformer<br><span class="hljs-keyword">from</span> sentence_transformers.evaluation <span class="hljs-keyword">import</span> InformationRetrievalEvaluator<br><span class="hljs-keyword">from</span> sentence_transformers.util <span class="hljs-keyword">import</span> cos_sim<br><br>project_dir = os.path.dirname(os.path.abspath(__file__)).split(<span class="hljs-string">&#x27;/src&#x27;</span>)[<span class="hljs-number">0</span>]<br><br><span class="hljs-comment"># data process</span><br><span class="hljs-comment"># load dataset, get corpus, queries, relevant_docs</span><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(os.path.join(project_dir, <span class="hljs-string">&quot;data/doc_qa.json&quot;</span>), <span class="hljs-string">&quot;r&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> f:<br>    content = json.loads(f.read())<br><br>corpus = content[<span class="hljs-string">&#x27;corpus&#x27;</span>]<br>queries = content[<span class="hljs-string">&#x27;queries&#x27;</span>]<br>relevant_docs = content[<span class="hljs-string">&#x27;relevant_docs&#x27;</span>]<br><br><span class="hljs-comment"># # Load a model</span><br><span class="hljs-comment"># 替换成自己的模型完整路径或使用huggingface modl id</span><br>model_name = <span class="hljs-string">&quot;bge-base-zh-v1.5&quot;</span><br>model_path = os.path.join(project_dir, <span class="hljs-string">f&quot;models/<span class="hljs-subst">&#123;model_name&#125;</span>&quot;</span>)<br>model = SentenceTransformer(model_path, device=<span class="hljs-string">&quot;cuda&quot;</span> <span class="hljs-keyword">if</span> torch.cuda.is_available() <span class="hljs-keyword">else</span> <span class="hljs-string">&quot;cpu&quot;</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Model loaded&quot;</span>)<br><br>s_time = time.time()<br><br><span class="hljs-comment"># # Evaluate the model</span><br>evaluator = InformationRetrievalEvaluator(<br>    queries=queries,<br>    corpus=corpus,<br>    relevant_docs=relevant_docs,<br>    name=<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;os.path.basename(model_path)&#125;</span>&quot;</span>,<br>    score_functions=&#123;<span class="hljs-string">&quot;cosine&quot;</span>: cos_sim&#125;<br>)<br><br><span class="hljs-comment"># Evaluate the model</span><br>result = evaluator(model)<br>pprint(result)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Time cost: <span class="hljs-subst">&#123;time.time() - s_time:<span class="hljs-number">.2</span>f&#125;</span>s&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>我们在评估器中传入queries, corpus,
+relevant_docs字典，加载完模型后即可进行评估。</p>
+<p>评估结果在下文中给出，作为baseline（基准）指标。</p>
+<h3 id="微调数据合成">微调数据合成</h3>
+<p>在介绍Embedding模型微调前，我们将使用<code>LlamaIndex</code>框架来构建微调数据集。数据集的构建方法已在文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486333&amp;idx=1&amp;sn=29d00d472647bc5d6e336bec22c88139&amp;chksm=fcb9b2edcbce3bfb42ea149d96fb1296b10a79a60db7ad2da01b85ab223394191205426bc025&amp;token=402005631&amp;lang=zh_CN#rd">NLP（八十六）RAG框架Retrieve阶段的Embedding模型微调</a>中给出，这里再次介绍。</p>
+<p>在<code>LlamaIndex</code>框架中，可方便地使用generate_qa_embedding_pairs方法，利用Prompt工程对文本生成相关问题并进行关联。</p>
+<p>Embedding模型的微调数据合成脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @file: make_ft_corpus.py</span><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> llama_index.legacy.finetuning <span class="hljs-keyword">import</span> (<br>    generate_qa_embedding_pairs<br>)<br><span class="hljs-keyword">from</span> llama_index.llms.openai <span class="hljs-keyword">import</span> OpenAI<br><span class="hljs-keyword">from</span> llama_index.core <span class="hljs-keyword">import</span> SimpleDirectoryReader<br><span class="hljs-keyword">from</span> llama_index.core.node_parser <span class="hljs-keyword">import</span> SentenceSplitter<br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><br>load_dotenv()<br><br>project_dir = os.path.dirname(os.path.abspath(__file__)).split(<span class="hljs-string">&#x27;/src&#x27;</span>)[<span class="hljs-number">0</span>]<br><br>TRAIN_FILES = [os.path.join(project_dir, <span class="hljs-string">&quot;data/ft_train.txt&quot;</span>)]<br>VAL_FILES = [os.path.join(project_dir, <span class="hljs-string">&quot;data/ft_test.txt&quot;</span>)]<br><br>TRAIN_CORPUS_FPATH = os.path.join(project_dir, <span class="hljs-string">&quot;data/ft_train_corpus.json&quot;</span>)<br>VAL_CORPUS_FPATH = os.path.join(project_dir, <span class="hljs-string">&quot;data/ft_val_corpus.json&quot;</span>)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">load_corpus</span>(<span class="hljs-params">files, verbose=<span class="hljs-literal">False</span></span>):<br>    <span class="hljs-keyword">if</span> verbose:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Loading files <span class="hljs-subst">&#123;files&#125;</span>&quot;</span>)<br><br>    reader = SimpleDirectoryReader(input_files=files)<br>    docs = reader.load_data()<br>    <span class="hljs-keyword">if</span> verbose:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Loaded <span class="hljs-subst">&#123;<span class="hljs-built_in">len</span>(docs)&#125;</span> docs&quot;</span>)<br><br>    parser = SentenceSplitter(chunk_size=<span class="hljs-number">250</span>, chunk_overlap=<span class="hljs-number">0</span>)<br>    nodes = parser.get_nodes_from_documents(docs, show_progress=verbose)<br><br>    <span class="hljs-keyword">if</span> verbose:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Parsed <span class="hljs-subst">&#123;<span class="hljs-built_in">len</span>(nodes)&#125;</span> nodes&quot;</span>)<br><br>    <span class="hljs-keyword">return</span> nodes<br><br><br>train_nodes = load_corpus(TRAIN_FILES, verbose=<span class="hljs-literal">True</span>)<br>val_nodes = load_corpus(VAL_FILES, verbose=<span class="hljs-literal">True</span>)<br><br>llm = OpenAI(model=<span class="hljs-string">&quot;gpt-3.5-turbo&quot;</span>, api_key=os.getenv(<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>))<br><br>qa_generate_prompt_tmpl = <span class="hljs-string">&quot;&quot;&quot;\</span><br><span class="hljs-string">Context information is below.</span><br><span class="hljs-string"></span><br><span class="hljs-string">---------------------</span><br><span class="hljs-string">&#123;context_str&#125;</span><br><span class="hljs-string">---------------------</span><br><span class="hljs-string"></span><br><span class="hljs-string">Given the context information and not prior knowledge.</span><br><span class="hljs-string">generate only questions based on the below query.</span><br><span class="hljs-string"></span><br><span class="hljs-string">You are a Professor. Your task is to setup \</span><br><span class="hljs-string">&#123;num_questions_per_chunk&#125; questions for an upcoming \</span><br><span class="hljs-string">quiz/examination in Chinese. The questions should be diverse in nature \</span><br><span class="hljs-string">across the document in Chinese. The questions should not contain options, not start with Q1/ Q2. \</span><br><span class="hljs-string">Restrict the questions to the context information provided.</span><br><span class="hljs-string">&quot;&quot;&quot;</span><br><br>train_dataset = generate_qa_embedding_pairs(nodes=train_nodes, llm=llm, num_questions_per_chunk=<span class="hljs-number">1</span>, qa_generate_prompt_tmpl=qa_generate_prompt_tmpl)<br>val_dataset = generate_qa_embedding_pairs(nodes=val_nodes, llm=llm, num_questions_per_chunk=<span class="hljs-number">1</span>, qa_generate_prompt_tmpl=qa_generate_prompt_tmpl)<br><br>train_dataset.save_json(TRAIN_CORPUS_FPATH)<br>val_dataset.save_json(VAL_CORPUS_FPATH)<br></code></pre></td></tr></table></figure>
+<p>输出结果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash">Output:<br><br>Loading files [<span class="hljs-string">&#x27;/Users/admin/PycharmProjects/embedding_model_exp/data/ft_train.txt&#x27;</span>]<br>Loaded 1 docs<br>Parsing nodes: 100%|██████████| 1/1 [00:00&lt;00:00, 23.54it/s]<br>Parsing nodes:   0%|          | 0/1 [00:00&lt;?, ?it/s]Parsed 137 nodes<br>Loading files [<span class="hljs-string">&#x27;/Users/admin/PycharmProjects/embedding_model_exp/data/ft_test.txt&#x27;</span>]<br>Loaded 1 docs<br>Parsing nodes: 100%|██████████| 1/1 [00:00&lt;00:00, 45.84it/s]<br>  0%|          | 0/137 [00:00&lt;?, ?it/s]Parsed 111 nodes<br>100%|██████████| 137/137 [03:34&lt;00:00,  1.57s/it]<br>100%|██████████| 111/111 [01:55&lt;00:00,  1.04s/it]<br></code></pre></td></tr></table></figure>
+<p>这样，我们就能得到微调数据集了，保存为ft_train_corpus.json和ft_val_corpus.json。</p>
+<h3 id="embedding模型微调">Embedding模型微调</h3>
+<p>接下来，我们将会对<code>bge-base-zh-v1.5</code>模型进行微调，微调的目的是让模型更适配我们自己的数据集，从而取得更好的召回效果。</p>
+<p>以下笔者将介绍三种模型训练的框架，帮助读者更好地实现Embedding模型微调。</p>
+<h4 id="使用-sentence-transformers-v3">使用
+<code>sentence-transformers v3</code></h4>
+<p>这里，我们使用的sentence-transformers模块的版本为V3.0.0。</p>
+<p>利用该模块，我们不难实现Embedding模型微调，微调代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @file: ft_sentence_transformers_trainer.py</span><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">from</span> datasets <span class="hljs-keyword">import</span> Dataset<br><span class="hljs-keyword">from</span> sentence_transformers <span class="hljs-keyword">import</span> SentenceTransformer<br><span class="hljs-keyword">from</span> sentence_transformers.evaluation <span class="hljs-keyword">import</span> InformationRetrievalEvaluator<br><span class="hljs-keyword">from</span> sentence_transformers.util <span class="hljs-keyword">import</span> cos_sim<br><span class="hljs-keyword">from</span> sentence_transformers.losses <span class="hljs-keyword">import</span> MultipleNegativesRankingLoss<br><span class="hljs-keyword">from</span> sentence_transformers <span class="hljs-keyword">import</span> SentenceTransformerTrainingArguments<br><span class="hljs-keyword">from</span> sentence_transformers.training_args <span class="hljs-keyword">import</span> BatchSamplers<br><span class="hljs-keyword">from</span> sentence_transformers <span class="hljs-keyword">import</span> SentenceTransformerTrainer<br><br>start_time = time.time()<br>project_dir = os.path.dirname(os.path.abspath(__file__)).split(<span class="hljs-string">&#x27;/src&#x27;</span>)[<span class="hljs-number">0</span>]<br><br><span class="hljs-comment"># load eval dataset</span><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(os.path.join(project_dir, <span class="hljs-string">&quot;data/ft_val_dataset.json&quot;</span>), <span class="hljs-string">&quot;r&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> f:<br>    eval_content = json.loads(f.read())<br><br>corpus, queries, relevant_docs = eval_content[<span class="hljs-string">&#x27;corpus&#x27;</span>], eval_content[<span class="hljs-string">&#x27;queries&#x27;</span>], eval_content[<span class="hljs-string">&#x27;relevant_docs&#x27;</span>]<br><span class="hljs-comment"># load train dataset</span><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(os.path.join(project_dir, <span class="hljs-string">&quot;data/ft_train_dataset.json&quot;</span>), <span class="hljs-string">&quot;r&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> f:<br>    train_content = json.loads(f.read())<br><br>train_anchor, train_positive = [], []<br><span class="hljs-keyword">for</span> query_id, context_id <span class="hljs-keyword">in</span> train_content[<span class="hljs-string">&#x27;relevant_docs&#x27;</span>].items():<br>    train_anchor.append(train_content[<span class="hljs-string">&#x27;queries&#x27;</span>][query_id])<br>    train_positive.append(train_content[<span class="hljs-string">&#x27;corpus&#x27;</span>][context_id[<span class="hljs-number">0</span>]])<br><br>train_dataset = Dataset.from_dict(&#123;<span class="hljs-string">&quot;positive&quot;</span>: train_positive, <span class="hljs-string">&quot;anchor&quot;</span>: train_anchor&#125;)<br><br><span class="hljs-built_in">print</span>(train_dataset)<br><span class="hljs-built_in">print</span>(train_dataset[<span class="hljs-number">0</span>:<span class="hljs-number">5</span>])<br><br><span class="hljs-comment"># Load a model</span><br>model_name = <span class="hljs-string">&#x27;bge-base-zh-v1.5&#x27;</span><br><span class="hljs-comment"># 替换成自己的模型完整路径或使用huggingface modl id</span><br>model_path = os.path.join(project_dir, <span class="hljs-string">f&quot;models/<span class="hljs-subst">&#123;model_name&#125;</span>&quot;</span>)<br>model = SentenceTransformer(model_path, device=<span class="hljs-string">&quot;cuda:0&quot;</span> <span class="hljs-keyword">if</span> torch.cuda.is_available() <span class="hljs-keyword">else</span> <span class="hljs-string">&quot;cpu&quot;</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Model loaded&quot;</span>)<br><br><span class="hljs-comment"># # Evaluate the model</span><br>evaluator = InformationRetrievalEvaluator(<br>    queries=queries,<br>    corpus=corpus,<br>    relevant_docs=relevant_docs,<br>    name=<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;model_name&#125;</span>&quot;</span>,<br>    score_functions=&#123;<span class="hljs-string">&quot;cosine&quot;</span>: cos_sim&#125;<br>)<br>train_loss = MultipleNegativesRankingLoss(model)<br><br><span class="hljs-comment"># define training arguments</span><br>args = SentenceTransformerTrainingArguments(<br>    output_dir=<span class="hljs-string">f&quot;ft_<span class="hljs-subst">&#123;model_name&#125;</span>&quot;</span>,  <span class="hljs-comment"># output directory and hugging face model ID</span><br>    num_train_epochs=<span class="hljs-number">5</span>,  <span class="hljs-comment"># number of epochs</span><br>    per_device_train_batch_size=<span class="hljs-number">2</span>,  <span class="hljs-comment"># train batch size</span><br>    gradient_accumulation_steps=<span class="hljs-number">2</span>,  <span class="hljs-comment"># for a global batch size of 512</span><br>    per_device_eval_batch_size=<span class="hljs-number">4</span>,  <span class="hljs-comment"># evaluation batch size</span><br>    warmup_ratio=<span class="hljs-number">0.1</span>,  <span class="hljs-comment"># warmup ratio</span><br>    learning_rate=<span class="hljs-number">2e-5</span>,  <span class="hljs-comment"># learning rate, 2e-5 is a good value</span><br>    lr_scheduler_type=<span class="hljs-string">&quot;cosine&quot;</span>,  <span class="hljs-comment"># use constant learning rate scheduler</span><br>    optim=<span class="hljs-string">&quot;adamw_torch_fused&quot;</span>,  <span class="hljs-comment"># use fused adamw optimizer</span><br>    tf32=<span class="hljs-literal">True</span>,  <span class="hljs-comment"># use tf32 precision</span><br>    bf16=<span class="hljs-literal">True</span>,  <span class="hljs-comment"># use bf16 precision</span><br>    batch_sampler=BatchSamplers.NO_DUPLICATES,<br>    eval_strategy=<span class="hljs-string">&quot;epoch&quot;</span>,  <span class="hljs-comment"># evaluate after each epoch</span><br>    save_strategy=<span class="hljs-string">&quot;epoch&quot;</span>,  <span class="hljs-comment"># save after each epoch</span><br>    logging_steps=<span class="hljs-number">10</span>,  <span class="hljs-comment"># log every 10 steps</span><br>    save_total_limit=<span class="hljs-number">3</span>,  <span class="hljs-comment"># save only the last 3 models</span><br>    load_best_model_at_end=<span class="hljs-literal">True</span>,  <span class="hljs-comment"># load the best model when training ends</span><br>    metric_for_best_model=<span class="hljs-string">f&quot;eval_<span class="hljs-subst">&#123;model_name&#125;</span>_cosine_ndcg@10&quot;</span>,  <span class="hljs-comment"># Optimizing for the best ndcg@10 score</span><br>)<br><br><span class="hljs-comment"># train the model</span><br>trainer = SentenceTransformerTrainer(<br>    model=model,    <span class="hljs-comment"># the model to train</span><br>    args=args,      <span class="hljs-comment"># training arguments</span><br>    train_dataset=train_dataset.select_columns(<br>        [<span class="hljs-string">&quot;positive&quot;</span>, <span class="hljs-string">&quot;anchor&quot;</span>]<br>    ),  <span class="hljs-comment"># training dataset</span><br>    loss=train_loss,<br>    evaluator=evaluator<br>)<br><br>trainer.train()<br>trainer.save_model()<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;cost time: <span class="hljs-subst">&#123;time.time() - start_time:<span class="hljs-number">.2</span>f&#125;</span>s&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>笔者在1张NVIDIA
+A800-SXM4-80GB型号的GPU上进行训练，耗时约63.10秒。同时，我们会将微调后的Embedding模型保存在GPU上。</p>
+<h4 id="使用-autotrain">使用 <code>AutoTrain</code></h4>
+<p><code>AutoTrain</code>是一种自动训练和部署最先进的机器学习模型的方法，与
+Hugging Face
+生态系统无缝集成。它提供了一种自动方式来训练和部署最先进的机器学习模型。该应用程序支持广泛的机器学习任务，包括文本分类、文本回归、实体识别、摘要、问答、翻译和表格任务。</p>
+<p>你不需要写任何代码，就能实现各类机器学习任务的训练。</p>
+<p>这里，我们以Embedding模型训练为例，来介绍如何在<code>AutoTrain</code>实现模型训练。</p>
+<p>首先，我们将上述微调数据集进行数据处理，使其格式符合datasets模块的格式，并上传至HuggingFace
+Hub，项目名称为<code>jclian91/embedding_exp_semiconductor</code>。</p>
+<p>模型训练的配置文件（<code>config.yml</code>）如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">task:</span> <span class="hljs-string">sentence-transformers:pair</span><br><span class="hljs-attr">base_model:</span> <span class="hljs-string">/workspace/code/embedding_model_exp/models/bge-base-zh-v1.5</span><br><span class="hljs-attr">project_name:</span> <span class="hljs-string">autotrain-pair</span><br><span class="hljs-attr">log:</span> <span class="hljs-string">tensorboard</span><br><span class="hljs-attr">backend:</span> <span class="hljs-string">local</span><br><br><span class="hljs-attr">data:</span><br>  <span class="hljs-attr">path:</span> <span class="hljs-string">jclian91/embedding_exp_semiconductor</span><br>  <span class="hljs-attr">train_split:</span> <span class="hljs-string">train</span><br>  <span class="hljs-attr">valid_split:</span> <span class="hljs-string">dev</span><br>  <span class="hljs-attr">column_mapping:</span><br>    <span class="hljs-attr">sentence1_column:</span> <span class="hljs-string">anchor</span><br>    <span class="hljs-attr">sentence2_column:</span> <span class="hljs-string">positive</span><br><br><span class="hljs-attr">params:</span><br>  <span class="hljs-attr">max_seq_length:</span> <span class="hljs-number">512</span><br>  <span class="hljs-attr">epochs:</span> <span class="hljs-number">5</span><br>  <span class="hljs-attr">batch_size:</span> <span class="hljs-number">4</span><br>  <span class="hljs-attr">lr:</span> <span class="hljs-number">2e-5</span><br>  <span class="hljs-attr">optimizer:</span> <span class="hljs-string">adamw_torch_fused</span><br>  <span class="hljs-attr">scheduler:</span> <span class="hljs-string">cosine</span><br>  <span class="hljs-attr">gradient_accumulation:</span> <span class="hljs-number">2</span><br>  <span class="hljs-attr">mixed_precision:</span> <span class="hljs-string">fp16</span><br></code></pre></td></tr></table></figure>
+<p>训练命令为<code>CUDA_VISIBLE_DEVICES=0 autotrain --config config.yml</code>。</p>
+<p>全程我们没有写任何代码，只是配置了模型训练的相关参数，就完成了Embedding模型的微调，轻松
++ 愉快。</p>
+<h4 id="使用-llamaindex">使用 <code>LlamaIndex</code></h4>
+<p>使用<code>LlamaIndex</code>框架来进行Embedding模型微调，笔者已经在文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486333&amp;idx=1&amp;sn=29d00d472647bc5d6e336bec22c88139&amp;chksm=fcb9b2edcbce3bfb42ea149d96fb1296b10a79a60db7ad2da01b85ab223394191205426bc025&amp;token=402005631&amp;lang=zh_CN#rd">NLP（八十六）RAG框架Retrieve阶段的Embedding模型微调</a>中介绍过了，这次不再详述，但使用起来也是非常方便的。</p>
+<h3 id="评估指标对比">评估指标对比</h3>
+<p>我们对基准模型、不同训练方式的Embedding模型进行指标对比，结果如下表所示：</p>
+<table>
+
+<thead>
+<tr class="header">
+<th>模型</th>
+<th>accuracy@5</th>
+<th>accuracy@10</th>
+<th>map@100</th>
+<th>mrr@10</th>
+<th>ndcg@10</th>
+<th>cost time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>bge-base-zh-v1.5</td>
+<td>0.8100</td>
+<td>0.8816</td>
+<td>0.6998</td>
+<td>0.6945</td>
+<td>0.7396</td>
+<td>15.44s</td>
+</tr>
+<tr class="even">
+<td>ft_bge-base-zh-v1.5</td>
+<td>0.9128</td>
+<td>0.9408</td>
+<td>0.8052</td>
+<td>0.8018</td>
+<td>0.8362</td>
+<td>15.14s</td>
+</tr>
+<tr class="odd">
+<td>autotrain-bge-base-zh-v15</td>
+<td>0.9159</td>
+<td>0.9346</td>
+<td>0.7952</td>
+<td>0.7918</td>
+<td>0.8272</td>
+<td>15.07s</td>
+</tr>
+</tbody>
+</table>
+<p>注意：</p>
+<ul>
+<li>ft_bge-base-zh-v1.5和autotrain-bge-base-zh-v15都是对基准模型bge-base-zh-v1.5进行微调得到的模型，前者使用sentence-transformers微调，后者使用AutoTrain微调。</li>
+<li>评估脚本为 src/baseline_eval/bge_base_zh_eval.py，使用Mac
+CPU测试，CPU型号为 <code>Apple M2 Pro</code> 。</li>
+<li>不同的训练框架并不会太影响模型微调后的表现（除去部分模型参数的影响），决定Embedding模型效果的是数据集和模型本身，还有模型参数等因素。</li>
+</ul>
+<h3 id="总结">总结</h3>
+<p>本文重点介绍了如何使用Sentence
+Transformers和AutoTrain对开源的Embedding模型<code>bge-base-zh-v1.5</code>进行微调，并验证Embedding模型微调后的效果。</p>
+<p>Sentence
+Transformers是一个宝库，它介绍了关于Embedding模型方方面面的内容，是了解、深入Embedding模型必不可少的工具。后续笔者将会介绍Embedding模型量化、俄罗斯套娃嵌入模型（Matryoshka
+Representation Learning, MRL）等相关方面的内容。</p>
+<p>本文给出的Python代码将会是一个更全面的Embedding模型相关实验的部分内容，后续项目将会陆续补充。该项目已开源至Github，网址为:
+<a
+target="_blank" rel="noopener" href="https://github.com/percent4/embedding_model_exp">https://github.com/percent4/embedding_model_exp</a>
+.</p>
+<h3 id="参考文献">参考文献</h3>
+<ol type="1">
+<li>Training and Finetuning Embedding Models with Sentence Transformers
+v3: <a
+target="_blank" rel="noopener" href="https://huggingface.co/blog/train-sentence-transformers">https://huggingface.co/blog/train-sentence-transformers</a></li>
+<li>Fine-tune Embedding models for Retrieval Augmented Generation (RAG):
+<a
+target="_blank" rel="noopener" href="https://www.philschmid.de/fine-tune-embedding-model-for-rag">https://www.philschmid.de/fine-tune-embedding-model-for-rag</a></li>
+<li>俄罗斯套娃 (Matryoshka) 嵌入模型概述: <a
+target="_blank" rel="noopener" href="https://huggingface.co/blog/zh/matryoshka">https://huggingface.co/blog/zh/matryoshka</a></li>
+<li>Finetune Embeddings: <a
+target="_blank" rel="noopener" href="https://docs.llamaindex.ai/en/stable/examples/finetuning/embeddings/finetune_embedding/">https://docs.llamaindex.ai/en/stable/examples/finetuning/embeddings/finetune_embedding/</a></li>
+<li>NLP（八十六）RAG框架Retrieve阶段的Embedding模型微调: <a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486333&amp;idx=1&amp;sn=29d00d472647bc5d6e336bec22c88139&amp;chksm=fcb9b2edcbce3bfb42ea149d96fb1296b10a79a60db7ad2da01b85ab223394191205426bc025&amp;token=1376257911&amp;lang=zh_CN#rd">https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486333&amp;idx=1&amp;sn=29d00d472647bc5d6e336bec22c88139&amp;chksm=fcb9b2edcbce3bfb42ea149d96fb1296b10a79a60db7ad2da01b85ab223394191205426bc025&amp;token=1376257911&amp;lang=zh_CN#rd</a></li>
+<li>How to Fine-Tune Custom Embedding Models Using AutoTrain: <a
+target="_blank" rel="noopener" href="https://huggingface.co/blog/abhishek/finetune-custom-embeddings-autotrain">https://huggingface.co/blog/abhishek/finetune-custom-embeddings-autotrain</a></li>
+<li>Upload a dataset to the Hub: <a
+target="_blank" rel="noopener" href="https://huggingface.co/docs/datasets/v1.16.0/upload_dataset.html">https://huggingface.co/docs/datasets/v1.16.0/upload_dataset.html</a></li>
+<li>NLP（八十二）RAG框架中的Retrieve算法评估: <a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486199&amp;idx=1&amp;sn=f24175b05bdf5bc6dd42efed4d5acae8&amp;chksm=fcb9b367cbce3a711fabd1a56bb5b9d803aba2f42964b4e1f9a4dc6e2174f0952ddb9e1d4c55&amp;token=402005631&amp;lang=zh_CN#rd">https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486199&amp;idx=1&amp;sn=f24175b05bdf5bc6dd42efed4d5acae8&amp;chksm=fcb9b367cbce3a711fabd1a56bb5b9d803aba2f42964b4e1f9a4dc6e2174f0952ddb9e1d4c55&amp;token=402005631&amp;lang=zh_CN#rd</a></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Embedding-Model/" class="print-no-link">#Embedding Model</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（一百零一）Embedding模型微调实践</div>
+      <div>https://percent4.github.io/NLP（一百零一）Embedding模型微调实践/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年6月19日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/%E4%BD%BF%E7%94%A8AutoTrain%E6%97%A0%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB/" title="使用AutoTrain无代码实现人脸识别">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">使用AutoTrain无代码实现人脸识别</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/%E4%BD%BF%E7%94%A8Python%E7%BC%96%E5%86%99%E7%AE%80%E5%8D%95%E5%AE%89%E5%8D%93%E5%BA%94%E7%94%A8/" title="使用Python编写简单安卓应用">
+                        <span class="hidden-mobile">使用Python编写简单安卓应用</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
