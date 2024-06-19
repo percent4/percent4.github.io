@@ -1,3 +1,4 @@
+https://percent4.github.io/%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%EF%BC%88BST%EF%BC%89%E7%9A%84Python%E5%AE%9E%E7%8E%B0/
 https://percent4.github.io/NLP%EF%BC%88%E4%B9%9D%E5%8D%81%E4%B8%83%EF%BC%89%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%95%B0%E5%AD%A6%E8%A7%A3%E9%A2%98%E8%83%BD%E5%8A%9B%E7%9A%84%E5%88%9D%E6%AD%A5%E6%8E%A2%E7%B4%A2/
 https://percent4.github.io/ElasticSearch%E4%B8%AD%E7%9A%84%E5%9C%B0%E5%9B%BE%E5%8F%AF%E8%A7%86%E5%8C%96/
 https://percent4.github.io/NLP%EF%BC%88%E4%B9%9D%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8LLaMA-Factory%E5%AE%9E%E7%8E%B0function-calling/
@@ -317,6 +318,7 @@ https://percent4.github.io/tags/Text-to-SQL/
 https://percent4.github.io/tags/function-calling/
 https://percent4.github.io/tags/transformers/
 https://percent4.github.io/tags/%E6%B3%A8%E5%86%8C%E5%99%A8/
+https://percent4.github.io/tags/%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91/
 https://percent4.github.io/categories/NLP/
 https://percent4.github.io/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/
 https://percent4.github.io/categories/%E8%8D%89%E7%A8%BF/
