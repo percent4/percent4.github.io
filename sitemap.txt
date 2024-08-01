@@ -1,3 +1,8 @@
+https://percent4.github.io/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E9%9B%B6%E5%9B%9B%EF%BC%89BERT%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%AF%E8%A7%A3%E9%87%8A%E6%80%A7/
+https://percent4.github.io/%E7%AC%94%E8%AE%B0%EF%BC%9A%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%95%B0%E5%AD%A6%E8%A7%A3%E9%A2%98%E8%83%BD%E5%8A%9B/
+https://percent4.github.io/Open-WebUI%E7%9A%84Pipelines%E5%AD%A6%E4%B9%A0%E4%B9%8B%E4%BD%BF%E7%94%A8%E5%A4%A7%E6%A8%A1%E5%9E%8B%E8%A7%A3%E6%95%B0%E5%AD%A6%E9%A2%98/
+https://percent4.github.io/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E9%9B%B6%E4%B8%89%EF%BC%89%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E5%88%A9%E5%99%A8%E4%B9%8BOpen-WebUI%E5%85%A5%E9%97%A8/
+https://percent4.github.io/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E9%9B%B6%E4%BA%8C%EF%BC%89ReRank%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83%E5%AE%9E%E8%B7%B5/
 https://percent4.github.io/about/index.html
 https://percent4.github.io/%E4%BD%BF%E7%94%A8AutoTrain%E6%97%A0%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB/
 https://percent4.github.io/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E9%9B%B6%E4%B8%80%EF%BC%89Embedding%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83%E5%AE%9E%E8%B7%B5/
@@ -335,6 +340,10 @@ https://percent4.github.io/tags/AutoTrain/
 https://percent4.github.io/tags/%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB/
 https://percent4.github.io/tags/Toga/
 https://percent4.github.io/tags/Android/
+https://percent4.github.io/tags/Open-WebUI/
+https://percent4.github.io/tags/ReRank%E6%A8%A1%E5%9E%8B/
+https://percent4.github.io/tags/%E5%8F%AF%E8%A7%A3%E9%87%8A%E6%80%A7/
+https://percent4.github.io/tags/%E6%95%B0%E5%AD%A6/
 https://percent4.github.io/categories/NLP/
 https://percent4.github.io/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/
 https://percent4.github.io/categories/%E8%8D%89%E7%A8%BF/

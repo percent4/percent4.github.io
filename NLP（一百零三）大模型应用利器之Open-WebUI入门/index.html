@@ -1,0 +1,1177 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍如何使用vLLM框架来部署大模型以及大模型应用利器Open WebUI的使用场景和其它功能，本文可作为Open WebUI方面的入门文章。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（一百零三）大模型应用利器之Open_WebUI入门">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E9%9B%B6%E4%B8%89%EF%BC%89%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E5%88%A9%E5%99%A8%E4%B9%8BOpen-WebUI%E5%85%A5%E9%97%A8/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍如何使用vLLM框架来部署大模型以及大模型应用利器Open WebUI的使用场景和其它功能，本文可作为Open WebUI方面的入门文章。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2024/06/22/dN3CrIAagqvhKmO.png">
+<meta property="og:image" content="https://s2.loli.net/2024/06/22/kTKedtRmFMzDabP.png">
+<meta property="og:image" content="https://s2.loli.net/2024/06/22/eVqxpUj7uNFtPnm.png">
+<meta property="og:image" content="https://s2.loli.net/2024/06/23/ONhG63ZVL75dBps.png">
+<meta property="og:image" content="https://s2.loli.net/2024/06/22/hgex6JcdiMPEbtN.png">
+<meta property="og:image" content="https://s2.loli.net/2024/06/22/wvP2YGgZCO9IjxH.png">
+<meta property="og:image" content="https://s2.loli.net/2024/06/23/5XFiSAVrx3mIokC.png">
+<meta property="og:image" content="https://s2.loli.net/2024/06/23/YAVisLdeRcyx64m.png">
+<meta property="og:image" content="https://s2.loli.net/2024/06/23/NAlhSxBT6FXGUfa.png">
+<meta property="og:image" content="https://s2.loli.net/2024/06/23/deToqIuQZA9RDEU.png">
+<meta property="og:image" content="https://s2.loli.net/2024/06/23/jsK6xw2CTUh4vie.png">
+<meta property="og:image" content="https://s2.loli.net/2024/06/23/N5XHfFrdpon9b8m.png">
+<meta property="og:image" content="https://s2.loli.net/2024/06/23/aBewY6A9QGWTkPq.png">
+<meta property="og:image" content="https://s2.loli.net/2024/06/23/vlNh8BATSofWRZO.png">
+<meta property="og:image" content="https://s2.loli.net/2024/06/23/Y3B2UoHMd4rZ7IA.png">
+<meta property="og:image" content="https://s2.loli.net/2024/06/23/whLoTMr5zmlCQaK.png">
+<meta property="og:image" content="https://s2.loli.net/2024/06/23/iuL8BbpPG92sjV4.png">
+<meta property="article:published_time" content="2024-08-01T04:37:05.000Z">
+<meta property="article:modified_time" content="2024-08-01T04:38:00.737Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="Open WebUI">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2024/06/22/dN3CrIAagqvhKmO.png">
+  
+  
+  
+  <title>NLP（一百零三）大模型应用利器之Open_WebUI入门 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（一百零三）大模型应用利器之Open_WebUI入门"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-08-01 12:37" pubdate>
+          星期四, 八月 1日 2024, 12:37 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          17k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          143 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（一百零三）大模型应用利器之Open_WebUI入门</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍如何使用vLLM框架来部署大模型以及大模型应用利器Open
+WebUI的使用场景和其它功能，本文可作为Open WebUI方面的入门文章。</p>
+</blockquote>
+<p>在介绍<code>Open WebUI</code>相关内容之前，我们先使用vLLM框架来部署本文中所使用的大模型。</p>
+<p>关于vLLM框架的相关介绍和使用方法，可以参考笔者之前的文章：<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486248&amp;idx=1&amp;sn=8238c4cb0f24384e6eb90de94b73731a&amp;chksm=fcb9b2b8cbce3bae3cfaf83a1307c1f8a9ce0300cf73949ae831a8f0d7137067e295ea79302c&amp;token=601670821&amp;lang=zh_CN#rd">vLLM入门（一）初始vLLM</a>
+。</p>
+<h2 id="使用vllm部署模型">使用vLLM部署模型</h2>
+<p>本章节将介绍以下4个大模型的部署和获取方式：</p>
+<ul>
+<li>Qwen2-72B-Instruct</li>
+<li>llava-v1.6-34b-hf</li>
+<li>llama3-70b-8192</li>
+<li>mixtral-8x7b-32768</li>
+</ul>
+<p>我们使用vLLM框架来部署通用模型<code>Qwen2-72B-Instruct</code>和多模态模型<code>llava-v1.6-34b-hf</code>。vLLM框架在最新的版本v0.5.0中已添加了对多模态模型的部署支持，不过暂时还只支持LLaVA系列模型。而llama3-70b-8192模型和mixtral-8x7b-32768模型可以在Groq官网中获取，不必再自行部署。</p>
+<h3 id="qwen2-72b-instruct的部署">Qwen2-72B-Instruct的部署</h3>
+<p>我们在GPU机器上启动Docker Nvidia服务：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run --gpus 2 -itd --<span class="hljs-built_in">rm</span> --privileged --name=llm --ipc=host -p 50080:8000 -v /data3/data-ai/usr/models:/workspace/models nvcr.io/nvidia/pytorch:23.08-py3<br></code></pre></td></tr></table></figure>
+<p>此处，我们使用0,1两张GPU卡，并对模型路径进行外挂，我们需要的模型路径就位于这个路径下。接着我们进入容器中，安装最新版vllm:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">pip install vllm==0.5.0<br></code></pre></td></tr></table></figure>
+<p>部署Qwen2-72B-Instruct模型，命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">CUDA_VISIBLE_DEVICES=0,1 <span class="hljs-built_in">nohup</span> python -m vllm.entrypoints.openai.api_server --model /workspace/models/Qwen2-72B-Instruct --served-model-name Qwen2-72B-Instruct --gpu-memory-utilization 0.95 --max-model-len 8192 --dtype auto --api-key token-abc123 --tensor-parallel-size 2 &amp;<br></code></pre></td></tr></table></figure>
+<p>72B模型所占用显存较大，如无其它优化，则一般需用两张80G显存的显卡，笔者这里使用的显卡类型是A800-SXM4-80GB。该部署服务为OpenAI风格的API服务，其中Bearer
+Token为token-abc123。</p>
+<p>接着我们来验证模型是否部署成功：</p>
+<ul>
+<li>查看模型</li>
+</ul>
+<p>输入:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl http://localhost:8000/v1/models -H <span class="hljs-string">&quot;Authorization: Bearer token-abc123&quot;</span> | jq<br></code></pre></td></tr></table></figure>
+<p>输出:</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;object&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;list&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>    <span class="hljs-punctuation">&#123;</span><br>      <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Qwen2-72B-Instruct&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;object&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;model&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;created&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1719047559</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;owned_by&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;vllm&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;root&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Qwen2-72B-Instruct&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;parent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;max_model_len&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">8192</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;permission&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>        <span class="hljs-punctuation">&#123;</span><br>          <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;modelperm-f97254d07f81448988cd6733aa69ddce&quot;</span><span class="hljs-punctuation">,</span><br>          <span class="hljs-attr">&quot;object&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;model_permission&quot;</span><span class="hljs-punctuation">,</span><br>          <span class="hljs-attr">&quot;created&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1719047559</span><span class="hljs-punctuation">,</span><br>          <span class="hljs-attr">&quot;allow_create_engine&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span><br>          <span class="hljs-attr">&quot;allow_sampling&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span><br>          <span class="hljs-attr">&quot;allow_logprobs&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span><br>          <span class="hljs-attr">&quot;allow_search_indices&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span><br>          <span class="hljs-attr">&quot;allow_view&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span><br>          <span class="hljs-attr">&quot;allow_fine_tuning&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span><br>          <span class="hljs-attr">&quot;organization&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;*&quot;</span><span class="hljs-punctuation">,</span><br>          <span class="hljs-attr">&quot;group&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span><br>          <span class="hljs-attr">&quot;is_blocking&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><br>        <span class="hljs-punctuation">&#125;</span><br>      <span class="hljs-punctuation">]</span><br>    <span class="hljs-punctuation">&#125;</span><br>  <span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>模型问答</li>
+</ul>
+<p>输入:</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli">curl <span class="hljs-params">--location</span> &#x27;http:<span class="hljs-string">//localhost</span><span class="hljs-function">:8000</span>/v1/chat/completions&#x27; \<br><span class="hljs-params">--header</span> &#x27;Content-Type: application/json&#x27; \<br><span class="hljs-params">--header</span> &#x27;Authorization: Bearer token-abc123&#x27; \<br><span class="hljs-params">--data</span> &#x27;&#123;<br>    <span class="hljs-string">&quot;model&quot;</span>: <span class="hljs-string">&quot;Qwen2-72B-Instruct&quot;</span>,<br>    <span class="hljs-string">&quot;messages&quot;</span>: [<br>      &#123;<br>        <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>,<br>        <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;中国的首都是哪里？&quot;</span><br>      &#125;<br>    ]<br>  &#125;&#x27;<br></code></pre></td></tr></table></figure>
+<p>输出:</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;cmpl-7aa0528dabf34fc8a6d4be431cc588d5&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;object&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;chat.completion&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;created&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1719047641</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;model&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Qwen2-72B-Instruct&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;choices&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>        <span class="hljs-punctuation">&#123;</span><br>            <span class="hljs-attr">&quot;index&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>                <span class="hljs-attr">&quot;role&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;assistant&quot;</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-attr">&quot;content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;中国的首都是北京。&quot;</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-attr">&quot;tool_calls&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-punctuation">]</span><br>            <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;logprobs&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;finish_reason&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;stop&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;stop_reason&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><br>        <span class="hljs-punctuation">&#125;</span><br>    <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;usage&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;prompt_tokens&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">24</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;total_tokens&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">30</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;completion_tokens&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">6</span><br>    <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<h3 id="llava-v1.6-34b-hf的部署">llava-v1.6-34b-hf的部署</h3>
+<p>vLLM框架官网文档(https://docs.vllm.ai/en/stable/models/vlm.html)给出了多模态模型<code>llava-1.5-7b-hf</code>的部署方式和使用方式，但很少有资料给出了vLLM框架部署llava-v1.6-34b-hf模型的方法。</p>
+<p>笔者参考vLLM中的脚本：https://github.com/vllm-project/vllm/blob/main/tests/multimodal/test_processor.py
+，给出的部署命令为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">CUDA_VISIBLE_DEVICES=0,1 python -m vllm.entrypoints.openai.api_server \<br>    --model /workspace/models/llava-v1.6-34b-hf \<br>    --served-model-name llava-v1.6-34b-hf \<br>    --image-input-type pixel_values \<br>    --image-token-id 64000 \<br>    --image-input-shape 1,3,672,672 \<br>    --image-feature-size 2928 \<br>    --chat-template /workspace/models/template_llava.jinja<br></code></pre></td></tr></table></figure>
+<p>这其中,
+template_llava.jinja在vLLM源码中的examples文件夹中已经给出。验证模型成功的方法参考同上，输入命令为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl --location <span class="hljs-string">&#x27;http://localhost:8000/v1/chat/completions&#x27;</span> \<br>--header <span class="hljs-string">&#x27;Content-Type: application/json&#x27;</span> \<br>--data <span class="hljs-string">&#x27;&#123;</span><br><span class="hljs-string">    &quot;model&quot;: &quot;llava-v1.6-34b-hf&quot;,</span><br><span class="hljs-string">    &quot;messages&quot;: [</span><br><span class="hljs-string">        &#123;</span><br><span class="hljs-string">            &quot;role&quot;: &quot;user&quot;,</span><br><span class="hljs-string">            &quot;content&quot;: [</span><br><span class="hljs-string">                &#123;</span><br><span class="hljs-string">                    &quot;type&quot;: &quot;text&quot;,</span><br><span class="hljs-string">                    &quot;text&quot;: &quot;How many persons are there in this image?&quot;</span><br><span class="hljs-string">                &#125;,</span><br><span class="hljs-string">                &#123;</span><br><span class="hljs-string">                    &quot;type&quot;: &quot;image_url&quot;,</span><br><span class="hljs-string">                    &quot;image_url&quot;: &#123;</span><br><span class="hljs-string">                        &quot;url&quot;: &quot;https://k.sinaimg.cn/n/sinakd20240607s/108/w1024h684/20240607/7124-f44122427ecc58740167b6b24ee6fa6c.jpg/w700d1q75cms.jpg?by=cms_fixed_width&quot;</span><br><span class="hljs-string">                    &#125;</span><br><span class="hljs-string">                &#125;</span><br><span class="hljs-string">            ]</span><br><span class="hljs-string">        &#125;</span><br><span class="hljs-string">    ]</span><br><span class="hljs-string">&#125;&#x27;</span><br></code></pre></td></tr></table></figure>
+<h3 id="llama3-70b-8192-和-mixtral-8x7b-32768-的获取">llama3-70b-8192 和
+mixtral-8x7b-32768 的获取</h3>
+<p>llama3-70b-8192模型和mixtral-8x7b-32768模型可以在Groq官网中获取，官网体验网址为
+https://groq.com/ ，需要先注册账号。</p>
+<p>当然，我们也可以使用API来调用Groq上已部署好的模型，不过需要先申请API
+KEY，申请网址为：https://console.groq.com/docs/quickstart 。</p>
+<p>申请完API
+KEY之后，我们就能以OpenAI风格的API来调用上述模型了，以llama3-70b-8192模型为例，示例的调用curl命令为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl --location <span class="hljs-string">&#x27;https://api.groq.com/openai/v1/chat/completions&#x27;</span> \<br>--header <span class="hljs-string">&#x27;Content-Type: application/json&#x27;</span> \<br>--header <span class="hljs-string">&#x27;Authorization: Bearer gsk_xxx&#x27;</span> \<br>--data <span class="hljs-string">&#x27;&#123;</span><br><span class="hljs-string">    &quot;model&quot;: &quot;llama3-70b-8192&quot;,</span><br><span class="hljs-string">    &quot;messages&quot;: [</span><br><span class="hljs-string">        &#123;</span><br><span class="hljs-string">            &quot;role&quot;: &quot;user&quot;,</span><br><span class="hljs-string">            &quot;content&quot;: &quot;中国的首都是哪里？&quot;</span><br><span class="hljs-string">        &#125;</span><br><span class="hljs-string">    ]</span><br><span class="hljs-string">&#125;&#x27;</span><br></code></pre></td></tr></table></figure>
+<p>将命令中的Bearer Token换成你自己的就行。</p>
+<p>输出结果为：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;chatcmpl-xxx&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;object&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;chat.completion&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;created&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1719069639</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;model&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;llama3-70b-8192&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;choices&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>        <span class="hljs-punctuation">&#123;</span><br>            <span class="hljs-attr">&quot;index&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>                <span class="hljs-attr">&quot;role&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;assistant&quot;</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-attr">&quot;content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot; Easy one! 😊\n\n中国的首都是北京 (běi jīng)。\n\nBeijing is the capital of China, and it&#x27;s located in the northern part of the country.&quot;</span><br>            <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;logprobs&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;finish_reason&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;stop&quot;</span><br>        <span class="hljs-punctuation">&#125;</span><br>    <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;usage&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;prompt_tokens&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">16</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;prompt_time&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.005321601</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;completion_tokens&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">40</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;completion_time&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.106680264</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;total_tokens&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">56</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;total_time&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.11200186499999999</span><br>    <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;system_fingerprint&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;fp_xxx&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;x_groq&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;req_xxx&quot;</span><br>    <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<p><strong>至此</strong>，我们已经完成了上述4个模型的部署或获取，这样我们的准备工作就完成了。</p>
+<h2 id="open-webui介绍">Open WebUI介绍</h2>
+<p><code>Open WebUI</code>（以前称为Ollama
+WebUI）是一款面向大型语言模型（LLMs）的用户友好型Web界面，支持Ollama和兼容OpenAI的API运行。通过一个直观的界面，它为用户提供了一种便捷的方式，与语言模型进行交互、训练和管理。</p>
+<h3 id="主要特点">主要特点</h3>
+<ul>
+<li>直观的界面：灵感来源于ChatGPT，保证了用户友好的体验。</li>
+<li>响应式设计：无论是在桌面还是移动设备上，都能享受到无缝的体验。</li>
+<li>快速响应：性能快速且响应迅速。</li>
+<li>简明的设置过程：通过Docker或Kubernetes安装，旨在提供无忧的体验。</li>
+<li>代码语法高亮：提高代码的可读性。</li>
+<li>完整的Markdown和LaTeX支持：为了丰富交互体验，提供广泛的Markdown和LaTeX功能。</li>
+<li>本地RAG集成：未来聊天交互的特色功能，通过#命令加载文档或添加文件。</li>
+<li>网页浏览功能：使用#命令来丰富聊天体验。</li>
+<li>快捷预设支持：使用/命令快速访问预设提示。</li>
+<li>RLHF注释：通过评分消息帮助构建用于RLHF的数据集。</li>
+<li>对话标签：方便地分类和查找特定聊天。</li>
+<li>多模型支持：无缝切换不同聊天模型。</li>
+<li>多模态支持：允许与支持图像等多模态的模型进行交互。</li>
+</ul>
+<h3 id="使用场景">使用场景</h3>
+<p><code>Open WebUI</code>适用于各种涉及大型语言模型交互的场景，可以是数据科学家、研究人员、开发者或任何对人工智能和自然语言处理感兴趣的个人或团队。以下是一些可能的应用场景：</p>
+<ul>
+<li>数据分析和研究：研究者和学者可以通过与LLMs交互，探索数据集，进行自然语言理解和生成研究。</li>
+<li>软件开发：开发人员可以利用其代码语法高亮和多模型支持功能进行编程问题的解决和代码生成。</li>
+<li>教育：教师和学习者可以使用它作为一种教学和学习工具，以探索自然语言处理和人工智能的概念。</li>
+<li>个人娱乐和探索：普通用户也可以使用它来探索AI对话的乐趣，获取信息或进行创造性写作。</li>
+</ul>
+<h3 id="安装使用">安装使用</h3>
+<p><code>Open WebUI</code>的安装使用非常方便，可以直接使用Docker部署，也可以使用第三方模块<code>open-webui</code>部署服务。</p>
+<p>本文中，笔者使用第三方模块<code>open-webui</code>来部署<code>Open WebUI</code>服务。</p>
+<p>首先，安装对应模块：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">pip install open-webui==0.3.5<br></code></pre></td></tr></table></figure>
+<p>接着启动服务：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">open-webui serve<br></code></pre></td></tr></table></figure>
+<p>服务启动成功后，在浏览器中输入<u>localhost:8080</u>即可看到用户登录界面，如下：</p>
+<figure>
+<img src="https://s2.loli.net/2024/06/22/dN3CrIAagqvhKmO.png" srcset="/img/loading.gif" lazyload
+alt="Open WebUI登录界面" />
+<figcaption aria-hidden="true">Open WebUI登录界面</figcaption>
+</figure>
+<p>完成用户登录后，即可使用<code>Open WebUI</code>服务了。</p>
+<h2 id="open-webui使用场景">Open WebUI使用场景</h2>
+<p><code>Open WebUI</code>提供了大量的大模型（LLMs）应用场景，使用起来也非常方便，本文将探讨如下使用场景：</p>
+<ol type="1">
+<li>模型问答: 使用vLLM框架部署模型，再使用Open
+WebUI直接进行模型问答</li>
+<li>多模型支持: 多模型回复比对（Qwen2-72B-Instruct, llama3-70b-8192,
+mixtral-8x7b）</li>
+<li>RAG场景1: 文档问答</li>
+<li>RAG场景2: 使用Web Search进行问答</li>
+<li>Function Calling: 需用Python实现工具（Tool）代码</li>
+<li>多模态场景: 对图片进行问答（VQA）</li>
+<li>Pipelines: pipeline编排，可自定义工作流程</li>
+</ol>
+<h3 id="模型问答">模型问答</h3>
+<p>首先我们需要配置模型服务连接。在个人的Settings页面中，选择Admin
+Settings，在Connections选项中，配置好我们自己部署或获取的OpenAI风格的API，配置页面如下：</p>
+<figure>
+<img src="https://s2.loli.net/2024/06/22/kTKedtRmFMzDabP.png" srcset="/img/loading.gif" lazyload
+alt="open-webui-settings-connections.png" />
+<figcaption
+aria-hidden="true">open-webui-settings-connections.png</figcaption>
+</figure>
+<p>点击Save按钮进行保存。</p>
+<p>在首页中的Wokespace选项中，就能看到配置好的页面，如下图：</p>
+<figure>
+<img src="https://s2.loli.net/2024/06/22/eVqxpUj7uNFtPnm.png" srcset="/img/loading.gif" lazyload
+alt="open-webui-workspace-models.png" />
+<figcaption
+aria-hidden="true">open-webui-workspace-models.png</figcaption>
+</figure>
+<p>在首页中，点击New
+Chat创建新对话，点击+号选择<code>Qwen2-72B-Instruct</code>模型，这样就能使用该模型进行对话聊天了，样例对话如下图：</p>
+<figure>
+<img src="https://s2.loli.net/2024/06/23/ONhG63ZVL75dBps.png" srcset="/img/loading.gif" lazyload
+alt="open-webui-new-chat-single-model.png" />
+<figcaption
+aria-hidden="true">open-webui-new-chat-single-model.png</figcaption>
+</figure>
+<h3 id="多模型问答">多模型问答</h3>
+<p>上述的例子为单个模型进行对话，Open
+WebUI还支持多个模型同时回答，方便用户对不同模型的回复进行直观方便地进行对比。</p>
+<p>样例多模型回答如下图：</p>
+<figure>
+<img src="https://s2.loli.net/2024/06/22/hgex6JcdiMPEbtN.png" srcset="/img/loading.gif" lazyload
+alt="open-webui-new-chat-multi-model-1.png" />
+<figcaption
+aria-hidden="true">open-webui-new-chat-multi-model-1.png</figcaption>
+</figure>
+<figure>
+<img src="https://s2.loli.net/2024/06/22/wvP2YGgZCO9IjxH.png" srcset="/img/loading.gif" lazyload
+alt="open-webui-new-chat-multi-model-2.png" />
+<figcaption
+aria-hidden="true">open-webui-new-chat-multi-model-2.png</figcaption>
+</figure>
+<p>上面第二个问题是数学题目，选择的三个模型都回答正确。</p>
+<h3 id="文档问答">文档问答</h3>
+<p>在<code>Open WebUI</code>中，可以很轻松地实现RAG场景中的文档问答。</p>
+<p>首先我们需要上传一个示例PDF文档：oppo_n3_flip.pdf
+。操作步骤为：在首页的Workspace中选择Documents栏，点击上传对应的PDF文件即可。在对相应文档进行问答时，只需要在聊天框中输入#号，再选择对应的文档即可。</p>
+<p>或者，也可以直接在聊天框中点击+号，选择Upload
+Files，可直接实现文档上传，再对文档直接进行回答就行了。</p>
+<p>样例文档问答如下图：</p>
+<figure>
+<img src="https://s2.loli.net/2024/06/23/5XFiSAVrx3mIokC.png" srcset="/img/loading.gif" lazyload
+alt="open-webui-new-chat-doc-qa.png" />
+<figcaption
+aria-hidden="true">open-webui-new-chat-doc-qa.png</figcaption>
+</figure>
+<p>如果我们还想了解下在<code>Open WebUI</code>中是如何实现RAG框架的，可以在Settings
+-&gt; Admin Settings -&gt; Documents中查看参数设置：</p>
+<figure>
+<img src="https://s2.loli.net/2024/06/23/YAVisLdeRcyx64m.png" srcset="/img/loading.gif" lazyload
+alt="open-webui-new-chat-doc-qa-param.png" />
+<figcaption
+aria-hidden="true">open-webui-new-chat-doc-qa-param.png</figcaption>
+</figure>
+<p>在默认的RAG
+Documents配置中，选择的文档相似度计算方式为文本相似度，Embedding模型使用<code>sentence-transformers/all-MiniLM-L6-v2</code>
+(<strong>注意</strong>：这个模型在服务启动时就会下载并加载)，同时也给出了问答回复模板（RAG
+Template）。</p>
+<h3 id="web-search问答">Web Search问答</h3>
+<p>接下来，我们在来看RAG场景中的Web Search问答，此时，我们将web
+search结果作为输入文档，整体的问答流程与上述的文档回答类似。</p>
+<p>首先，我们需要配置搜索引擎参数：在 Settings -&gt; Admin Settings
+-&gt; Web Search 中进行配置，选择Web Search
+Engine为goole_pse，并配置好Google PSE API Key和Google PSE Engine
+id，如下图：</p>
+<figure>
+<img src="https://s2.loli.net/2024/06/23/NAlhSxBT6FXGUfa.png" srcset="/img/loading.gif" lazyload
+alt="open-webui-new-chat-web-qa.png" />
+<figcaption
+aria-hidden="true">open-webui-new-chat-web-qa.png</figcaption>
+</figure>
+<p>配置完Web
+Search之后，我们可以在聊天中加入搜索引擎的内容了，此时，只需要再聊天框中的+号中开启Web
+Search即可。</p>
+<p>样例Web Search问答如下图：</p>
+<figure>
+<img src="https://s2.loli.net/2024/06/23/deToqIuQZA9RDEU.png" srcset="/img/loading.gif" lazyload
+alt="open-webui-new-chat-web-qa.png" />
+<figcaption
+aria-hidden="true">open-webui-new-chat-web-qa.png</figcaption>
+</figure>
+<p>在上述的样例回答中，第一个问题没有使用Web
+Search，可以看到大模型的回答不正确，产生了<strong>幻觉</strong>；第二个问题使用了Web
+Search，回答正确，并且给出了参考网站，点击网址可查看网页的标题和内容。</p>
+<h3 id="function-calling">Function Calling</h3>
+<p>Function
+Calling允许大模型调用外部API或工具（Tool），从而进一步拓展大模型的知识范围。</p>
+<p>在首页的 Workspace -&gt; Tools
+中进行工具配置，此时需要按格式写好工具外调的Python代码。这里给出两个工具：<code>time_teller</code>和<code>rubbbish_category</code>，其中<code>time_teller</code>工具调用Python中的datetime模块给出当前时间，而<code>rubbbish_category</code>工具则借助外部API对用户问题中的垃圾进行垃圾分类。</p>
+<figure>
+<img src="https://s2.loli.net/2024/06/23/jsK6xw2CTUh4vie.png" srcset="/img/loading.gif" lazyload
+alt="open-webui-workspace-tools.png" />
+<figcaption
+aria-hidden="true">open-webui-workspace-tools.png</figcaption>
+</figure>
+<p>其中，<code>time_teller</code>工具的Python实现代码为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Tools</span>:<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-keyword">pass</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">get_current_time</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-built_in">str</span>:<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        Get the current time in a more human-readable format.</span><br><span class="hljs-string">        :return: The current time.</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br><br>        now = datetime.now()<br>        current_time = now.strftime(<span class="hljs-string">&quot;%I:%M:%S %p&quot;</span>)  <span class="hljs-comment"># Using 12-hour format with AM/PM</span><br>        current_date = now.strftime(<br>            <span class="hljs-string">&quot;%A, %B %d, %Y&quot;</span><br>        )  <span class="hljs-comment"># Full weekday, month name, day, and year</span><br><br>        <span class="hljs-keyword">return</span> <span class="hljs-string">f&quot;Current Date and Time = <span class="hljs-subst">&#123;current_date&#125;</span>, <span class="hljs-subst">&#123;current_time&#125;</span>&quot;</span><br></code></pre></td></tr></table></figure>
+<p>在聊天框中的+号开启<code>time_teller</code>工具即可使用该工具。</p>
+<p>样例问答如下图：</p>
+<figure>
+<img src="https://s2.loli.net/2024/06/23/N5XHfFrdpon9b8m.png" srcset="/img/loading.gif" lazyload
+alt="open-webui-new-chat-tools-1.png" />
+<figcaption
+aria-hidden="true">open-webui-new-chat-tools-1.png</figcaption>
+</figure>
+<p>上述回答中，第一个问答调用了外部工具<code>time_teller</code>，因此大模型可以正确地回答当前时间，而第二个问题未开启外部工具，因而大模型无法回答当前时间。</p>
+<p><code>rubbbish_category</code>工具的Python实现代码为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Tools</span>:<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-keyword">pass</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">get_rubbish_category</span>(<span class="hljs-params">self, rubbish: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">str</span>:<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        get the category of the rubbish.</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        url = <span class="hljs-string">f&quot;https://api.timelessq.com/garbage?keyword=<span class="hljs-subst">&#123;rubbish&#125;</span>&quot;</span><br>        response = requests.request(<span class="hljs-string">&quot;GET&quot;</span>, url)<br>        output_str_list = []<br>        <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> response.json()[<span class="hljs-string">&quot;data&quot;</span>]:<br>            output_str_list.append(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;item[<span class="hljs-string">&#x27;name&#x27;</span>]&#125;</span>: <span class="hljs-subst">&#123;item[<span class="hljs-string">&#x27;categroy&#x27;</span>]&#125;</span>&quot;</span>)<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;\n&quot;</span>.join(output_str_list)<br></code></pre></td></tr></table></figure>
+<p>样例问答如下图：</p>
+<figure>
+<img src="https://s2.loli.net/2024/06/23/aBewY6A9QGWTkPq.png" srcset="/img/loading.gif" lazyload
+alt="open-webui-new-chat-tools-2.png" />
+<figcaption
+aria-hidden="true">open-webui-new-chat-tools-2.png</figcaption>
+</figure>
+<p>上述回答中，第一个问题未调用外部工具，大模型的回答中规中矩；而第二个问题调用了外部工具<code>rubbbish_category</code>，借助外部API的数据，使得大模型的回答更加丰富，回复质量无疑比未调用工具时更高。</p>
+<h3 id="多模态问答">多模态问答</h3>
+<p>在上述的模型部署章节，我们已经完成了多模态模型<code>llava-v1.6-34b-hf</code>的部署，因此，可直接在<code>Open WebUI</code>中上传图片进行问答。</p>
+<p>样例问答如下图：</p>
+<figure>
+<img src="https://s2.loli.net/2024/06/23/vlNh8BATSofWRZO.png" srcset="/img/loading.gif" lazyload
+alt="open-webui-new-chat-multi-modal-qa.png" />
+<figcaption
+aria-hidden="true">open-webui-new-chat-multi-modal-qa.png</figcaption>
+</figure>
+<h3 id="pipelines">Pipelines</h3>
+<p>Pipelines允许我们在<code>Open WebUI</code>中自定义流水线作业，比如实现代码运行等。</p>
+<p>本文不再给出Pipelines的使用方式，后续有机会将专门写这方面的文章进行介绍，计划是使用大模型解数学题目，其中回答过程中会给出Python代码，并需要获取Python代码运行结果。</p>
+<h2 id="open-webui其它功能">Open WebUI其它功能</h2>
+<p><code>Open WebUI</code>还提供了一些其它有用的小功能，本文尝试着讨论如下：</p>
+<ol type="1">
+<li>会话点赞/点踩功能</li>
+<li>会话导出</li>
+<li>代码语法高亮</li>
+<li>Latex格式支持（公式需用<code>$...$</code>包围起来）</li>
+<li>Swagger接口文档(需要授权，Bearer Token可在网页中直接找到)</li>
+</ol>
+<h3 id="会话点赞点踩功能">会话点赞/点踩功能</h3>
+<p><code>Open WebUI</code>的New
+Chat中，支持对模型回复进行点赞/点踩，对模型回复进行评价，还有重新生成及继续生成功能，还支持对模型回复进行编辑。</p>
+<p>对模型回复进行点赞/点踩，有助于为后续Reward
+Model及RLHF阶段的训练提供数据集。</p>
+<h3 id="会话导出">会话导出</h3>
+<p><code>Open WebUI</code>还支持对话导出，点击···按钮，选择Download
+-&gt; Export Chat(.json)，即可获得JSON格式的对话导出数据。</p>
+<p>以时间查询对话为例，导出文件为<code>chat-export-1719111625238.json</code>，内容如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">[</span><br>    <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;9412b79f-09c2-404d-84b1-bda48bc7463b&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;user_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;48343703-94f0-4b63-b954-2a995d3b7093&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;title&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;⏰ 查询时间 🕰️&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;chat&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>            <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;title&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;⏰ 查询时间 🕰️&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;models&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>                <span class="hljs-string">&quot;Qwen2-72B-Instruct&quot;</span><br>            <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;options&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;messages&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>                <span class="hljs-punctuation">&#123;</span><br>                    <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;9cea61cf-d5d1-4236-8ec8-303ac8b28981&quot;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;parentId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;childrenIds&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>                        <span class="hljs-string">&quot;9cf1147b-b868-4ecb-884a-270549b43c77&quot;</span><br>                    <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;role&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;user&quot;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;现在几点了&quot;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;timestamp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1718955676</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;models&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>                        <span class="hljs-string">&quot;Qwen2-72B-Instruct&quot;</span><br>                    <span class="hljs-punctuation">]</span><br>                <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-punctuation">&#123;</span><br>                    <span class="hljs-attr">&quot;parentId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;9cea61cf-d5d1-4236-8ec8-303ac8b28981&quot;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;9cf1147b-b868-4ecb-884a-270549b43c77&quot;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;childrenIds&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>                        <span class="hljs-string">&quot;5472812b-aeb8-4f2e-a903-29a6bac42756&quot;</span><br>                    <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;role&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;assistant&quot;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;现在时间是下午03:41:17，但是请注意这个时间是基于2024年6月21日星期五的时间点。如果您需要当前实际时间，请查看您的设备时间。&quot;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;model&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Qwen2-72B-Instruct&quot;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;modelName&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Qwen2-72B-Instruct&quot;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;userContext&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;timestamp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1718955676</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;done&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><br>                <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-punctuation">&#123;</span><br>                    <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;5472812b-aeb8-4f2e-a903-29a6bac42756&quot;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;parentId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;9cf1147b-b868-4ecb-884a-270549b43c77&quot;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;childrenIds&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>                        <span class="hljs-string">&quot;5b8f70b4-6517-4414-992c-890772b53b17&quot;</span><br>                    <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;role&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;user&quot;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;现在几点了&quot;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;timestamp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1718955692</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;models&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>                        <span class="hljs-string">&quot;Qwen2-72B-Instruct&quot;</span><br>                    <span class="hljs-punctuation">]</span><br>                <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-punctuation">&#123;</span><br>                    <span class="hljs-attr">&quot;parentId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;5472812b-aeb8-4f2e-a903-29a6bac42756&quot;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;5b8f70b4-6517-4414-992c-890772b53b17&quot;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;childrenIds&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;role&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;assistant&quot;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;对不起，作为一个AI，我无法实时提供当前的时间。请查看你所在设备的时间以获取准确时间。&quot;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;model&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Qwen2-72B-Instruct&quot;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;modelName&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Qwen2-72B-Instruct&quot;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;userContext&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;timestamp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1718955692</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;done&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><br>                <span class="hljs-punctuation">&#125;</span><br>            <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;history&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>                <span class="hljs-attr">&quot;messages&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>                    <span class="hljs-attr">&quot;9cea61cf-d5d1-4236-8ec8-303ac8b28981&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>                        <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;9cea61cf-d5d1-4236-8ec8-303ac8b28981&quot;</span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;parentId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;childrenIds&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>                            <span class="hljs-string">&quot;9cf1147b-b868-4ecb-884a-270549b43c77&quot;</span><br>                        <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;role&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;user&quot;</span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;现在几点了&quot;</span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;timestamp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1718955676</span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;models&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>                            <span class="hljs-string">&quot;Qwen2-72B-Instruct&quot;</span><br>                        <span class="hljs-punctuation">]</span><br>                    <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;9cf1147b-b868-4ecb-884a-270549b43c77&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>                        <span class="hljs-attr">&quot;parentId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;9cea61cf-d5d1-4236-8ec8-303ac8b28981&quot;</span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;9cf1147b-b868-4ecb-884a-270549b43c77&quot;</span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;childrenIds&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>                            <span class="hljs-string">&quot;5472812b-aeb8-4f2e-a903-29a6bac42756&quot;</span><br>                        <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;role&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;assistant&quot;</span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;现在时间是下午03:41:17，但是请注意这个时间是基于2024年6月21日星期五的时间点。如果您需要当前实际时间，请查看您的设备时间。&quot;</span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;model&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Qwen2-72B-Instruct&quot;</span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;modelName&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Qwen2-72B-Instruct&quot;</span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;userContext&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;timestamp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1718955676</span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;done&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><br>                    <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;5472812b-aeb8-4f2e-a903-29a6bac42756&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>                        <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;5472812b-aeb8-4f2e-a903-29a6bac42756&quot;</span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;parentId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;9cf1147b-b868-4ecb-884a-270549b43c77&quot;</span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;childrenIds&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>                            <span class="hljs-string">&quot;5b8f70b4-6517-4414-992c-890772b53b17&quot;</span><br>                        <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;role&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;user&quot;</span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;现在几点了&quot;</span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;timestamp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1718955692</span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;models&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>                            <span class="hljs-string">&quot;Qwen2-72B-Instruct&quot;</span><br>                        <span class="hljs-punctuation">]</span><br>                    <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;5b8f70b4-6517-4414-992c-890772b53b17&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>                        <span class="hljs-attr">&quot;parentId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;5472812b-aeb8-4f2e-a903-29a6bac42756&quot;</span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;5b8f70b4-6517-4414-992c-890772b53b17&quot;</span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;childrenIds&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;role&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;assistant&quot;</span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;对不起，作为一个AI，我无法实时提供当前的时间。请查看你所在设备的时间以获取准确时间。&quot;</span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;model&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Qwen2-72B-Instruct&quot;</span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;modelName&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Qwen2-72B-Instruct&quot;</span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;userContext&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;timestamp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1718955692</span><span class="hljs-punctuation">,</span><br>                        <span class="hljs-attr">&quot;done&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><br>                    <span class="hljs-punctuation">&#125;</span><br>                <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-attr">&quot;currentId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;5b8f70b4-6517-4414-992c-890772b53b17&quot;</span><br>            <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;tags&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;timestamp&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1718955676711</span><br>        <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;updated_at&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1718955693</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;created_at&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1718955676</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;share_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;archived&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><br>    <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">]</span><br></code></pre></td></tr></table></figure>
+<h3 id="代码语法高亮">代码语法高亮</h3>
+<p><code>Open WebUI</code>还支持对模型回复中的代码进行语法高亮，使得代码显示更优雅。</p>
+<p>以快排程序为例，如下图：</p>
+<figure>
+<img src="https://s2.loli.net/2024/06/23/Y3B2UoHMd4rZ7IA.png" srcset="/img/loading.gif" lazyload
+alt="open-webui-new-chat-code-highlight.png" />
+<figcaption
+aria-hidden="true">open-webui-new-chat-code-highlight.png</figcaption>
+</figure>
+<h3 id="latex格式支持">Latex格式支持</h3>
+<p><code>Open WebUI</code>还支持对模型回复中的Latex格式的数学公式进行渲染，前提是数学公式需要用<span
+class="math display">\[...\]</span>包围起来。</p>
+<p>样例对话如下图：</p>
+<figure>
+<img src="https://s2.loli.net/2024/06/23/whLoTMr5zmlCQaK.png" srcset="/img/loading.gif" lazyload
+alt="open-webui-new-chat-latex.png" />
+<figcaption
+aria-hidden="true">open-webui-new-chat-latex.png</figcaption>
+</figure>
+<h3 id="swagger接口文档">Swagger接口文档</h3>
+<p><code>Open WebUI</code>还提供了平台完整功能的Swagger接口文档，如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>App</th>
+<th>Docs Path</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>WebUI</td>
+<td>/api/v1/docs</td>
+</tr>
+<tr class="even">
+<td>Ollama</td>
+<td>/ollama/docs</td>
+</tr>
+<tr class="odd">
+<td>OpenAI</td>
+<td>/openai/api/docs</td>
+</tr>
+<tr class="even">
+<td>Images</td>
+<td>/images/api/v1/docs</td>
+</tr>
+<tr class="odd">
+<td>Audio</td>
+<td>/audio/api/v1/docs</td>
+</tr>
+<tr class="even">
+<td>RAG</td>
+<td>/rag/api/v1/docs</td>
+</tr>
+</tbody>
+</table>
+<p>以WebUI为例，在浏览器中输入<u>http://localhost:8080/api/v1/docs</u>即会显示WebUI的Swagger接口文档。</p>
+<p>点击右上方的Authorize按钮进行授权认证，Bearer
+Token可在<code>Open WebUI</code>网页中的个人信息（Settings -&gt; Account
+-&gt; API Key）中直接找到。</p>
+<p>以获取工具接口(/tools/)为例，直接在页面进行测试，如下图：</p>
+<figure>
+<img src="https://s2.loli.net/2024/06/23/iuL8BbpPG92sjV4.png" srcset="/img/loading.gif" lazyload
+alt="open-webui-swagger-webui.png" />
+<figcaption aria-hidden="true">open-webui-swagger-webui.png</figcaption>
+</figure>
+<h2 id="总结">总结</h2>
+<p>本文重点介绍了如何使用vLLM来部署通用模型<code>Qwen2-72B-Instruct</code>和多模态模型<code>llava-v1.6-34b-hf</code>，以及在Groq官网中获取llama3-70b-8192
+和 mixtral-8x7b-32768模型的调用方式。</p>
+<p>接着，本文介绍了<code>Open WebUI</code>的基本信息，以及一些重要特性，包括单/多模型回复、文档问答、Web
+Search问答、Function Calling、多模态问答等，还有其它一些小功能等。</p>
+<p>本文可作为<code>Open WebUI</code>的入门文章，后续笔者将探索<code>Open WebUI</code>的更多功能，欢迎关注~</p>
+<h2 id="参考文献">参考文献</h2>
+<ol type="1">
+<li>Latex support issue in Open Webui: <a
+target="_blank" rel="noopener" href="https://github.com/open-webui/open-webui/issues/2615"
+class="uri">https://github.com/open-webui/open-webui/issues/2615</a></li>
+<li>NLP（九十六）使用LLaMA-Factory实现function calling: <a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/694577892"
+class="uri">https://zhuanlan.zhihu.com/p/694577892</a></li>
+<li>Quickstart of groq: <a
+target="_blank" rel="noopener" href="https://console.groq.com/docs/quickstart"
+class="uri">https://console.groq.com/docs/quickstart</a></li>
+<li>features of Open Webui: <a
+target="_blank" rel="noopener" href="https://docs.openwebui.com/features/"
+class="uri">https://docs.openwebui.com/features/</a></li>
+<li>vllm/tests/multimodal/test_processor.py: <a
+target="_blank" rel="noopener" href="https://github.com/vllm-project/vllm/blob/main/tests/multimodal/test_processor.py"
+class="uri">https://github.com/vllm-project/vllm/blob/main/tests/multimodal/test_processor.py</a></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Open-WebUI/" class="print-no-link">#Open WebUI</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（一百零三）大模型应用利器之Open_WebUI入门</div>
+      <div>https://percent4.github.io/NLP（一百零三）大模型应用利器之Open-WebUI入门/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年8月1日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/Open-WebUI%E7%9A%84Pipelines%E5%AD%A6%E4%B9%A0%E4%B9%8B%E4%BD%BF%E7%94%A8%E5%A4%A7%E6%A8%A1%E5%9E%8B%E8%A7%A3%E6%95%B0%E5%AD%A6%E9%A2%98/" title="Open_WebUI的Pipelines学习之使用大模型解数学题">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Open_WebUI的Pipelines学习之使用大模型解数学题</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E9%9B%B6%E4%BA%8C%EF%BC%89ReRank%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83%E5%AE%9E%E8%B7%B5/" title="NLP（一百零二）ReRank模型微调实践">
+                        <span class="hidden-mobile">NLP（一百零二）ReRank模型微调实践</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

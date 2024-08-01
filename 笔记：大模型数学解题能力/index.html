@@ -1,0 +1,1035 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍笔者近段时间来在大模型数学解题能力方面的调研工作，包括数据集、论文、实践项目、开源平台等。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="笔记：大模型数学解题能力">
+<meta property="og:url" content="https://percent4.github.io/%E7%AC%94%E8%AE%B0%EF%BC%9A%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%95%B0%E5%AD%A6%E8%A7%A3%E9%A2%98%E8%83%BD%E5%8A%9B/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍笔者近段时间来在大模型数学解题能力方面的调研工作，包括数据集、论文、实践项目、开源平台等。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2024/07/06/k1ALWf3lHTvoBrn.png">
+<meta property="article:published_time" content="2024-08-01T04:40:20.000Z">
+<meta property="article:modified_time" content="2024-08-01T04:41:41.784Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="大模型">
+<meta property="article:tag" content="数学">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2024/07/06/k1ALWf3lHTvoBrn.png">
+  
+  
+  
+  <title>笔记：大模型数学解题能力 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="笔记：大模型数学解题能力"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-08-01 12:40" pubdate>
+          星期四, 八月 1日 2024, 12:40 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          7.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          62 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">笔记：大模型数学解题能力</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍笔者近段时间来在大模型数学解题能力方面的调研工作，包括数据集、论文、实践项目、开源平台等。</p>
+</blockquote>
+<p>笔者从今年五一开始从事大模型数学解题能力方面的工作，到7月初已完成了数据收集及合成，模型微调，模型部署推理，模型测评，模型开源等各阶段任务。这期间，笔者就大模型数学解题能力方面的工作形成了一系列文章，如下：</p>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486824&amp;idx=1&amp;sn=fd6b36cf78aead227359606a7270516d&amp;chksm=fcb9b4f8cbce3dee332335092f576c703ccdc55598cf45cb7f483f822ba5c72590019384d12a&amp;token=910217935&amp;lang=zh_CN#rd">NLP（九十七）大模型数学解题能力的初步探索</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486889&amp;idx=1&amp;sn=27c1a40d3af462f43a80a1ed401843f6&amp;chksm=fcb9b439cbce3d2fd73e753618e0b32027314648eb13dc8b48bb9e713ad5313777c1ef27ce46&amp;token=910217935&amp;lang=zh_CN#rd">NLP（九十九）大模型的数学能力微调及测评</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486909&amp;idx=1&amp;sn=31b01bd4155b2c9ca15e2a7ae9f4de15&amp;chksm=fcb9b42dcbce3d3bb473cf138f0f0f9a71addeff934900d155b6b90fb2a5857c1926b8aa0e9d&amp;token=910217935&amp;lang=zh_CN&amp;poc_token=HCThiGajFt5ytgfZvK8pB0u2ZgTr-k_OD29zlsJj">NLP（一百）大模型数学能力测评</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247487013&amp;idx=1&amp;sn=6a6786ba8c8c7cfdbc02ef558adefe71&amp;chksm=fcb9b7b5cbce3ea37f8fb61e743d0ea0a7d4f5d6b8e8b2c7a80171a5c8c217524d8f307c0146&amp;token=910217935&amp;lang=zh_CN#rd">Open
+WebUI的Pipelines学习之使用大模型解数学题</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247487025&amp;idx=1&amp;sn=368b349152f5c3e31de961cf2e9572c1&amp;chksm=fcb9b7a1cbce3eb78d7406a7b089b7175fa1691d10209645238b4da4edc0af3b2f5549dd249f&amp;token=910217935&amp;lang=zh_CN#rd">个人的数学解题大模型已开源至HuggingFace平台！</a></li>
+</ol>
+<p>当然，在研究过程中，笔者也进行了大量的调研工作，形成了一系列笔记，经过整理现在予以公开，以飨读者。笔记内容包括数据集、论文、实践项目、开源平台等。</p>
+<p>该笔记内容在Notion平台上已经公开，有兴趣的读者可以访问：<a
+target="_blank" rel="noopener" href="https://local-dugout-3c9.notion.site/Math-for-LLM-d631565f4c0f42d8bf4dcfe87a384ece?pvs=74">https://local-dugout-3c9.notion.site/Math-for-LLM-d631565f4c0f42d8bf4dcfe87a384ece?pvs=74</a>
+.</p>
+<p><strong>如有错误或不完整的地方，欢迎读者补充！</strong></p>
+<h2 id="数据集">数据集</h2>
+<h3 id="gsm8k">GSM8K</h3>
+<blockquote>
+<p>访问网址：<a
+target="_blank" rel="noopener" href="https://huggingface.co/datasets/openai/gsm8k">https://huggingface.co/datasets/openai/gsm8k</a></p>
+</blockquote>
+<p>GSM8K数据集为大模型数学能力评测常见的benchmark之一，题目类型为小学数学题，共8.5k样本。</p>
+<p>GSM8K是大小为8.5K的小学数学数据集，涉及基本算术运算，需要2-8个步骤才能解决，包含7.5K训练集和1K测试集。GSM8K每道题的答案包含完整的解题过程，有助于CoT训练。在GSM8K数据集中，测试数据的正确答案在
+#### 后面，而且一般为整数。GSM8K数据集的测试集共1319条。</p>
+<h3 id="math">MATH</h3>
+<blockquote>
+<p>访问网址：<a
+target="_blank" rel="noopener" href="https://huggingface.co/datasets/lighteval/MATH/viewer">https://huggingface.co/datasets/lighteval/MATH/viewer</a></p>
+</blockquote>
+<p>MATH数据集为大模型数学能力评测常见的benchmark之一，是一个包含12500个高中数学竞赛的问题（7500个用于训练，5000个用于测试）的数据集，以文本模式的Latex格式呈现。MATH中的每个问题都有一个完整的逐步解决方案，有助于CoT训练。</p>
+<p>MATH数据集的最终答案用包围起来，答案表述一般比较多变，形式多样，有分数，根式，多项式，整数，小数等等。在其官网Github项目
+hendrycks/math 中，提供了用于判断两个最终答案是否相等的代码脚本
+math_equivalence.py ，网址为：<a
+target="_blank" rel="noopener" href="https://github.com/hendrycks/math/blob/main/modeling/math_equivalence.py">https://github.com/hendrycks/math/blob/main/modeling/math_equivalence.py</a>
+.</p>
+<h3 id="ape210k">Ape210K</h3>
+<blockquote>
+<p>访问网址：<a
+target="_blank" rel="noopener" href="https://github.com/Chenny0808/ape210k">https://github.com/Chenny0808/ape210k</a></p>
+</blockquote>
+<p>Ape210K数据集由猿辅导开源共享，它是一个新的大规模和模板丰富的Math
+Word
+Problem（MWP）数据集，包含210,488个（约210K）中国小学水平的数学问题。每个问题都包含最佳答案和得出答案所需的方程式。</p>
+<p>数据集分布如下：</p>
+<figure>
+<img
+src="https://raw.githubusercontent.com/Chenny0808/ape210k/master/images/15759784507903.jpg" srcset="/img/loading.gif" lazyload
+alt="Ape210K数据集分布" />
+<figcaption aria-hidden="true">Ape210K数据集分布</figcaption>
+</figure>
+<p>样例数据如下：</p>
+<figure>
+<img
+src="https://raw.githubusercontent.com/Chenny0808/ape210k/master/images/15759776402677.jpg" srcset="/img/loading.gif" lazyload
+alt="样例数据" />
+<figcaption aria-hidden="true">样例数据</figcaption>
+</figure>
+<h3 id="tal-scq5k">TAL-SCQ5K</h3>
+<blockquote>
+<p>访问网址：<a
+target="_blank" rel="noopener" href="https://huggingface.co/datasets/math-eval/TAL-SCQ5K">https://huggingface.co/datasets/math-eval/TAL-SCQ5K</a></p>
+</blockquote>
+<p>TAL-SCQ5K-EN/TAL-SCQ5K-CN
+是好未来教育集团打造的高质量中英文数学竞赛数据集，每个数据集包含 5K
+道题目（3K 道训练题和 2K
+道测试题），题目为多项选择题，涵盖小学、初中、高中阶段的数学主题。此外，数据集还提供了详细的解答步骤以方便
+CoT 训练，题目中的所有数学表达式均以标准文本模式 Latex 呈现。</p>
+<p>样例数据：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;dataset_name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;prime_math_competition_en_single_choice_8K_dev&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;dataset_version&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2023-07-07&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;qid&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;244&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;queId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;8afc802a8c304199b1040f11ffa2e92a&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;competition_source_list&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;difficulty&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;qtype&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;single_choice&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;problem&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;A $14$-digit. number $666666 XY 444444$ is a multiple of $26$. If $X$ and $Y$ are both positive, what is the smallest vaue of $X+ Y$? &quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;answer_option_list&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>        <span class="hljs-punctuation">[</span><span class="hljs-punctuation">&#123;</span><br>            <span class="hljs-attr">&quot;aoVal&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;A&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;$$3$$ &quot;</span><br>        <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-punctuation">[</span><span class="hljs-punctuation">&#123;</span><br>            <span class="hljs-attr">&quot;aoVal&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;B&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;$$4$$ &quot;</span><br>        <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-punctuation">[</span><span class="hljs-punctuation">&#123;</span><br>            <span class="hljs-attr">&quot;aoVal&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;C&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;$$9$$ &quot;</span><br>        <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-punctuation">[</span><span class="hljs-punctuation">&#123;</span><br>            <span class="hljs-attr">&quot;aoVal&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;D&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;$$14$$ &quot;</span><br>        <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-punctuation">[</span><span class="hljs-punctuation">&#123;</span><br>            <span class="hljs-attr">&quot;aoVal&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;E&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;None of the above &quot;</span><br>        <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">]</span><br>    <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;knowledge_point_routes&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;Overseas Competition-&gt;Knowledge Point-&gt;Number Theory Modules-&gt;Division without Remainders-&gt;Divisibility Rules&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;answer_analysis&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;Since $1001$ is a multiple of $13$, $111111 = 111 \\times 1001$ is also a multiple of $13$.  It follows that both $666666$ and $444444$ are both multiples of $26$.  $666666XY 444444 = 66666600000000 + XY 000000 + 444444$  $\\Rightarrow XY$ must be divisible by $13$.  Smallest $X+Y=1+3=4$. &quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;answer_value&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;B&quot;</span><br><span class="hljs-punctuation">&#125;</span><br><br></code></pre></td></tr></table></figure>
+<h3 id="math23k">Math23K</h3>
+<blockquote>
+<p>访问网址：<a
+target="_blank" rel="noopener" href="https://paperswithcode.com/dataset/math23k">https://paperswithcode.com/dataset/math23k</a></p>
+</blockquote>
+<p>Math23K数据集是一个为解决数学应用题而创建的数据集，包含从互联网上爬取的
+23,162 道中文数学问题。</p>
+<p>该数据集最初是在论文 <strong>Deep Neural Solver for Math Word
+Problems</strong>
+中引入的。原始文件最初分为训练/测试数据集，而其它研究工作（https://github.com/2003pro/Graph2Tree）
+执行训练/验证/测试数据集分割。</p>
+<p>样例数据：</p>
+<figure>
+<img
+src="https://imageprx.openbayes.net/cdn-cgi/image/format=auto/https:/p.ipic.vip/ynffqu.jpg" srcset="/img/loading.gif" lazyload
+alt="Math23K数据集样例数据" />
+<figcaption aria-hidden="true">Math23K数据集样例数据</figcaption>
+</figure>
+<h3 id="chinese_aaai_math">chinese_AAAI_Math</h3>
+<blockquote>
+<p>访问网址: <a
+target="_blank" rel="noopener" href="https://huggingface.co/datasets/YaHi/chinese_AAAI_Math">https://huggingface.co/datasets/YaHi/chinese_AAAI_Math</a></p>
+</blockquote>
+<p>与之相关的网站：https://ai4ed.cc/competitions/aaai2024competition
+，关于该竞赛的描述，可以参考上述给出的官网。该竞赛将给我们带来全新的体验，让我们在领略数学的乐趣的同时，领略人工智能的强大威力，共同见证人工智能（AI）如何以新的方式解决挑战性问题，为未来开辟新道路。</p>
+<h3 id="mathpile">MathPile</h3>
+<blockquote>
+<p>访问网址：<a
+target="_blank" rel="noopener" href="https://gair-nlp.github.io/MathPile/">https://gair-nlp.github.io/MathPile/</a></p>
+</blockquote>
+<p>上海交通大学的人工智能实验室（GAIR）发布了一项重要的贡献，推出了名为"MathPile"的专门预训练语料库，旨在增强大规模模型在数学推理方面的能力。这个庞大的数据集包含95亿个标记，来源于各种数学内容，包括教科书、学术论文和在线资源如StackExchange。MathPile的独特之处在于其对数据质量的精心筛选，确保输入到人工智能模型中的数据具有高质量，以促进更准确和复杂的数学问题解决能力。MathPile的开源性质以及商业可用性标志着人工智能社区的一个显著进展，可能会导致更智能的系统，能够协助处理复杂的数学任务。</p>
+<p>MathPile 具备以下几个特点：</p>
+<figure>
+<img
+src="https://raw.githubusercontent.com/GAIR-NLP/MathPile/main/static/images/mathpile-features.png" srcset="/img/loading.gif" lazyload
+alt="MathPile数据集特性" />
+<figcaption aria-hidden="true">MathPile数据集特性</figcaption>
+</figure>
+<h3 id="superclue-math6">SuperCLUE-Math6</h3>
+<blockquote>
+<p>访问网址：<a
+target="_blank" rel="noopener" href="https://github.com/CLUEbenchmark/SuperCLUE-Math6">https://github.com/CLUEbenchmark/SuperCLUE-Math6</a></p>
+</blockquote>
+<p>SuperCLUE-Math6数据集是一个GSM8K的中文升级版，专门设计来测试中文大模型在数学推理方面的核心能力。SuperCLUE-Math6不仅延续了GSM8K的高质量和多样性，更在难度和应用广度上进行了适当的扩充。它的推出，旨在解决中文模型评估中的关键问题，并提供一个全面的测试平台。</p>
+<h2 id="测评">测评</h2>
+<h3 id="gsm8k数据集测评">GSM8K数据集测评</h3>
+<p>测评项目如下：</p>
+<ol type="1">
+<li>gsm8k_eval.ipynb: <a
+target="_blank" rel="noopener" href="https://colab.research.google.com/github/google-deepmind/gemma/blob/main/colabs/gsm8k_eval.ipynb#scrollTo=kRShUtLfEXiq">https://colab.research.google.com/github/google-deepmind/gemma/blob/main/colabs/gsm8k_eval.ipynb#scrollTo=kRShUtLfEXiq</a></li>
+<li>GSM8K-eval: <a
+target="_blank" rel="noopener" href="https://github.com/Guangxuan-Xiao/GSM8K-eval">https://github.com/Guangxuan-Xiao/GSM8K-eval</a></li>
+</ol>
+<h3 id="math数据集测评">MATH数据集测评</h3>
+<p>测评项目如下：</p>
+<ol type="1">
+<li>hendrycks/math: <a
+target="_blank" rel="noopener" href="https://github.com/hendrycks/math?tab=readme-ov-file">https://github.com/hendrycks/math?tab=readme-ov-file</a></li>
+</ol>
+<h3 id="opencompass司南">OpenCompass（司南）</h3>
+<p>OpenCompass（思南）是由上海人工智能实验室提供的一个大模型评估平台，提供了全面、丰富、便利的大模型评估工具，包含了各个主体、各个维度的模型评估，是国内比较权威可信的大模型评估平台。</p>
+<p>OpenCompass提供了数学主题评估，访问网址为：<a
+target="_blank" rel="noopener" href="https://hub.opencompass.org.cn/topic/12">https://hub.opencompass.org.cn/topic/12</a>
+.</p>
+<h3 id="matheval">MathEval</h3>
+<blockquote>
+<p>访问网址：<a target="_blank" rel="noopener" href="https://matheval.ai/">https://matheval.ai/</a></p>
+</blockquote>
+<p>MathEval是一个专注于全面评估大模型数学能力的测评基准。共包含20个数学领域测评集和近30K道数学题目，旨在全面评估大模型在包含算术，小初高竞赛和部分高等数学分支在内的各阶段、难度和数学子领域的解题能力表现，既可以作为现阶段大模型之间数学能力横向对比的一站式参考，也可以为后续如何进一步提高大模型数学能力指引方向。</p>
+<p>MathEval平台由智慧教育、北京师范大学、暨南大学、华东师范大学、西安交通大学、香港城市大学等单位共同开发。</p>
+<h2 id="模型">模型</h2>
+<h3 id="llemma">Llemma</h3>
+<blockquote>
+<p>访问网址：<a
+target="_blank" rel="noopener" href="https://blog.eleuther.ai/llemma/">https://blog.eleuther.ai/llemma/</a></p>
+</blockquote>
+<p>LLEMMA模型是专门解决数学问题的开源大语言模型。它由多个大学和Eleuther
+AI公司共同研发，模型能够理解和生成数学表达式、解决数学问题，并与其他计算工具（如Python解释器和形式定理证明器）进行交互。</p>
+<p>该模型基于Code
+Llama进行构建，在多个数学问题解决基准测试上，LLEMMA都表现出色，超过了所有已知的开放基础模型。</p>
+<p>LLEMMA模型是在Proof-Pile-2（一个包含550亿标记的数学和科学文档数据集）上进行预训练的，该数据集包括科学论文、与数学相关的网页数据和数学代码。</p>
+<p>LLEMMA训练并发布了两个模型：Llemma 34B和Llemma 7B。LLEMMA
+7B模型在200B个令牌上进行了训练，而LLEMMA
+34B模型在50B个令牌上进行了训练。</p>
+<h3 id="internlm2-math">InternLM2-Math</h3>
+<blockquote>
+<p>访问网址：<a
+target="_blank" rel="noopener" href="https://github.com/InternLM/InternLM-Math">https://github.com/InternLM/InternLM-Math</a></p>
+</blockquote>
+<p>2024年1月23日，上海人工智能实验室（上海AI实验室）开源发布新一代数学模型书生·浦语数学（InternLM2-Math）。基于书生·浦语2.0（InternLM2）强大的基础能力，InternLM2-Math仅以中轻量级参数规模，即在多项数学评测中刷新开源模型数学能力上限；此外，InternLM2-Math不仅会“解题”，更会“判题”，突破了传统数学大模型应用局限，将为数学基础研究和教学提供优质应用基座。</p>
+<p>InternLM2-Math为首个同时支持形式化数学语言及解题过程评价的开源模型，以强大内生计算和推理能力，为技术社区提供强大数学工具和模型范式。秉持“以高质量开源赋能创新”的理念，InternLM2-Math代码和模型完全开源，并支持免费商用。</p>
+<p><img
+src="https://img.shlab.org.cn/pjlab/images/2024/01/638416911088500000.png" srcset="/img/loading.gif" lazyload /></p>
+<h3 id="deepseek-coder-v2">DeepSeek-Coder-V2</h3>
+<blockquote>
+<p>访问网址：<a
+target="_blank" rel="noopener" href="https://github.com/deepseek-ai/DeepSeek-Coder-V2">https://github.com/deepseek-ai/DeepSeek-Coder-V2</a></p>
+</blockquote>
+<p>DeepSeek-Coder-V2模型是一个开源的代码语言模型，专为代码生成、代码补全、代码修复以及数学推理等任务而设计。该模型通过在大量高质量的多源语料库上进一步训练，显著提升了其在代码生成和数学推理方面的能力，同时在一般语言任务中的表现也保持在同等水平。DeepSeek-Coder-V2
+支持 338 种编程语言并将上下文长度从 16K 扩展到 128K。该模型分为 16B 和
+236B 参数版本，且在多项基准测试中表现优越，甚至在某些任务上超越了如
+GPT4-Turbo 等闭源模型。</p>
+<p><img src="https://s2.loli.net/2024/07/06/k1ALWf3lHTvoBrn.png" srcset="/img/loading.gif" lazyload /></p>
+<h3 id="step-dpo">Step-DPO</h3>
+<blockquote>
+<p>访问网址：<a
+target="_blank" rel="noopener" href="https://github.com/dvlab-research/Step-DPO">https://github.com/dvlab-research/Step-DPO</a></p>
+</blockquote>
+<p>Step-DPO是一种用于增强大规模语言模型（LLMs）长链推理能力的简单、有效且数据高效的方法。它通过构建包含10K步骤偏好对的高质量数据集来实现这一目的。在有限的数据和训练步骤下，Step-DPO显著提升了模型在MATH和GSM8K上的表现。</p>
+<p>Step-DPO模型由香港中文大学的贾佳亚团队提出。</p>
+<p><img
+src="https://raw.githubusercontent.com/dvlab-research/Step-DPO/main/imgs/summary.jpg" srcset="/img/loading.gif" lazyload /></p>
+<p>在线Demo网址：<a
+target="_blank" rel="noopener" href="http://103.170.5.190:7870/">http://103.170.5.190:7870/</a></p>
+<h3 id="其它模型">其它模型</h3>
+<p>其它专门为解决数学问题的大模型还有：</p>
+<ul>
+<li>九章大模型（MathGPT）：由<code>好未来</code>开发</li>
+<li>WizardMath：由<code>微软</code>开发</li>
+<li>GAIRMath-Abel：由<code>上海交大生成式人工智能研究组 (GAIR)</code>开发</li>
+<li>...</li>
+</ul>
+<h2 id="论文及工具">论文及工具</h2>
+<ol type="1">
+<li>论文：<strong>Large Language Models for Mathematical Reasoning:
+Progresses and
+Challenges</strong>，大模型数学推理能力的进展及挑战调研，网址为：<a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/2402.00157">https://arxiv.org/abs/2402.00157</a></li>
+<li>论文：<strong>構建一個中文國小數學文字問題語料庫(Building a Corpus
+for Developing the Chinese Elementary School Math Word Problem
+Solver)</strong>，台湾地区一篇关于中小学数学问题（Math Word
+Problem）语料库构建的论文，数据集未公开，网址为：<a
+target="_blank" rel="noopener" href="https://aclanthology.org/O16-1031.pdf">https://aclanthology.org/O16-1031.pdf</a></li>
+<li>工具：<strong>Metamath Home Page</strong>，Metamath
+是一种简单、灵活的计算机可处理语言，支持严格验证、存档和呈现数学证明。网址为：<a
+target="_blank" rel="noopener" href="https://us.metamath.org/">https://us.metamath.org/</a></li>
+<li>工具：<strong>Interpretable Geometry Problem Solving with Formal
+Language and Symbolic Reasoning</strong>，使用符号语言（Interpretable
+Geometry Problem Solver,
+Inter-GPS）进行几何问题推理，共3,002个几何问题。网址为：<a
+target="_blank" rel="noopener" href="https://lupantech.github.io/inter-gps/">https://lupantech.github.io/inter-gps/</a></li>
+<li>工具：<strong>SigmaDolphin</strong>，Automated Math Word Problem
+Solving，网址为：<a
+target="_blank" rel="noopener" href="https://www.microsoft.com/en-us/research/project/sigmadolphin/overview/">https://www.microsoft.com/en-us/research/project/sigmadolphin/overview/</a></li>
+<li>工具：<strong>Asymptote</strong>，一种用于描述几何问题的编程语言，网址为：<a
+target="_blank" rel="noopener" href="https://artofproblemsolving.com/wiki/index.php/Asymptote:_Basics">https://artofproblemsolving.com/wiki/index.php/Asymptote:_Basics</a></li>
+<li>工具：<strong>Algebra Homework Help -- People's
+Math!</strong>，代数学习题网站，网址为：<a
+target="_blank" rel="noopener" href="https://www.algebra.com/">https://www.algebra.com/</a></li>
+<li>工具：<strong>WolframAlpha
+Mathematics</strong>，WolframAlpha开发的解决特定类型的数学问题的网站，网址为：<a
+target="_blank" rel="noopener" href="https://www.wolframalpha.com/examples/mathematics">https://www.wolframalpha.com/examples/mathematics</a></li>
+<li>工具:
+<strong>autogen_agentchat_MathChat.ipynb</strong>，微软开发的Agent框架Autogen，给出的一个用于解决数学习题的Agent例子，网址为：<a
+target="_blank" rel="noopener" href="https://github.com/microsoft/FLAML/blob/main/notebook/autogen_agentchat_MathChat.ipynb">https://github.com/microsoft/FLAML/blob/main/notebook/autogen_agentchat_MathChat.ipynb</a></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" class="print-no-link">#大模型</a>
+      
+        <a href="/tags/%E6%95%B0%E5%AD%A6/" class="print-no-link">#数学</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>笔记：大模型数学解题能力</div>
+      <div>https://percent4.github.io/笔记：大模型数学解题能力/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年8月1日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E9%9B%B6%E5%9B%9B%EF%BC%89BERT%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%AF%E8%A7%A3%E9%87%8A%E6%80%A7/" title="NLP（一百零四）BERT模型的可解释性">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NLP（一百零四）BERT模型的可解释性</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/Open-WebUI%E7%9A%84Pipelines%E5%AD%A6%E4%B9%A0%E4%B9%8B%E4%BD%BF%E7%94%A8%E5%A4%A7%E6%A8%A1%E5%9E%8B%E8%A7%A3%E6%95%B0%E5%AD%A6%E9%A2%98/" title="Open_WebUI的Pipelines学习之使用大模型解数学题">
+                        <span class="hidden-mobile">Open_WebUI的Pipelines学习之使用大模型解数学题</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

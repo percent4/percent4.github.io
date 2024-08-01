@@ -1,0 +1,956 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍什么是Open WebUI中的Pipelines，并给出一些简单的例子，最后演示如何结合Pipelines来制作大模型解数学题的Web界面。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Open_WebUI的Pipelines学习之使用大模型解数学题">
+<meta property="og:url" content="https://percent4.github.io/Open-WebUI%E7%9A%84Pipelines%E5%AD%A6%E4%B9%A0%E4%B9%8B%E4%BD%BF%E7%94%A8%E5%A4%A7%E6%A8%A1%E5%9E%8B%E8%A7%A3%E6%95%B0%E5%AD%A6%E9%A2%98/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍什么是Open WebUI中的Pipelines，并给出一些简单的例子，最后演示如何结合Pipelines来制作大模型解数学题的Web界面。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2024/07/01/XPOCA7neWRcr3iH.png">
+<meta property="og:image" content="https://s2.loli.net/2024/07/01/fECpsARKo4HVxQi.png">
+<meta property="og:image" content="https://s2.loli.net/2024/07/01/CqEneSy6lwc84YF.png">
+<meta property="og:image" content="https://s2.loli.net/2024/07/01/4hBcjZfMwVUx7Rk.png">
+<meta property="og:image" content="https://s2.loli.net/2024/07/01/N86ysPFDiUIOqwK.png">
+<meta property="og:image" content="https://s2.loli.net/2024/07/01/TuXcpmj8zPlZh3N.png">
+<meta property="og:image" content="https://s2.loli.net/2024/07/01/KsG4wV3ujf7m2IR.png">
+<meta property="og:image" content="https://s2.loli.net/2024/07/01/pIgJncFZ3Oz6VS2.png">
+<meta property="og:image" content="https://s2.loli.net/2024/07/01/uM2BYxQJ4Wte9lE.png">
+<meta property="og:image" content="https://s2.loli.net/2024/07/01/MweUujrd6lP8toQ.png">
+<meta property="og:image" content="https://s2.loli.net/2024/07/01/2mtnB4PfNsSzrHO.png">
+<meta property="article:published_time" content="2024-08-01T04:38:42.000Z">
+<meta property="article:modified_time" content="2024-08-01T04:39:56.270Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="大模型">
+<meta property="article:tag" content="Open WebUI">
+<meta property="article:tag" content="数学">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2024/07/01/XPOCA7neWRcr3iH.png">
+  
+  
+  
+  <title>Open_WebUI的Pipelines学习之使用大模型解数学题 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Open_WebUI的Pipelines学习之使用大模型解数学题"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-08-01 12:38" pubdate>
+          星期四, 八月 1日 2024, 12:38 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          51 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Open_WebUI的Pipelines学习之使用大模型解数学题</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍什么是Open
+WebUI中的Pipelines，并给出一些简单的例子，最后演示如何结合Pipelines来制作大模型解数学题的Web界面。</p>
+</blockquote>
+<p>在文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486994&amp;idx=1&amp;sn=9fa3c66d397ccdc42d647dec2831ccfa&amp;chksm=fcb9b782cbce3e9406ae8bd3b680bd815a1fccfe065e490f1c04aa70a613800e16d04d0ea369&amp;payreadticket=HLFBop4ZPyu7YpCKPM5_FuZvoz3sFT21vtNFGQ4ZWAIXsXgrvEc9yloWjU8ojh3x_neWGRs#rd">NLP（一百零三）大模型应用利器之Open
+WebUI入门</a>中，笔者介绍了大模型应用方面一个很好用的工具，即<code>Open WebUI</code>。本文将会在此基础上，介绍<code>Open WebUI</code>的一个重要特性，即Pipelines（管道，或者流水线），它允许开发者来定制使用大模型的流程。</p>
+<h2 id="open-webui中的pipelines">Open WebUI中的Pipelines</h2>
+<h3 id="介绍">介绍</h3>
+<p>Pipelines为<code>Open WebUI</code>带来了模块化、定制化的工作流程，这对于任何支持Open
+API的UI客户端都是支持的。只需几行代码，它就能帮助你轻松地扩展功能，集成独特的逻辑，创建动态工作流程。</p>
+<p>常见的Pipeline有以下几种：</p>
+<ul>
+<li><strong>Function Calling Pipeline</strong>: 轻松处理function
+calls，使用定制化逻辑来提升你的应用；</li>
+<li><strong>Custom RAG Pipeline</strong>: 执行复杂的RAG
+pipelines满足你的需求；</li>
+<li><strong>Rate Limit Filter</strong>: 控制流程中的请求，避免超出rate
+limits;</li>
+<li><strong>Toxic Message
+Filter</strong>：执行过滤器，用于高效地检测和处理有毒的消息；</li>
+<li>其它</li>
+</ul>
+<p>如需使用<strong>Pipelines</strong>服务，我们只需要执行下面的Docker命令即可：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run -p 9099:9099 --add-host=host.docker.internal:host-gateway -v pipelines:/app/pipelines --name pipelines --restart always ghcr.io/open-webui/pipelines:main<br></code></pre></td></tr></table></figure>
+<h3 id="例子">例子</h3>
+<p>使用<code>open-webui serve</code>命令启动<code>Open WebUI</code>，在该应用界面中配置Pipelines连接，如下图：</p>
+<figure>
+<img src="https://s2.loli.net/2024/07/01/XPOCA7neWRcr3iH.png" srcset="/img/loading.gif" lazyload
+alt="配置Pipelines连接" />
+<figcaption aria-hidden="true">配置Pipelines连接</figcaption>
+</figure>
+<p>以添加<code>Wikipedia Pipeline</code>为例，我们来演示如何在<code>Open WebUI</code>使用Pipelines.</p>
+<p>在Settings -&gt; Admin Panel -》 Pipelines汇总，选择来自Github
+URL的pipeline，并点击下载按钮，并保存，如下图：</p>
+<figure>
+<img src="https://s2.loli.net/2024/07/01/fECpsARKo4HVxQi.png" srcset="/img/loading.gif" lazyload
+alt="添加Wikipedia Pipeline" />
+<figcaption
+aria-hidden="true">添加<code>Wikipedia Pipeline</code></figcaption>
+</figure>
+<p>在新对话（New
+Chat）中，选择<code>Wikipedia Pipeline</code>进行对话，以输入"Mistral
+AI"为例，结果如下图：</p>
+<figure>
+<img src="https://s2.loli.net/2024/07/01/CqEneSy6lwc84YF.png" srcset="/img/loading.gif" lazyload
+alt="使用Wikipedia Pipeline" />
+<figcaption
+aria-hidden="true">使用<code>Wikipedia Pipeline</code></figcaption>
+</figure>
+<h2 id="pipelines实战">Pipelines实战</h2>
+<p>接下来，我们来自己实现一个定制化的Pipeline，即使用大模型来数学题。</p>
+<p>在文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247486909&amp;idx=1&amp;sn=31b01bd4155b2c9ca15e2a7ae9f4de15&amp;chksm=fcb9b42dcbce3d3bb473cf138f0f0f9a71addeff934900d155b6b90fb2a5857c1926b8aa0e9d&amp;token=120899150&amp;lang=zh_CN#rd">NLP（一百）大模型数学能力测评</a>中，笔者介绍了如何使用大模型微调数学解题数据，并使用训练后的模型来解答数学题。其中，使用大模型来解答数学题的流程是这样的：</p>
+<ol type="1">
+<li>用户输入数学题目</li>
+<li>大模型给出思考和解答过程，并生成Python代码</li>
+<li>执行Python代码，得到运行结果</li>
+<li>使用运行结果，进行回答总结</li>
+</ol>
+<p>我们以<code>QWen-2-72B-Instruct</code>为例，在笔者构建的数学习题数据集上进行微调，训练后的模型在<strong>GSM8K</strong>数据集上的准确率为93.03%，在<strong>MATH</strong>数据集上的准确率为68.54%，比训练前的两个指标有所提升，如下图:</p>
+<figure>
+<img src="https://s2.loli.net/2024/07/01/4hBcjZfMwVUx7Rk.png" srcset="/img/loading.gif" lazyload
+alt="pipelines_4.png" />
+<figcaption aria-hidden="true">pipelines_4.png</figcaption>
+</figure>
+<p>笔者在Github的<code>llm_math_solver</code>项目中，进行了一系列模型微调，结果如下表：</p>
+<table>
+<thead>
+<tr class="header">
+<th>数据集</th>
+<th>GSM8K</th>
+<th>MATH</th>
+<th>样本数</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>QWen1.5-32B</td>
+<td>79.68%</td>
+<td>43.58%</td>
+<td>2402</td>
+</tr>
+<tr class="even">
+<td>Yi-1.5-34B</td>
+<td>83.47%</td>
+<td>52.76%</td>
+<td>3480</td>
+</tr>
+<tr class="odd">
+<td>Yi-1.5-34B-Chat</td>
+<td>85.67%</td>
+<td>57.22%</td>
+<td>3479</td>
+</tr>
+<tr class="even">
+<td>QWen-2-72B-Instruct</td>
+<td>93.03%</td>
+<td>68.54%</td>
+<td>3469</td>
+</tr>
+</tbody>
+</table>
+<p>在<strong>MATH</strong>数据集上，微调后的<code>QWen-2-72B-Instruct</code>模型准确率达到了惊人的68.54%。与之进行对比，<code>GPT-4o-0513</code>模型的准确率为76.6%，<code>DeepSeek-Coder-V2-Instruct</code>模型（236B）的准确率为75.7%。</p>
+<p>我们将以微调后的<code>QWen-2-72B-Instruct</code>模型来创建大模型解数学题的Web界面。</p>
+<h3
+id="使用pipelines构建大模型解数学题的web界面">使用Pipelines构建大模型解数学题的Web界面</h3>
+<p>首先，使用vLLM部署微调后的<code>QWen-2-72B-Instruct</code>模型，新模型为<code>QWen-2-72B-Instruct-math</code>模型。</p>
+<p>我们创建<code>Math Solver Pipeline</code>，其中上传的Pipeline实现的Python脚本如下:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @file: math_solver_pipeline.py</span><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> re<br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">import</span> subprocess<br><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span>, <span class="hljs-type">Union</span>, Generator, Iterator<br><span class="hljs-keyword">from</span> schemas <span class="hljs-keyword">import</span> OpenAIChatMessage<br><span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel<br><span class="hljs-keyword">from</span> openai <span class="hljs-keyword">import</span> OpenAI<br><span class="hljs-keyword">from</span> random <span class="hljs-keyword">import</span> choices<br><br>os.environ[<span class="hljs-string">&quot;OPENAI_BASE_URL&quot;</span>] = <span class="hljs-string">&quot;http://localhost:50080/v1&quot;</span><br>os.environ[<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>] = <span class="hljs-string">&quot;token-abc123&quot;</span><br>client = OpenAI()<br><br>execution_desc = [<span class="hljs-string">&quot;运行以上代码，输出会是： &quot;</span>,<br>                  <span class="hljs-string">&quot;现在将上面的代码复制到Python环境中运行，运行结果为：&quot;</span>,<br>                  <span class="hljs-string">&quot;执行上述Python代码，运行结果将是：&quot;</span>,<br>                  <span class="hljs-string">&quot;上面的Python代码执行结果为：&quot;</span>,<br>                  <span class="hljs-string">&quot;运行上述代码，我们可以得到题目要求的答案。输出结果将是：&quot;</span>]<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Pipeline</span>:<br>    <span class="hljs-keyword">class</span> <span class="hljs-title class_">Valves</span>(<span class="hljs-title class_ inherited__">BaseModel</span>):<br>        <span class="hljs-keyword">pass</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self</span>):<br>        self.name = <span class="hljs-string">&quot;Math Solver Pipeline&quot;</span><br>        <span class="hljs-keyword">pass</span><br><br>    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">on_startup</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-comment"># This function is called when the server is started.</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;on_startup:<span class="hljs-subst">&#123;__name__&#125;</span>&quot;</span>)<br>        <span class="hljs-keyword">pass</span><br><br>    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">on_shutdown</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-comment"># This function is called when the server is stopped.</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;on_shutdown:<span class="hljs-subst">&#123;__name__&#125;</span>&quot;</span>)<br>        <span class="hljs-keyword">pass</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">pipe</span>(<span class="hljs-params"></span><br><span class="hljs-params">        self, user_message: <span class="hljs-built_in">str</span>, model_id: <span class="hljs-built_in">str</span>, messages: <span class="hljs-type">List</span>[<span class="hljs-built_in">dict</span>], body: <span class="hljs-built_in">dict</span></span><br><span class="hljs-params">    </span>) -&gt; <span class="hljs-type">Union</span>[<span class="hljs-built_in">str</span>, Generator, Iterator]:<br>        <span class="hljs-comment"># This is where you can add your custom pipelines like RAG.</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;pipe:<span class="hljs-subst">&#123;__name__&#125;</span>&quot;</span>)<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;user_message: <span class="hljs-subst">&#123;user_message&#125;</span>&quot;</span>)<br>        query = user_message<br>        messages = [&#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;system&quot;</span>,<span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;你是一个数学解题大师，请解决下面的数学题，给出思考过程，必要时需要给出解题过程中的Python代码。正确答案的数值用\\boxed&#123;&#125;包围起来，最终的答案以因此开头，不要讲多余的废话。&quot;</span>&#125;]<br>        messages.append(&#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">f&quot;题目：<span class="hljs-subst">&#123;query&#125;</span>&quot;</span>&#125;)<br>        result = client.chat.completions.create(messages=messages,<br>                                                model=<span class="hljs-string">&quot;Qwen2-72B-Instruct-math&quot;</span>,<br>                                                temperature=<span class="hljs-number">0.2</span>,<br>                                                stream=<span class="hljs-literal">True</span>)<br>        reply_message = <span class="hljs-string">&quot;&quot;</span><br>        <span class="hljs-keyword">for</span> chunk <span class="hljs-keyword">in</span> result:<br>            <span class="hljs-keyword">if</span> <span class="hljs-built_in">hasattr</span>(chunk, <span class="hljs-string">&quot;choices&quot;</span>) <span class="hljs-keyword">and</span> chunk.choices[<span class="hljs-number">0</span>].delta.content:<br>                reply_message += chunk.choices[<span class="hljs-number">0</span>].delta.content<br><br>        <span class="hljs-comment"># find python code and execute the code</span><br>        <span class="hljs-keyword">if</span> <span class="hljs-string">&#x27;```python&#x27;</span> <span class="hljs-keyword">in</span> reply_message <span class="hljs-keyword">and</span> <span class="hljs-string">&#x27;\n```&#x27;</span> <span class="hljs-keyword">in</span> reply_message:<br>            messages.append(&#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;assistant&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&#x27;```&#x27;</span>.join(reply_message.split(<span class="hljs-string">&#x27;```&#x27;</span>)[:-<span class="hljs-number">1</span>]) + <span class="hljs-string">&#x27;```&#x27;</span>&#125;)<br>            python_code_string = re.findall(<span class="hljs-string">r&#x27;```python\n(.*?)\n```&#x27;</span>, reply_message, re.S)[<span class="hljs-number">0</span>]<br>            python_file_path = <span class="hljs-string">&#x27;temp.py&#x27;</span><br>            <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(python_file_path, <span class="hljs-string">&#x27;w&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>                f.write(python_code_string)<br>            python_code_run = subprocess.run([<span class="hljs-string">&#x27;python3&#x27;</span>, python_file_path], stdout=subprocess.PIPE, timeout=<span class="hljs-number">10</span>)<br>            <span class="hljs-keyword">if</span> python_code_run.returncode:<br>                <span class="hljs-keyword">raise</span> RuntimeError(<span class="hljs-string">&quot;生成的Python代码无法运行！&quot;</span>)<br>            python_code_execution = python_code_run.stdout.decode(<span class="hljs-string">&#x27;utf-8&#x27;</span>)<br>            os.remove(python_file_path)<br>            code_reply_str = choices(execution_desc, k=<span class="hljs-number">1</span>)[<span class="hljs-number">0</span>]<br>            code_reply = <span class="hljs-string">f&quot;\n<span class="hljs-subst">&#123;code_reply_str&#125;</span>```<span class="hljs-subst">&#123;python_code_execution.strip()&#125;</span>```\n&quot;</span><br>            reply_message += code_reply<br>            messages.append(&#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: code_reply&#125;)<br>            result = client.chat.completions.create(messages=messages,<br>                                                    model=<span class="hljs-string">&quot;Qwen2-72B-Instruct-math&quot;</span>,<br>                                                    temperature=<span class="hljs-number">0.2</span>,<br>                                                    stream=<span class="hljs-literal">True</span>)<br><br>            final_reply = <span class="hljs-string">&quot;&quot;</span><br>            <span class="hljs-keyword">for</span> chunk <span class="hljs-keyword">in</span> result:<br>                <span class="hljs-keyword">if</span> <span class="hljs-built_in">hasattr</span>(chunk, <span class="hljs-string">&quot;choices&quot;</span>) <span class="hljs-keyword">and</span> chunk.choices[<span class="hljs-number">0</span>].delta.content:<br>                    reply_message += chunk.choices[<span class="hljs-number">0</span>].delta.content<br>                    final_reply += chunk.choices[<span class="hljs-number">0</span>].delta.content<br>            <span class="hljs-keyword">return</span> reply_message.replace(<span class="hljs-string">&#x27;```python&#x27;</span>, <span class="hljs-string">&#x27;\n```python&#x27;</span>)<br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-keyword">return</span> reply_message<br></code></pre></td></tr></table></figure>
+<p>创建完该Pipeline后，我们就能在<code>Open WebUI</code>界面中使用该流程进行对话了。</p>
+<p>示例对话如下图:</p>
+<p><img src="https://s2.loli.net/2024/07/01/N86ysPFDiUIOqwK.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="https://s2.loli.net/2024/07/01/TuXcpmj8zPlZh3N.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="https://s2.loli.net/2024/07/01/KsG4wV3ujf7m2IR.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="https://s2.loli.net/2024/07/01/pIgJncFZ3Oz6VS2.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="https://s2.loli.net/2024/07/01/uM2BYxQJ4Wte9lE.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="https://s2.loli.net/2024/07/01/MweUujrd6lP8toQ.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img src="https://s2.loli.net/2024/07/01/2mtnB4PfNsSzrHO.png" srcset="/img/loading.gif" lazyload /></p>
+<p>有兴趣的读者，可以尝试在DeepSeek
+V2产品中解决上面的数学题。这样你就能发现，微调后的<code>QWen-2-72B-Instruct-math</code>模型的在这些题目上的表现不输给DeepSeek
+V2 Coder模型。</p>
+<h2 id="总结">总结</h2>
+<p>本文介绍了什么是Open
+WebUI中的Pipelines，并给出一些简单的例子，最后演示如何结合Pipelines来制作大模型解数学题的Web界面。</p>
+<p>关于对<code>QWen-2-72B-Instruct</code>模型的数学能力微调，以及创建解数学题的Pipeline方面的资料，可参考Github项目:
+https://github.com/percent4/llm_math_solver .</p>
+<h2 id="参考文献">参考文献</h2>
+<ol type="1">
+<li>Getting Started with OpenWebUI Pipelines:
+https://ikasten.io/2024/06/03/getting-started-with-openwebui-pipelines/</li>
+<li>Pipelines: UI-Agnostic OpenAI API Plugin Framework:
+https://docs.openwebui.com/pipelines/</li>
+<li>Qwen2-72B-Instruct:
+https://huggingface.co/Qwen/Qwen2-72B-Instruct</li>
+<li>DeepSeek-Coder-V2: Breaking the Barrier of Closed-Source Models in
+Code Intelligence: https://github.com/deepseek-ai/DeepSeek-Coder-V2</li>
+<li>Welcome to LLM Math Solver:
+https://github.com/percent4/llm_math_solver</li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" class="print-no-link">#大模型</a>
+      
+        <a href="/tags/Open-WebUI/" class="print-no-link">#Open WebUI</a>
+      
+        <a href="/tags/%E6%95%B0%E5%AD%A6/" class="print-no-link">#数学</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Open_WebUI的Pipelines学习之使用大模型解数学题</div>
+      <div>https://percent4.github.io/Open-WebUI的Pipelines学习之使用大模型解数学题/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年8月1日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/%E7%AC%94%E8%AE%B0%EF%BC%9A%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%95%B0%E5%AD%A6%E8%A7%A3%E9%A2%98%E8%83%BD%E5%8A%9B/" title="笔记：大模型数学解题能力">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">笔记：大模型数学解题能力</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E9%9B%B6%E4%B8%89%EF%BC%89%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E5%88%A9%E5%99%A8%E4%B9%8BOpen-WebUI%E5%85%A5%E9%97%A8/" title="NLP（一百零三）大模型应用利器之Open_WebUI入门">
+                        <span class="hidden-mobile">NLP（一百零三）大模型应用利器之Open_WebUI入门</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
