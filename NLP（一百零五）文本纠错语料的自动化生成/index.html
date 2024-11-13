@@ -1,0 +1,913 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍如何借助OCR和文本挖掘技术，从中文PDF文档中自动化生成文本纠错的高质量语料。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（一百零五）文本纠错语料的自动化生成">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E9%9B%B6%E4%BA%94%EF%BC%89%E6%96%87%E6%9C%AC%E7%BA%A0%E9%94%99%E8%AF%AD%E6%96%99%E7%9A%84%E8%87%AA%E5%8A%A8%E5%8C%96%E7%94%9F%E6%88%90/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍如何借助OCR和文本挖掘技术，从中文PDF文档中自动化生成文本纠错的高质量语料。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2024/08/17/uBMfoI2bEJ5UXKT.png">
+<meta property="og:image" content="https://s2.loli.net/2024/08/17/vsMFKDwxVgZp2c8.png">
+<meta property="og:image" content="https://s2.loli.net/2024/08/17/wZLBXUsxbNCdoSV.png">
+<meta property="article:published_time" content="2024-11-13T11:26:10.000Z">
+<meta property="article:modified_time" content="2024-11-13T11:26:58.937Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="文本纠错">
+<meta property="article:tag" content="OCR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2024/08/17/uBMfoI2bEJ5UXKT.png">
+  
+  
+  
+  <title>NLP（一百零五）文本纠错语料的自动化生成 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（一百零五）文本纠错语料的自动化生成"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-11-13 19:26" pubdate>
+          星期三, 十一月 13日 2024, 7:26 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          13k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          111 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（一百零五）文本纠错语料的自动化生成</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍如何借助OCR和文本挖掘技术，从中文PDF文档中自动化生成文本纠错的高质量语料。</p>
+</blockquote>
+<h3 id="引言">引言</h3>
+<p>我们知道，高质量语料对于文本任务是非常重要的，而对于文本纠错任务，目前的中文语料较为缺乏，因此，如何构建中文文本纠错的高质量语料值得探索。</p>
+<p>本文将会介绍如何从中文文字版PDF文档中，借助OCR和文本挖掘技术，自动化大规模地生成文本纠错的高质量语料。</p>
+<p>从文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU2NTYyMDk5MQ==&amp;mid=2247487119&amp;idx=1&amp;sn=bcb04a475c02157b9701787c1df8c984&amp;chksm=fcb9b71fcbce3e09ac1ec0f33791f02c34449d34a6275fbafd007f5ecfab8a4cf6cd4d5d2b3e&amp;token=1475577230&amp;lang=zh_CN#rd">如何用Python轻松识别扫描版PDF</a>，我们知道，对于文字版PDF的文本提取，有两者实现方式：<code>fitz</code>模块提取（规则提取）和转化为图片后使用OCR提取。</p>
+<ul>
+<li><code>fitz</code>模块提取，提取的文本为正确文本</li>
+<li>转化为图片后使用OCR技术提取文本，往往会带有一定的识别错误，通常为字形上的识别错误</li>
+</ul>
+<p>借助这两种提取文本路径，我们可以尝试着构建文本纠错语料！</p>
+<p>对于文字版PDF文档，<code>fitz</code>模块提取的正确文本和OCR识别文本，两者之间的差异不会很大，因此，可以使用文本挖掘技术，找到那些字符数量一样，且文本高度相似但又不完全相同的字符串，这样我们就找到了文本纠错的语料。整个过程使用Python程序实现，不需要人工干预，高效便捷且可靠，最终生成的文本纠错语料也有一定的价值。</p>
+<p>从中文文字版PDF自动化生成文本纠错语料的整体流程如下图：</p>
+<figure>
+<img src="https://s2.loli.net/2024/08/17/uBMfoI2bEJ5UXKT.png" srcset="/img/loading.gif" lazyload
+alt="整体流程" />
+<figcaption aria-hidden="true">整体流程</figcaption>
+</figure>
+<p>本文将从以下三个模块进行拆解讲和讲述：</p>
+<ol type="1">
+<li>预处理</li>
+<li>OCR识别</li>
+<li>文本纠错语料构建</li>
+<li>相近字形语料</li>
+</ol>
+<h3 id="预处理">预处理</h3>
+<p>在这个阶段，我们对输入的中文文字版PDF文档使用<code>fitz</code>模块进行文本提取，并将PDF文档中的每一页PDF页面转化为png格式的图片。</p>
+<p>实现的Python代码如下:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @file: preprocess.py</span><br><span class="hljs-comment"># PDF文档预处理</span><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> time<br><br><span class="hljs-keyword">import</span> fitz<br><span class="hljs-keyword">from</span> PIL <span class="hljs-keyword">import</span> Image<br><br><span class="hljs-keyword">from</span> src.config.config <span class="hljs-keyword">import</span> PROJECT_DIR<br><br><br><span class="hljs-comment"># 使用fitz模块提取文本， 未使用OCR</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_pdf_file_text</span>(<span class="hljs-params"></span><br><span class="hljs-params">        pdf_file_path: <span class="hljs-built_in">str</span></span><br><span class="hljs-params"></span>) -&gt; <span class="hljs-built_in">dict</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">str</span>]:<br>    doc = fitz.<span class="hljs-built_in">open</span>(pdf_file_path)<br>    page_result = &#123;&#125;<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(doc.page_count):<br>        page = doc[i]<br>        text = <span class="hljs-string">&quot;&quot;</span><br>        page_content = page.get_text(<span class="hljs-string">&quot;blocks&quot;</span>)<br>        <span class="hljs-keyword">for</span> record <span class="hljs-keyword">in</span> page_content:<br>            <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> record[-<span class="hljs-number">1</span>]:<br>                text += record[<span class="hljs-number">4</span>]<br>        page_result[i] = text<br>    doc.close()<br>    <span class="hljs-comment"># 将识别结果保存到json文件中</span><br>    pdf_file_name = pdf_file_path.split(<span class="hljs-string">&#x27;/&#x27;</span>)[-<span class="hljs-number">1</span>].split(<span class="hljs-string">&quot;.&quot;</span>)[<span class="hljs-number">0</span>]<br>    json_output_path = os.path.join(PROJECT_DIR, <span class="hljs-string">f&quot;output/<span class="hljs-subst">&#123;pdf_file_name&#125;</span>/original_text.json&quot;</span>)<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(json_output_path, <span class="hljs-string">&quot;w&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> f:<br>        f.write(json.dumps(page_result, ensure_ascii=<span class="hljs-literal">False</span>, indent=<span class="hljs-number">4</span>))<br>    <span class="hljs-keyword">return</span> page_result<br><br><br><span class="hljs-comment"># 将PDF文件转换为图片</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">convert_pdf_2_img</span>(<span class="hljs-params"></span><br><span class="hljs-params">        pdf_file: <span class="hljs-built_in">str</span></span><br><span class="hljs-params"></span>) -&gt; <span class="hljs-built_in">list</span>[<span class="hljs-built_in">str</span>]:<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    convert pdf to image</span><br><span class="hljs-string">    :param pdf_file: pdf file path</span><br><span class="hljs-string">    :param pages: convert pages number(at most)</span><br><span class="hljs-string">    :return: output of image file path list</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    pdf_document = fitz.<span class="hljs-built_in">open</span>(pdf_file)<br>    output_image_file_path_list = []<br>    <span class="hljs-comment"># Iterate through each page and convert to an image</span><br>    <span class="hljs-keyword">for</span> page_number <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(pdf_document.page_count):<br>        <span class="hljs-comment"># Get the page</span><br>        page = pdf_document[page_number]<br>        <span class="hljs-comment"># Convert the page to an image</span><br>        pix = page.get_pixmap()<br>        <span class="hljs-comment"># Create a Pillow Image object from the pixmap</span><br>        image = Image.frombytes(<span class="hljs-string">&quot;RGB&quot;</span>, [pix.width, pix.height], pix.samples)<br>        <span class="hljs-comment"># Save the image</span><br>        pdf_file_name = pdf_file.split(<span class="hljs-string">&#x27;/&#x27;</span>)[-<span class="hljs-number">1</span>].split(<span class="hljs-string">&quot;.&quot;</span>)[<span class="hljs-number">0</span>]<br>        output_dir = os.path.join(PROJECT_DIR, <span class="hljs-string">f&quot;output/<span class="hljs-subst">&#123;pdf_file_name&#125;</span>&quot;</span>)<br>        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> os.path.exists(output_dir):<br>            os.makedirs(output_dir)<br>        save_image_path = os.path.join(output_dir, <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;page_number&#125;</span>.png&quot;</span>)<br>        image.save(save_image_path)<br>        output_image_file_path_list.append(save_image_path)<br>    <span class="hljs-comment"># Close the PDF file</span><br>    pdf_document.close()<br>    <span class="hljs-keyword">return</span> output_image_file_path_list<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    s_time = time.time()<br>    file_name = <span class="hljs-string">&quot;weite.pdf&quot;</span><br>    file_path = os.path.join(PROJECT_DIR, <span class="hljs-string">f&quot;docs/<span class="hljs-subst">&#123;file_name&#125;</span>&quot;</span>)<br>    output_image_path_list = convert_pdf_2_img(file_path)<br>    original_text = get_pdf_file_text(file_path)<br></code></pre></td></tr></table></figure>
+<p>我们使用weite.pdf，其前两页如下：</p>
+<figure>
+<img src="https://s2.loli.net/2024/08/17/vsMFKDwxVgZp2c8.png" srcset="/img/loading.gif" lazyload
+alt="示例PDF文档第1页" />
+<figcaption aria-hidden="true">示例PDF文档第1页</figcaption>
+</figure>
+<figure>
+<img src="https://s2.loli.net/2024/08/17/wZLBXUsxbNCdoSV.png" srcset="/img/loading.gif" lazyload
+alt="示例PDF文档第2页" />
+<figcaption aria-hidden="true">示例PDF文档第2页</figcaption>
+</figure>
+<p>使用<code>fitz</code>模块提取这两页的文字如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;0&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;更多电子书资料请搜索「书行万里」：ht t p: //w\nw\nw\n. gpdf . net\nhttps://homeofpdf.com https://homeofpdf.com https://homeofpdf.com \nhttps://homeofpdf.com https://homeofpdf.com https://homeofpdf.com \nhttps://homeofpdf.com https://homeofpdf.com https://homeofpdf.com \n&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;1&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;图书在版编目（CIP）数据\n少年维特的烦恼/(德)歌德(Goethe,J.W.Von)著；韩耀成译.—南京：\n译林出版社，2010.6 (2013.9重印)\n(经典译林)\nISBN 978-7-5447-1079-4\nⅠ.①少… Ⅱ.①歌… ②韩… Ⅲ.①书信体小说—德国—近代\nⅣ.①I516.44\n中国版本图书馆CIP数据核字（2009）第209690号\n书　名 少年维特的烦恼\n作　者 ［德国］歌德\n译　者 韩耀成\n责任编辑 夏秀玫　孙茜\n原文出版 dtv weltliteratur,1978\n出版发行 凤凰出版传媒集团　凤凰出版传媒股份有限公司 译林出\n版社\n集团地址 南京市湖南路1号A楼，邮编：210009\n集团网址 http://www.ppm.cn\n出版社地址 南京市湖南路1号A楼，邮编：210009\n电子信箱 yilin@yilin.com\n出版社网址 http://www.yilin.com\n更多电子书资料请搜索「书行万里」：ht t p: //w\nw\nw\n. gpdf . net\nhttps://homeofpdf.com https://homeofpdf.com https://homeofpdf.com \nhttps://homeofpdf.com https://homeofpdf.com https://homeofpdf.com \nhttps://homeofpdf.com https://homeofpdf.com https://homeofpdf.com \n&quot;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<h3 id="ocr识别">OCR识别</h3>
+<p>接下来，我们使用PaddleOCR这个OCR工具，对每张图片（即一页PDF）进行OCR识别，提取PDF页面中的文字。</p>
+<p>实现的Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @file: image_ocr.py</span><br><span class="hljs-comment"># 使用PaddleOCR提取图片中的文字</span><br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> paddleocr <span class="hljs-keyword">import</span> PaddleOCR<br><br><span class="hljs-keyword">from</span> src.config.config <span class="hljs-keyword">import</span> PROJECT_DIR<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_pdf_file_ocr_result</span>(<span class="hljs-params">pdf_file_dir_path: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">dict</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">str</span>]:<br>    <span class="hljs-comment"># Paddleocr目前支持的多语言语种可以通过修改lang参数进行切换</span><br>    <span class="hljs-comment"># 例如`ch`, `en`, `fr`, `german`, `korean`, `japan`</span><br>    ocr = PaddleOCR(use_angle_cls=<span class="hljs-literal">False</span>, lang=<span class="hljs-string">&quot;ch&quot;</span>)<br>    page_ocr_result = &#123;&#125;<br>    files = [file <span class="hljs-keyword">for</span> file <span class="hljs-keyword">in</span> os.listdir(pdf_file_dir_path) <span class="hljs-keyword">if</span> file.endswith(<span class="hljs-string">&quot;.png&quot;</span>)]<br>    <span class="hljs-comment"># 按数字大小排序</span><br>    files.sort(key=<span class="hljs-keyword">lambda</span> x: <span class="hljs-built_in">int</span>(x.split(<span class="hljs-string">&quot;.&quot;</span>)[<span class="hljs-number">0</span>]))<br>    <span class="hljs-keyword">for</span> file <span class="hljs-keyword">in</span> files:<br>        text = <span class="hljs-string">&quot;&quot;</span><br>        page_no = <span class="hljs-built_in">int</span>(file.split(<span class="hljs-string">&quot;.&quot;</span>)[<span class="hljs-number">0</span>])<br>        img_path = os.path.join(pdf_file_dir_path, file)<br>        result = ocr.ocr(img_path, cls=<span class="hljs-literal">False</span>)<br>        <span class="hljs-keyword">for</span> idx <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(result)):<br>            res = result[idx]<br>            <span class="hljs-keyword">if</span> res:<br>                <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> res:<br>                    text += line[<span class="hljs-number">1</span>][<span class="hljs-number">0</span>]<br>                    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;page: <span class="hljs-subst">&#123;page_no&#125;</span>, text: <span class="hljs-subst">&#123;line[<span class="hljs-number">1</span>][<span class="hljs-number">0</span>]&#125;</span>&quot;</span>)<br>        page_ocr_result[page_no] = text<br><br>    <span class="hljs-comment"># 将识别结果保存到json文件中</span><br>    json_output_path = os.path.join(pdf_file_dir_path, <span class="hljs-string">&quot;ocr_result.json&quot;</span>)<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(json_output_path, <span class="hljs-string">&quot;w&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> f:<br>        f.write(json.dumps(page_ocr_result, ensure_ascii=<span class="hljs-literal">False</span>, indent=<span class="hljs-number">4</span>))<br>    <span class="hljs-keyword">return</span> page_ocr_result<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    pdf_file_name = <span class="hljs-string">&quot;wushihui&quot;</span><br>    test_dir_path = os.path.join(PROJECT_DIR, <span class="hljs-string">f&quot;output/<span class="hljs-subst">&#123;pdf_file_name&#125;</span>&quot;</span>)<br>    get_pdf_file_ocr_result(test_dir_path)<br></code></pre></td></tr></table></figure>
+<p>对于前两页PDF的OCR识别结果，如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;0&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Yilin ClassicsJ.W.GOETHE经/典/译/林Die Leidendes jungen WertherC少年维特的烦恼[德国]歌德著韩耀成译&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;1&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;图书在版编目（CIP）数据少年维特的烦恼/(德)歌德(Goethe,J.W.Von)著：韩耀成译.一南京：译林出版社，2010.6(2013.9重印)(经典译林)ISBN 978-7-5447-1079-41.①少...II.①歌...②韩...IⅢI.①书信体小说一德国一近代IV.①)I516.44中国版本图书馆CIP数据核字（2009）第209690号书名少年维特的烦恼作者［德国］歌德译者韩耀成责任编辑夏秀玫孙茜原文出版dtvweltliteratur,1978出版发行凤凰出版传媒集团凤凰出版传媒股份有限公司译林出版社集团地址南京市湖南路1号A楼，邮编：210009集团网址http://www.ppm.cn出版社地址南京市湖南路1号A楼，邮编：210009电子信箱yilin@yilin.com出版社网址http://www.yilin.com&quot;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<h3 id="文本纠错语料构建">文本纠错语料构建</h3>
+<p>接下来是最为关键的文本语料构建阶段。</p>
+<p>一个基本的想法是，提取的正确文本和OCR识别文本，两者之间的差异不会很大。</p>
+<p>我们将正确文本和识别文本进行分句，作为基本单元，中文文本分句工具采用<code>sententx</code>模块。在每一页PDF中，找到与OCR识别句子语义最接近的正确句子，这里我们使用Jaccard相似度，阈值取0.8。对于OCR识别句子和相似的正确句子，如果两者长度一样，且整个句子中不同的字符数量大于0，且小于一定数量，我们可认为两者形成了文本纠错的一条语料。</p>
+<p>实现Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @file: corpus_generator.py</span><br><span class="hljs-comment"># 文本纠错语料构建</span><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> json<br><br><span class="hljs-keyword">import</span> difflib<br><span class="hljs-keyword">from</span> sentencex <span class="hljs-keyword">import</span> segment<br><br><span class="hljs-keyword">from</span> src.config.config <span class="hljs-keyword">import</span> PROJECT_DIR<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">text_preprocess</span>(<span class="hljs-params">text: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">str</span>:<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    text preprocess</span><br><span class="hljs-string">    :param text: original text</span><br><span class="hljs-string">    :return: preprocessed text</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    text = text.replace(<span class="hljs-string">&quot;\n&quot;</span>, <span class="hljs-string">&quot;&quot;</span>)<br>    <span class="hljs-keyword">return</span> text<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_sentences</span>(<span class="hljs-params">text: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">list</span>[<span class="hljs-built_in">str</span>]:<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    get sentences from text</span><br><span class="hljs-string">    :param text: original text</span><br><span class="hljs-string">    :return: sentences list</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    sentences = segment(<span class="hljs-string">&quot;zh&quot;</span>, text)<br>    <span class="hljs-keyword">return</span> sentences<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">find_similar_sentence</span>(<span class="hljs-params">sent: <span class="hljs-built_in">str</span>, candidate_sentences: <span class="hljs-built_in">list</span>[<span class="hljs-built_in">str</span>]</span>) -&gt; <span class="hljs-built_in">str</span>:<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    find similar sentence</span><br><span class="hljs-string">    :param sent: sentence</span><br><span class="hljs-string">    :param candidate_sentences: candidate sentences</span><br><span class="hljs-string">    :return: similar sentence</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-keyword">for</span> candidate_sent <span class="hljs-keyword">in</span> candidate_sentences:<br>        <span class="hljs-keyword">if</span> sent == candidate_sent:<br>            <span class="hljs-keyword">return</span> candidate_sent<br>        <span class="hljs-keyword">elif</span> <span class="hljs-built_in">len</span>(sent) == <span class="hljs-built_in">len</span>(candidate_sent):<br>            <span class="hljs-comment"># 计算两个句子的jaccard相似度</span><br>            set_sent = <span class="hljs-built_in">set</span>(sent)<br>            set_candidate_sent = <span class="hljs-built_in">set</span>(candidate_sent)<br>            jaccard_sim = <span class="hljs-built_in">len</span>(set_sent &amp; set_candidate_sent) / <span class="hljs-built_in">len</span>(set_sent | set_candidate_sent)<br>            <span class="hljs-keyword">if</span> jaccard_sim &gt; <span class="hljs-number">0.8</span>:<br>                <span class="hljs-keyword">return</span> candidate_sent<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;&quot;</span><br><br><br><span class="hljs-comment"># 使用difflib, 查找s1 与 s2 不同的文字</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">find_differences</span>(<span class="hljs-params">s1: <span class="hljs-built_in">str</span>, s2: <span class="hljs-built_in">str</span></span>):<br>    <span class="hljs-comment"># 使用 difflib.SequenceMatcher 来比较两个字符串</span><br>    matcher = difflib.SequenceMatcher(<span class="hljs-literal">None</span>, s1, s2)<br><br>    <span class="hljs-comment"># 存储不同的字符及其在 s1 中的下标</span><br>    differences = []<br><br>    <span class="hljs-comment"># 遍历匹配块，获取不匹配的部分</span><br>    <span class="hljs-keyword">for</span> tag, i1, i2, j1, j2 <span class="hljs-keyword">in</span> matcher.get_opcodes():<br>        <span class="hljs-keyword">if</span> tag != <span class="hljs-string">&#x27;equal&#x27;</span>:<br>            <span class="hljs-comment"># 不匹配的部分</span><br>            <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(i1, i2):<br>                differences.append((i, s1[i]))<br><br>    <span class="hljs-keyword">return</span> differences<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_corpus</span>(<span class="hljs-params">original_text: <span class="hljs-built_in">str</span>, ocr_text: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">list</span>[<span class="hljs-built_in">dict</span>]:<br>    corpus_list = []<br>    original_sents = get_sentences(text_preprocess(original_text))<br>    ocr_sents = get_sentences(text_preprocess(ocr_text))<br>    <span class="hljs-keyword">for</span> ocr_sent <span class="hljs-keyword">in</span> ocr_sents:<br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(ocr_sent) &gt; <span class="hljs-number">4</span>:   <span class="hljs-comment"># 过滤掉长度小于4的ocr句子</span><br>            similar_sent = find_similar_sentence(ocr_sent, original_sents)<br>            <span class="hljs-keyword">if</span> similar_sent:<br>                <span class="hljs-comment"># 如果两个句子中的不同文字数量大于0且小于6, 则添加至corpus_list，认为是文本纠错语料</span><br>                diffs = find_differences(similar_sent, ocr_sent)<br>                <span class="hljs-keyword">if</span> <span class="hljs-number">0</span> &lt; <span class="hljs-built_in">len</span>(diffs) &lt; <span class="hljs-number">6</span>:<br>                    corpus_list.append(&#123;<br>                        <span class="hljs-string">&quot;ori_sent&quot;</span>: similar_sent,<br>                        <span class="hljs-string">&quot;ocr_sent&quot;</span>: ocr_sent,<br>                        <span class="hljs-string">&quot;diffs&quot;</span>: diffs<br>                    &#125;)<br><br>    <span class="hljs-keyword">return</span> corpus_list<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    pdf_file_name = <span class="hljs-string">&quot;wushihui&quot;</span><br>    pdf_dir_path = os.path.join(PROJECT_DIR, <span class="hljs-string">f&quot;output/<span class="hljs-subst">&#123;pdf_file_name&#125;</span>&quot;</span>)<br>    ocr_result_file_path = os.path.join(pdf_dir_path, <span class="hljs-string">&quot;ocr_result.json&quot;</span>)<br>    original_text_file_path = os.path.join(pdf_dir_path, <span class="hljs-string">&quot;original_text.json&quot;</span>)<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(ocr_result_file_path, <span class="hljs-string">&quot;r&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> f:<br>        ocr_result_dict = json.load(f)<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(original_text_file_path, <span class="hljs-string">&quot;r&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> f:<br>        original_text_dict = json.load(f)<br><br>    <span class="hljs-comment"># 生成文本纠错语料</span><br>    final_corpus_list = []<br>    <span class="hljs-keyword">for</span> key, value <span class="hljs-keyword">in</span> ocr_result_dict.items():<br>        my_ocr_text = value<br>        <span class="hljs-keyword">if</span> key <span class="hljs-keyword">in</span> original_text_dict:<br>            my_original_text = original_text_dict[key]<br>            my_corpus_list = get_corpus(my_original_text, my_ocr_text)<br>            final_corpus_list.extend(my_corpus_list)<br><br>    <span class="hljs-comment"># 将文本纠错语料保存到json文件中</span><br>    json_output_path = os.path.join(PROJECT_DIR, <span class="hljs-string">f&quot;data/<span class="hljs-subst">&#123;pdf_dir_path.split(<span class="hljs-string">&#x27;/&#x27;</span>)[-<span class="hljs-number">1</span>]&#125;</span>_corpus.json&quot;</span>)<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(json_output_path, <span class="hljs-string">&quot;w&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> f:<br>        f.write(json.dumps(final_corpus_list, ensure_ascii=<span class="hljs-literal">False</span>, indent=<span class="hljs-number">4</span>))<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;已找到<span class="hljs-subst">&#123;<span class="hljs-built_in">len</span>(final_corpus_list)&#125;</span>条文本纠错语料，保存至<span class="hljs-subst">&#123;json_output_path&#125;</span>&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>为了验证上述算法的有效性，笔者从网络上下载了10个中文文字版PDF，对于每个PDF文档进行逐一验证，获取的文本纠错语料展示如下（每个文档仅展示一条语料）：</p>
+<ul>
+<li>deguo_tongshi.pdf</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;ori_sent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;德意志城市大多兴起于修道院和城堡附近、帝王驻跸地以及逃亡农奴聚居地，特别是交通和商业中心。&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;ocr_sent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;德意志城市大多兴起于修道院和城堡附近、帝王驻蹭地以及逃亡农奴聚居地，特别是交通和商业中心。&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;diffs&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>            <span class="hljs-punctuation">[</span><br>                <span class="hljs-number">22</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-string">&quot;跸&quot;</span><br>            <span class="hljs-punctuation">]</span><br>        <span class="hljs-punctuation">]</span><br>    <span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>digital_china.pdf</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;ori_sent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;三、“双碳”目标与数字化技术1.&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;ocr_sent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;三、“双碳”自标与数字化技术1.&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;diffs&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>            <span class="hljs-punctuation">[</span><br>                <span class="hljs-number">6</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-string">&quot;目&quot;</span><br>            <span class="hljs-punctuation">]</span><br>        <span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>guoyun1909.pdf</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;ori_sent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;此时，立宪万能论已成为大清国的主旋律，人们或过于天真地相信，或过于世故地假装相信，只要一立宪，大清国的任何问题都能迎刃而解。&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;ocr_sent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;此时，立宪方能论已成为大清国的主旋律，人们或过于天真地相信，或过于世敌地假装相信，只要一立宪，大清国的任何问题都能迎刃而解。&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;diffs&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>            <span class="hljs-punctuation">[</span><br>                <span class="hljs-number">5</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-string">&quot;万&quot;</span><br>            <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-punctuation">[</span><br>                <span class="hljs-number">34</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-string">&quot;故&quot;</span><br>            <span class="hljs-punctuation">]</span><br>        <span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>lishidewendu.pdf</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;ori_sent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;在接下来的岁月，拉玛出演了一系列电影，那段历史，图片比文字更有说服力。&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;ocr_sent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;在接下来的罗月，拉玛出演了一系列电影，那段历史，图片比文字更有说服力。&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;diffs&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>            <span class="hljs-punctuation">[</span><br>                <span class="hljs-number">5</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-string">&quot;岁&quot;</span><br>            <span class="hljs-punctuation">]</span><br>        <span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>shiyi.pdf</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;ori_sent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;那一年的5月29日上午，当南美洲上空的星星冉冉升起时，它们都发生了些许位移，而且距离太阳越近的星星，它们位置的改变就越明显。&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;ocr_sent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;那一年的5月29日上午，当南美洲上空的星星再再升起时，它们都发生了些许位移，而且距离太阳越近的星星，它们位置的改变就越明显。&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;diffs&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>            <span class="hljs-punctuation">[</span><br>                <span class="hljs-number">21</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-string">&quot;冉&quot;</span><br>            <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-punctuation">[</span><br>                <span class="hljs-number">22</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-string">&quot;冉&quot;</span><br>            <span class="hljs-punctuation">]</span><br>        <span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>weite.pdf</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;ori_sent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;她提高嗓音，好让他半聋的耳朵听得见。&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;ocr_sent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;她提高噪音，好让他半聋的耳朵听得见。&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;diffs&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>            <span class="hljs-punctuation">[</span><br>                <span class="hljs-number">3</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-string">&quot;嗓&quot;</span><br>            <span class="hljs-punctuation">]</span><br>        <span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>wushihui.pdf</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;ori_sent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;李尊吾带沈方壶冒雪入京，见到踢毽子的程华安，便打消了比武之念。&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;ocr_sent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;李尊吾带沈方壶冒雪入京，见到踢键子的程华安，便打消了比武之念。&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;diffs&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>            <span class="hljs-punctuation">[</span><br>                <span class="hljs-number">15</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-string">&quot;毽&quot;</span><br>            <span class="hljs-punctuation">]</span><br>        <span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>yingren.pdf</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;ori_sent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;虽然如此，那般活跃的妙椿仍没有上京的余力。&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;ocr_sent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;虽然如此，那般活跌的妙椿仍没有上京的余力。&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;diffs&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>            <span class="hljs-punctuation">[</span><br>                <span class="hljs-number">8</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-string">&quot;跃&quot;</span><br>            <span class="hljs-punctuation">]</span><br>        <span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>zengguofan.pdf</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;ori_sent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;曾国潢的曾孙曾昭抡是著名化学家，曾任高教部副部长。&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;ocr_sent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;曾国潢的曾孙曾昭抢是著名化学家，曾任高教部副部长。&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;diffs&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>            <span class="hljs-punctuation">[</span><br>                <span class="hljs-number">8</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-string">&quot;抡&quot;</span><br>            <span class="hljs-punctuation">]</span><br>        <span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>zhangshidong.pdf</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;ori_sent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;慈禧还政住颐和园后，连皇上每次觐见也要递红包。&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;ocr_sent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;慈禧还政住顾和园后，连皇上每次豌见也要递红包。&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;diffs&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>            <span class="hljs-punctuation">[</span><br>                <span class="hljs-number">5</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-string">&quot;颐&quot;</span><br>            <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-punctuation">[</span><br>                <span class="hljs-number">15</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-string">&quot;觐&quot;</span><br>            <span class="hljs-punctuation">]</span><br>        <span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<h3 id="相近字形语料">相近字形语料</h3>
+<p>作为上述研究的一个副产品是，我们可以得到相近字形语料库，因为OCR技术识别错误的文字往往是字形上比较接近的文字。</p>
+<p>使用上述自动化构建流程，我们可以从中文文字数量多的PDF文档中，能提取出数量可观的文本纠错语料，因此从大量的文本纠错语料中，我们还可以构建出相近字形语料库。</p>
+<p>实现的Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @file: visually_similar_characters.py</span><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">from</span> pprint <span class="hljs-keyword">import</span> pprint<br><span class="hljs-keyword">from</span> collections <span class="hljs-keyword">import</span> defaultdict<br><br><br><span class="hljs-keyword">from</span> src.config.config <span class="hljs-keyword">import</span> PROJECT_DIR<br><br>visually_similar_characters = defaultdict(<span class="hljs-built_in">set</span>)<br><br><span class="hljs-keyword">for</span> file <span class="hljs-keyword">in</span> os.listdir(os.path.join(PROJECT_DIR, <span class="hljs-string">&#x27;data&#x27;</span>)):<br>    file_path = os.path.join(PROJECT_DIR, <span class="hljs-string">&#x27;data&#x27;</span>, file)<br>    <span class="hljs-comment"># read json file</span><br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(file_path, <span class="hljs-string">&#x27;r&#x27;</span>, encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>        data = json.loads(f.read())<br>    <span class="hljs-keyword">for</span> sample <span class="hljs-keyword">in</span> data:<br>        <span class="hljs-keyword">for</span> record_item <span class="hljs-keyword">in</span> sample[<span class="hljs-string">&quot;diffs&quot;</span>]:<br>            char = record_item[<span class="hljs-number">1</span>]<br>            <span class="hljs-comment"># 判断是否为中文字符</span><br>            <span class="hljs-keyword">if</span> <span class="hljs-string">&#x27;\u4e00&#x27;</span> &lt;= char &lt;= <span class="hljs-string">&#x27;\u9fff&#x27;</span>:<br>                visually_similar_characters[char].add(sample[<span class="hljs-string">&#x27;ocr_sent&#x27;</span>][record_item[<span class="hljs-number">0</span>]])<br><br>pprint(visually_similar_characters)<br></code></pre></td></tr></table></figure>
+<p>字典中前10个相近字形的结果展示如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-string">&#x27;一&#x27;</span>: &#123;<span class="hljs-string">&#x27;二&#x27;</span>&#125;,<br><span class="hljs-string">&#x27;万&#x27;</span>: &#123;<span class="hljs-string">&#x27;方&#x27;</span>&#125;,<br><span class="hljs-string">&#x27;丈&#x27;</span>: &#123;<span class="hljs-string">&#x27;文&#x27;</span>&#125;,<br><span class="hljs-string">&#x27;丐&#x27;</span>: &#123;<span class="hljs-string">&#x27;与&#x27;</span>, <span class="hljs-string">&#x27;弓&#x27;</span>, <span class="hljs-string">&#x27;写&#x27;</span>&#125;,<br><span class="hljs-string">&#x27;丕&#x27;</span>: &#123;<span class="hljs-string">&#x27;不&#x27;</span>&#125;,<br><span class="hljs-string">&#x27;丢&#x27;</span>: &#123;<span class="hljs-string">&#x27;去&#x27;</span>&#125;,<br><span class="hljs-string">&#x27;串&#x27;</span>: &#123;<span class="hljs-string">&#x27;事&#x27;</span>&#125;,<br><span class="hljs-string">&#x27;丽&#x27;</span>: &#123;<span class="hljs-string">&#x27;前&#x27;</span>&#125;,<br><span class="hljs-string">&#x27;乎&#x27;</span>: &#123;<span class="hljs-string">&#x27;平&#x27;</span>&#125;,<br><span class="hljs-string">&#x27;乏&#x27;</span>: &#123;<span class="hljs-string">&#x27;之&#x27;</span>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="总结">总结</h3>
+<p>本文想法新颖，自有其创新之处，有一定的实用价值。</p>
+<p>本文主要介绍了如何从中文文字版PDF文档中，自动化构建出高质量的中文文本纠错语料。</p>
+<p>本文中给出的Python代码均已开源，项目为text_corrector_corpus_auto_generation，网址为https://github.com/percent4/text_corrector_corpus_auto_generation，欢迎大家参考~</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%96%87%E6%9C%AC%E7%BA%A0%E9%94%99/" class="print-no-link">#文本纠错</a>
+      
+        <a href="/tags/OCR/" class="print-no-link">#OCR</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（一百零五）文本纠错语料的自动化生成</div>
+      <div>https://percent4.github.io/NLP（一百零五）文本纠错语料的自动化生成/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年11月13日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E9%9B%B6%E5%85%AD%EF%BC%89GSM8K%E6%B5%8B%E8%AF%95%E9%9B%86%E4%B8%AD%E5%AD%98%E5%9C%A8%E7%9A%84%E5%87%A0%E4%B8%AA%E9%97%AE%E9%A2%98/" title="NLP（一百零六）GSM8K测试集中存在的几个问题">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NLP（一百零六）GSM8K测试集中存在的几个问题</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/%E5%A6%82%E4%BD%95%E7%94%A8Python%E8%BD%BB%E6%9D%BE%E8%AF%86%E5%88%AB%E6%89%AB%E6%8F%8F%E7%89%88PDF/" title="如何用Python轻松识别扫描版PDF">
+                        <span class="hidden-mobile">如何用Python轻松识别扫描版PDF</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
