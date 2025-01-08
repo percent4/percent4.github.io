@@ -1,0 +1,905 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍pytest框架中一些常用的插件以及如何进行插件开发。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pytest测试框架使用笔记（二）插件的使用与开发">
+<meta property="og:url" content="https://percent4.github.io/pytest%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6%E4%BD%BF%E7%94%A8%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89%E6%8F%92%E4%BB%B6%E7%9A%84%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%BC%80%E5%8F%91/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍pytest框架中一些常用的插件以及如何进行插件开发。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2024/11/26/UjQXDzPn2WTsA1k.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/26/NB8gi6dcpRUzYeD.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/26/4DOuRhHbXZVKq76.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/26/dqfI3oQ6rkHl5MV.png">
+<meta property="article:published_time" content="2025-01-08T05:11:40.000Z">
+<meta property="article:modified_time" content="2025-01-08T05:12:13.189Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="pytest">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2024/11/26/UjQXDzPn2WTsA1k.png">
+  
+  
+  
+  <title>pytest测试框架使用笔记（二）插件的使用与开发 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="pytest测试框架使用笔记（二）插件的使用与开发"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-01-08 13:11" pubdate>
+          星期三, 一月 8日 2025, 1:11 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          4.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          38 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">pytest测试框架使用笔记（二）插件的使用与开发</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍pytest框架中一些常用的插件以及如何进行插件开发。</p>
+</blockquote>
+<p>在文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/SxuJVYYubIomtNVf1G1gCA?token=1196225180&amp;lang=zh_CN">pytest测试框架使用笔记（一）</a>中，笔者介绍了pytest测试框架的常见用法。本文将在此基础上，介绍基于pytest的常见插件的使用方法，以及如何进行插件开发。</p>
+<p><code>pytest插件</code>是用于扩展pytest功能的模块，允许开发者根据特定需求自定义测试行为和增强测试报告等功能。</p>
+<p>以下是一些常用的pytest插件及其功能：</p>
+<table>
+<thead>
+<tr class="header">
+<th>插件名称</th>
+<th>功能描述</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>pytest-html</td>
+<td>生成HTML格式的测试报告</td>
+</tr>
+<tr class="even">
+<td>allure-pytest</td>
+<td>集成Allure框架生成详细测试报告</td>
+</tr>
+<tr class="odd">
+<td>pytest-xdist</td>
+<td>支持并行执行测试用例</td>
+</tr>
+<tr class="even">
+<td>pytest-rerunfailures</td>
+<td>允许对失败的测试用例进行重试</td>
+</tr>
+<tr class="odd">
+<td>pytest-cov</td>
+<td>生成代码覆盖率报告</td>
+</tr>
+</tbody>
+</table>
+<p>通过这些插件，用户可以根据项目需求灵活调整和扩展pytest框架，从而提高测试效率和质量。</p>
+<p>本文将会结合笔者日常的开发经验，介绍几个常用的pytest插件，以及如何进行定制化插件开发。</p>
+<h2 id="异步测试">异步测试</h2>
+<p>在pytest中进行异步测试，通常会用到<code>pytest-asyncio</code>
+插件，可直接使用pip方式安装。这个插件为pytest提供了对asyncio协程的支持。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># @file: test_file.py</span><br><span class="hljs-keyword">import</span> pytest<br><span class="hljs-keyword">import</span> asyncio<br><br><span class="hljs-comment"># 被测异步函数</span><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">async_function</span>(<span class="hljs-params">x</span>):<br>    <span class="hljs-keyword">await</span> asyncio.sleep(<span class="hljs-number">1</span>)<br>    <span class="hljs-keyword">return</span> x * <span class="hljs-number">2</span><br><br><span class="hljs-comment"># 异步测试函数</span><br><span class="hljs-meta">@pytest.mark.asyncio</span><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">test_async_function</span>():<br>    result = <span class="hljs-keyword">await</span> async_function(<span class="hljs-number">3</span>)<br>    <span class="hljs-keyword">assert</span> result == <span class="hljs-number">6</span><br></code></pre></td></tr></table></figure>
+<p>运行测试命令如下：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-attribute">pytest</span> -v test_file.py<br></code></pre></td></tr></table></figure>
+<h2 id="测试覆盖率">测试覆盖率</h2>
+<p>在单元测试中，通常需要对测试的文件生成代码覆盖率，而<code>pytest-cov</code>插件能很好地生成代码覆盖率报告。</p>
+<p>比如我们有如下的功能函数(文件名为<code>add_func.py</code>)：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @file: add_func.py</span><br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">my_add_func</span>(<span class="hljs-params">a, b</span>):<br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(a, <span class="hljs-built_in">int</span>) <span class="hljs-keyword">and</span> <span class="hljs-built_in">isinstance</span>(b, <span class="hljs-built_in">int</span>):<br>        <span class="hljs-keyword">return</span> a + b<br>    <span class="hljs-keyword">elif</span> <span class="hljs-built_in">isinstance</span>(a, <span class="hljs-built_in">float</span>) <span class="hljs-keyword">and</span> <span class="hljs-built_in">isinstance</span>(b, <span class="hljs-built_in">float</span>):<br>        <span class="hljs-keyword">return</span> a + b<br>    <span class="hljs-keyword">elif</span> <span class="hljs-built_in">isinstance</span>(a, <span class="hljs-built_in">str</span>) <span class="hljs-keyword">and</span> <span class="hljs-built_in">isinstance</span>(b, <span class="hljs-built_in">str</span>):<br>        <span class="hljs-keyword">return</span> a + b<br>    <span class="hljs-keyword">elif</span> <span class="hljs-built_in">isinstance</span>(a, <span class="hljs-built_in">int</span>) <span class="hljs-keyword">and</span> <span class="hljs-built_in">isinstance</span>(b, <span class="hljs-built_in">str</span>):<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">str</span>(a) + b<br>    <span class="hljs-keyword">elif</span> <span class="hljs-built_in">isinstance</span>(a, <span class="hljs-built_in">list</span>) <span class="hljs-keyword">and</span> <span class="hljs-built_in">isinstance</span>(b, <span class="hljs-built_in">list</span>):<br>        <span class="hljs-keyword">return</span> a + b<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">None</span><br></code></pre></td></tr></table></figure>
+<p>针对上述的函数，我们使用pytest进行单元测试，如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @file: test_math_op.py</span><br><span class="hljs-keyword">import</span> math<br><span class="hljs-keyword">from</span> add_func <span class="hljs-keyword">import</span> my_add_func<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_my_add_func_case_1</span>():<br>    <span class="hljs-keyword">assert</span> my_add_func(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>) == <span class="hljs-number">3</span><br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_my_add_func_case_2</span>():<br>    <span class="hljs-keyword">assert</span> math.fabs(my_add_func(<span class="hljs-number">1.1</span>, <span class="hljs-number">2.2</span>) - <span class="hljs-number">3.3</span>) &lt; <span class="hljs-number">1e-9</span><br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_my_add_func_case_3</span>():<br>    <span class="hljs-keyword">assert</span> my_add_func(<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-string">&quot;b&quot;</span>) == <span class="hljs-string">&quot;ab&quot;</span><br></code></pre></td></tr></table></figure>
+<p>使用<code>pytest-cov</code>命令输出代码覆盖率，命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">pytest -v test_math_op.py --cov<br></code></pre></td></tr></table></figure>
+<p>输出结果如下：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">collected 3 items<br><br>test<span class="hljs-emphasis">_math_op.py::test_my_add_func_case_1 PASSED                  [ 33%]</span><br><span class="hljs-emphasis">test_math_op.py::test_my_add_func_case_2 PASSED                  [ 66%]</span><br><span class="hljs-emphasis">test_math_op.py::test_my_add_func_case_</span>3 PASSED                  [100%]<br><br><span class="hljs-bullet">--------- </span>coverage: platform darwin, python 3.10.12-final-0 ----------<br><span class="hljs-section">Name              Stmts   Miss  Cover</span><br><span class="hljs-section">-------------------------------------</span><br>add<span class="hljs-emphasis">_func.py          12      5    58%</span><br><span class="hljs-emphasis">test_math_</span>op.py       8      0   100%<br><span class="hljs-code">-------------------------------------</span><br><span class="hljs-code">TOTAL                20      5    75%</span><br></code></pre></td></tr></table></figure>
+<p>如果需要生成代码覆盖率的HTML报告，则命令行为<code>pytest -v test_math_op.py --cov --cov-report=html</code>。运行后会在当前目录下生成htmlconv文件夹下，在浏览器中打开其中的index.html文件，结果如下：</p>
+<figure>
+<img src="https://s2.loli.net/2024/11/26/UjQXDzPn2WTsA1k.png" srcset="/img/loading.gif" lazyload
+alt="代码测试覆盖率" />
+<figcaption aria-hidden="true">代码测试覆盖率</figcaption>
+</figure>
+<p>点击<code>add_func.py</code>文件，可以查看该文件中哪些代码已经被测试通过，哪些代码没有加入单元测试。</p>
+<p><img src="https://s2.loli.net/2024/11/26/NB8gi6dcpRUzYeD.png" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="生成html报告">生成HTML报告</h2>
+<p><code>pytest-html</code>插件可以生成HTML格式的测试报告。</p>
+<p>保持上述的测试代码不变，运行HTML测试报告生成命令<code>pytest -v test_math_op.py --html=report.html</code>，输出结果为：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs stylus">collected <span class="hljs-number">3</span> items<br><br>test_math_op<span class="hljs-selector-class">.py</span>::test_my_add_func_case_1 PASSED                  <span class="hljs-selector-attr">[ 33%]</span><br>test_math_op<span class="hljs-selector-class">.py</span>::test_my_add_func_case_2 PASSED                  <span class="hljs-selector-attr">[ 66%]</span><br>test_math_op<span class="hljs-selector-class">.py</span>::test_my_add_func_case_3 PASSED                  <span class="hljs-selector-attr">[100%]</span><br><br>- Generated <span class="hljs-selector-tag">html</span> report: file:<span class="hljs-comment">///Users/admin/PycharmProjects/env_test/pytest_learning/report.html -</span><br></code></pre></td></tr></table></figure>
+<p>生成的HTML报告如下图：</p>
+<figure>
+<img src="https://s2.loli.net/2024/11/26/4DOuRhHbXZVKq76.png" srcset="/img/loading.gif" lazyload
+alt="生成HTML测试报告" />
+<figcaption aria-hidden="true">生成HTML测试报告</figcaption>
+</figure>
+<p>上面方法生成的报告，CSS是独立的，分享报告的时候样式会丢失，为了更好的分享发邮件展示报告，可以把CSS样式合并到html里。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs stylus">pytest -v test_math_op<span class="hljs-selector-class">.py</span> <span class="hljs-attr">--html</span>=report<span class="hljs-selector-class">.html</span> <span class="hljs-attr">--self-contained-html</span><br></code></pre></td></tr></table></figure>
+<p>使用<code>allure</code>工具，可以生成更美观的HTML报告，前提是你的电脑系统中已安装<code>allure</code>工具并安装了<code>pytest-allure</code>插件。</p>
+<p>先生成allure报告：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">pytest -v test_math_op.py --alluredir ./result<br></code></pre></td></tr></table></figure>
+<p>再生成HTML报告：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">allure generate ./result/ -o ./report/ --clean<br></code></pre></td></tr></table></figure>
+<p>打开report文件夹中的index.html，显示结果如下：</p>
+<p><img src="https://s2.loli.net/2024/11/26/dqfI3oQ6rkHl5MV.png" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="重试机制">重试机制</h2>
+<p><code>pytest-rerunfailures</code>允许对失败的测试用例进行重试。</p>
+<p>我们有如下测试代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @file: test_math_op.py</span><br><span class="hljs-keyword">import</span> random<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_example</span>():<br>    <span class="hljs-keyword">assert</span> random.choice([<span class="hljs-literal">True</span>, <span class="hljs-literal">False</span>, <span class="hljs-literal">False</span>])<br></code></pre></td></tr></table></figure>
+<p>对上述测试用例加入重试机制，命令行为<code>pytest -v test_math_op.py --reruns 3 --reruns-delay 2</code>，输出结果如下：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs stylus">collected <span class="hljs-number">1</span> item<br><br>test_math_op<span class="hljs-selector-class">.py</span>::test_example RERUN                              <span class="hljs-selector-attr">[100%]</span><br>test_math_op<span class="hljs-selector-class">.py</span>::test_example RERUN                              <span class="hljs-selector-attr">[100%]</span><br>test_math_op<span class="hljs-selector-class">.py</span>::test_example PASSED                             <span class="hljs-selector-attr">[100%]</span><br></code></pre></td></tr></table></figure>
+<p>由于在上面的测试文件中，测试用例是随机选择的，所以我们的运行结果并不一定会重试。如果测试通过的话，则不会进行重试。</p>
+<h2 id="插件开发">插件开发</h2>
+<p>如果我们需要进行定制化插件的开发，有两种可以选择的方案，一种是修改pytest模块所在的路径中
+hookspec.py 文件中的hook函数，一种是修改conftest.py。</p>
+<p>比如下面的测试用例：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @file: test_math_op.py</span><br><span class="hljs-keyword">import</span> pytest<br><br><br><span class="hljs-meta">@pytest.mark.parametrize(<span class="hljs-params"><span class="hljs-string">&quot;name&quot;</span>, [<span class="hljs-string">&quot;张三&quot;</span>, <span class="hljs-string">&quot;李四&quot;</span>, <span class="hljs-string">&quot;王五&quot;</span>]</span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_name</span>(<span class="hljs-params">name</span>):<br>    <span class="hljs-keyword">assert</span> <span class="hljs-built_in">len</span>(name) &gt; <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+<p>运行命令<code>pytest -v test_math_op.py</code>，输出结果如下：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs stylus">collected <span class="hljs-number">3</span> items<br><br>test_math_op<span class="hljs-selector-class">.py</span>::test_name<span class="hljs-selector-attr">[\u5f20\u4e09]</span> PASSED                  <span class="hljs-selector-attr">[ 33%]</span><br>test_math_op<span class="hljs-selector-class">.py</span>::test_name<span class="hljs-selector-attr">[\u674e\u56db]</span> PASSED                  <span class="hljs-selector-attr">[ 66%]</span><br>test_math_op<span class="hljs-selector-class">.py</span>::test_name<span class="hljs-selector-attr">[\u738b\u4e94]</span> PASSED                  <span class="hljs-selector-attr">[100%]</span><br></code></pre></td></tr></table></figure>
+<p>我们发现用例名字编码格式为Unicode，无法显示中文。如果需要显示中文，则在conftest.py中加入以下代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span><br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">pytest_collection_modifyitems</span>(<span class="hljs-params">session, config, items: <span class="hljs-type">List</span></span>):<br>    <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> items:<br>        item.name = item.name.encode(<span class="hljs-string">&#x27;utf-8&#x27;</span>).decode(<span class="hljs-string">&#x27;unicode-escape&#x27;</span>)<br>        item._nodeid = item.nodeid.encode(<span class="hljs-string">&#x27;utf-8&#x27;</span>).decode(<span class="hljs-string">&#x27;unicode-escape&#x27;</span>)<br>    items.reverse()<br></code></pre></td></tr></table></figure>
+<p>再次运行命令<code>pytest -v test_math_op.py</code>，输出结果如下：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs stylus">collected <span class="hljs-number">3</span> items<br><br>test_math_op<span class="hljs-selector-class">.py</span>::test_name<span class="hljs-selector-attr">[王五]</span> PASSED                          <span class="hljs-selector-attr">[ 33%]</span><br>test_math_op<span class="hljs-selector-class">.py</span>::test_name<span class="hljs-selector-attr">[李四]</span> PASSED                          <span class="hljs-selector-attr">[ 66%]</span><br>test_math_op<span class="hljs-selector-class">.py</span>::test_name<span class="hljs-selector-attr">[张三]</span> PASSED                          <span class="hljs-selector-attr">[100%]</span><br></code></pre></td></tr></table></figure>
+<h2 id="总结">总结</h2>
+<p>本文在pytest框架的常见用法上，介绍了一些常见的pytest插件使用方法，以及如何进行定制化的插件开发，希望能对读者有所启发~</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Python/" class="category-chain-item">Python</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/pytest/" class="print-no-link">#pytest</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>pytest测试框架使用笔记（二）插件的使用与开发</div>
+      <div>https://percent4.github.io/pytest测试框架使用笔记（二）插件的使用与开发/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年1月8日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90ElasticSearch%E5%90%8C%E4%B9%89%E8%AF%8D%E7%AE%A1%E7%90%86%EF%BC%9A%E6%89%93%E9%80%A0%E6%9B%B4%E6%99%BA%E8%83%BD%E7%9A%84%E6%90%9C%E7%B4%A2%E4%BD%93%E9%AA%8C/" title="深度解析ElasticSearch同义词管理：打造更智能的搜索体验">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">深度解析ElasticSearch同义词管理：打造更智能的搜索体验</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/pytest%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6%E4%BD%BF%E7%94%A8%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/" title="pytest测试框架使用笔记（一）">
+                        <span class="hidden-mobile">pytest测试框架使用笔记（一）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

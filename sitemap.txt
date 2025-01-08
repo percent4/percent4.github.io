@@ -1,4 +1,11 @@
 https://percent4.github.io/about/index.html
+https://percent4.github.io/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E4%B8%80%E5%8D%81%EF%BC%89%E5%88%9B%E5%BB%BAHuggingFace-Spaces%E5%BA%94%E7%94%A8/
+https://percent4.github.io/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E9%9B%B6%E4%B9%9D%EF%BC%89Embedding%E4%B8%AD%E7%9A%84Late-Chunking%EF%BC%88%E8%BF%9F%E5%88%86%EF%BC%89%E7%AD%96%E7%95%A5/
+https://percent4.github.io/%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90ElasticSearch%E5%90%8C%E4%B9%89%E8%AF%8D%E7%AE%A1%E7%90%86%EF%BC%9A%E6%89%93%E9%80%A0%E6%9B%B4%E6%99%BA%E8%83%BD%E7%9A%84%E6%90%9C%E7%B4%A2%E4%BD%93%E9%AA%8C/
+https://percent4.github.io/pytest%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6%E4%BD%BF%E7%94%A8%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89%E6%8F%92%E4%BB%B6%E7%9A%84%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%BC%80%E5%8F%91/
+https://percent4.github.io/pytest%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6%E4%BD%BF%E7%94%A8%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/
+https://percent4.github.io/Gradio%E5%85%A5%E9%97%A8%EF%BC%882%EF%BC%89%E8%A1%A8%E6%A0%BCDataFrame%E7%9A%84%E8%BF%9B%E9%98%B6%E4%BD%BF%E7%94%A8/
+https://percent4.github.io/Python%E8%8E%B7%E5%8F%96Excel%E4%B8%AD%E7%9A%84%E6%95%B0%E6%8D%AE%E9%AA%8C%E8%AF%81%E5%86%85%E5%AE%B9/
 https://percent4.github.io/OCR%E5%85%A5%E9%97%A8%EF%BC%88%E4%B8%80%EF%BC%89OCR%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%AE%9E%E6%88%98%EF%BC%9A%E7%A0%B4%E8%A7%A3%E6%B1%89%E5%AD%97%E9%AA%8C%E8%AF%81%E7%A0%81/
 https://percent4.github.io/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E9%9B%B6%E5%85%AB%EF%BC%89%E4%B8%80%E4%B8%AA%E5%A5%BD%E7%94%A8%E7%9A%84%E6%A0%87%E6%B3%A8%E5%B9%B3%E5%8F%B0Label-Studio/
 https://percent4.github.io/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E9%9B%B6%E4%B8%83%EF%BC%89%E5%A4%A7%E6%A8%A1%E5%9E%8B%E8%A7%A3%E7%AD%94%E9%AB%98%E8%80%83%E6%95%B0%E5%AD%A6%E9%A2%98%E8%AF%84%E6%B5%8B%E5%AE%9E%E9%AA%8C/
@@ -363,6 +370,11 @@ https://percent4.github.io/tags/GSM8K/
 https://percent4.github.io/tags/%E6%95%B0%E7%8B%AC/
 https://percent4.github.io/tags/PDF/
 https://percent4.github.io/tags/%E9%AA%8C%E8%AF%81%E7%A0%81/
+https://percent4.github.io/tags/HuggingFace-Spaces/
+https://percent4.github.io/tags/Late-Chunking/
+https://percent4.github.io/tags/Embedding/
+https://percent4.github.io/tags/Excel/
+https://percent4.github.io/tags/pytest/
 https://percent4.github.io/categories/NLP/
 https://percent4.github.io/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/
 https://percent4.github.io/categories/%E8%8D%89%E7%A8%BF/

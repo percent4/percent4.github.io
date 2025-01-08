@@ -1,0 +1,974 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍Python最常用的测试框架之一的pytest，介绍该测试框架的常见用法，也是笔者近期使用该框架的一些总结。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pytest测试框架使用笔记（一）">
+<meta property="og:url" content="https://percent4.github.io/pytest%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6%E4%BD%BF%E7%94%A8%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍Python最常用的测试框架之一的pytest，介绍该测试框架的常见用法，也是笔者近期使用该框架的一些总结。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-01-08T05:10:53.000Z">
+<meta property="article:modified_time" content="2025-01-08T05:11:30.975Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="pytest">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>pytest测试框架使用笔记（一） - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="pytest测试框架使用笔记（一）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-01-08 13:10" pubdate>
+          星期三, 一月 8日 2025, 1:10 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          13k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          108 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">pytest测试框架使用笔记（一）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍Python最常用的测试框架之一的pytest，介绍该测试框架的常见用法，也是笔者近期使用该框架的一些总结。</p>
+</blockquote>
+<p>pytest是一个功能强大的Python测试框架，广泛用于编写和运行单元测试、集成测试和功能测试。它与Python自带的unittest框架相似，但在使用上更为简洁和高效。</p>
+<p>pytest的主要特点如下：</p>
+<ul>
+<li>易于上手：pytest具有直观的API，用户可以快速编写测试用例。</li>
+<li>支持多种测试类型：能够处理简单的单元测试到复杂的功能测试，包括Web自动化测试（如Selenium）和接口自动化测试（如requests）。</li>
+<li>参数化功能：允许通过参数化来简化多个用例的编写，使得同一测试函数可以使用不同的输入进行多次验证。</li>
+<li>丰富的插件生态：pytest支持多种第三方插件，如pytest-html（生成HTML格式的测试报告）、pytest-xdist（支持并行执行测试）等，用户还可以自定义扩展。</li>
+<li>灵活的跳过和失败处理：在测试执行过程中，可以选择跳过某些测试或标记预期失败的用例。</li>
+<li>与持续集成工具兼容：pytest能够方便地与Jenkins等持续集成工具进行集成。</li>
+</ul>
+<p>pytest可以通过pip轻松安装。打开命令行并输入以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">pip install -U pytest<br></code></pre></td></tr></table></figure>
+<p>安装完成后，可以通过以下命令检查版本以确认安装成功：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">pytest --version<br></code></pre></td></tr></table></figure>
+<h2 id="快速入门">快速入门</h2>
+<h3 id="一个简单的例子">一个简单的例子</h3>
+<p>以下是一个测试脚本的Python代码，文件名称为test_square.py。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># file name: test_square.py</span><br><span class="hljs-keyword">import</span> math<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_sqrt</span>():<br>    num = <span class="hljs-number">25</span><br>    <span class="hljs-keyword">assert</span> math.sqrt(num) == <span class="hljs-number">5</span><br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_square</span>():<br>    num = <span class="hljs-number">7</span><br>    <span class="hljs-keyword">assert</span> num ** <span class="hljs-number">2</span> == <span class="hljs-number">40</span><br></code></pre></td></tr></table></figure>
+<p>使用命令行测试:</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-attribute">pytest</span> test_square.py<br></code></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs markdown">collected 2 items                                                                                                         <br><br>test<span class="hljs-emphasis">_square.py .F                                                                                                   [100%]</span><br><span class="hljs-emphasis"></span><br><span class="hljs-emphasis">======================================================== FAILURES =========================================================</span><br><span class="hljs-emphasis"><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">___ test_square __</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span>_</span><br><br><span class="hljs-code">    def test_square():</span><br><span class="hljs-code">        num = 7</span><br><span class="hljs-code">&gt;       assert num ** 2 == 40</span><br><span class="hljs-code">E       assert (7 ** 2) == 40</span><br><span class="hljs-code"></span><br>test<span class="hljs-emphasis">_square.py:11: AssertionError</span><br><span class="hljs-emphasis">================================================= short test summary info =================================================</span><br><span class="hljs-emphasis">FAILED test_</span>square.py::test<span class="hljs-emphasis">_square - assert (7 ** 2) == 40</span><br><span class="hljs-emphasis">=============================================== 1 failed, 1 passed in 0.06s ===============================================</span><br></code></pre></td></tr></table></figure>
+<p>可以看到，上面测试命令运行了2个测试case，其中一个运行成功，用<code>.</code>标识，另一个运行失败，用<code>F</code>标识，并给出了报错信息。</p>
+<p>如果需要输出详细信息，则在命令行中加入-v参数。</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-attribute">pytest</span> -v test_square.py<br></code></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs markdown">collected 2 items                                                                                                         <br><br>test<span class="hljs-emphasis">_square.py::test_</span>sqrt PASSED                                                                                    [ 50%]<br>test<span class="hljs-emphasis">_square.py::test_</span>square FAILED                                                                                  [100%]<br><br>======================================================== FAILURES =========================================================<br><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">___ test<span class="hljs-emphasis">_square _</span>__</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><br><br><span class="hljs-code">    def test_square():</span><br><span class="hljs-code">        num = 7</span><br><span class="hljs-code">&gt;       assert num ** 2 == 40</span><br><span class="hljs-code">E       assert (7 ** 2) == 40</span><br><span class="hljs-code"></span><br>test<span class="hljs-emphasis">_square.py:11: AssertionError</span><br><span class="hljs-emphasis">================================================= short test summary info =================================================</span><br><span class="hljs-emphasis">FAILED test_</span>square.py::test<span class="hljs-emphasis">_square - assert (7 ** 2) == 40</span><br><span class="hljs-emphasis">=============================================== 1 failed, 1 passed in 0.06s ===============================================</span><br></code></pre></td></tr></table></figure>
+<p><strong>注意</strong>：测试文件名应以test_开头或以_test结尾。测试函数要以test_开头，不然不会加入测试中。测试类名应以Test开头，并且不能包含__init__方法。</p>
+<p>如果将上述函数中的test_square函数名称改为a_test_square，则该函数将不会加入测试，使用pytest命令行运行(加-v参数)时，输出结果为：</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs tap">collected<span class="hljs-number"> 1 </span>item                                                                                                          <br><br>test_square.py::test_sqrt PASSED                                                                                    [100%]<br><br>====================================================<span class="hljs-number"> 1 </span>passed in 0.03s ====================================================<br></code></pre></td></tr></table></figure>
+<p>可以看到，函数名称为a_test_square的测试例子将不会加入测试，上述的测试只运行了一个测试例子，且测试成功。</p>
+<p><strong>注意</strong>:
+如果在测试文件夹下只运行<code>pytest -v</code>，则pytest将会运行该目录下的所有测试case。</p>
+<h2 id="测试标记mark">测试标记（Mark）</h2>
+<h3 id="标记测试函数">标记测试函数</h3>
+<p>默认情况下，pytest会执行文件中的所有以test_开头或结尾的测试函数。</p>
+<p>如果我们需要运行特定的测试函数，则可以通过以下三种方式实现：</p>
+<ul>
+<li>显式指定函数名，通过<code>::</code>标记，比如命令<code>pytest test_square.py::test_sqrt</code>，则只会运行test_square.py中的test_sqrt函数</li>
+<li>使用模糊匹配，使用 -k
+选项标识，比如命令<code>pytest -k sqrt test_square.py</code></li>
+<li>使用<code>pytest.mark</code>在函数上进行标记。</li>
+</ul>
+<p>使用<code>pytest.mark</code>时，对测试函数进行标识，如以下脚本：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> math<br><span class="hljs-keyword">import</span> pytest<br><br><br><span class="hljs-meta">@pytest.mark.finish</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_sqrt</span>():<br>    num = <span class="hljs-number">25</span><br>    <span class="hljs-keyword">assert</span> math.sqrt(num) == <span class="hljs-number">5</span><br><br><br><span class="hljs-meta">@pytest.mark.progress</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_square</span>():<br>    num = <span class="hljs-number">7</span><br>    <span class="hljs-keyword">assert</span> num ** <span class="hljs-number">2</span> == <span class="hljs-number">40</span><br></code></pre></td></tr></table></figure>
+<p>测试时使用<code>-m</code>选择标记的测试函数，如命令：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs vim">pytest -v -<span class="hljs-keyword">m</span> <span class="hljs-keyword">finish</span> test_square.<span class="hljs-keyword">py</span><br></code></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">collected</span> <span class="hljs-number">2</span> items / <span class="hljs-number">1</span> deselected / <span class="hljs-number">1</span> selected                                                                             <br><br><span class="hljs-attribute">test_square</span>.py::test_sqrt PASSED                                                                                   <span class="hljs-meta"> [100%]</span><br></code></pre></td></tr></table></figure>
+<p><strong>注意</strong>：在使用mark功能时，同一个测试函数可以打多个标识，多个函数也可以打相同的标识。</p>
+<h3 id="跳过测试">跳过测试</h3>
+<p>使用<code>pytest.mark.skip</code>装饰器可跳过指定的测试函数。如以下脚本：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> math<br><span class="hljs-keyword">import</span> pytest<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_sqrt</span>():<br>    num = <span class="hljs-number">25</span><br>    <span class="hljs-keyword">assert</span> math.sqrt(num) == <span class="hljs-number">5</span><br><br><br><span class="hljs-meta">@pytest.mark.skip(<span class="hljs-params">reason=<span class="hljs-string">&quot;Not implemented yet&quot;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_square</span>():<br>    num = <span class="hljs-number">7</span><br>    <span class="hljs-keyword">assert</span> num ** <span class="hljs-number">2</span> == <span class="hljs-number">40</span><br></code></pre></td></tr></table></figure>
+<p>使用命令行<code>pytest test_square.py</code>，输出结果如下：</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs tap">collected<span class="hljs-number"> 2 </span>items                                                                                                         <br><br>test_square.py::test_sqrt PASSED                                                                                    [ 50%]<br>test_square.py::test_square SKIPPED (unconditional skip)                                                            [100%]<br><br>==============================================<span class="hljs-number"> 1 </span>passed,<span class="hljs-number"> 1 </span>skipped in 0.03s ===============================================<br></code></pre></td></tr></table></figure>
+<p>可以看到，第二个测试函数被跳过了，不会加入此次测试。</p>
+<p>pytest还支持使用 pytest.mark.skipif 为测试函数指定被忽略的条件。</p>
+<h3 id="标识预见错误">标识预见错误</h3>
+<p>使用<code>pytest.mark.xfail</code>实现预见错误功能，即该测试函数的错误已经被预知了，因此测试结果为通过。如以下脚本：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> math<br><span class="hljs-keyword">import</span> pytest<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_sqrt</span>():<br>    num = <span class="hljs-number">25</span><br>    <span class="hljs-keyword">assert</span> math.sqrt(num) == <span class="hljs-number">5</span><br><br><br><span class="hljs-meta">@pytest.mark.xfail(<span class="hljs-params">reason=<span class="hljs-string">&quot;I know this will fail&quot;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_square</span>():<br>    num = <span class="hljs-number">7</span><br>    <span class="hljs-keyword">assert</span> num ** <span class="hljs-number">2</span> == <span class="hljs-number">40</span><br></code></pre></td></tr></table></figure>
+<p>使用命令<code>pytest -v test_square.py</code>进行测试，输出结果如下：</p>
+<figure class="highlight mercury"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs mercury">collected <span class="hljs-number">2</span> items                                                                                                         <br><br>test_square.py::test_sqrt PASSED                                                                                    [ <span class="hljs-number">50</span><span class="hljs-comment">%]</span><br>test_square.py::test_square XFAIL (I know this will <span class="hljs-built_in">fail</span>)                                                           [<span class="hljs-number">100</span><span class="hljs-comment">%]</span><br><br><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span> <span class="hljs-number">1</span> passed, <span class="hljs-number">1</span> xfailed in <span class="hljs-number">0.04</span>s <span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><span class="hljs-built_in">=</span><br></code></pre></td></tr></table></figure>
+<p>可以看到test_square函数的测试结果为XFAIL，该测试也是通过的。</p>
+<h3 id="参数化测试">参数化测试</h3>
+<p>如果我们的测试函数需要对参数的多个值进行测试，一种方法是直接在测试函数中测试多个值的情形，但这只是一个测试case。较好的解决方法是参数化测试，即每组参数都独立执行一次测试。如以下的脚本：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> pytest<br><br><br><span class="hljs-meta">@pytest.mark.parametrize(<span class="hljs-params"><span class="hljs-string">&quot;num&quot;</span>, [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>]</span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_square</span>(<span class="hljs-params">num: <span class="hljs-built_in">int</span></span>):<br>    <span class="hljs-keyword">assert</span> <span class="hljs-number">0</span> &lt; num ** <span class="hljs-number">2</span> &lt; <span class="hljs-number">10</span><br></code></pre></td></tr></table></figure>
+<p>执行测试，输出结果为：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs markdown">collected 4 items                                                                                                         <br><br>test<span class="hljs-emphasis">_square.py::test_</span>square[1] PASSED                                                                               [ 25%]<br>test<span class="hljs-emphasis">_square.py::test_</span>square[2] PASSED                                                                               [ 50%]<br>test<span class="hljs-emphasis">_square.py::test_</span>square[3] PASSED                                                                               [ 75%]<br>test<span class="hljs-emphasis">_square.py::test_</span>square[4] FAILED                                                                               [100%]<br><br>======================================================== FAILURES =========================================================<br><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span>_ test<span class="hljs-emphasis">_square[4] <span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span><span class="hljs-strong">____</span>_</span>_<br><br>num = 4<br><br><span class="hljs-code">    @pytest.mark.parametrize(&quot;num&quot;, [1, 2, 3, 4])</span><br><span class="hljs-code">    def test_square(num: int):</span><br><span class="hljs-code">&gt;       assert 0 &lt; num ** 2 &lt; 10</span><br><span class="hljs-code">E       assert (4 ** 2) &lt; 10</span><br><span class="hljs-code"></span><br>test<span class="hljs-emphasis">_square.py:6: AssertionError</span><br><span class="hljs-emphasis">================================================= short test summary info =================================================</span><br><span class="hljs-emphasis">FAILED test_</span>square.py::test<span class="hljs-emphasis">_square[4] - assert (4 ** 2) &lt; 10</span><br><span class="hljs-emphasis">=============================================== 1 failed, 3 passed in 0.07s ===============================================</span><br></code></pre></td></tr></table></figure>
+<p>可以看到，上面的参数化测试执行了4个测试case，3个成功，1个失败，这使得参数化测试很有优势。</p>
+<p>如果我们需要将测试组的默认参数显示更清晰，我们可以使用<code>pytest.param</code>的<code>id</code>参数进行自定义，修改如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> pytest<br><br><br><span class="hljs-meta">@pytest.mark.parametrize(<span class="hljs-params"><span class="hljs-string">&quot;num&quot;</span>,</span></span><br><span class="hljs-params"><span class="hljs-meta">                         [pytest.param(<span class="hljs-params"><span class="hljs-number">1</span>, <span class="hljs-built_in">id</span>=<span class="hljs-string">&#x27;case_1&#x27;</span></span>),</span></span><br><span class="hljs-params"><span class="hljs-meta">                          pytest.param(<span class="hljs-params"><span class="hljs-number">2</span>, <span class="hljs-built_in">id</span>=<span class="hljs-string">&#x27;case_2&#x27;</span></span>),</span></span><br><span class="hljs-params"><span class="hljs-meta">                          pytest.param(<span class="hljs-params"><span class="hljs-number">3</span>, <span class="hljs-built_in">id</span>=<span class="hljs-string">&#x27;case_3&#x27;</span></span>),</span></span><br><span class="hljs-params"><span class="hljs-meta">                          pytest.param(<span class="hljs-params"><span class="hljs-number">4</span>, <span class="hljs-built_in">id</span>=<span class="hljs-string">&#x27;case_4&#x27;</span></span>)]</span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_square</span>(<span class="hljs-params">num: <span class="hljs-built_in">int</span></span>):<br>    <span class="hljs-keyword">assert</span> <span class="hljs-number">0</span> &lt; num ** <span class="hljs-number">2</span> &lt; <span class="hljs-number">10</span><br></code></pre></td></tr></table></figure>
+<p>如果需要将测试函数中的参数调整为多个参数，那么可以修改如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> pytest<br><br><br><span class="hljs-meta">@pytest.mark.parametrize(<span class="hljs-params"><span class="hljs-string">&quot;x, y&quot;</span>, [(<span class="hljs-params"><span class="hljs-number">1</span>, <span class="hljs-number">2</span></span>), (<span class="hljs-params"><span class="hljs-number">3</span>, <span class="hljs-number">4</span></span>)]</span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_square</span>(<span class="hljs-params">x: <span class="hljs-built_in">int</span>, y: <span class="hljs-built_in">int</span></span>):<br>    <span class="hljs-keyword">assert</span> <span class="hljs-number">0</span> &lt; x ** <span class="hljs-number">2</span> + y ** <span class="hljs-number">2</span> &lt; <span class="hljs-number">10</span><br></code></pre></td></tr></table></figure>
+<h2 id="测试固件fixture">测试固件（Fixture）</h2>
+<p>固件（Fixture）是一些函数，pytest
+会在执行测试函数之前（或之后）加载运行它们，类似于<code>unittest</code>框架
+的相关测试固件，如<code>setup</code>、<code>teardown</code>等。</p>
+<p>pytest使用<code>pytest.fixture()</code>
+来定义固件，更多时候，我们会使用<code>conftest.py</code>文件来管理固件。</p>
+<h3 id="调用方法">调用方法</h3>
+<p>固件的调用方式有很多，这里介绍三种常见的调用方法：</p>
+<ul>
+<li>使用fixture函数名作为参数</li>
+</ul>
+<p>如下面的脚本所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> pytest<br><br><br><span class="hljs-meta">@pytest.fixture</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_data</span>():<br>    data = &#123;<span class="hljs-string">&#x27;name&#x27;</span>: <span class="hljs-string">&#x27;John&#x27;</span>, <span class="hljs-string">&#x27;age&#x27;</span>: <span class="hljs-number">25</span>&#125;<br>    <span class="hljs-keyword">return</span> data<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_user_name</span>(<span class="hljs-params">get_data</span>):<br>    <span class="hljs-keyword">assert</span> get_data[<span class="hljs-string">&#x27;name&#x27;</span>] == <span class="hljs-string">&#x27;John&#x27;</span><br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_user_age</span>(<span class="hljs-params">get_data</span>):<br>    <span class="hljs-keyword">assert</span> get_data[<span class="hljs-string">&#x27;age&#x27;</span>] == <span class="hljs-number">25</span><br></code></pre></td></tr></table></figure>
+<p>在上述例子中，test_user_name和test_user_age测试函数都是使用get_data固件。</p>
+<ul>
+<li>使用<code>@pytest.mark.usefixtures('fixture函数名')</code>装饰器</li>
+</ul>
+<p>此时上面的脚本修改如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> pytest<br><br><span class="hljs-comment"># 将data设置为全局变量</span><br>data = &#123;&#125;<br><br><br><span class="hljs-meta">@pytest.fixture</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_data</span>():<br>    <span class="hljs-keyword">global</span> data<br>    data = &#123;<span class="hljs-string">&#x27;name&#x27;</span>: <span class="hljs-string">&#x27;John&#x27;</span>, <span class="hljs-string">&#x27;age&#x27;</span>: <span class="hljs-number">25</span>&#125;<br><br><br><span class="hljs-meta">@pytest.mark.usefixtures(<span class="hljs-params"><span class="hljs-string">&#x27;get_data&#x27;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_user_name</span>():<br>    <span class="hljs-keyword">assert</span> data[<span class="hljs-string">&#x27;name&#x27;</span>] == <span class="hljs-string">&#x27;John&#x27;</span><br><br><br><span class="hljs-meta">@pytest.mark.usefixtures(<span class="hljs-params"><span class="hljs-string">&#x27;get_data&#x27;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_user_age</span>():<br>    <span class="hljs-keyword">assert</span> data[<span class="hljs-string">&#x27;age&#x27;</span>] == <span class="hljs-number">25</span><br></code></pre></td></tr></table></figure>
+<p>需要注意的是，这里将data设置为全局变量，仅作为本次例子演示使用。</p>
+<ul>
+<li>使用autouse参数自动执行fixture函数</li>
+</ul>
+<p>此时，上述的脚本修改如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> pytest<br><br><span class="hljs-comment"># 将data设置为全局变量</span><br>data = &#123;&#125;<br><br><br><span class="hljs-meta">@pytest.fixture(<span class="hljs-params">autouse=<span class="hljs-literal">True</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_data</span>():<br>    <span class="hljs-keyword">global</span> data<br>    data = &#123;<span class="hljs-string">&#x27;name&#x27;</span>: <span class="hljs-string">&#x27;John&#x27;</span>, <span class="hljs-string">&#x27;age&#x27;</span>: <span class="hljs-number">25</span>&#125;<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_user_name</span>():<br>    <span class="hljs-keyword">assert</span> data[<span class="hljs-string">&#x27;name&#x27;</span>] == <span class="hljs-string">&#x27;John&#x27;</span><br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_user_age</span>():<br>    <span class="hljs-keyword">assert</span> data[<span class="hljs-string">&#x27;age&#x27;</span>] == <span class="hljs-number">25</span><br><br></code></pre></td></tr></table></figure>
+<p>当然,
+pytest也支持调用多个固件，和对固件进行参数化测试。以下是一个结合多个固件和参数化测试的例子：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> pytest<br><br><span class="hljs-comment"># 将data设置为全局变量</span><br>data = &#123;&#125;<br><br><br><span class="hljs-meta">@pytest.fixture(<span class="hljs-params">params=[&#123;<span class="hljs-string">&#x27;name&#x27;</span>: <span class="hljs-string">&#x27;John&#x27;</span>, <span class="hljs-string">&#x27;age&#x27;</span>: <span class="hljs-number">25</span>&#125;,</span></span><br><span class="hljs-params"><span class="hljs-meta">                        &#123;<span class="hljs-string">&#x27;name&#x27;</span>: <span class="hljs-string">&#x27;Tom&#x27;</span>, <span class="hljs-string">&#x27;age&#x27;</span>: <span class="hljs-number">30</span>&#125;]</span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_data</span>(<span class="hljs-params">request</span>):<br>    <span class="hljs-keyword">global</span> data<br>    data = request.param<br><br><br><span class="hljs-meta">@pytest.fixture()</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">set_user_country</span>():<br>    <span class="hljs-keyword">global</span> data<br>    data[<span class="hljs-string">&#x27;country&#x27;</span>] = <span class="hljs-string">&#x27;US&#x27;</span><br><br><br><span class="hljs-meta">@pytest.mark.usefixtures(<span class="hljs-params"><span class="hljs-string">&#x27;get_data&#x27;</span></span>)</span><br><span class="hljs-meta">@pytest.mark.usefixtures(<span class="hljs-params"><span class="hljs-string">&#x27;set_user_country&#x27;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_user_name_and_age</span>():<br>    <span class="hljs-keyword">assert</span> data[<span class="hljs-string">&#x27;name&#x27;</span>] <span class="hljs-keyword">in</span> [<span class="hljs-string">&#x27;John&#x27;</span>, <span class="hljs-string">&#x27;Alan&#x27;</span>]<br>    <span class="hljs-keyword">assert</span> <span class="hljs-number">0</span> &lt; data[<span class="hljs-string">&#x27;age&#x27;</span>] &lt; <span class="hljs-number">100</span><br><br><br><span class="hljs-meta">@pytest.mark.usefixtures(<span class="hljs-params"><span class="hljs-string">&#x27;get_data&#x27;</span></span>)</span><br><span class="hljs-meta">@pytest.mark.usefixtures(<span class="hljs-params"><span class="hljs-string">&#x27;set_user_country&#x27;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_user_country</span>():<br>    <span class="hljs-keyword">assert</span> data[<span class="hljs-string">&#x27;country&#x27;</span>] == <span class="hljs-string">&#x27;US&#x27;</span><br><br></code></pre></td></tr></table></figure>
+<p>上面的例子中，共有2个固件：get_data,
+set_user_country，其中get_data设置data中的name和age，采用参数化测试，而set_user_country则设置data中的country.</p>
+<p>执行上述测试，结果如下：</p>
+<figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs prolog">collected <span class="hljs-number">4</span> items                                                                                                         <br><br>test_square.py::test_user_name_and_age[get_data0] <span class="hljs-symbol">PASSED</span>                                                            [ <span class="hljs-number">25</span><span class="hljs-comment">%]</span><br>test_square.py::test_user_name_and_age[get_data1] <span class="hljs-symbol">FAILED</span>                                                            [ <span class="hljs-number">50</span><span class="hljs-comment">%]</span><br>test_square.py::test_user_country[get_data0] <span class="hljs-symbol">PASSED</span>                                                                 [ <span class="hljs-number">75</span><span class="hljs-comment">%]</span><br>test_square.py::test_user_country[get_data1] <span class="hljs-symbol">PASSED</span>                                                                 [<span class="hljs-number">100</span><span class="hljs-comment">%]</span><br><br>======================================================== <span class="hljs-symbol">FAILURES</span> =========================================================<br><span class="hljs-symbol">____________________________________________</span> test_user_name_and_age[get_data1] <span class="hljs-symbol">____________________________________________</span><br><br>    @pytest.mark.usefixtures(<span class="hljs-string">&#x27;get_data&#x27;</span>)<br>    @pytest.mark.usefixtures(<span class="hljs-string">&#x27;set_user_country&#x27;</span>)<br>    def test_user_name_and_age():<br>&gt;       assert data[<span class="hljs-string">&#x27;name&#x27;</span>] in [<span class="hljs-string">&#x27;John&#x27;</span>, <span class="hljs-string">&#x27;Alan&#x27;</span>]<br><span class="hljs-symbol">E</span>       <span class="hljs-symbol">AssertionError</span>: assert <span class="hljs-string">&#x27;Tom&#x27;</span> in [<span class="hljs-string">&#x27;John&#x27;</span>, <span class="hljs-string">&#x27;Alan&#x27;</span>]<br><br>test_square.py:<span class="hljs-number">23</span>: <span class="hljs-symbol">AssertionError</span><br>================================================= short test summary info =================================================<br><span class="hljs-symbol">FAILED</span> test_square.py::test_user_name_and_age[get_data1] - <span class="hljs-symbol">AssertionError</span>: assert <span class="hljs-string">&#x27;Tom&#x27;</span> in [<span class="hljs-string">&#x27;John&#x27;</span>, <span class="hljs-string">&#x27;Alan&#x27;</span>]<br>=============================================== <span class="hljs-number">1</span> failed, <span class="hljs-number">3</span> passed in <span class="hljs-number">0.06</span>s ===============================================<br></code></pre></td></tr></table></figure>
+<p>与我们预期的一样，共有4个测试case，其中test_user_name_and_age当参数为{'name':
+'Tom', 'age': 30}时会报错。</p>
+<h3 id="作用域">作用域</h3>
+<p>pytest的固件的作用域(scope)分为<code>session</code>、<code>module</code>、<code>class</code>、<code>function</code>四个级别。在定义fixture函数的时候通过scope参数指定作用范围，默认为function。</p>
+<ul>
+<li><strong>function</strong>:
+函数级，每个测试函数都会执行一次固件；</li>
+<li><strong>class</strong>:
+类级别，每个测试类执行一次，所有方法都可以使用；</li>
+<li><strong>module</strong>:
+模块级，每个模块执行一次，模块内函数和方法都可使用；</li>
+<li><strong>session</strong>:
+会话级，一次测试只执行一次，所有被找到的函数和方法都可用。</li>
+</ul>
+<p>关于固件的作用域，将在下面的<code>配置文件conftest.py</code>中进行演示。</p>
+<h2 id="配置文件conftest.py">配置文件conftest.py</h2>
+<p>在pytest框架中，conftest.py文件的主要用途是定义和共享测试固件（fixtures）及其他配置选项，以便在多个测试文件之间重用。这种方式可以减少代码重复，提高测试的可维护性和可读性。</p>
+<p>conftest.py的用途如下：</p>
+<ul>
+<li><p>定义共享固件：</p>
+<p>固件是pytest中的一种功能，用于设置测试环境或者提供测试数据。通过在conftest.py中定义固件，可以使其在同一目录下的所有测试文件中可用。</p></li>
+<li><p>配置命令行选项：</p>
+<p>可以在conftest.py中添加自定义的命令行选项，以便在运行pytest时传递参数。</p></li>
+<li><p>添加钩子函数：</p>
+<p>可以使用钩子函数来扩展pytest的功能，例如修改测试收集过程或报告输出。</p></li>
+</ul>
+<h3 id="简单例子">简单例子</h3>
+<p>以下是一个简单的示例，展示了如何在conftest.py中定义一个夹具，并在不同的测试文件中使用它：</p>
+<ol type="1">
+<li>创建 conftest.py</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># conftest.py</span><br><span class="hljs-keyword">import</span> pytest<br><br><span class="hljs-meta">@pytest.fixture</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">input_value</span>():<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">42</span><br></code></pre></td></tr></table></figure>
+<ol start="2" type="1">
+<li>创建测试文件 test_example1.py</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># test_example1.py</span><br><span class="hljs-keyword">import</span> pytest<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_divisible_by_2</span>(<span class="hljs-params">input_value</span>):<br>    <span class="hljs-keyword">assert</span> input_value % <span class="hljs-number">2</span> == <span class="hljs-number">0</span><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_divisible_by_3</span>(<span class="hljs-params">input_value</span>):<br>    <span class="hljs-keyword">assert</span> input_value % <span class="hljs-number">3</span> == <span class="hljs-number">0</span><br></code></pre></td></tr></table></figure>
+<ol start="3" type="1">
+<li>创建测试文件 test_example2.py</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># test_example2.py</span><br><span class="hljs-keyword">import</span> pytest<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_divisible_by_6</span>(<span class="hljs-params">input_value</span>):<br>    <span class="hljs-keyword">assert</span> input_value % <span class="hljs-number">6</span> == <span class="hljs-number">0</span><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_divisible_by_7</span>(<span class="hljs-params">input_value</span>):<br>    <span class="hljs-keyword">assert</span> input_value % <span class="hljs-number">7</span> == <span class="hljs-number">0</span><br></code></pre></td></tr></table></figure>
+<ol start="4" type="1">
+<li>运行测试</li>
+</ol>
+<p>在终端中运行以下命令来执行这些测试：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs vim">pytest -v test_example1.<span class="hljs-keyword">py</span> test_example2.<span class="hljs-keyword">py</span><br></code></pre></td></tr></table></figure>
+<p>输出示例如下所示：</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs arduino">test_example1.py::test_divisible_by_2 PASSED<br>test_example1.py::test_divisible_by_3 FAILED<br>test_example2.py::test_divisible_by_6 PASSED<br>test_example2.py::test_divisible_by_7 FAILED<br></code></pre></td></tr></table></figure>
+<p>通过这个示例，可以看到input_value夹具被成功地在多个测试文件中重用，从而避免了在每个测试文件中重复定义相同的数据或设置。这种方法使得测试代码更加整洁和易于管理。</p>
+<h3 id="作用域演示">作用域演示</h3>
+<p>conftest.py如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> pytest<br><br><br><span class="hljs-meta">@pytest.fixture(<span class="hljs-params">scope=<span class="hljs-string">&quot;session&quot;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">session_fixture</span>():<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;这是一个作用于session的fixture&quot;</span>)<br><br><br><span class="hljs-meta">@pytest.fixture(<span class="hljs-params">scope=<span class="hljs-string">&quot;module&quot;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">module_fixture</span>():<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;这是一个作用于module的fixture&quot;</span>)<br><br><br><span class="hljs-meta">@pytest.fixture(<span class="hljs-params">scope=<span class="hljs-string">&quot;class&quot;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">class_fixture</span>():<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;这是一个作用于class的fixture&quot;</span>)<br><br><br><span class="hljs-meta">@pytest.fixture(<span class="hljs-params">scope=<span class="hljs-string">&quot;function&quot;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">function_fixture</span>():<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;这是一个作用于function的fixture&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>在test_example1.py测试文件中，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># test_example1.py</span><br><span class="hljs-keyword">import</span> pytest<br><br><br><span class="hljs-meta">@pytest.mark.usefixtures(<span class="hljs-params"><span class="hljs-string">&quot;class_fixture&quot;</span></span>)</span><br><span class="hljs-meta">@pytest.mark.usefixtures(<span class="hljs-params"><span class="hljs-string">&quot;function_fixture&quot;</span></span>)</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">TestOrder</span>:<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">test_a</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;test_a&quot;</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">test_b</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;test_b&quot;</span>)<br><br><br><span class="hljs-meta">@pytest.mark.usefixtures(<span class="hljs-params"><span class="hljs-string">&quot;function_fixture&quot;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_c</span>():<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;test_c&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>在文件中，TestOrder类使用了class_fixture,
+function_fixture固件，test_c只使用了function_fixture固件。</p>
+<p>运行命令<code>pytest -v -s test_example1.py</code>后（-s支持终端输出），结果如下：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs vim">collected <span class="hljs-number">3</span> <span class="hljs-built_in">items</span>                                                                                                         <br><br>test_example1.<span class="hljs-keyword">py</span>::TestOrder::test_a 这是一个作用于class的fixture<br>这是一个作用于<span class="hljs-keyword">function</span>的fixture<br>test_a<br>PASSED<br>test_example1.<span class="hljs-keyword">py</span>::TestOrder::test_b 这是一个作用于<span class="hljs-keyword">function</span>的fixture<br>test_b<br>PASSED<br>test_example1.<span class="hljs-keyword">py</span>::test_c 这是一个作用于<span class="hljs-keyword">function</span>的fixture<br>test_c<br>PASSED<br><br>==================================================== <span class="hljs-number">3</span> passed in <span class="hljs-number">0.02</span>s ====================================================<br></code></pre></td></tr></table></figure>
+<p>TestOrder类中，class_fixture执行了一次，而test_a,
+test_b分别执行function_fixture一次。</p>
+<h2 id="异步测试">异步测试</h2>
+<p>在pytest中进行异步测试，通常会用到 pytest-asyncio
+插件，可直接使用pip方式安装。这个插件为pytest提供了对asyncio协程的支持。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># @file: test_file.py</span><br><span class="hljs-keyword">import</span> pytest<br><span class="hljs-keyword">import</span> asyncio<br><br><span class="hljs-comment"># 被测异步函数</span><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">async_function</span>(<span class="hljs-params">x</span>):<br>    <span class="hljs-keyword">await</span> asyncio.sleep(<span class="hljs-number">1</span>)<br>    <span class="hljs-keyword">return</span> x * <span class="hljs-number">2</span><br><br><span class="hljs-comment"># 异步测试函数</span><br><span class="hljs-meta">@pytest.mark.asyncio</span><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">test_async_function</span>():<br>    result = <span class="hljs-keyword">await</span> async_function(<span class="hljs-number">3</span>)<br>    <span class="hljs-keyword">assert</span> result == <span class="hljs-number">6</span><br></code></pre></td></tr></table></figure>
+<p>运行测试命令如下：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-attribute">pytest</span> -v test_file.py<br></code></pre></td></tr></table></figure>
+<h2 id="总结">总结</h2>
+<p>本文主要介绍了Python的主流测试框架之一的pytest，分别展示了pytest的基本用法，标识，固件，异步测试等使用方法，算是对pytest有了一个初步的了解。</p>
+<p>后续文章将会介绍pytest的高级用法，敬请期待~</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Python/" class="category-chain-item">Python</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/pytest/" class="print-no-link">#pytest</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>pytest测试框架使用笔记（一）</div>
+      <div>https://percent4.github.io/pytest测试框架使用笔记（一）/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年1月8日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/pytest%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6%E4%BD%BF%E7%94%A8%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89%E6%8F%92%E4%BB%B6%E7%9A%84%E4%BD%BF%E7%94%A8%E4%B8%8E%E5%BC%80%E5%8F%91/" title="pytest测试框架使用笔记（二）插件的使用与开发">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">pytest测试框架使用笔记（二）插件的使用与开发</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/Gradio%E5%85%A5%E9%97%A8%EF%BC%882%EF%BC%89%E8%A1%A8%E6%A0%BCDataFrame%E7%9A%84%E8%BF%9B%E9%98%B6%E4%BD%BF%E7%94%A8/" title="Gradio入门（2）表格DataFrame的进阶使用">
+                        <span class="hidden-mobile">Gradio入门（2）表格DataFrame的进阶使用</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

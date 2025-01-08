@@ -1,0 +1,1039 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍Embedding模型中的Late Chunking（迟分）策略，演示多个中文Late Chunking的例子，并搭建相关Gradio服务，最后再展示其在RAG框架中对于大模型回复质量的提升作用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（一百零九）Embedding中的Late-Chunking（迟分）策略">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E9%9B%B6%E4%B9%9D%EF%BC%89Embedding%E4%B8%AD%E7%9A%84Late-Chunking%EF%BC%88%E8%BF%9F%E5%88%86%EF%BC%89%E7%AD%96%E7%95%A5/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍Embedding模型中的Late Chunking（迟分）策略，演示多个中文Late Chunking的例子，并搭建相关Gradio服务，最后再展示其在RAG框架中对于大模型回复质量的提升作用。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2024/12/22/RoZYw85fmbMhyOV.jpg">
+<meta property="og:image" content="https://s2.loli.net/2024/12/22/Xqd6uDej59yA8Op.png">
+<meta property="og:image" content="https://s2.loli.net/2024/12/22/rMLwHmYtQlRnzoy.png">
+<meta property="og:image" content="https://s2.loli.net/2024/12/22/5QLbkradNO4TWtR.png">
+<meta property="article:published_time" content="2025-01-08T05:14:53.000Z">
+<meta property="article:modified_time" content="2025-01-08T05:16:02.905Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="Late Chunking">
+<meta property="article:tag" content="Embedding">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2024/12/22/RoZYw85fmbMhyOV.jpg">
+  
+  
+  
+  <title>NLP（一百零九）Embedding中的Late-Chunking（迟分）策略 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（一百零九）Embedding中的Late-Chunking（迟分）策略"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-01-08 13:14" pubdate>
+          星期三, 一月 8日 2025, 1:14 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          19k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          157 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（一百零九）Embedding中的Late-Chunking（迟分）策略</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍Embedding模型中的Late
+Chunking（迟分）策略，演示多个中文Late
+Chunking的例子，并搭建相关Gradio服务，最后再展示其在RAG框架中对于大模型回复质量的提升作用。</p>
+</blockquote>
+<h2 id="late-chunking技术及原理">Late Chunking技术及原理</h2>
+<p>Late Chunking(迟分)技术是Jina
+AI公司（&lt;https://jina.ai）于今年8月份介绍的在Embedding模型方面的新技术。</p>
+<p>众所周知，在保留上下文信息的同时对长文本进行分块并保证召回的效果，是一项有难度的挑战。而Late
+Chunking技术利用长上下文嵌入模型生成上下文的分块嵌入，以实现更好的检索应用。</p>
+<p>Late
+Chunking(迟分)是一种先通读全文再分块的新方法，包含两个主要步骤：</p>
+<ul>
+<li>编码全文：先编码整个文档，得到每个 token
+的向量表示，保留完整的上下文信息。</li>
+<li>分块池化：根据分块边界，对同一个文本块的 token
+向量进行平均池化，生成每个文本块的向量。由于每个 token
+的向量是在全文的语境下生成的，因此迟分可以保留块之间的上下文信息。</li>
+</ul>
+<p>其原理如下图所示：</p>
+<figure>
+<img src="https://s2.loli.net/2024/12/22/RoZYw85fmbMhyOV.jpg" srcset="/img/loading.gif" lazyload
+alt="迟分与朴素分块的原理对比" />
+<figcaption aria-hidden="true">迟分与朴素分块的原理对比</figcaption>
+</figure>
+<p>从上面的原理图中，我们可以看到，Late
+Chunking技术并没有改变Embedding模型的内部结构，而是在对文本进行嵌入时改变了嵌入方式。传统的嵌入方式（Naive
+Chunking）是先对文本进行切分，分别对每个chunk进行嵌入；而Late
+Chunking是先对文本进行token级别的嵌入，获取每个token的嵌入，再根据文本块的token向量进行平均池化，生成每个文本块的嵌入向量，这也是它被称为“<code>迟分</code>”的原因。当然，Late
+Chunking并不是对所有Embedding模型都会生效，目前只有Jina
+AI的Embedding模型能做到。</p>
+<p>Jina
+AI官网给出了一个英语方面的生动例子，使用的Embedding模型为<code>jina-embeddings-v2-base-en</code>,对于输入的文本，按照句子进行切分，共生成3个chunk，输入的query为Berlin，朴素嵌入（即我们现在在用的常见的嵌入方式）和Late
+Chunking的相似度分数计算如下：</p>
+<table>
+
+<thead>
+<tr class="header">
+<th>Query</th>
+<th>Chunk</th>
+<th>Sim. on naive chunking</th>
+<th>Sim. on late chunking</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Berlin</td>
+<td>Berlin is the capital and largest city of Germany, both by area and
+by population.</td>
+<td>0.849</td>
+<td>0.850</td>
+</tr>
+<tr class="even">
+<td>Berlin</td>
+<td>Its more than 3.85 million inhabitants make it the European Union's
+most populous city, as measured by population within city limits.</td>
+<td>0.708</td>
+<td>0.825</td>
+</tr>
+<tr class="odd">
+<td>Berlin</td>
+<td>The city is also one of the states of Germany, and is the third
+smallest state in the country in terms of area.</td>
+<td>0.753</td>
+<td>0.850</td>
+</tr>
+</tbody>
+</table>
+<p>从上面的英语例子中，我们可以看到Late
+Chunking很好地保留了上下文之间的信息，每个chunk与query之间的相似度都比较高，而朴素嵌入时其余两个文本中不含Berlin，因此与query的相似度较低。这个例子很好地展示了Late
+Chunking技术有不错的上下文信息保留能力。</p>
+<p>网络上能搜索到的关于Late
+Chunking技术大概就这么多。笔者想要在这基础上再深入一步，探索Late
+Chunking的更多应用。</p>
+<h2 id="中文late-chunking的例子">中文Late Chunking的例子</h2>
+<p>官网给出了Late
+Chunking在英语方面的例子，这里我们将其扩充至中文。笔者选用的中文Embedding模型为<code>jinaai/jina-embeddings-v2-base-zh</code>，使用的示例文本为（来源于王安石的百度词条）：</p>
+<blockquote>
+<p>王安石（1021年12月19日－1086年5月21日），字介甫，号半山。抚州临川县（今属江西省抚州市）人。中国北宋时期政治家、文学家、思想家、改革家。庆历二年（1042年），王安石中进士，历任扬州签判、鄞县知县、舒州通判等职，政绩显著。宋仁宗末年，曾作《上仁宗皇帝言事书》，要求对宋初以来的法度进行全盘改革，但未被采纳。</p>
+</blockquote>
+<ol type="1">
+<li>加载模型：</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoModel<br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoTokenizer<br><br><span class="hljs-comment"># load model and tokenizer</span><br>tokenizer = AutoTokenizer.from_pretrained(<span class="hljs-string">&#x27;jinaai/jina-embeddings-v2-base-zh&#x27;</span>, trust_remote_code=<span class="hljs-literal">True</span>)<br>model = AutoModel.from_pretrained(<span class="hljs-string">&#x27;jinaai/jina-embeddings-v2-base-zh&#x27;</span>, trust_remote_code=<span class="hljs-literal">True</span>)<br></code></pre></td></tr></table></figure>
+<ol type="1">
+<li>按句子进行切分</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">chunk_by_sentences</span>(<span class="hljs-params">input_text: <span class="hljs-built_in">str</span>, tokenizer: <span class="hljs-built_in">callable</span></span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    Split the input text into sentences using the tokenizer</span><br><span class="hljs-string">    :param input_text: The text snippet to split into sentences</span><br><span class="hljs-string">    :param tokenizer: The tokenizer to use</span><br><span class="hljs-string">    :return: A tuple containing the list of text chunks and their corresponding token spans</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    inputs = tokenizer(input_text, return_tensors=<span class="hljs-string">&#x27;pt&#x27;</span>, return_offsets_mapping=<span class="hljs-literal">True</span>)<br>    punctuation_mark_id = tokenizer.convert_tokens_to_ids(<span class="hljs-string">&#x27;。&#x27;</span>)<br>    sep_id = tokenizer.eos_token_id<br>    token_offsets = inputs[<span class="hljs-string">&#x27;offset_mapping&#x27;</span>][<span class="hljs-number">0</span>]<br>    token_ids = inputs[<span class="hljs-string">&#x27;input_ids&#x27;</span>][<span class="hljs-number">0</span>]<br>    chunk_positions = [<br>        (i, <span class="hljs-built_in">int</span>(start + <span class="hljs-number">1</span>))<br>        <span class="hljs-keyword">for</span> i, (token_id, (start, end)) <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(<span class="hljs-built_in">zip</span>(token_ids, token_offsets))<br>        <span class="hljs-keyword">if</span> token_id == punctuation_mark_id<br>        <span class="hljs-keyword">and</span> (<br>            token_offsets[i + <span class="hljs-number">1</span>][<span class="hljs-number">0</span>] - token_offsets[i][<span class="hljs-number">1</span>] &gt;= <span class="hljs-number">0</span><br>            <span class="hljs-keyword">or</span> token_ids[i + <span class="hljs-number">1</span>] == sep_id<br>        )<br>    ]<br>    chunks = [<br>        input_text[x[<span class="hljs-number">1</span>] : y[<span class="hljs-number">1</span>]]<br>        <span class="hljs-keyword">for</span> x, y <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>([(<span class="hljs-number">1</span>, <span class="hljs-number">0</span>)] + chunk_positions[:-<span class="hljs-number">1</span>], chunk_positions)<br>    ]<br>    span_annotations = [<br>        (x[<span class="hljs-number">0</span>], y[<span class="hljs-number">0</span>]) <span class="hljs-keyword">for</span> (x, y) <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>([(<span class="hljs-number">1</span>, <span class="hljs-number">0</span>)] + chunk_positions[:-<span class="hljs-number">1</span>], chunk_positions)<br>    ]<br>    <span class="hljs-keyword">return</span> chunks, span_annotations<br></code></pre></td></tr></table></figure>
+<ol type="1">
+<li>对示例文本进行切分</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python">input_text = <span class="hljs-string">&quot;王安石（1021年12月19日－1086年5月21日），字介甫，号半山。抚州临川县（今属江西省抚州市）人。中国北宋时期政治家、文学家、思想家、改革家。庆历二年（1042年），王安石中进士，历任扬州签判、鄞县知县、舒州通判等职，政绩显著。宋仁宗末年，曾作《上仁宗皇帝言事书》，要求对宋初以来的法度进行全盘改革，但未被采纳。&quot;</span><br><br><span class="hljs-comment"># determine chunks</span><br>chunks, span_annotations = chunk_by_sentences(input_text, tokenizer)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Chunks:\n- &quot;&#x27;</span> + <span class="hljs-string">&#x27;&quot;\n- &quot;&#x27;</span>.join(chunks) + <span class="hljs-string">&#x27;&quot;&#x27;</span>)<br></code></pre></td></tr></table></figure>
+<p>输出结果如下：</p>
+<pre><code class="hljs">Chunks:
+- &quot;王安石（1021年12月19日－1086年5月21日），字介甫，号半山。&quot;
+- &quot;抚州临川县（今属江西省抚州市）人。&quot;
+- &quot;中国北宋时期政治家、文学家、思想家、改革家。&quot;
+- &quot;庆历二年（1042年），王安石中进士，历任扬州签判、鄞县知县、舒州通判等职，政绩显著。&quot;
+- &quot;宋仁宗末年，曾作《上仁宗皇帝言事书》，要求对宋初以来的法度进行全盘改革，但未被采纳。&quot;</code></pre>
+<ol type="1">
+<li>定义late_chunking函数</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">late_chunking</span>(<span class="hljs-params"></span><br><span class="hljs-params">    model_output: <span class="hljs-string">&#x27;BatchEncoding&#x27;</span>, span_annotation: <span class="hljs-built_in">list</span>, max_length=<span class="hljs-literal">None</span></span><br><span class="hljs-params"></span>):<br>    token_embeddings = model_output[<span class="hljs-number">0</span>]<br>    outputs = []<br>    <span class="hljs-keyword">for</span> embeddings, annotations <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(token_embeddings, span_annotation):<br>        <span class="hljs-keyword">if</span> (<br>            max_length <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span><br>        ):  <span class="hljs-comment"># remove annotations which go bejond the max-length of the model</span><br>            annotations = [<br>                (start, <span class="hljs-built_in">min</span>(end, max_length - <span class="hljs-number">1</span>))<br>                <span class="hljs-keyword">for</span> (start, end) <span class="hljs-keyword">in</span> annotations<br>                <span class="hljs-keyword">if</span> start &lt; (max_length - <span class="hljs-number">1</span>)<br>            ]<br>        pooled_embeddings = [<br>            embeddings[start:end].<span class="hljs-built_in">sum</span>(dim=<span class="hljs-number">0</span>) / (end - start)<br>            <span class="hljs-keyword">for</span> start, end <span class="hljs-keyword">in</span> annotations<br>            <span class="hljs-keyword">if</span> (end - start) &gt;= <span class="hljs-number">1</span><br>        ]<br>        pooled_embeddings = [<br>            embedding.detach().cpu().numpy() <span class="hljs-keyword">for</span> embedding <span class="hljs-keyword">in</span> pooled_embeddings<br>        ]<br>        outputs.append(pooled_embeddings)<br><br>    <span class="hljs-keyword">return</span> outputs<br></code></pre></td></tr></table></figure>
+<ol type="1">
+<li>对比朴素嵌入与Late Chunking的结果</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># chunk before</span><br>embeddings_traditional_chunking = model.encode(chunks)<br><br><span class="hljs-comment"># chunk afterwards (context-sensitive chunked pooling)</span><br>inputs = tokenizer(input_text, return_tensors=<span class="hljs-string">&#x27;pt&#x27;</span>)<br>model_output = model(**inputs)<br>embeddings = late_chunking(model_output, [span_annotations])[<span class="hljs-number">0</span>]<br><br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><br>cos_sim = <span class="hljs-keyword">lambda</span> x, y: np.dot(x, y) / (np.linalg.norm(x) * np.linalg.norm(y))<br><br>query = <span class="hljs-string">&quot;王安石是哪个朝代的&quot;</span><br><span class="hljs-comment"># query = &quot;王安石是哪里人&quot;</span><br>query_embedding = model.encode(query)<br><br><span class="hljs-keyword">for</span> chunk, new_embedding, trad_embeddings <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(chunks, embeddings, embeddings_traditional_chunking):<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;similarity_new(&quot;<span class="hljs-subst">&#123;query&#125;</span>&quot;, &quot;<span class="hljs-subst">&#123;chunk&#125;</span>&quot;):&#x27;</span>, cos_sim(query_embedding, new_embedding))<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;similarity_trad(&quot;<span class="hljs-subst">&#123;query&#125;</span>&quot;, &quot;<span class="hljs-subst">&#123;chunk&#125;</span>&quot;):&#x27;</span>, cos_sim(query_embedding, trad_embeddings))<br></code></pre></td></tr></table></figure>
+<p>输出结果如下：</p>
+<pre><code class="hljs">similarity_new(&quot;王安石是哪个朝代的&quot;, &quot;王安石（1021年12月19日－1086年5月21日），字介甫，号半山。&quot;): 0.6774667
+similarity_trad(&quot;王安石是哪个朝代的&quot;, &quot;王安石（1021年12月19日－1086年5月21日），字介甫，号半山。&quot;): 0.7342801
+similarity_new(&quot;王安石是哪个朝代的&quot;, &quot;抚州临川县（今属江西省抚州市）人。&quot;): 0.61272216
+similarity_trad(&quot;王安石是哪个朝代的&quot;, &quot;抚州临川县（今属江西省抚州市）人。&quot;): 0.27474773
+similarity_new(&quot;王安石是哪个朝代的&quot;, &quot;中国北宋时期政治家、文学家、思想家、改革家。&quot;): 0.63981277
+similarity_trad(&quot;王安石是哪个朝代的&quot;, &quot;中国北宋时期政治家、文学家、思想家、改革家。&quot;): 0.49549717
+similarity_new(&quot;王安石是哪个朝代的&quot;, &quot;庆历二年（1042年），王安石中进士，历任扬州签判、鄞县知县、舒州通判等职，政绩显著。&quot;): 0.61709845
+similarity_trad(&quot;王安石是哪个朝代的&quot;, &quot;庆历二年（1042年），王安石中进士，历任扬州签判、鄞县知县、舒州通判等职，政绩显著。&quot;): 0.57014936
+similarity_new(&quot;王安石是哪个朝代的&quot;, &quot;宋仁宗末年，曾作《上仁宗皇帝言事书》，要求对宋初以来的法度进行全盘改革，但未被采纳。&quot;): 0.5486519
+similarity_trad(&quot;王安石是哪个朝代的&quot;, &quot;宋仁宗末年，曾作《上仁宗皇帝言事书》，要求对宋初以来的法度进行全盘改革，但未被采纳。&quot;): 0.36279958</code></pre>
+<p>根据上面的对比结果，我们输入的query为<code>王安石是哪个朝代的</code>，在朴素嵌入结果中，正确答案对应文本排在第三位，相似度分数为0.4955，而在Late
+Chunking的结果中，正确答案对应文本排在第二位，相似度分数为0.6398。</p>
+<p>由此可见，Late
+Chunking比朴素嵌入更能保留上下文信息，尤其是上下文之间存在指代关系的文本，Late
+Chunking的表现更为出色。</p>
+<h2 id="使用gradio实现中文late-chunking服务">使用Gradio实现中文Late
+Chunking服务</h2>
+<p>上面的例子仅仅是中文Late
+Chunking的一个简单例子，让我们来使用<code>Gradio</code>工具，实现中文Late
+Chunking服务，将query的召回结果按照文本相似度排序，获得更为直观的展示。</p>
+<p>搭建Gradio服务的Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> gradio <span class="hljs-keyword">as</span> gr<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoModel, AutoTokenizer<br><br><span class="hljs-comment"># load model and tokenizer</span><br>tokenizer = AutoTokenizer.from_pretrained(<span class="hljs-string">&#x27;jinaai/jina-embeddings-v2-base-zh&#x27;</span>, trust_remote_code=<span class="hljs-literal">True</span>)<br>model = AutoModel.from_pretrained(<span class="hljs-string">&#x27;jinaai/jina-embeddings-v2-base-zh&#x27;</span>, trust_remote_code=<span class="hljs-literal">True</span>)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">chunk_by_sentences</span>(<span class="hljs-params">input_text: <span class="hljs-built_in">str</span>, tokenizer: <span class="hljs-built_in">callable</span>, separator: <span class="hljs-built_in">str</span></span>):<br>    inputs = tokenizer(input_text, return_tensors=<span class="hljs-string">&#x27;pt&#x27;</span>, return_offsets_mapping=<span class="hljs-literal">True</span>)<br>    punctuation_mark_id = tokenizer.convert_tokens_to_ids(separator)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;separator: <span class="hljs-subst">&#123;separator&#125;</span>, punctuation_mark_id: <span class="hljs-subst">&#123;punctuation_mark_id&#125;</span>&quot;</span>)<br>    sep_id = tokenizer.eos_token_id<br>    token_offsets = inputs[<span class="hljs-string">&#x27;offset_mapping&#x27;</span>][<span class="hljs-number">0</span>]<br>    token_ids = inputs[<span class="hljs-string">&#x27;input_ids&#x27;</span>][<span class="hljs-number">0</span>]<br>    chunk_positions = [<br>        (i, <span class="hljs-built_in">int</span>(start + <span class="hljs-number">1</span>))<br>        <span class="hljs-keyword">for</span> i, (token_id, (start, end)) <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(<span class="hljs-built_in">zip</span>(token_ids, token_offsets))<br>        <span class="hljs-keyword">if</span> token_id == punctuation_mark_id<br>           <span class="hljs-keyword">and</span> (<br>                   token_offsets[i + <span class="hljs-number">1</span>][<span class="hljs-number">0</span>] - token_offsets[i][<span class="hljs-number">1</span>] &gt;= <span class="hljs-number">0</span><br>                   <span class="hljs-keyword">or</span> token_ids[i + <span class="hljs-number">1</span>] == sep_id<br>           )<br>    ]<br>    chunks = [<br>        input_text[x[<span class="hljs-number">1</span>]: y[<span class="hljs-number">1</span>]]<br>        <span class="hljs-keyword">for</span> x, y <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>([(<span class="hljs-number">1</span>, <span class="hljs-number">0</span>)] + chunk_positions[:-<span class="hljs-number">1</span>], chunk_positions)<br>    ]<br>    span_annotations = [<br>        (x[<span class="hljs-number">0</span>], y[<span class="hljs-number">0</span>]) <span class="hljs-keyword">for</span> (x, y) <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>([(<span class="hljs-number">1</span>, <span class="hljs-number">0</span>)] + chunk_positions[:-<span class="hljs-number">1</span>], chunk_positions)<br>    ]<br>    <span class="hljs-keyword">return</span> chunks, span_annotations<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">late_chunking</span>(<span class="hljs-params">model_output, span_annotation, max_length=<span class="hljs-literal">None</span></span>):<br>    token_embeddings = model_output[<span class="hljs-number">0</span>]<br>    outputs = []<br>    <span class="hljs-keyword">for</span> embeddings, annotations <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(token_embeddings, span_annotation):<br>        <span class="hljs-keyword">if</span> max_length <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>            annotations = [<br>                (start, <span class="hljs-built_in">min</span>(end, max_length - <span class="hljs-number">1</span>))<br>                <span class="hljs-keyword">for</span> (start, end) <span class="hljs-keyword">in</span> annotations<br>                <span class="hljs-keyword">if</span> start &lt; (max_length - <span class="hljs-number">1</span>)<br>            ]<br>        pooled_embeddings = [<br>            embeddings[start:end].<span class="hljs-built_in">sum</span>(dim=<span class="hljs-number">0</span>) / (end - start)<br>            <span class="hljs-keyword">for</span> start, end <span class="hljs-keyword">in</span> annotations<br>            <span class="hljs-keyword">if</span> (end - start) &gt;= <span class="hljs-number">1</span><br>        ]<br>        pooled_embeddings = [<br>            embedding.detach().cpu().numpy() <span class="hljs-keyword">for</span> embedding <span class="hljs-keyword">in</span> pooled_embeddings<br>        ]<br>        outputs.append(pooled_embeddings)<br><br>    <span class="hljs-keyword">return</span> outputs<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">embedding_retriever</span>(<span class="hljs-params">query_input, text_input, separator</span>):<br>    chunks, span_annotations = chunk_by_sentences(text_input, tokenizer, separator)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;chunks: &quot;</span>, chunks)<br>    inputs = tokenizer(text_input, return_tensors=<span class="hljs-string">&#x27;pt&#x27;</span>, max_length=<span class="hljs-number">4096</span>, truncation=<span class="hljs-literal">True</span>)<br>    model_output = model(**inputs)<br>    late_chunking_embeddings = late_chunking(model_output, [span_annotations])[<span class="hljs-number">0</span>]<br><br>    query_inputs = tokenizer(query_input, return_tensors=<span class="hljs-string">&#x27;pt&#x27;</span>)<br>    query_embedding = model(**query_inputs)[<span class="hljs-number">0</span>].detach().cpu().numpy().mean(axis=<span class="hljs-number">1</span>)<br><br>    traditional_chunking_embeddings = model.encode(chunks)<br><br>    cos_sim = <span class="hljs-keyword">lambda</span> x, y: np.dot(x, y) / (np.linalg.norm(x) * np.linalg.norm(y))<br><br>    naive_embedding_score_dict = &#123;&#125;<br>    late_chunking_embedding_score_dict = &#123;&#125;<br>    <span class="hljs-keyword">for</span> chunk, trad_embed, new_embed <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(chunks, traditional_chunking_embeddings, late_chunking_embeddings):<br>        <span class="hljs-comment"># 计算query和每个chunk的embedding的cosine similarity，相似度分数转化为float类型</span><br>        naive_embedding_score_dict[chunk] = <span class="hljs-built_in">round</span>(cos_sim(query_embedding, trad_embed).tolist()[<span class="hljs-number">0</span>], <span class="hljs-number">4</span>)<br>        late_chunking_embedding_score_dict[chunk] = <span class="hljs-built_in">round</span>(cos_sim(query_embedding, new_embed).tolist()[<span class="hljs-number">0</span>], <span class="hljs-number">4</span>)<br><br>    naive_embedding_order = <span class="hljs-built_in">sorted</span>(<br>        naive_embedding_score_dict.items(), key=<span class="hljs-keyword">lambda</span> x: x[<span class="hljs-number">1</span>], reverse=<span class="hljs-literal">True</span><br>    )<br>    late_chunking_order = <span class="hljs-built_in">sorted</span>(<br>        late_chunking_embedding_score_dict.items(), key=<span class="hljs-keyword">lambda</span> x: x[<span class="hljs-number">1</span>], reverse=<span class="hljs-literal">True</span><br>    )<br><br>    df_data = []<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(naive_embedding_order)):<br>        df_data.append([i+<span class="hljs-number">1</span>, naive_embedding_order[i][<span class="hljs-number">0</span>], naive_embedding_order[i][<span class="hljs-number">1</span>],<br>                        late_chunking_order[i][<span class="hljs-number">0</span>], late_chunking_order[i][<span class="hljs-number">1</span>]])<br>    <span class="hljs-keyword">return</span> df_data<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    <span class="hljs-keyword">with</span> gr.Blocks() <span class="hljs-keyword">as</span> demo:<br>        query = gr.TextArea(lines=<span class="hljs-number">1</span>, placeholder=<span class="hljs-string">&quot;your query&quot;</span>, label=<span class="hljs-string">&quot;Query&quot;</span>)<br>        text = gr.TextArea(lines=<span class="hljs-number">3</span>, placeholder=<span class="hljs-string">&quot;your text&quot;</span>, label=<span class="hljs-string">&quot;Text&quot;</span>)<br>        sep = gr.TextArea(lines=<span class="hljs-number">1</span>, placeholder=<span class="hljs-string">&quot;your separator&quot;</span>, label=<span class="hljs-string">&quot;Separator&quot;</span>)<br>        submit = gr.Button(<span class="hljs-string">&quot;Submit&quot;</span>)<br>        result = gr.DataFrame(headers=[<span class="hljs-string">&quot;order&quot;</span>, <span class="hljs-string">&quot;naive_embedding_text&quot;</span>, <span class="hljs-string">&quot;naive_embedding_score&quot;</span>,<br>                                       <span class="hljs-string">&quot;late_chunking_text&quot;</span>, <span class="hljs-string">&quot;late_chunking_score&quot;</span>],<br>                              label=<span class="hljs-string">&quot;Retrieve Result&quot;</span>,<br>                              wrap=<span class="hljs-literal">True</span>)<br><br>        submit.click(fn=embedding_retriever,<br>                     inputs=[query, text, sep],<br>                     outputs=[result])<br>    demo.launch()<br></code></pre></td></tr></table></figure>
+<p>下面笔者将借助这个Gradio服务，来展示几个Late
+Chunking与朴素嵌入的对比结果的例子。其中示例文本分别来自<code>王安石</code>和<code>清明上河图密码</code>百度词条。</p>
+<figure>
+<img src="https://s2.loli.net/2024/12/22/Xqd6uDej59yA8Op.png" srcset="/img/loading.gif" lazyload
+alt="late chunking例子1" />
+<figcaption aria-hidden="true">late chunking例子1</figcaption>
+</figure>
+<figure>
+<img src="https://s2.loli.net/2024/12/22/rMLwHmYtQlRnzoy.png" srcset="/img/loading.gif" lazyload
+alt="late chunking例子2" />
+<figcaption aria-hidden="true">late chunking例子2</figcaption>
+</figure>
+<figure>
+<img src="https://s2.loli.net/2024/12/22/5QLbkradNO4TWtR.png" srcset="/img/loading.gif" lazyload
+alt="late chunking例子3" />
+<figcaption aria-hidden="true">late chunking例子3</figcaption>
+</figure>
+<p>上面的几个例子中，Late
+Chunking的召回结果都比朴素嵌入的要好，这是因为这些文本块之间存在着明显的指代关系，而Late
+Chunking此时能很好地保留这些文本块之间的上下文信息。</p>
+<p>上述的Gradio服务，笔者后续将会放在HuggingFace
+Spaces中进行部署，有兴趣的读者到时可以试用。</p>
+<h2 id="late-chunking在rag框架中的作用">Late
+Chunking在RAG框架中的作用</h2>
+<p>下面笔者将会来介绍Late Chunking在RAG框架中的作用，看看Late
+Chunking是如何在RAG过程中提升召回效果，保证回复质量的。</p>
+<p>我们的示例文本是关于蔚来ET9的，其文章标题为<code>蔚来ET9正式上市 售78.8万元起</code>，网址为
+<a target="_blank" rel="noopener" href="https://news.qq.com/rain/a/20241221A07RW900"
+class="uri">https://news.qq.com/rain/a/20241221A07RW900</a> 。</p>
+<p>我们对上面的Late
+Chunking中的切分方式做个小小的改动，之前是按照分隔符进行句子级别的切分，这里我们保留原文中的段落切分的方式。对于Embedding的召回结果，我们取top
+4合并成参考文本，并使用大模型进行问题回复。</p>
+<p>笔者实现了对比Late
+Chunking与朴素嵌入在RAG过程的回复结果的Python代码，如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @place: Pudong, Shanghai</span><br><span class="hljs-comment"># @file: late_chunking_exp.py</span><br><span class="hljs-comment"># @time: 2024/12/22 22:48</span><br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoModel<br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoTokenizer<br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><span class="hljs-keyword">from</span> openai <span class="hljs-keyword">import</span> OpenAI<br><br>load_dotenv()<br><span class="hljs-comment"># load model and tokenizer</span><br>tokenizer = AutoTokenizer.from_pretrained(<span class="hljs-string">&#x27;jinaai/jina-embeddings-v2-base-zh&#x27;</span>, trust_remote_code=<span class="hljs-literal">True</span>)<br>model = AutoModel.from_pretrained(<span class="hljs-string">&#x27;jinaai/jina-embeddings-v2-base-zh&#x27;</span>, trust_remote_code=<span class="hljs-literal">True</span>)<br><br>chunks = [<br>    <span class="hljs-string">&quot;蔚来ET9正式上市 售78.8万元起&quot;</span>,<br>    <span class="hljs-string">&quot;易车讯 12月21日，蔚来ET9正式上市，售价区间78.8-81.8万元。蔚来ET9定位蔚来品牌科技行政旗舰轿车，新车搭载众多顶尖的黑科技，是中国首款搭载线控转向技术的量产车型，并搭载先进数字架构。&quot;</span>,<br>    <span class="hljs-string">&quot;蔚来ET9保留了蔚来家族式设计，标志性的一体式X-Bar和Double Dash日间行车灯，让新车看起来富有力量感。“Design for AD”的设计理念得以延续，前瞭望塔式传感器布局，将3颗激光雷达、摄像头等感应硬件巧妙融入外观造型设计中。&quot;</span>,<br>    <span class="hljs-string">&quot;车头大灯组采用了行业首发MicroLED智能高像素大灯，结合Aqulia2.0超感系统可以实现“广、亮、准、远”的精细化照明。新车整体造型非常流畅，车顶流线从车头一直延伸到车尾，像一张巨大的弓箭，在保持了经典轿车造型商务感的同时，又带来强大的气场和未来气息。&quot;</span>,<br>    <span class="hljs-string">&quot;超感系统天鹰座Aquila 2.0新增双侧广角激光雷达，通过两侧金属翼子板集成，即提升了安全性，又提升了辅助驾驶能力。超远距激光雷达，搭载蔚来自研杨戬主控芯片，成像效果更佳清晰。新车首次搭载4D毫米波成像雷达，大大增加前向感知能力。&quot;</span>,<br>    <span class="hljs-string">&quot;车身尺寸方面，蔚来ET9长宽高分别为5325*2017*1621mm，轴距达到了3250mm。此外，新车还配备了23寸的铝合金锻造轮毂，且搭配同级最大的790mm轮胎直径，极具视觉冲击力。来到车尾，新车延续了家族式设计，贯穿式的尾灯组极具辨识度。值得一提的是，新车搭配了同级唯一的鹅颈式全主动尾翼，运动感十足。蔚来ET9首发感应式电动前备箱，支持脚踢感应和车外语音开启，前备箱容积达到105L。&quot;</span>,<br>    <span class="hljs-string">&quot;内饰方面，蔚来ET9首次采用了矩形方向盘，同时，新车还首发搭载蓝宝石全焦段 AR HUD，能够实现远焦面15米处等效120寸AR-HUD效果。&quot;</span>,<br>    <span class="hljs-string">&quot;作为行政旗舰轿车，蔚来ET9采用四座布局，创造性的采用了“天空岛”和“行政桥”的设计，配合拱式车身设计，后排的乘坐体验堪比商务舱。在&#x27;行政桥&#x27;内部，蔚来为二排乘客精心设计了飞机头等舱座椅，拥有582mm超宽坐垫，拥有前排22向，后排20向电动调节。此外，二排座椅还拥有135°超大躺角，可一键尊享11项功能联动。后排还配备了一张360°无级调节的行政桌案，能在任意角度随心调节。“行政桥”下方集成智能冰箱，最大容积达到10L，温度调节范围在-2°C到55°C，此外还首发了常温模式，总计拥有6种预设模式。&quot;</span>,<br>    <span class="hljs-string">&quot;此外，全车配备七扇电动遮阳帘，支持一键开启。专为后排商务场景开发的全景互联行政屏，应用14.5英寸OLED高清显示屏，屏幕角度可随座椅位置调节，任意姿态下都能拥有舒适的视角。&quot;</span>,<br>    <span class="hljs-string">&quot;蔚来ET9还首发九霄天琴蔚来8.2.4.8旗舰沉浸声系统。配备了35个扬声器，采用8.2.4.8声学布局，功率可达2800W。在ET9后排的行政桥内，还设置了中置环绕单元，配备了2个高音扬声器+1个中音扬声器。&quot;</span>,<br>    <span class="hljs-string">&quot;蔚来ET9还首发搭载cedar 雪松全新智能系统，包含全新一代感知硬件、全新一代中央计算器、SkyOS 天枢整车操作系统等。ET9搭载了蔚来首款5nm车规级智能驾驶芯片——神玑NX9031，与全球首个以车为中心的智能电动汽车整车全域操作系统SkyOS·天枢相结合，实现算力与自身算法的紧密结合，智驾、座舱跨域计算资源的共享，带来极致安全和极致效率。&quot;</span>,<br>    <span class="hljs-string">&quot;蔚来ET9搭载先进数字架构，定义了一层解耦的计算与通信框架，能够支持智能硬件、操作系统、算法和应用等各层次独立迭代。具体来看，蔚来ET9的先进数字架构由大脑——中央计算平台、小脑与脊髓——高效区域控制器、神经网络——高速冗余的通信网络、血液循环——双冗余低压电源、感知器官——超感系统、灵魂和思想——整车全域操作系统六大部分组成，具备强大的算力、超高带宽与极低时延、极致可靠、精准到点的能源管理等特点。在先进数字架构的支撑下，蔚来ET9实现了多项全球首发与同级领先的技术。&quot;</span>,<br>    <span class="hljs-string">&quot;SkyOS是蔚来整车底层操作系统，包含了整车系统、智驾系统、智能座舱系统、联通服务补能和移动互联，解决整车各个系统不同域之间的安全性、实时性和应用的复杂性问题，以及将软件定义汽车有效落实到造车的各个环节，建立全方位的、立体的技术体系，使得各种设备能够有机地融合在一起，实现高效的协同工作。&quot;</span>,<br>    <span class="hljs-string">&quot;蔚来ET9搭载国内首个“全域900V高压架构”，包含电池、电机、线束、空调、DC-DC、车载充电机等核心电子电器元件，拥有最高电压925V、充电峰值功率600kW、充电峰值电流765A的三项全球第一。&quot;</span>,<br>    <span class="hljs-string">&quot;具体来看，蔚来ET9搭载了前180千瓦感应异步电机，后340千瓦永磁同步电机，综合功率520千瓦，综合扭矩达700牛·米，百公里加速4.3秒。电池方面，蔚来ET9搭载自研46105大圆柱电芯。补能方面，新车的闪电充峰值功率高达600kW，充电峰值电流765A，900V支持充电5分钟补能255公里。&quot;</span>,<br>    <span class="hljs-string">&quot;蔚来ET9搭载“SkyRide·天行智能底盘系统”，首次将线控转向、后轮转向和全主动悬架三大核心硬件系统集成在一起，是目前全球唯一的全线控智能底盘。全球首创智能化、高集成度的主动悬架系统，每个减振器高度集成独立电动液压泵，无刷直流电机响应迅速，可以在1毫秒内完成信息处理、计算和响应。同时，悬架支持大幅度高度调节，每秒可进行1000次扭矩调整，且四轮独立控制，满足多场景驾驶需求。&quot;</span>,<br>    <span class="hljs-string">&quot;蔚来ET9首次应用的航空工业级“线控转向”技术，方向盘与转向电机之间采用电讯号传输，不仅结构重量轻，传递效率也能提升40%，并支持OTA迭代升级。在低速泊车、掉头等场景中，“线控转向”技术提供灵敏便捷的转向，无需交叉手打方向盘，配合标配最大后轮转角8.3°的后轮转向系统，实现最小10.9米的转弯直径。&quot;</span>,<br>    <span class="hljs-string">&quot;天行全主动悬架的每个减振器高度集成独立电动液压泵，无刷直流电机响应迅速，可以在1毫秒内完成信息处理、计算和响应。同时，悬架支持大幅度高度调节，每秒可进行1000次扭矩调整，且四轮独立控制，满足多场景驾驶需求。&quot;</span>,<br>    <span class="hljs-string">&quot;车身强度方面，新车采用高强度钢铝镁合金车身与空间力学设计，扭转刚度达52600Nm/Deg。车身强度达2000MPa，全面提升乘员舱保护。侧气帘长2.3m，高0.67m，可100%覆盖前后排乘客保护区域。同时，新车搭载了行业首创“V腔”设计的二排专属侧气囊。&quot;</span><br>]<br><br>input_text = <span class="hljs-string">&#x27;&#x27;</span>.join(chunks)<br><br>chunk_inputs = tokenizer(chunks[<span class="hljs-number">0</span>], return_tensors=<span class="hljs-string">&#x27;pt&#x27;</span>)<br>first_length = chunk_inputs[<span class="hljs-string">&#x27;input_ids&#x27;</span>].shape[<span class="hljs-number">1</span>]<br>span_annotations = [(<span class="hljs-number">1</span>, first_length)]<br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, <span class="hljs-built_in">len</span>(chunks)):<br>    chunk_inputs = tokenizer(chunks[i], return_tensors=<span class="hljs-string">&#x27;pt&#x27;</span>)<br>    length = chunk_inputs[<span class="hljs-string">&#x27;input_ids&#x27;</span>].shape[<span class="hljs-number">1</span>]<br>    start = span_annotations[i-<span class="hljs-number">1</span>][<span class="hljs-number">1</span>]<br>    end = start + length<br>    span_annotations.append((start, end))<br><br><span class="hljs-built_in">print</span>(span_annotations)<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">late_chunking</span>(<span class="hljs-params"></span><br><span class="hljs-params">    model_output: <span class="hljs-string">&#x27;BatchEncoding&#x27;</span>, span_annotation: <span class="hljs-built_in">list</span>, max_length=<span class="hljs-literal">None</span></span><br><span class="hljs-params"></span>):<br>    token_embeddings = model_output[<span class="hljs-number">0</span>]<br>    outputs = []<br>    <span class="hljs-keyword">for</span> embeddings, annotations <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(token_embeddings, span_annotation):<br>        <span class="hljs-keyword">if</span> (<br>            max_length <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span><br>        ):  <span class="hljs-comment"># remove annotations which go bejond the max-length of the model</span><br>            annotations = [<br>                (start, <span class="hljs-built_in">min</span>(end, max_length - <span class="hljs-number">1</span>))<br>                <span class="hljs-keyword">for</span> (start, end) <span class="hljs-keyword">in</span> annotations<br>                <span class="hljs-keyword">if</span> start &lt; (max_length - <span class="hljs-number">1</span>)<br>            ]<br>        pooled_embeddings = [<br>            embeddings[start:end].<span class="hljs-built_in">sum</span>(dim=<span class="hljs-number">0</span>) / (end - start)<br>            <span class="hljs-keyword">for</span> start, end <span class="hljs-keyword">in</span> annotations<br>            <span class="hljs-keyword">if</span> (end - start) &gt;= <span class="hljs-number">1</span><br>        ]<br>        pooled_embeddings = [<br>            embedding.detach().cpu().numpy() <span class="hljs-keyword">for</span> embedding <span class="hljs-keyword">in</span> pooled_embeddings<br>        ]<br>        outputs.append(pooled_embeddings)<br><br>    <span class="hljs-keyword">return</span> outputs<br><br><span class="hljs-comment"># chunk before</span><br>embeddings_traditional_chunking = model.encode(chunks)<br><br><span class="hljs-comment"># chunk after wards (context-sensitive chunked pooling)</span><br>inputs = tokenizer(input_text, return_tensors=<span class="hljs-string">&#x27;pt&#x27;</span>, max_length=<span class="hljs-number">4096</span>, truncation=<span class="hljs-literal">True</span>)<br>model_output = model(**inputs)<br>embeddings = late_chunking(model_output, [span_annotations])[<span class="hljs-number">0</span>]<br><br>cos_sim = <span class="hljs-keyword">lambda</span> x, y: np.dot(x, y) / (np.linalg.norm(x) * np.linalg.norm(y))<br><br>query = <span class="hljs-string">&quot;蔚来ET9的车身强度是多少？&quot;</span><br>query_embedding = model.encode(query)<br><br>naive_embedding_score_dict = &#123;&#125;<br>late_chunking_embedding_score_dict = &#123;&#125;<br><span class="hljs-keyword">for</span> chunk, trad_embed, new_embed <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(chunks, embeddings_traditional_chunking, embeddings):<br>    <span class="hljs-comment"># 计算query和每个chunk的embedding的cosine similarity，相似度分数转化为float类型</span><br>    naive_embedding_score_dict[chunk] = cos_sim(query_embedding, trad_embed)<br>    late_chunking_embedding_score_dict[chunk] = cos_sim(query_embedding, new_embed)<br><br>naive_embedding_order = <span class="hljs-built_in">sorted</span>(<br>    naive_embedding_score_dict.items(), key=<span class="hljs-keyword">lambda</span> x: x[<span class="hljs-number">1</span>], reverse=<span class="hljs-literal">True</span><br>)<br>late_chunking_order = <span class="hljs-built_in">sorted</span>(<br>    late_chunking_embedding_score_dict.items(), key=<span class="hljs-keyword">lambda</span> x: x[<span class="hljs-number">1</span>], reverse=<span class="hljs-literal">True</span><br>)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_answer</span>(<span class="hljs-params">query, retrieve_result</span>):<br>    top_k = <span class="hljs-number">4</span><br>    text = <span class="hljs-string">&#x27;&#x27;</span>.join([_[<span class="hljs-number">0</span>] <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> retrieve_result[:top_k]])<br>    prompt = <span class="hljs-string">f&quot;给定下面的文本，请问答用户的问题。\n\n<span class="hljs-subst">&#123;text&#125;</span>\n\n问题：<span class="hljs-subst">&#123;query&#125;</span>&quot;</span><br><br>    client = OpenAI(<br>        api_key=os.environ.get(<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>),  <span class="hljs-comment"># This is the default and can be omitted</span><br>    )<br><br>    chat_completion = client.chat.completions.create(<br>        messages=[<br>            &#123;<br>                <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>,<br>                <span class="hljs-string">&quot;content&quot;</span>: prompt,<br>            &#125;<br>        ],<br>        model=<span class="hljs-string">&quot;gpt-4o-mini&quot;</span>,<br>    )<br>    <span class="hljs-keyword">return</span> chat_completion.choices[<span class="hljs-number">0</span>].message.content<br><br><br>naive_embedding_answer = get_answer(query=query, retrieve_result=naive_embedding_order)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;query: <span class="hljs-subst">&#123;query&#125;</span>, 朴素嵌入时RAG过程中LLM的回复：<span class="hljs-subst">&#123;naive_embedding_answer&#125;</span>&quot;</span>)<br>late_chunking_answer = get_answer(query=query, retrieve_result=late_chunking_order)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;query: <span class="hljs-subst">&#123;query&#125;</span>, 迟分嵌入时RAG过程中LLM的回复：<span class="hljs-subst">&#123;late_chunking_answer&#125;</span>&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>根据示例文本，笔者测试了三个简单的问题，对比结果如下：</p>
+<table>
+
+<thead>
+<tr class="header">
+<th>序号</th>
+<th>问题</th>
+<th>朴素嵌入时LLM回复</th>
+<th>Late Chunking时LLM回复</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>蔚来ET9的车身强度是多少？</td>
+<td>文本中并没有提供关于蔚来ET9车身强度的具体信息，所以无法回答这个问题。</td>
+<td>蔚来ET9的车身强度达到2000MPa。</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>蔚来ET9有多少个电动遮阳帘？</td>
+<td>文本中并未提到蔚来ET9的电动遮阳帘数量。因此，无法回答这个问题。</td>
+<td>蔚来ET9配备了七扇电动遮阳帘。</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>蔚来ET9中的冰箱的最大容积是多少？</td>
+<td>文本中并没有提到蔚来ET9中包含冰箱或相关信息。因此，无法提供关于冰箱最大容积的数据。提到的是前备箱的容积为105L。
+如果您有其他问题，请告知！</td>
+<td>蔚来ET9中的冰箱的最大容积达到10升。</td>
+</tr>
+</tbody>
+</table>
+<p>当然，这只是演示了几个Late
+Chunking的召回效果比朴素嵌入效果好的例子，并不是说Late
+Chunking的召回效果就一定会比朴素嵌入效果好。</p>
+<p>那么，沃我们在实际场景中该如何选择分块策略呢？</p>
+<ul>
+<li>对于朴素分块，适合场景为：主题多样，需要检索特定信息；需要展示局部文本片段。</li>
+<li>对于Late
+Chunking，适合场景为：主题连贯，需要上下文信息；需要平衡局部细节和全局语义。</li>
+</ul>
+<p>读者可以仔细观察上面关于蔚来ET9的文章，测试的三个例子都来自这样的段落：段落中未提及蔚来ET9，而是用指代，但人类不难用上下文得到这些信息。说到来，这是一篇蔚来ET9的文章，主体连贯，因此很适合用Late
+Chunking，其保留上下文的能力在这种场景下会比朴素分块好。</p>
+<h2 id="总结">总结</h2>
+<p>本文主要介绍了Embedding模型中的Late
+Chunking（迟分）策略，演示多个中文Late
+Chunking的例子，并搭建相关Gradio服务，最后再展示其在RAG框架中对于大模型回复质量的提升作用。</p>
+<p>上面给出的Python代码均已开源至Github，网址为: <a
+target="_blank" rel="noopener" href="https://github.com/percent4/embedding_rerank_retrieval"
+class="uri">https://github.com/percent4/embedding_rerank_retrieval</a>
+。</p>
+<h2 id="参考文献">参考文献</h2>
+<ol type="1">
+<li>Jina AI官网: <a target="_blank" rel="noopener" href="https://jina.ai/"
+class="uri">https://jina.ai/</a></li>
+<li>在 Notebook的例子: <a
+target="_blank" rel="noopener" href="https://colab.research.google.com/drive/15vNZb6AsU7byjYoaEtXuNu567JWNzXOz?usp=sharing#scrollTo=abe3d93b9e6609b9"
+class="uri">https://colab.research.google.com/drive/15vNZb6AsU7byjYoaEtXuNu567JWNzXOz?usp=sharing#scrollTo=abe3d93b9e6609b9</a></li>
+<li>Jina AI官网关于Late Chunking的介绍: <a
+target="_blank" rel="noopener" href="https://jina.ai/news/late-chunking-in-long-context-embedding-models/"
+class="uri">https://jina.ai/news/late-chunking-in-long-context-embedding-models/</a></li>
+<li>Late Chunking论文: <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2409.04701"
+class="uri">https://arxiv.org/pdf/2409.04701</a></li>
+<li>卷起来了！长文本向量模型分块策略大比拼: <a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/tWToc7Lu18nb6TwuZ_bz1g"
+class="uri">https://mp.weixin.qq.com/s/tWToc7Lu18nb6TwuZ_bz1g</a></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Late-Chunking/" class="print-no-link">#Late Chunking</a>
+      
+        <a href="/tags/Embedding/" class="print-no-link">#Embedding</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（一百零九）Embedding中的Late-Chunking（迟分）策略</div>
+      <div>https://percent4.github.io/NLP（一百零九）Embedding中的Late-Chunking（迟分）策略/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年1月8日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E4%B8%80%E5%8D%81%EF%BC%89%E5%88%9B%E5%BB%BAHuggingFace-Spaces%E5%BA%94%E7%94%A8/" title="NLP（一百一十）创建HuggingFace Spaces应用">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NLP（一百一十）创建HuggingFace Spaces应用</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90ElasticSearch%E5%90%8C%E4%B9%89%E8%AF%8D%E7%AE%A1%E7%90%86%EF%BC%9A%E6%89%93%E9%80%A0%E6%9B%B4%E6%99%BA%E8%83%BD%E7%9A%84%E6%90%9C%E7%B4%A2%E4%BD%93%E9%AA%8C/" title="深度解析ElasticSearch同义词管理：打造更智能的搜索体验">
+                        <span class="hidden-mobile">深度解析ElasticSearch同义词管理：打造更智能的搜索体验</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
