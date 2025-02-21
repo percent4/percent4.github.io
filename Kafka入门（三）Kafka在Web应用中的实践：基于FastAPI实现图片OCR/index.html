@@ -1,0 +1,907 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍Kafka 在 Web 应用中的实践，也就是Kafka作为消息队列，FastAPI作为Web框架来实现图片上传、OCR识别及结果查看。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kafka入门（三）Kafka在Web应用中的实践：基于FastAPI实现图片OCR">
+<meta property="og:url" content="https://percent4.github.io/Kafka%E5%85%A5%E9%97%A8%EF%BC%88%E4%B8%89%EF%BC%89Kafka%E5%9C%A8Web%E5%BA%94%E7%94%A8%E4%B8%AD%E7%9A%84%E5%AE%9E%E8%B7%B5%EF%BC%9A%E5%9F%BA%E4%BA%8EFastAPI%E5%AE%9E%E7%8E%B0%E5%9B%BE%E7%89%87OCR/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍Kafka 在 Web 应用中的实践，也就是Kafka作为消息队列，FastAPI作为Web框架来实现图片上传、OCR识别及结果查看。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2025/02/07/PD3Cd9ubp4zqrW7.png">
+<meta property="og:image" content="https://s2.loli.net/2025/02/07/zmJNMbFklcDEOCg.png">
+<meta property="og:image" content="https://s2.loli.net/2025/02/08/KFAgUVn8LlGDcob.png">
+<meta property="og:image" content="https://s2.loli.net/2025/02/08/zC6SqV9X73NtsQB.png">
+<meta property="og:image" content="https://s2.loli.net/2025/02/08/Kwrsiu6cEtUL2vN.png">
+<meta property="og:image" content="https://s2.loli.net/2025/02/08/MI7JWE9ir5gL4ve.png">
+<meta property="og:image" content="https://s2.loli.net/2025/02/08/rQEMuUTfsYo1bSW.png">
+<meta property="og:image" content="https://s2.loli.net/2025/02/08/93mTvKc4rx1jUhB.png">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg">
+<meta property="article:published_time" content="2025-02-21T12:42:47.000Z">
+<meta property="article:modified_time" content="2025-02-21T12:43:44.580Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="FastAPI">
+<meta property="article:tag" content="OCR">
+<meta property="article:tag" content="Kafka">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2025/02/07/PD3Cd9ubp4zqrW7.png">
+  
+  
+  
+  <title>Kafka入门（三）Kafka在Web应用中的实践：基于FastAPI实现图片OCR - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Kafka入门（三）Kafka在Web应用中的实践：基于FastAPI实现图片OCR"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-02-21 20:42" pubdate>
+          星期五, 二月 21日 2025, 8:42 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          13k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          108 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Kafka入门（三）Kafka在Web应用中的实践：基于FastAPI实现图片OCR</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍Kafka 在 Web
+应用中的实践，也就是Kafka作为消息队列，FastAPI作为Web框架来实现图片上传、OCR识别及结果查看。</p>
+</blockquote>
+<p>在文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/TYbXYY9zfthQp72IK1V31Q?token=2031559562&amp;lang=zh_CN">Kafka入门（一）Kafak介绍、安装与简单使用</a>中，笔者介绍了Kafka的基础概念、使用场景、安装以及如何简单实用。</p>
+<p>在本文中，笔者将会把FastAPI与Kafka结合使用，Kafka作为消息队列，FastAPI作为Web框架来实现图片上传、OCR识别及结果查看。主要功能如下：</p>
+<ol type="1">
+<li>上传图片到FastAPI，FastAPI将图片发送到Kafka，同时将图片信息写入数据库，状态为未完成</li>
+<li>Kafka消费者消费图片，调用模拟的OCR识别结果，将结果更新至数据库，状态为已完成</li>
+<li>FastAPI查询数据库，返回识别结果</li>
+</ol>
+<p>流程图如下：</p>
+<figure>
+<img src="https://s2.loli.net/2025/02/07/PD3Cd9ubp4zqrW7.png" srcset="/img/loading.gif" lazyload
+alt="主流程示意图" />
+<figcaption aria-hidden="true">主流程示意图</figcaption>
+</figure>
+<h2 id="项目代码">项目代码</h2>
+<h3 id="前端部分">前端部分</h3>
+<p>项目的前端部分采用前端页面采用BootStrap实现，位于<code>static</code>目录，主要功能如下：</p>
+<ul>
+<li>批量上传图片页面: upload.html</li>
+<li>查询图片识别结果页面: results.html</li>
+</ul>
+<p>前端代码使用使用OpenAI GPT-4o模型生成，代码略作修改，功能完整。</p>
+<p>其中批量上传图片页面<code>upload.html</code>的HTML代码如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">&quot;zh&quot;</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">&quot;UTF-8&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;viewport&quot;</span> <span class="hljs-attr">content</span>=<span class="hljs-string">&quot;width=device-width, initial-scale=1&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>批量上传图片<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span><br><br>    <span class="hljs-comment">&lt;!-- 引入 Bootstrap 样式 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">link</span> <span class="hljs-attr">href</span>=<span class="hljs-string">&quot;https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css&quot;</span> <span class="hljs-attr">rel</span>=<span class="hljs-string">&quot;stylesheet&quot;</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">body</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;container mt-4&quot;</span>&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-name">h2</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;text-center mb-4&quot;</span>&gt;</span>批量上传图片（OCR 识别）<span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span><br><br>    <span class="hljs-comment">&lt;!-- 文件上传区域 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;mb-3&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;file&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-control&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;fileInput&quot;</span> <span class="hljs-attr">multiple</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><br>    <span class="hljs-comment">&lt;!-- 按钮区域 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;d-flex gap-2&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;btn btn-primary flex-fill&quot;</span> <span class="hljs-attr">onclick</span>=<span class="hljs-string">&quot;uploadImages()&quot;</span>&gt;</span>📤 上传图片<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;btn btn-outline-danger flex-fill&quot;</span> <span class="hljs-attr">onclick</span>=<span class="hljs-string">&quot;clearFiles()&quot;</span>&gt;</span>🗑 清空图片<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><br>    <span class="hljs-comment">&lt;!-- 进度条 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;progressContainer&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;d-none mt-3&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;progress&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;progressBar&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;progress-bar progress-bar-striped progress-bar-animated&quot;</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&quot;width: 0%&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">p</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;progressText&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;text-center mt-2&quot;</span>&gt;</span>等待上传...<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><br>    <span class="hljs-comment">&lt;!-- 这里不直接写 href，使用 JavaScript 控制 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;btn btn-success w-100 mt-3&quot;</span> <span class="hljs-attr">onclick</span>=<span class="hljs-string">&quot;redirectToResults()&quot;</span>&gt;</span>🔍 查看 OCR 识别结果<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript">        <span class="hljs-comment">/** 📤 上传图片并调用后端 API */</span></span><br><span class="language-javascript">        <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">uploadImages</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">            <span class="hljs-keyword">let</span> files = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&quot;fileInput&quot;</span>).<span class="hljs-property">files</span>;</span><br><span class="language-javascript">            <span class="hljs-keyword">if</span> (files.<span class="hljs-property">length</span> === <span class="hljs-number">0</span>) &#123;</span><br><span class="language-javascript">                <span class="hljs-title function_">alert</span>(<span class="hljs-string">&quot;❌ 请选择至少一张图片！&quot;</span>);</span><br><span class="language-javascript">                <span class="hljs-keyword">return</span>;</span><br><span class="language-javascript">            &#125;</span><br><span class="language-javascript"></span><br><span class="language-javascript">            <span class="hljs-keyword">let</span> progressContainer = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&quot;progressContainer&quot;</span>);</span><br><span class="language-javascript">            <span class="hljs-keyword">let</span> progressBar = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&quot;progressBar&quot;</span>);</span><br><span class="language-javascript">            <span class="hljs-keyword">let</span> progressText = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&quot;progressText&quot;</span>);</span><br><span class="language-javascript"></span><br><span class="language-javascript">            progressContainer.<span class="hljs-property">classList</span>.<span class="hljs-title function_">remove</span>(<span class="hljs-string">&quot;d-none&quot;</span>);</span><br><span class="language-javascript">            progressBar.<span class="hljs-property">style</span>.<span class="hljs-property">width</span> = <span class="hljs-string">&quot;0%&quot;</span>;</span><br><span class="language-javascript">            progressText.<span class="hljs-property">innerText</span> = <span class="hljs-string">`正在上传 0 / <span class="hljs-subst">$&#123;files.length&#125;</span>`</span>;</span><br><span class="language-javascript"></span><br><span class="language-javascript">            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; files.<span class="hljs-property">length</span>; i++) &#123;</span><br><span class="language-javascript">                <span class="hljs-keyword">let</span> formData = <span class="hljs-keyword">new</span> <span class="hljs-title class_">FormData</span>();</span><br><span class="language-javascript">                formData.<span class="hljs-title function_">append</span>(<span class="hljs-string">&quot;file&quot;</span>, files[i]);</span><br><span class="language-javascript"></span><br><span class="language-javascript">                <span class="hljs-keyword">let</span> response = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(<span class="hljs-string">&quot;http://127.0.0.1:8000/upload/&quot;</span>, &#123;</span><br><span class="language-javascript">                    <span class="hljs-attr">method</span>: <span class="hljs-string">&quot;POST&quot;</span>,</span><br><span class="language-javascript">                    <span class="hljs-attr">body</span>: formData</span><br><span class="language-javascript">                &#125;);</span><br><span class="language-javascript"></span><br><span class="language-javascript">                <span class="hljs-keyword">let</span> result = <span class="hljs-keyword">await</span> response.<span class="hljs-title function_">json</span>();</span><br><span class="language-javascript">                <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`上传成功: <span class="hljs-subst">$&#123;result.filename&#125;</span>`</span>);</span><br><span class="language-javascript"></span><br><span class="language-javascript">                <span class="hljs-comment">// 更新进度条</span></span><br><span class="language-javascript">                <span class="hljs-keyword">let</span> percentComplete = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">round</span>(((i + <span class="hljs-number">1</span>) / files.<span class="hljs-property">length</span>) * <span class="hljs-number">100</span>);</span><br><span class="language-javascript">                progressBar.<span class="hljs-property">style</span>.<span class="hljs-property">width</span> = percentComplete + <span class="hljs-string">&quot;%&quot;</span>;</span><br><span class="language-javascript">                progressText.<span class="hljs-property">innerText</span> = <span class="hljs-string">`正在上传 <span class="hljs-subst">$&#123;i + <span class="hljs-number">1</span>&#125;</span> / <span class="hljs-subst">$&#123;files.length&#125;</span>`</span>;</span><br><span class="language-javascript">            &#125;</span><br><span class="language-javascript"></span><br><span class="language-javascript">            <span class="hljs-title function_">alert</span>(<span class="hljs-string">&quot;✅ 所有图片上传完成！&quot;</span>);</span><br><span class="language-javascript">            progressText.<span class="hljs-property">innerText</span> = <span class="hljs-string">&quot;上传完成！&quot;</span>;</span><br><span class="language-javascript">        &#125;</span><br><span class="language-javascript"></span><br><span class="language-javascript">        <span class="hljs-comment">/** 🗑 清空已选择的文件 */</span></span><br><span class="language-javascript">        <span class="hljs-keyword">function</span> <span class="hljs-title function_">clearFiles</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">            <span class="hljs-keyword">let</span> fileInput = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&quot;fileInput&quot;</span>);</span><br><span class="language-javascript">            fileInput.<span class="hljs-property">value</span> = <span class="hljs-string">&quot;&quot;</span>;  <span class="hljs-comment">// 清空文件输入框</span></span><br><span class="language-javascript">            <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&quot;progressContainer&quot;</span>).<span class="hljs-property">classList</span>.<span class="hljs-title function_">add</span>(<span class="hljs-string">&quot;d-none&quot;</span>);  <span class="hljs-comment">// 隐藏进度条</span></span><br><span class="language-javascript">        &#125;</span><br><span class="language-javascript"></span><br><span class="language-javascript">        <span class="hljs-comment">/** 🔄 确保跳转到 /static/results.html，避免路径问题 */</span></span><br><span class="language-javascript">        <span class="hljs-keyword">function</span> <span class="hljs-title function_">redirectToResults</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">            <span class="hljs-variable language_">window</span>.<span class="hljs-property">location</span>.<span class="hljs-property">href</span> = <span class="hljs-string">&quot;/static/results.html&quot;</span>;  <span class="hljs-comment">// 使用**绝对路径**方式跳转</span></span><br><span class="language-javascript">        &#125;</span><br><span class="language-javascript">    </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br><br><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<p>查询图片识别结果页面<code>results.html</code>的HTML代码如下:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">&quot;zh&quot;</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">&quot;UTF-8&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;viewport&quot;</span> <span class="hljs-attr">content</span>=<span class="hljs-string">&quot;width=device-width, initial-scale=1&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>OCR 结果查看<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">link</span> <span class="hljs-attr">href</span>=<span class="hljs-string">&quot;https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css&quot;</span> <span class="hljs-attr">rel</span>=<span class="hljs-string">&quot;stylesheet&quot;</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">body</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;container mt-4&quot;</span>&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-name">h2</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;text-center&quot;</span>&gt;</span>OCR 识别结果<span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;input-group mb-3&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;searchInput&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-control&quot;</span> <span class="hljs-attr">placeholder</span>=<span class="hljs-string">&quot;按文件名搜索&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;btn btn-outline-primary&quot;</span> <span class="hljs-attr">onclick</span>=<span class="hljs-string">&quot;fetchResults()&quot;</span>&gt;</span>查询<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-check mb-3&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;checkbox&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-check-input&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;sortByTime&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">label</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-check-label&quot;</span> <span class="hljs-attr">for</span>=<span class="hljs-string">&quot;sortByTime&quot;</span>&gt;</span> 按时间排序<span class="hljs-tag">&lt;/<span class="hljs-name">label</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-name">table</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;table table-striped table-bordered&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">thead</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;table-dark&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">tr</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">th</span>&gt;</span>UUID<span class="hljs-tag">&lt;/<span class="hljs-name">th</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">th</span>&gt;</span>文件名<span class="hljs-tag">&lt;/<span class="hljs-name">th</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">th</span>&gt;</span>图片<span class="hljs-tag">&lt;/<span class="hljs-name">th</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">th</span>&gt;</span>OCR 结果<span class="hljs-tag">&lt;/<span class="hljs-name">th</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">th</span>&gt;</span>开始时间<span class="hljs-tag">&lt;/<span class="hljs-name">th</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">th</span>&gt;</span>状态<span class="hljs-tag">&lt;/<span class="hljs-name">th</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">th</span>&gt;</span>消耗时间<span class="hljs-tag">&lt;/<span class="hljs-name">th</span>&gt;</span><br>            <span class="hljs-tag">&lt;/<span class="hljs-name">tr</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">thead</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">tbody</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;resultsTableBody&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">tbody</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">table</span>&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href</span>=<span class="hljs-string">&quot;upload.html&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;btn btn-primary w-100 mt-3&quot;</span>&gt;</span>返回上传页面<span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript">        <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">fetchResults</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">            <span class="hljs-keyword">let</span> searchText = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&quot;searchInput&quot;</span>).<span class="hljs-property">value</span>;</span><br><span class="language-javascript">            <span class="hljs-keyword">let</span> sortByTime = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&quot;sortByTime&quot;</span>).<span class="hljs-property">checked</span>;</span><br><span class="language-javascript">            <span class="hljs-keyword">let</span> url = <span class="hljs-string">`http://127.0.0.1:8000/results/?sort_by_time=<span class="hljs-subst">$&#123;sortByTime&#125;</span>`</span>;</span><br><span class="language-javascript"></span><br><span class="language-javascript">            <span class="hljs-keyword">if</span> (searchText) &#123;</span><br><span class="language-javascript">                url += <span class="hljs-string">`&amp;filename=<span class="hljs-subst">$&#123;searchText&#125;</span>`</span>;</span><br><span class="language-javascript">            &#125;</span><br><span class="language-javascript"></span><br><span class="language-javascript">            <span class="hljs-keyword">let</span> response = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(url);</span><br><span class="language-javascript">            <span class="hljs-keyword">let</span> results = <span class="hljs-keyword">await</span> response.<span class="hljs-title function_">json</span>();</span><br><span class="language-javascript"></span><br><span class="language-javascript">            <span class="hljs-keyword">let</span> tableBody = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&quot;resultsTableBody&quot;</span>);</span><br><span class="language-javascript">            tableBody.<span class="hljs-property">innerHTML</span> = <span class="hljs-string">&quot;&quot;</span>;</span><br><span class="language-javascript"></span><br><span class="language-javascript">            results.<span class="hljs-title function_">forEach</span>(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> &#123;</span><br><span class="language-javascript">                <span class="hljs-keyword">let</span> row = <span class="hljs-string">`&lt;tr&gt;</span></span><br><span class="hljs-string"><span class="language-javascript">                    &lt;td&gt;<span class="hljs-subst">$&#123;result.uuid&#125;</span>&lt;/td&gt;</span></span><br><span class="hljs-string"><span class="language-javascript">                    &lt;td&gt;<span class="hljs-subst">$&#123;result.filename&#125;</span>&lt;/td&gt;</span></span><br><span class="hljs-string"><span class="language-javascript">                    &lt;td&gt;&lt;a href=&quot;<span class="hljs-subst">$&#123;result.filepath&#125;</span>&quot; target=&quot;_blank&quot;&gt;查看图片&lt;/a&gt;&lt;/td&gt;</span></span><br><span class="hljs-string"><span class="language-javascript">                    &lt;td&gt;<span class="hljs-subst">$&#123;result.ocr_text&#125;</span>&lt;/td&gt;</span></span><br><span class="hljs-string"><span class="language-javascript">                    &lt;td&gt;<span class="hljs-subst">$&#123;result.start_time&#125;</span>&lt;/td&gt;</span></span><br><span class="hljs-string"><span class="language-javascript">                    &lt;td&gt;<span class="hljs-subst">$&#123;result.status&#125;</span>&lt;/td&gt;</span></span><br><span class="hljs-string"><span class="language-javascript">                    &lt;td&gt;<span class="hljs-subst">$&#123;result.elapsed_time.toFixed(<span class="hljs-number">2</span>)&#125;</span> 秒&lt;/td&gt;</span></span><br><span class="hljs-string"><span class="language-javascript">                &lt;/tr&gt;`</span>;</span><br><span class="language-javascript">                tableBody.<span class="hljs-property">innerHTML</span> += row;</span><br><span class="language-javascript">            &#125;);</span><br><span class="language-javascript">        &#125;</span><br><span class="language-javascript"></span><br><span class="language-javascript">        <span class="hljs-variable language_">window</span>.<span class="hljs-property">onload</span> = fetchResults;</span><br><span class="language-javascript">    </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br><br><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<p>前端代码使用使用OpenAI GPT-4o模型生成，代码略作修改，功能完整。</p>
+<h3 id="后端部分">后端部分</h3>
+<p>后端部分，Web框架采用FastAPI，数据库采用MySQL，消息队列采用Kafka。</p>
+<p>在本地启动Kafka后，在Kafka中创建名为<code>ocr-topic</code>的topic。在本地启动MySQL，创建数据库<code>ocr</code>。</p>
+<p>基础配置文件<code>config.py</code>如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><br><span class="hljs-comment"># MySQL 配置</span><br>MYSQL_USERNAME = <span class="hljs-string">&quot;root&quot;</span><br>MYSQL_PASSWORD = <span class="hljs-string">&quot;root&quot;</span><br>MYSQL_HOST = <span class="hljs-string">&quot;localhost&quot;</span><br>MYSQL_PORT = <span class="hljs-string">&quot;3306&quot;</span><br>MYSQL_DATABASE = <span class="hljs-string">&quot;ocr_db&quot;</span><br><br><span class="hljs-comment"># Kafka 配置</span><br>KAFKA_HOST = <span class="hljs-string">&quot;localhost&quot;</span><br>KAFKA_PORT = <span class="hljs-string">&quot;9092&quot;</span><br>KAFKA_TOPIC = <span class="hljs-string">&quot;ocr-topic&quot;</span><br></code></pre></td></tr></table></figure>
+<p>MySQL操作部分代码（<code>models.py</code>）如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> sqlalchemy <span class="hljs-keyword">import</span> Column, Integer, String, Float, create_engine, DATETIME<br><span class="hljs-keyword">from</span> sqlalchemy.ext.declarative <span class="hljs-keyword">import</span> declarative_base<br><span class="hljs-keyword">from</span> sqlalchemy.orm <span class="hljs-keyword">import</span> sessionmaker<br><span class="hljs-keyword">import</span> config<br><br><span class="hljs-comment"># 定义 MySQL 连接 URL</span><br>DATABASE_URL = <span class="hljs-string">f&quot;mysql+pymysql://<span class="hljs-subst">&#123;config.MYSQL_USERNAME&#125;</span>:<span class="hljs-subst">&#123;config.MYSQL_PASSWORD&#125;</span>@<span class="hljs-subst">&#123;config.MYSQL_HOST&#125;</span>:<span class="hljs-subst">&#123;config.MYSQL_PORT&#125;</span>/<span class="hljs-subst">&#123;config.MYSQL_DATABASE&#125;</span>&quot;</span><br><br><span class="hljs-comment"># 连接 MySQL</span><br>engine = create_engine(DATABASE_URL, echo=<span class="hljs-literal">True</span>)<br><br>SessionLocal = sessionmaker(autocommit=<span class="hljs-literal">False</span>, autoflush=<span class="hljs-literal">False</span>, bind=engine)<br>Base = declarative_base()<br><br><br><span class="hljs-comment"># 定义 OCR 结果的数据库表</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">OCRResult</span>(<span class="hljs-title class_ inherited__">Base</span>):<br>    __tablename__ = <span class="hljs-string">&quot;ocr_results&quot;</span><br><br>    <span class="hljs-built_in">id</span> = Column(Integer, primary_key=<span class="hljs-literal">True</span>, index=<span class="hljs-literal">True</span>, autoincrement=<span class="hljs-literal">True</span>)<br>    uuid = Column(String(<span class="hljs-number">255</span>), unique=<span class="hljs-literal">True</span>, index=<span class="hljs-literal">True</span>)<br>    filename = Column(String(<span class="hljs-number">255</span>), index=<span class="hljs-literal">True</span>)<br>    filepath = Column(String(<span class="hljs-number">512</span>))<br>    ocr_text = Column(String(<span class="hljs-number">5000</span>))  <span class="hljs-comment"># OCR 处理可能会返回较长文本</span><br>    start_time = Column(DATETIME)  <span class="hljs-comment"># 记录开始时间</span><br>    status = Column(Integer)  <span class="hljs-comment"># 0-未完成；1-已完成</span><br>    elapsed_time = Column(Float)  <span class="hljs-comment"># 记录消耗时间, 单位秒</span><br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    <span class="hljs-comment"># 确保创建表</span><br>    Base.metadata.create_all(bind=engine)<br><br></code></pre></td></tr></table></figure>
+<p>FastAPI Web代码（<code>main.py</code>）如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> uuid<br><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime <span class="hljs-keyword">as</span> dt<br><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI, File, UploadFile, Depends, Query<br><span class="hljs-keyword">from</span> fastapi.middleware.cors <span class="hljs-keyword">import</span> CORSMiddleware<br><span class="hljs-keyword">from</span> sqlalchemy.orm <span class="hljs-keyword">import</span> Session<br><span class="hljs-keyword">from</span> models <span class="hljs-keyword">import</span> SessionLocal, OCRResult<br><span class="hljs-keyword">from</span> starlette.responses <span class="hljs-keyword">import</span> FileResponse<br><span class="hljs-keyword">from</span> fastapi.staticfiles <span class="hljs-keyword">import</span> StaticFiles<br><br><span class="hljs-keyword">from</span> config <span class="hljs-keyword">import</span> KAFKA_HOST, KAFKA_PORT, KAFKA_TOPIC<br><br><span class="hljs-keyword">from</span> kafka <span class="hljs-keyword">import</span> KafkaProducer<br><br>producer = KafkaProducer(bootstrap_servers=<span class="hljs-string">f&#x27;<span class="hljs-subst">&#123;KAFKA_HOST&#125;</span>:<span class="hljs-subst">&#123;KAFKA_PORT&#125;</span>&#x27;</span>)<br><br>app = FastAPI()<br><br><span class="hljs-comment"># 允许前端访问 API</span><br>app.add_middleware(<br>    CORSMiddleware,<br>    allow_origins=[<span class="hljs-string">&quot;*&quot;</span>],<br>    allow_credentials=<span class="hljs-literal">True</span>,<br>    allow_methods=[<span class="hljs-string">&quot;*&quot;</span>],<br>    allow_headers=[<span class="hljs-string">&quot;*&quot;</span>],<br>)<br><br>STATIC_FOLDER = <span class="hljs-string">&quot;static&quot;</span><br>UPLOAD_FOLDER = <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;STATIC_FOLDER&#125;</span>/uploads&quot;</span><br>os.makedirs(UPLOAD_FOLDER, exist_ok=<span class="hljs-literal">True</span>)<br>os.makedirs(STATIC_FOLDER, exist_ok=<span class="hljs-literal">True</span>)<br><br><span class="hljs-comment"># **提供静态资源**</span><br>app.mount(<span class="hljs-string">&quot;/static&quot;</span>, StaticFiles(directory=STATIC_FOLDER), name=<span class="hljs-string">&quot;static&quot;</span>)<br><br><br><span class="hljs-comment"># **首页 `/` 自动打开上传页面**</span><br><span class="hljs-meta">@app.get(<span class="hljs-params"><span class="hljs-string">&quot;/&quot;</span></span>)</span><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">serve_homepage</span>():<br>    <span class="hljs-keyword">return</span> FileResponse(<span class="hljs-string">&quot;static/upload.html&quot;</span>)<br><br><br><span class="hljs-comment"># 依赖项：数据库会话管理</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_db</span>():<br>    db = SessionLocal()<br>    <span class="hljs-keyword">try</span>:<br>        <span class="hljs-keyword">yield</span> db<br>    <span class="hljs-keyword">finally</span>:<br>        db.close()<br><br><br><span class="hljs-comment"># **📌 上传文件并 OCR 识别**</span><br><span class="hljs-meta">@app.post(<span class="hljs-params"><span class="hljs-string">&quot;/upload/&quot;</span></span>)</span><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">upload_image</span>(<span class="hljs-params">file: UploadFile = File(<span class="hljs-params">...</span>), db: Session = Depends(<span class="hljs-params">get_db</span>)</span>):<br>    start_time = time.time()<br><br>    <span class="hljs-comment"># **生成唯一 ID 并保存文件**</span><br>    file_extension = file.filename.split(<span class="hljs-string">&quot;.&quot;</span>)[-<span class="hljs-number">1</span>]<br>    unique_id = <span class="hljs-built_in">str</span>(uuid.uuid4())  <span class="hljs-comment"># 生成 UUID 作为文件唯一标识</span><br>    save_path = os.path.join(UPLOAD_FOLDER, <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;unique_id&#125;</span>.<span class="hljs-subst">&#123;file_extension&#125;</span>&quot;</span>)<br><br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(save_path, <span class="hljs-string">&quot;wb&quot;</span>) <span class="hljs-keyword">as</span> image_file:<br>        image_file.write(file.file.read())<br><br>    <span class="hljs-comment"># **使用 Tesseract OCR 识别图片文字**</span><br>    <span class="hljs-comment"># image = Image.open(save_path)</span><br>    <span class="hljs-comment"># ocr_text = pytesseract.image_to_string(image)</span><br><br>    elapsed_time = time.time() - start_time  <span class="hljs-comment"># 计算处理时间</span><br><br>    <span class="hljs-comment"># **存储 OCR 结果到数据库**</span><br>    db_result = OCRResult(<br>        uuid=unique_id,<br>        filename=file.filename,<br>        filepath=save_path,<br>        ocr_text=<span class="hljs-literal">None</span>,<br>        start_time=dt.now(),<br>        status=<span class="hljs-number">0</span>,<br>        elapsed_time=<span class="hljs-number">0.0</span><br>    )<br>    db.add(db_result)<br>    db.commit()<br><br>    <span class="hljs-comment"># 将uuid和文件路径送入至Kafka队列，作为生产者</span><br>    producer.send(KAFKA_TOPIC, key=unique_id.encode(), value=save_path.encode())<br><br>    <span class="hljs-keyword">return</span> &#123;<br>        <span class="hljs-string">&quot;uuid&quot;</span>: unique_id,<br>        <span class="hljs-string">&quot;filename&quot;</span>: file.filename,<br>        <span class="hljs-string">&quot;ocr_text&quot;</span>: <span class="hljs-literal">None</span>,<br>        <span class="hljs-string">&quot;elapsed_time&quot;</span>: elapsed_time<br>    &#125;<br><br><br><span class="hljs-comment"># **📌 获取所有 OCR 结果**</span><br><span class="hljs-meta">@app.get(<span class="hljs-params"><span class="hljs-string">&quot;/results/&quot;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_results</span>(<span class="hljs-params"></span><br><span class="hljs-params">    db: Session = Depends(<span class="hljs-params">get_db</span>),</span><br><span class="hljs-params">    filename: <span class="hljs-built_in">str</span> = Query(<span class="hljs-params"><span class="hljs-literal">None</span>, title=<span class="hljs-string">&quot;文件名&quot;</span>, description=<span class="hljs-string">&quot;搜索 OCR 记录的文件名&quot;</span></span>),</span><br><span class="hljs-params">    sort_by_time: <span class="hljs-built_in">bool</span> = Query(<span class="hljs-params"><span class="hljs-literal">False</span>, title=<span class="hljs-string">&quot;按时间排序&quot;</span>, description=<span class="hljs-string">&quot;是否按时间倒序排序&quot;</span></span>)</span><br><span class="hljs-params"></span>):<br>    query = db.query(OCRResult)<br><br>    <span class="hljs-comment"># **🔍 文件名搜索**</span><br>    <span class="hljs-keyword">if</span> filename:<br>        query = query.<span class="hljs-built_in">filter</span>(OCRResult.filename.contains(filename))<br><br>    <span class="hljs-comment"># **🕒 按时间倒序**</span><br>    <span class="hljs-keyword">if</span> sort_by_time:<br>        query = query.order_by(OCRResult.start_time.desc())<br><br>    results = query.<span class="hljs-built_in">all</span>()<br><br>    <span class="hljs-keyword">return</span> [<br>        &#123;<br>            <span class="hljs-string">&quot;uuid&quot;</span>: result.uuid,<br>            <span class="hljs-string">&quot;filename&quot;</span>: result.filename,<br>            <span class="hljs-string">&quot;filepath&quot;</span>: <span class="hljs-string">f&quot;uploads/<span class="hljs-subst">&#123;os.path.basename(result.filepath)&#125;</span>&quot;</span>,<br>            <span class="hljs-string">&quot;ocr_text&quot;</span>: result.ocr_text,<br>            <span class="hljs-string">&quot;start_time&quot;</span>: result.start_time.strftime(<span class="hljs-string">&quot;%Y-%m-%d %H:%M:%S&quot;</span>),  <span class="hljs-comment"># 🎯 格式化时间</span><br>            <span class="hljs-string">&quot;status&quot;</span>: <span class="hljs-string">&quot;已完成&quot;</span> <span class="hljs-keyword">if</span> result.status <span class="hljs-keyword">else</span> <span class="hljs-string">&quot;进行中&quot;</span>,<br>            <span class="hljs-string">&quot;elapsed_time&quot;</span>: result.elapsed_time,<br>        &#125;<br>        <span class="hljs-keyword">for</span> result <span class="hljs-keyword">in</span> results<br>    ]<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    <span class="hljs-keyword">import</span> uvicorn<br><br>    uvicorn.run(app, host=<span class="hljs-string">&quot;0.0.0.0&quot;</span>, port=<span class="hljs-number">8000</span>, reload=<span class="hljs-literal">True</span>)<br>    <span class="hljs-comment"># 启动 FastAPI 服务</span><br>    <span class="hljs-comment"># uvicorn main:app --reload</span><br></code></pre></td></tr></table></figure>
+<p>上传图片使用/upload这个API，里面实现的操作如下：</p>
+<ul>
+<li>批量上传图片，图片保存至<code>static/upload</code>目录</li>
+<li>将图片基础信息写入MySQL，但此时未进行OCR识别，状态为未完成</li>
+<li>将图片信息写入Kafka，作为生产者，等待消费者端进行处理</li>
+</ul>
+<p>此时，我们还需要消费者来消费Kakfa中传入的消息，代码（<code>consumer.py</code>）如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><br><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">import</span> string<br><span class="hljs-keyword">from</span> random <span class="hljs-keyword">import</span> random, choice, randint<br><span class="hljs-keyword">from</span> kafka <span class="hljs-keyword">import</span> KafkaConsumer<br><br><span class="hljs-keyword">from</span> models <span class="hljs-keyword">import</span> SessionLocal, OCRResult<br><span class="hljs-keyword">from</span> config <span class="hljs-keyword">import</span> KAFKA_HOST, KAFKA_PORT, KAFKA_TOPIC<br><br><br>db = SessionLocal()<br><br>consumer = KafkaConsumer(KAFKA_TOPIC, bootstrap_servers=<span class="hljs-string">f&#x27;<span class="hljs-subst">&#123;KAFKA_HOST&#125;</span>:<span class="hljs-subst">&#123;KAFKA_PORT&#125;</span>&#x27;</span>, group_id=<span class="hljs-string">&quot;ocr-group&quot;</span>)<br><span class="hljs-keyword">for</span> message <span class="hljs-keyword">in</span> consumer:<br>    start_time = time.time()<br>    file_uuid = message.key.decode()<br>    file_path = message.value.decode()<br>    time.sleep(random() * <span class="hljs-number">10</span>)  <span class="hljs-comment"># 模拟 OCR 识别耗时</span><br>    <span class="hljs-comment"># 将模拟的 OCR 结果更新至数据库，更新的筛选条件是 uuid</span><br>    chars = randint(<span class="hljs-number">3</span>, <span class="hljs-number">20</span>)<br>    result = []<br>    <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(chars):<br>        result.append(choice(string.digits + string.ascii_letters))<br><br>    db.query(OCRResult).<span class="hljs-built_in">filter</span>(OCRResult.uuid == file_uuid).update(<br>        &#123;<br>            <span class="hljs-string">&quot;ocr_text&quot;</span>: <span class="hljs-string">&quot;&quot;</span>.join(result),<br>            <span class="hljs-string">&quot;status&quot;</span>: <span class="hljs-number">1</span>,<br>            <span class="hljs-string">&quot;elapsed_time&quot;</span>: time.time() - start_time<br>        &#125;<br>    )<br>    db.commit()<br></code></pre></td></tr></table></figure>
+<p>在消费者端，笔者模拟了模拟的OCR过程（随机睡眠过程 +
+随机字符生成），待OCR识别完毕后更新该图片在MySQL中的完成状态、识别结果等信息。</p>
+<h2 id="项目效果展示">项目效果展示</h2>
+<ol type="1">
+<li>批量上传图片页面</li>
+</ol>
+<p><img src="https://s2.loli.net/2025/02/07/zmJNMbFklcDEOCg.png" srcset="/img/loading.gif" lazyload /></p>
+<ol start="2" type="1">
+<li>未识别前的MySQL数据库中的数据</li>
+</ol>
+<p><img src="https://s2.loli.net/2025/02/08/KFAgUVn8LlGDcob.png" srcset="/img/loading.gif" lazyload /></p>
+<ol start="3" type="1">
+<li>未识别前的OCR结果查看页面</li>
+</ol>
+<p><img src="https://s2.loli.net/2025/02/08/zC6SqV9X73NtsQB.png" srcset="/img/loading.gif" lazyload /></p>
+<ol start="4" type="1">
+<li>识别后的MySQL数据库中的数据</li>
+</ol>
+<p><img src="https://s2.loli.net/2025/02/08/Kwrsiu6cEtUL2vN.png" srcset="/img/loading.gif" lazyload /></p>
+<ol start="5" type="1">
+<li>识别后的OCR结果查看页面</li>
+</ol>
+<p><img src="https://s2.loli.net/2025/02/08/MI7JWE9ir5gL4ve.png" srcset="/img/loading.gif" lazyload /></p>
+<ol start="6" type="1">
+<li>Kafka中的消息查看</li>
+</ol>
+<p><img src="https://s2.loli.net/2025/02/08/rQEMuUTfsYo1bSW.png" srcset="/img/loading.gif" lazyload /></p>
+<ol start="7" type="1">
+<li>查看图片</li>
+</ol>
+<p><img src="https://s2.loli.net/2025/02/08/93mTvKc4rx1jUhB.png" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="总结">总结</h2>
+<p>本文中的项目已开源至Github，网址为：https://github.com/percent4/kafka-fastapi-ocr-service
+。</p>
+<p>本文算是笔者使用Kafka做实战项目的开端，也对Kakfa的原理和使用方法有了更为深入的理解。</p>
+<p>希望后续能在这方面有更丰富的经验，感谢阅读~</p>
+<p>欢迎关注我的公众号<strong>NLP奇幻之旅</strong>，原创技术文章第一时间推送。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+<p>欢迎关注我的知识星球“<strong>自然语言处理奇幻之旅</strong>”，笔者正在努力构建自己的技术社区。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" class="category-chain-item">数据库</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/FastAPI/" class="print-no-link">#FastAPI</a>
+      
+        <a href="/tags/OCR/" class="print-no-link">#OCR</a>
+      
+        <a href="/tags/Kafka/" class="print-no-link">#Kafka</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Kafka入门（三）Kafka在Web应用中的实践：基于FastAPI实现图片OCR</div>
+      <div>https://percent4.github.io/Kafka入门（三）Kafka在Web应用中的实践：基于FastAPI实现图片OCR/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年2月21日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/Kafka%E5%85%A5%E9%97%A8%EF%BC%88%E5%9B%9B%EF%BC%89Kafka%E6%B6%88%E6%81%AF%E6%B6%88%E8%B4%B9%E7%8A%B6%E6%80%81%E5%85%A8%E8%A7%A3%E6%9E%90%EF%BC%9A%E5%A6%82%E4%BD%95%E7%B2%BE%E5%87%86%E8%BF%BD%E8%B8%AA%E4%BD%A0%E7%9A%84%E6%95%B0%E6%8D%AE%E6%B5%81%E5%90%91%EF%BC%9F/" title="Kafka入门（四）Kafka消息消费状态全解析：如何精准追踪你的数据流向？">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Kafka入门（四）Kafka消息消费状态全解析：如何精准追踪你的数据流向？</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/Kafka%E5%85%A5%E9%97%A8%EF%BC%88%E4%BA%8C%EF%BC%89ELK%E9%81%87%E4%B8%8AKafka%EF%BC%9A%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" title="Kafka入门（二）ELK遇上Kafka：日志分析最佳实践">
+                        <span class="hidden-mobile">Kafka入门（二）ELK遇上Kafka：日志分析最佳实践</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

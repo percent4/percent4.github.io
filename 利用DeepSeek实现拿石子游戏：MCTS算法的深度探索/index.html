@@ -1,0 +1,868 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍如何使用DeepSeek R1推理模型来实现基于MCTS算法的拿石子游戏，来体验下R1模型的强大之处！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="利用DeepSeek实现拿石子游戏：MCTS算法的深度探索">
+<meta property="og:url" content="https://percent4.github.io/%E5%88%A9%E7%94%A8DeepSeek%E5%AE%9E%E7%8E%B0%E6%8B%BF%E7%9F%B3%E5%AD%90%E6%B8%B8%E6%88%8F%EF%BC%9AMCTS%E7%AE%97%E6%B3%95%E7%9A%84%E6%B7%B1%E5%BA%A6%E6%8E%A2%E7%B4%A2/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍如何使用DeepSeek R1推理模型来实现基于MCTS算法的拿石子游戏，来体验下R1模型的强大之处！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2025/02/08/S3xMFzegyRXfCJp.png">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg">
+<meta property="article:published_time" content="2025-02-21T12:46:43.000Z">
+<meta property="article:modified_time" content="2025-02-21T12:47:27.682Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="MCTS">
+<meta property="article:tag" content="DeepSeek">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2025/02/08/S3xMFzegyRXfCJp.png">
+  
+  
+  
+  <title>利用DeepSeek实现拿石子游戏：MCTS算法的深度探索 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="利用DeepSeek实现拿石子游戏：MCTS算法的深度探索"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-02-21 20:46" pubdate>
+          星期五, 二月 21日 2025, 8:46 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          14k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          120 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">利用DeepSeek实现拿石子游戏：MCTS算法的深度探索</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍如何使用DeepSeek
+R1推理模型来实现基于MCTS算法的拿石子游戏，来体验下R1模型的强大之处！</p>
+</blockquote>
+<p>在文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ddBczT9Pia5hf2tuPDl8EQ?token=2031559562&amp;lang=zh_CN">迈向智能决策：蒙特卡洛树搜索（MCTS）的探索之路</a>中，笔者介绍了蒙特卡洛树搜索（MCTS）的基础概念、算法原理以及如何使用MCTS实现TicTacToe小游戏。</p>
+<p>近期，DeepSeek模型火遍全网，在全世界掀起了一阵“DeepSeek”浪潮。因此，笔者也将会借助公司自行部署的DeepSeek
+R1模型，来实现基于MCTS（蒙特卡洛树搜索）算法的拿石子游戏。</p>
+<p>笔者只会输入游戏规则以及已实现的MCTS类，然后让DeepSeek帮助我实现这部分代码，通过几轮的调试，DeepSeek成功完成了这个任务。</p>
+<h2 id="准备工作">准备工作</h2>
+<p>首先，笔者介绍下拿石子游戏。</p>
+<blockquote>
+<p>拿石子游戏规则如下： - 有一堆N颗石子，两个玩家轮流拿石子。 -
+两个玩家决定谁先走，然后轮流拿石子，每次可以拿1-2个石子。 -
+拿到最后一个石子的玩家获胜。</p>
+</blockquote>
+<p>该游戏的取胜规则是看N是否是3的倍数。</p>
+<ul>
+<li>如果N是3的倍数，则后手占优，有必胜策略：每次先手取1颗石子时，后手拿2颗，若先手拿2颗，则后手拿1颗，如果只要保证剩下的石子是3的倍数，则后手必赢。</li>
+<li>如果N不是3的倍数，则先手占优，有必胜策略：先手先拿1或2颗，保证剩下的石子是3的倍数，如此按照上面的做法，先手必赢。</li>
+</ul>
+<p>笔者先前实现的MCTS类代码如下（基于自洽，将这部分代码也放在此处）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><br><span class="hljs-keyword">from</span> dataclasses <span class="hljs-keyword">import</span> dataclass, field<br><span class="hljs-keyword">from</span> collections <span class="hljs-keyword">import</span> defaultdict<br><span class="hljs-keyword">import</span> math<br><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">Dict</span>, <span class="hljs-type">Set</span>, <span class="hljs-type">List</span>, <span class="hljs-type">Optional</span><br><span class="hljs-keyword">from</span> abc <span class="hljs-keyword">import</span> ABC, abstractmethod<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Node</span>(<span class="hljs-title class_ inherited__">ABC</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;Abstract base class for game state nodes.&quot;&quot;&quot;</span><br><br><span class="hljs-meta">    @abstractmethod</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">find_children</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-type">Set</span>[<span class="hljs-string">&quot;Node&quot;</span>]:<br>        <span class="hljs-string">&quot;&quot;&quot;Return all possible child nodes.&quot;&quot;&quot;</span><br><br><span class="hljs-meta">    @abstractmethod</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">get_random_child</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-type">Optional</span>[<span class="hljs-string">&quot;Node&quot;</span>]:<br>        <span class="hljs-string">&quot;&quot;&quot;Return a random child node.&quot;&quot;&quot;</span><br><br><span class="hljs-meta">    @abstractmethod</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">is_terminal</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-built_in">bool</span>:<br>        <span class="hljs-string">&quot;&quot;&quot;Check if the node is a terminal state.&quot;&quot;&quot;</span><br><br><span class="hljs-meta">    @abstractmethod</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">reward</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-built_in">float</span>:<br>        <span class="hljs-string">&quot;&quot;&quot;Return the reward value for a terminal node.&quot;&quot;&quot;</span><br><br><span class="hljs-meta">    @abstractmethod</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__hash__</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-built_in">int</span>:<br>        <span class="hljs-string">&quot;&quot;&quot;Define a hash function for the node.&quot;&quot;&quot;</span><br><br><span class="hljs-meta">    @abstractmethod</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__eq__</span>(<span class="hljs-params">self, other: <span class="hljs-built_in">object</span></span>) -&gt; <span class="hljs-built_in">bool</span>:<br>        <span class="hljs-string">&quot;&quot;&quot;Define equality comparison for nodes.&quot;&quot;&quot;</span><br><br><br><span class="hljs-meta">@dataclass</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">MCTS</span>:<br>    <span class="hljs-string">&quot;&quot;&quot;Monte Carlo Tree Search implementation.&quot;&quot;&quot;</span><br><br>    exploration_weight: <span class="hljs-built_in">float</span> = <span class="hljs-number">1.0</span><br>    total_rewards: <span class="hljs-type">Dict</span>[Node, <span class="hljs-built_in">float</span>] = field(default_factory=<span class="hljs-keyword">lambda</span>: defaultdict(<span class="hljs-built_in">float</span>))<br>    visit_counts: <span class="hljs-type">Dict</span>[Node, <span class="hljs-built_in">int</span>] = field(default_factory=<span class="hljs-keyword">lambda</span>: defaultdict(<span class="hljs-built_in">int</span>))<br>    children: <span class="hljs-type">Dict</span>[Node, <span class="hljs-type">Set</span>[Node]] = field(default_factory=<span class="hljs-keyword">lambda</span>: defaultdict(<span class="hljs-built_in">set</span>))<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">select_best_move</span>(<span class="hljs-params">self, node: Node</span>) -&gt; Node:<br>        <span class="hljs-string">&quot;&quot;&quot;Select the best move from the current node.&quot;&quot;&quot;</span><br>        <span class="hljs-keyword">if</span> node.is_terminal():<br>            <span class="hljs-keyword">raise</span> ValueError(<span class="hljs-string">f&quot;Cannot select move from terminal node: <span class="hljs-subst">&#123;node&#125;</span>&quot;</span>)<br><br>        <span class="hljs-keyword">if</span> node <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> self.children:<br>            <span class="hljs-keyword">return</span> node.get_random_child()<br><br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">max</span>(self.children[node], key=self._calculate_node_score)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">simulate</span>(<span class="hljs-params">self, node: Node</span>) -&gt; <span class="hljs-literal">None</span>:<br>        <span class="hljs-string">&quot;&quot;&quot;Perform one iteration of the MCTS algorithm.&quot;&quot;&quot;</span><br>        path = self._traverse_tree(node)<br>        leaf = path[-<span class="hljs-number">1</span>]<br>        self._expand_node(leaf)<br>        reward = self._simulate_random_playout(leaf)<br>        self._backpropagate(path, reward)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">_traverse_tree</span>(<span class="hljs-params">self, node: Node</span>) -&gt; <span class="hljs-type">List</span>[Node]:<br>        <span class="hljs-string">&quot;&quot;&quot;Traverse the tree to find an unexplored node.&quot;&quot;&quot;</span><br>        path = []<br>        <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>            path.append(node)<br>            <span class="hljs-keyword">if</span> node <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> self.children <span class="hljs-keyword">or</span> <span class="hljs-keyword">not</span> self.children[node]:<br>                <span class="hljs-keyword">return</span> path<br>            unexplored = self.children[node] - <span class="hljs-built_in">set</span>(self.children.keys())<br>            <span class="hljs-keyword">if</span> unexplored:<br>                path.append(unexplored.pop())<br>                <span class="hljs-keyword">return</span> path<br>            node = self._select_uct(node)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">_expand_node</span>(<span class="hljs-params">self, node: Node</span>) -&gt; <span class="hljs-literal">None</span>:<br>        <span class="hljs-string">&quot;&quot;&quot;Expand the node by adding its children to the tree.&quot;&quot;&quot;</span><br>        <span class="hljs-keyword">if</span> node <span class="hljs-keyword">in</span> self.children:<br>            <span class="hljs-keyword">return</span><br>        self.children[node] = node.find_children()<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">_simulate_random_playout</span>(<span class="hljs-params">self, node: Node</span>) -&gt; <span class="hljs-built_in">float</span>:<br>        <span class="hljs-string">&quot;&quot;&quot;Simulate a random playout from the given node.&quot;&quot;&quot;</span><br>        invert_reward = <span class="hljs-literal">True</span><br>        <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>            <span class="hljs-keyword">if</span> node.is_terminal():<br>                reward = node.reward()<br>                <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> - reward <span class="hljs-keyword">if</span> invert_reward <span class="hljs-keyword">else</span> reward<br>            node = node.get_random_child()<br>            invert_reward = <span class="hljs-keyword">not</span> invert_reward<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">_backpropagate</span>(<span class="hljs-params">self, path: <span class="hljs-type">List</span>[Node], reward: <span class="hljs-built_in">float</span></span>) -&gt; <span class="hljs-literal">None</span>:<br>        <span class="hljs-string">&quot;&quot;&quot;Update the statistics for the nodes in the path.&quot;&quot;&quot;</span><br>        <span class="hljs-keyword">for</span> node <span class="hljs-keyword">in</span> <span class="hljs-built_in">reversed</span>(path):<br>            self.visit_counts[node] += <span class="hljs-number">1</span><br>            self.total_rewards[node] += reward<br>            reward = <span class="hljs-number">1</span> - reward<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">_select_uct</span>(<span class="hljs-params">self, node: Node</span>) -&gt; Node:<br>        <span class="hljs-string">&quot;&quot;&quot;Select a child node using the UCT formula.&quot;&quot;&quot;</span><br>        <span class="hljs-keyword">assert</span> <span class="hljs-built_in">all</span>(n <span class="hljs-keyword">in</span> self.children <span class="hljs-keyword">for</span> n <span class="hljs-keyword">in</span> self.children[node])<br>        log_n_parent = math.log(self.visit_counts[node])<br><br>        <span class="hljs-keyword">def</span> <span class="hljs-title function_">uct</span>(<span class="hljs-params">n: Node</span>) -&gt; <span class="hljs-built_in">float</span>:<br>            <span class="hljs-keyword">return</span> self.total_rewards[n] / self.visit_counts[<br>                n<br>            ] + self.exploration_weight * math.sqrt(log_n_parent / self.visit_counts[n])<br><br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">max</span>(self.children[node], key=uct)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">_calculate_node_score</span>(<span class="hljs-params">self, node: Node</span>) -&gt; <span class="hljs-built_in">float</span>:<br>        <span class="hljs-string">&quot;&quot;&quot;Calculate the score for a node based on its average reward.&quot;&quot;&quot;</span><br>        <span class="hljs-keyword">if</span> self.visit_counts[node] == <span class="hljs-number">0</span>:<br>            <span class="hljs-keyword">return</span> <span class="hljs-built_in">float</span>(<span class="hljs-string">&quot;-inf&quot;</span>)<br>        <span class="hljs-keyword">return</span> self.total_rewards[node] / self.visit_counts[node]<br></code></pre></td></tr></table></figure>
+<h2 id="拿石子游戏">拿石子游戏</h2>
+<p>让我们看看DeepSeek在不知晓取胜策略的前提下，去实现MCTS算法，看看该算法是否能成功学习到游戏取胜的策略。</p>
+<p>下面是DeepSeek
+R1推理模型实现的基于MCTS算法的拿石子游戏，AI先走，玩家后走，完整代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @file: picking_stone.py</span><br><br><span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">Picking Stone Game</span><br><span class="hljs-string">一共有N颗石子，两个玩家轮流拿石子，每次可以拿1~2颗，拿到最后一颗石子的玩家获胜。</span><br><span class="hljs-string">实现一个AI玩家，使用MCTS算法进行决策。X代表AI，O代表玩家。</span><br><span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-keyword">import</span> random<br><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">Set</span>, <span class="hljs-type">Optional</span>, <span class="hljs-type">Any</span><br><br><span class="hljs-keyword">from</span> mcts <span class="hljs-keyword">import</span> Node, MCTS<br><br><br><span class="hljs-comment"># 实现StoneGameState</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">StoneGameState</span>(<span class="hljs-title class_ inherited__">Node</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, stones_remaining: <span class="hljs-built_in">int</span>, current_player: <span class="hljs-built_in">str</span></span>):<br>        self.stones_remaining = stones_remaining<br>        self.current_player = current_player  <span class="hljs-comment"># &quot;X&quot;或&quot;O&quot;</span><br><br><span class="hljs-meta">    @property</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">opponent</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-built_in">str</span>:<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;O&quot;</span> <span class="hljs-keyword">if</span> self.current_player == <span class="hljs-string">&quot;X&quot;</span> <span class="hljs-keyword">else</span> <span class="hljs-string">&quot;X&quot;</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">find_children</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-type">Set</span>[<span class="hljs-string">&quot;StoneGameState&quot;</span>]:<br>        children = <span class="hljs-built_in">set</span>()<br>        <span class="hljs-keyword">if</span> self.stones_remaining &gt;= <span class="hljs-number">1</span>:<br>            children.add(StoneGameState(self.stones_remaining - <span class="hljs-number">1</span>, self.opponent))<br>        <span class="hljs-keyword">if</span> self.stones_remaining &gt;= <span class="hljs-number">2</span>:<br>            children.add(StoneGameState(self.stones_remaining - <span class="hljs-number">2</span>, self.opponent))<br>        <span class="hljs-keyword">return</span> children<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">get_random_child</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-type">Optional</span>[<span class="hljs-string">&quot;StoneGameState&quot;</span>]:<br>        possible_moves = []<br>        <span class="hljs-keyword">if</span> self.stones_remaining &gt;= <span class="hljs-number">1</span>:<br>            possible_moves.append(<span class="hljs-number">1</span>)<br>        <span class="hljs-keyword">if</span> self.stones_remaining &gt;= <span class="hljs-number">2</span>:<br>            possible_moves.append(<span class="hljs-number">2</span>)<br>        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> possible_moves:<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">None</span><br>        move = random.choice(possible_moves)<br>        <span class="hljs-keyword">return</span> StoneGameState(self.stones_remaining - move, self.opponent)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">is_terminal</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-built_in">bool</span>:<br>        <span class="hljs-keyword">return</span> self.stones_remaining == <span class="hljs-number">0</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">reward</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-built_in">float</span>:<br>        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> self.is_terminal():<br>            <span class="hljs-keyword">raise</span> RuntimeError(<span class="hljs-string">&quot;reward() called on non-terminal node&quot;</span>)<br>        <span class="hljs-comment"># 当前玩家无法行动，输，返回0</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0.0</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__hash__</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-built_in">int</span>:<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">hash</span>((self.stones_remaining, self.current_player))<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__eq__</span>(<span class="hljs-params">self, other: <span class="hljs-type">Any</span></span>) -&gt; <span class="hljs-built_in">bool</span>:<br>        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> <span class="hljs-built_in">isinstance</span>(other, StoneGameState):<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span><br>        <span class="hljs-keyword">return</span> (<br>            self.stones_remaining == other.stones_remaining<br>            <span class="hljs-keyword">and</span> self.current_player == other.current_player<br>        )<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__repr__</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-built_in">str</span>:<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">f&quot;Stones: <span class="hljs-subst">&#123;self.stones_remaining&#125;</span>, Player: <span class="hljs-subst">&#123;self.current_player&#125;</span>&quot;</span><br><br><br><span class="hljs-comment"># 游戏主循环</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    <span class="hljs-comment"># 初始状态: N颗石子，X先手</span><br>    stone_num = <span class="hljs-number">10</span><br>    initial_state = StoneGameState(stones_remaining=stone_num, current_player=<span class="hljs-string">&quot;X&quot;</span>)<br>    mcts = MCTS()<br><br>    state = initial_state<br>    <span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> state.is_terminal():<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;\n当前剩余石子数: <span class="hljs-subst">&#123;state.stones_remaining&#125;</span>&quot;</span>)<br><br>        <span class="hljs-comment"># AI (X) 的回合</span><br>        <span class="hljs-keyword">if</span> state.current_player == <span class="hljs-string">&quot;X&quot;</span>:<br>            <span class="hljs-comment"># MCTS模拟1000次</span><br>            <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1000</span>):<br>                mcts.simulate(state)<br>            best_move = mcts.select_best_move(state)<br>            <span class="hljs-comment"># 计算AI拿取的石子数</span><br>            ai_move = state.stones_remaining - best_move.stones_remaining<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;AI（X）拿取了 <span class="hljs-subst">&#123;ai_move&#125;</span> 颗石子&quot;</span>)<br>            state = best_move  <span class="hljs-comment"># 切换到O的回合</span><br><br>        <span class="hljs-comment"># 玩家 (O) 的回合</span><br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>                <span class="hljs-keyword">try</span>:<br>                    move = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>(<span class="hljs-string">&quot;请输入你要拿的石子数（1或2）: &quot;</span>))<br>                    <span class="hljs-keyword">if</span> move <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> (<span class="hljs-number">1</span>, <span class="hljs-number">2</span>):<br>                        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;只能拿1或2颗！&quot;</span>)<br>                        <span class="hljs-keyword">continue</span><br>                    <span class="hljs-keyword">if</span> move &gt; state.stones_remaining:<br>                        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;石子不足，只剩<span class="hljs-subst">&#123;state.stones_remaining&#125;</span>颗！&quot;</span>)<br>                        <span class="hljs-keyword">continue</span><br>                    <span class="hljs-keyword">break</span><br>                <span class="hljs-keyword">except</span> ValueError:<br>                    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;请输入有效的数字！&quot;</span>)<br><br>            <span class="hljs-comment"># 更新石子状态并切换玩家</span><br>            new_stones = state.stones_remaining - move<br>            state = StoneGameState(stones_remaining=new_stones, current_player=<span class="hljs-string">&quot;X&quot;</span>)<br><br>    <span class="hljs-comment"># 游戏结束判断胜利者</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;\n===== 游戏结束 =====&quot;</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;剩余石子数: <span class="hljs-subst">&#123;state.stones_remaining&#125;</span>&quot;</span>)<br>    <span class="hljs-comment"># 因为无法行动的一方是输家，另一方获胜</span><br>    winner = <span class="hljs-string">&quot;O&quot;</span> <span class="hljs-keyword">if</span> state.current_player == <span class="hljs-string">&quot;X&quot;</span> <span class="hljs-keyword">else</span> <span class="hljs-string">&quot;X&quot;</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;胜利者: <span class="hljs-subst">&#123;winner&#125;</span>&quot;</span>)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    main()<br></code></pre></td></tr></table></figure>
+<p>运行该脚本，结果如下：</p>
+<ul>
+<li>第一次运行</li>
+</ul>
+<p>石子数量为9，AI先手，玩家后手（玩家按取胜策略走，数量为3的倍数时，后手必赢）。</p>
+<p>输出结果：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs makefile"><span class="hljs-section">当前剩余石子数: 9</span><br>AI（X）拿取了 1 颗石子<br><br><span class="hljs-section">当前剩余石子数: 8</span><br><span class="hljs-section">请输入你要拿的石子数（1或2）: 2</span><br><br><span class="hljs-section">当前剩余石子数: 6</span><br>AI（X）拿取了 1 颗石子<br><br><span class="hljs-section">当前剩余石子数: 5</span><br><span class="hljs-section">请输入你要拿的石子数（1或2）: 2</span><br><br><span class="hljs-section">当前剩余石子数: 3</span><br>AI（X）拿取了 1 颗石子<br><br><span class="hljs-section">当前剩余石子数: 2</span><br><span class="hljs-section">请输入你要拿的石子数（1或2）: 2</span><br><br>===== 游戏结束 =====<br><span class="hljs-section">剩余石子数: 0</span><br><span class="hljs-section">胜利者: O</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>第二次运行</li>
+</ul>
+<p>石子数量为9，AI先手，玩家后手（玩家随机走，不按取胜策略来）。此时AI往往能取胜。</p>
+<p>输出结果：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs makefile"><span class="hljs-section">当前剩余石子数: 9</span><br>AI（X）拿取了 1 颗石子<br><br><span class="hljs-section">当前剩余石子数: 8</span><br><span class="hljs-section">请输入你要拿的石子数（1或2）: 1</span><br><br><span class="hljs-section">当前剩余石子数: 7</span><br>AI（X）拿取了 1 颗石子<br><br><span class="hljs-section">当前剩余石子数: 6</span><br><span class="hljs-section">请输入你要拿的石子数（1或2）: 1</span><br><br><span class="hljs-section">当前剩余石子数: 5</span><br>AI（X）拿取了 2 颗石子<br><br><span class="hljs-section">当前剩余石子数: 3</span><br><span class="hljs-section">请输入你要拿的石子数（1或2）: 1</span><br><br><span class="hljs-section">当前剩余石子数: 2</span><br>AI（X）拿取了 2 颗石子<br><br>===== 游戏结束 =====<br><span class="hljs-section">剩余石子数: 0</span><br><span class="hljs-section">胜利者: X</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>第三次运行</li>
+</ul>
+<p>石子数量为10，AI先手，玩家后手（当石子数量不是3的倍数时，先手必赢）。</p>
+<p>第三次输出结果：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs makefile"><span class="hljs-section">当前剩余石子数: 10</span><br>AI（X）拿取了 1 颗石子<br><br><span class="hljs-section">当前剩余石子数: 9</span><br><span class="hljs-section">请输入你要拿的石子数（1或2）: 2</span><br><br><span class="hljs-section">当前剩余石子数: 7</span><br>AI（X）拿取了 1 颗石子<br><br><span class="hljs-section">当前剩余石子数: 6</span><br><span class="hljs-section">请输入你要拿的石子数（1或2）: 1</span><br><br><span class="hljs-section">当前剩余石子数: 5</span><br>AI（X）拿取了 2 颗石子<br><br><span class="hljs-section">当前剩余石子数: 3</span><br><span class="hljs-section">请输入你要拿的石子数（1或2）: 2</span><br><br><span class="hljs-section">当前剩余石子数: 1</span><br>AI（X）拿取了 1 颗石子<br><br>===== 游戏结束 =====<br><span class="hljs-section">剩余石子数: 0</span><br><span class="hljs-section">胜利者: X</span><br></code></pre></td></tr></table></figure>
+<p>可以看到，DeepSeek写的代码成功实现了MCTS算法，以及AI取胜的策略。这次，笔者真正感受到了DeepSeek
+R1推理模型的强大之处！</p>
+<p>如果我们再让DeepSeek
+R1模型实现下拿石子游戏的Gradio版本，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @file: picking_stone_gradio.py</span><br><br><span class="hljs-keyword">import</span> random<br><span class="hljs-keyword">import</span> gradio <span class="hljs-keyword">as</span> gr<br><span class="hljs-keyword">from</span> mcts <span class="hljs-keyword">import</span> MCTS, Node<br><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">Set</span>, <span class="hljs-type">Optional</span>, <span class="hljs-type">Any</span><br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">StoneGameState</span>(<span class="hljs-title class_ inherited__">Node</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, stones_remaining: <span class="hljs-built_in">int</span>, current_player: <span class="hljs-built_in">str</span></span>):<br>        self.stones_remaining = stones_remaining<br>        self.current_player = current_player  <span class="hljs-comment"># &quot;X&quot;或&quot;O&quot;</span><br><br><span class="hljs-meta">    @property</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">opponent</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-built_in">str</span>:<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;O&quot;</span> <span class="hljs-keyword">if</span> self.current_player == <span class="hljs-string">&quot;X&quot;</span> <span class="hljs-keyword">else</span> <span class="hljs-string">&quot;X&quot;</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">find_children</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-type">Set</span>[<span class="hljs-string">&quot;StoneGameState&quot;</span>]:<br>        children = <span class="hljs-built_in">set</span>()<br>        <span class="hljs-keyword">if</span> self.stones_remaining &gt;= <span class="hljs-number">1</span>:<br>            children.add(StoneGameState(self.stones_remaining - <span class="hljs-number">1</span>, self.opponent))<br>        <span class="hljs-keyword">if</span> self.stones_remaining &gt;= <span class="hljs-number">2</span>:<br>            children.add(StoneGameState(self.stones_remaining - <span class="hljs-number">2</span>, self.opponent))<br>        <span class="hljs-keyword">return</span> children<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">get_random_child</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-type">Optional</span>[<span class="hljs-string">&quot;StoneGameState&quot;</span>]:<br>        possible_moves = []<br>        <span class="hljs-keyword">if</span> self.stones_remaining &gt;= <span class="hljs-number">1</span>:<br>            possible_moves.append(<span class="hljs-number">1</span>)<br>        <span class="hljs-keyword">if</span> self.stones_remaining &gt;= <span class="hljs-number">2</span>:<br>            possible_moves.append(<span class="hljs-number">2</span>)<br>        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> possible_moves:<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">None</span><br>        move = random.choice(possible_moves)<br>        <span class="hljs-keyword">return</span> StoneGameState(self.stones_remaining - move, self.opponent)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">is_terminal</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-built_in">bool</span>:<br>        <span class="hljs-keyword">return</span> self.stones_remaining == <span class="hljs-number">0</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">reward</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-built_in">float</span>:<br>        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> self.is_terminal():<br>            <span class="hljs-keyword">raise</span> RuntimeError(<span class="hljs-string">&quot;reward() called on non-terminal node&quot;</span>)<br>        <span class="hljs-comment"># 当前玩家无法行动，输，返回0</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0.0</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__hash__</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-built_in">int</span>:<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">hash</span>((self.stones_remaining, self.current_player))<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__eq__</span>(<span class="hljs-params">self, other: <span class="hljs-type">Any</span></span>) -&gt; <span class="hljs-built_in">bool</span>:<br>        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> <span class="hljs-built_in">isinstance</span>(other, StoneGameState):<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span><br>        <span class="hljs-keyword">return</span> (<br>            self.stones_remaining == other.stones_remaining<br>            <span class="hljs-keyword">and</span> self.current_player == other.current_player<br>        )<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__repr__</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-built_in">str</span>:<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">f&quot;Stones: <span class="hljs-subst">&#123;self.stones_remaining&#125;</span>, Player: <span class="hljs-subst">&#123;self.current_player&#125;</span>&quot;</span><br><br><br><span class="hljs-comment"># 全局状态存储</span><br>current_state = <span class="hljs-literal">None</span><br>mcts = MCTS()<br>message_history = []<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">start_game</span>(<span class="hljs-params">stones_num</span>):<br>    <span class="hljs-keyword">global</span> current_state, mcts, message_history<br>    current_state = StoneGameState(<span class="hljs-built_in">int</span>(stones_num), <span class="hljs-string">&quot;X&quot;</span>)<br>    mcts = MCTS()<br>    message_history = [<span class="hljs-string">f&quot;🏁 初始石子: <span class="hljs-subst">&#123;stones_num&#125;</span>🪨&quot;</span>]<br><br>    <span class="hljs-keyword">if</span> current_state.stones_remaining &gt; <span class="hljs-number">0</span>:<br>        <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1000</span>):<br>            mcts.simulate(current_state)<br>        best_move = mcts.select_best_move(current_state)<br>        ai_move = current_state.stones_remaining - best_move.stones_remaining<br>        message_history.append(<span class="hljs-string">f&quot;🖥️ 拿走 <span class="hljs-subst">&#123;ai_move&#125;</span>🪨 → 剩余 <span class="hljs-subst">&#123;best_move.stones_remaining&#125;</span>🪨&quot;</span>)<br>        current_state = best_move<br><br>    <span class="hljs-keyword">return</span> update_ui()<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">player_move</span>(<span class="hljs-params">move: <span class="hljs-built_in">int</span></span>):<br>    <span class="hljs-keyword">global</span> current_state, mcts, message_history<br><br>    <span class="hljs-keyword">if</span> current_state <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">or</span> current_state.is_terminal():<br>        <span class="hljs-keyword">return</span> update_ui()<br><br>    new_stones = current_state.stones_remaining - move<br>    message_history.append(<span class="hljs-string">f&quot;👤 拿走 <span class="hljs-subst">&#123;move&#125;</span>🪨 → 剩余 <span class="hljs-subst">&#123;new_stones&#125;</span>🪨&quot;</span>)<br>    current_state = StoneGameState(new_stones, <span class="hljs-string">&quot;X&quot;</span>)<br><br>    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> current_state.is_terminal():<br>        <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1000</span>):<br>            mcts.simulate(current_state)<br>        best_move = mcts.select_best_move(current_state)<br>        ai_move = current_state.stones_remaining - best_move.stones_remaining<br>        message_history.append(<span class="hljs-string">f&quot;🖥️ 拿走 <span class="hljs-subst">&#123;ai_move&#125;</span>🪨 → 剩余 <span class="hljs-subst">&#123;best_move.stones_remaining&#125;</span>🪨&quot;</span>)<br>        current_state = best_move<br><br>    <span class="hljs-keyword">return</span> update_ui()<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">update_ui</span>():<br>    <span class="hljs-keyword">global</span> current_state, message_history<br>    <span class="hljs-keyword">if</span> current_state <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>        <span class="hljs-keyword">return</span> (<br>            <span class="hljs-string">&quot;&lt;div class=&#x27;history&#x27;&gt;等待游戏开始...&lt;/div&gt;&quot;</span>,<br>            <span class="hljs-string">&quot;🕹️ 点击开始按钮&quot;</span>,<br>            gr.Row(visible=<span class="hljs-literal">False</span>),<br>            <span class="hljs-string">&quot;&quot;</span><br>        )<br><br>    history_html = <span class="hljs-string">&quot;&lt;div class=&#x27;history&#x27;&gt;&quot;</span> + <span class="hljs-string">&quot;&lt;br&gt;&quot;</span>.join(message_history) + <span class="hljs-string">&quot;&lt;/div&gt;&quot;</span><br><br>    <span class="hljs-keyword">if</span> current_state.is_terminal():<br>        winner = <span class="hljs-string">&quot;🖥️ AI&quot;</span> <span class="hljs-keyword">if</span> current_state.current_player == <span class="hljs-string">&quot;O&quot;</span> <span class="hljs-keyword">else</span> <span class="hljs-string">&quot;👤 玩家&quot;</span><br>        <span class="hljs-keyword">return</span> (<br>            history_html,<br>            <span class="hljs-string">f&quot;🏆 游戏结束 | 胜者: <span class="hljs-subst">&#123;winner&#125;</span>&quot;</span>,<br>            gr.Row(visible=<span class="hljs-literal">False</span>),<br>            <span class="hljs-string">f&quot;&lt;div class=&#x27;winner&#x27;&gt;<span class="hljs-subst">&#123;winner&#125;</span> 🎉 获胜！&lt;/div&gt;&quot;</span><br>        )<br><br>    <span class="hljs-keyword">return</span> (<br>        history_html,<br>        <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;<span class="hljs-string">&#x27;🖥️ AI&#x27;</span> <span class="hljs-keyword">if</span> current_state.current_player == <span class="hljs-string">&#x27;X&#x27;</span> <span class="hljs-keyword">else</span> <span class="hljs-string">&#x27;👤 玩家&#x27;</span>&#125;</span> 回合 | 剩余: <span class="hljs-subst">&#123;current_state.stones_remaining&#125;</span>🪨&quot;</span>,<br>        gr.Row(visible=current_state.current_player == <span class="hljs-string">&quot;O&quot;</span>),<br>        <span class="hljs-string">&quot;&quot;</span><br>    )<br><br><br>css = <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">.history &#123; </span><br><span class="hljs-string">    padding: 15px;</span><br><span class="hljs-string">    border: 1px solid #eee;</span><br><span class="hljs-string">    border-radius: 8px;</span><br><span class="hljs-string">    max-height: 300px;</span><br><span class="hljs-string">    overflow-y: auto;</span><br><span class="hljs-string">&#125;</span><br><span class="hljs-string">.winner &#123;</span><br><span class="hljs-string">    padding: 20px;</span><br><span class="hljs-string">    background: #4CAF50;</span><br><span class="hljs-string">    color: white;</span><br><span class="hljs-string">    border-radius: 8px;</span><br><span class="hljs-string">    margin-top: 15px;</span><br><span class="hljs-string">    text-align: center;</span><br><span class="hljs-string">&#125;</span><br><span class="hljs-string">&quot;&quot;&quot;</span><br><br><span class="hljs-keyword">with</span> gr.Blocks(css=css) <span class="hljs-keyword">as</span> demo:<br>    gr.Markdown(<span class="hljs-string">&quot;# 🪨 石子对战&quot;</span>)<br><br>    <span class="hljs-keyword">with</span> gr.Accordion(<span class="hljs-string">&quot;📚 游戏规则&quot;</span>):<br>        gr.Markdown(<span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        ### 🎯 玩法：</span><br><span class="hljs-string">        1. 初始设置石子数量</span><br><span class="hljs-string">        2. AI先手拿取1-2颗石子</span><br><span class="hljs-string">        3. 玩家后手拿取1-2颗石子</span><br><span class="hljs-string">        4. **拿到最后一颗石子者胜**</span><br><span class="hljs-string">        &quot;&quot;&quot;</span>)<br><br>    <span class="hljs-keyword">with</span> gr.Row():<br>        stones_input = gr.Number(label=<span class="hljs-string">&quot;🪨 石子数量&quot;</span>, value=<span class="hljs-number">10</span>, minimum=<span class="hljs-number">3</span>, maximum=<span class="hljs-number">20</span>)<br>        start_btn = gr.Button(<span class="hljs-string">&quot;🚀 开始游戏&quot;</span>, variant=<span class="hljs-string">&quot;primary&quot;</span>)<br><br>    history = gr.HTML(label=<span class="hljs-string">&quot;📜 对战记录&quot;</span>)<br>    status = gr.HTML(label=<span class="hljs-string">&quot;📊 实时状态&quot;</span>)<br><br>    <span class="hljs-keyword">with</span> gr.Row(visible=<span class="hljs-literal">False</span>) <span class="hljs-keyword">as</span> controls:<br>        move1_btn = gr.Button(<span class="hljs-string">&quot;🪨 拿1颗&quot;</span>, variant=<span class="hljs-string">&quot;secondary&quot;</span>)<br>        move2_btn = gr.Button(<span class="hljs-string">&quot;🪨🪨 拿2颗&quot;</span>, variant=<span class="hljs-string">&quot;secondary&quot;</span>)<br><br>    result = gr.HTML(visible=<span class="hljs-literal">False</span>)<br><br>    start_btn.click(<br>        start_game,<br>        inputs=[stones_input],<br>        outputs=[history, status, controls, result]<br>    )<br>    move1_btn.click(<br>        <span class="hljs-keyword">lambda</span>: player_move(<span class="hljs-number">1</span>),<br>        outputs=[history, status, controls, result]<br>    )<br>    move2_btn.click(<br>        <span class="hljs-keyword">lambda</span>: player_move(<span class="hljs-number">2</span>),<br>        outputs=[history, status, controls, result]<br>    )<br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    demo.launch()<br></code></pre></td></tr></table></figure>
+<p>脚本可成功运行，效果图如下：</p>
+<p><img src="https://s2.loli.net/2025/02/08/S3xMFzegyRXfCJp.png" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="总结">总结</h2>
+<p>本文将会介绍了使用DeepSeek
+R1推理模型来实现基于MCTS算法的拿石子游戏，并且深深感受到了R1模型的强大之处！</p>
+<p>如果让笔者来实现上述拿石子游戏的代码，也许可能需要1-2天，但DeepSeek经过笔者的几次Prompt调试，就成功完成了Python代码，这样的功能和效果无疑是让人震惊的！</p>
+<p>本文中的代码已开源至Github，网址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/mcts_learning">https://github.com/percent4/mcts_learning</a>。</p>
+<p>欢迎大家持续关注~</p>
+<p>欢迎关注我的公众号<strong>NLP奇幻之旅</strong>，原创技术文章第一时间推送。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+<p>欢迎关注我的知识星球“<strong>自然语言处理奇幻之旅</strong>”，笔者正在努力构建自己的技术社区。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Python/" class="category-chain-item">Python</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/MCTS/" class="print-no-link">#MCTS</a>
+      
+        <a href="/tags/DeepSeek/" class="print-no-link">#DeepSeek</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>利用DeepSeek实现拿石子游戏：MCTS算法的深度探索</div>
+      <div>https://percent4.github.io/利用DeepSeek实现拿石子游戏：MCTS算法的深度探索/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年2月21日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/%E8%BF%88%E5%90%91%E6%99%BA%E8%83%BD%E5%86%B3%E7%AD%96%EF%BC%9A%E8%92%99%E7%89%B9%E5%8D%A1%E6%B4%9B%E6%A0%91%E6%90%9C%E7%B4%A2%EF%BC%88MCTS%EF%BC%89%E7%9A%84%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF/" title="迈向智能决策：蒙特卡洛树搜索（MCTS）的探索之路">
+                        <span class="hidden-mobile">迈向智能决策：蒙特卡洛树搜索（MCTS）的探索之路</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
