@@ -1,0 +1,873 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍如何使用Python中的ORM框架(&#96;sqlalchemy&#96;和&#96;sqlmodel&#96;)来操作MySQL数据库。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用ORM框架操作MySQL数据库">
+<meta property="og:url" content="https://percent4.github.io/%E4%BD%BF%E7%94%A8ORM%E6%A1%86%E6%9E%B6%E6%93%8D%E4%BD%9CMySQL%E6%95%B0%E6%8D%AE%E5%BA%93/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍如何使用Python中的ORM框架(&#96;sqlalchemy&#96;和&#96;sqlmodel&#96;)来操作MySQL数据库。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg">
+<meta property="article:published_time" content="2025-04-27T14:31:53.000Z">
+<meta property="article:modified_time" content="2025-04-27T14:33:57.652Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="MySQL">
+<meta property="article:tag" content="ORM">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+  
+  
+  
+  <title>使用ORM框架操作MySQL数据库 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="使用ORM框架操作MySQL数据库"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-04-27 22:31" pubdate>
+          星期日, 四月 27日 2025, 10:31 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          22k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          183 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">使用ORM框架操作MySQL数据库</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍如何使用Python中的ORM框架(<code>sqlalchemy</code>和<code>sqlmodel</code>)来操作MySQL数据库。</p>
+</blockquote>
+<p>在文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/lr0b1v6tsmppJlz9MbPSYQ">使用SQLAlchemy操作MySQL</a>中，笔者介绍了如何使用<code>sqlalchemy</code>模块来操作MySQL数据库。</p>
+<p>本文将在此基础上，对Python的两个ORM框架(<code>sqlalchemy</code>和<code>sqlmodel</code>)进行更为详细的介绍，包含内容如下：</p>
+<ul>
+<li>MySQL数据库启动</li>
+<li>ORM框架创建表格</li>
+<li>ORM框架实现同步CRUD</li>
+<li>ORM框架实现异步CRUD</li>
+</ul>
+<p>本文所演示的Python代码已上传至Github，网址为: <a
+target="_blank" rel="noopener" href="https://github.com/percent4/ORM_test">https://github.com/percent4/ORM_test</a>
+.</p>
+<h2 id="mysql数据库启动">MySQL数据库启动</h2>
+<p>本文采用Docker
+Compose方案来启动MySQL数据库，<code>docker-compose.yml</code>文件配置如下：</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs yml"><span class="hljs-attr">version:</span> <span class="hljs-string">&#x27;3&#x27;</span><br><br><span class="hljs-attr">services:</span><br>  <span class="hljs-attr">mysql8.0:</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">mysql:8.0</span><br>    <span class="hljs-attr">container_name:</span> <span class="hljs-string">mysql8.0</span><br>    <span class="hljs-attr">restart:</span> <span class="hljs-string">always</span><br>    <span class="hljs-attr">environment:</span><br>      <span class="hljs-attr">TZ:</span> <span class="hljs-string">Asia/Shanghai</span><br>      <span class="hljs-attr">MYSQL_ROOT_PASSWORD:</span> <span class="hljs-string">root</span><br>      <span class="hljs-attr">MYSQL_DATABASE:</span> <span class="hljs-string">orm_test</span><br>    <span class="hljs-attr">ports:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-number">3306</span><span class="hljs-string">:3306</span><br>    <span class="hljs-attr">volumes:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">./mysql/data/:/var/lib/mysql/</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">./mysql/conf/:/etc/mysql/conf.d/</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">./mysql/init/:/docker-entrypoint-initdb.d/</span><br>    <span class="hljs-attr">command:</span><br>      <span class="hljs-comment"># 将mysql8.0默认密码策略修改为原先策略 (mysql8.0对其默认策略做了更改 会导致密码无法匹配)</span><br>      <span class="hljs-string">--default-authentication-plugin=mysql_native_password</span><br>      <span class="hljs-string">--character-set-server=utf8mb4</span><br>      <span class="hljs-string">--collation-server=utf8mb4_general_ci</span><br>      <span class="hljs-string">--explicit_defaults_for_timestamp=true</span><br>    <span class="hljs-attr">networks:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">mysql_elk_net</span><br><br><span class="hljs-comment"># 网络配置</span><br><span class="hljs-attr">networks:</span><br>  <span class="hljs-attr">mysql_elk_net:</span><br>    <span class="hljs-attr">driver:</span> <span class="hljs-string">bridge</span><br></code></pre></td></tr></table></figure>
+<h2 id="orm框架创建表格">ORM框架创建表格</h2>
+<p>Python模块中对数据库操作常用ORM框架，常见的ORM框架主要有<code>sqlalchemy</code>和<code>sqlmodel</code>。</p>
+<p>我们以创建<code>users</code>表格为例，<code>sqlalchemy</code>的创建表格代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime <span class="hljs-keyword">as</span> dt<br><span class="hljs-keyword">from</span> sqlalchemy.dialects.mysql <span class="hljs-keyword">import</span> INTEGER, VARCHAR, DATETIME<br><span class="hljs-keyword">from</span> sqlalchemy <span class="hljs-keyword">import</span> Column<br><span class="hljs-keyword">from</span> sqlalchemy <span class="hljs-keyword">import</span> create_engine<br><span class="hljs-keyword">from</span> sqlalchemy.ext.declarative <span class="hljs-keyword">import</span> declarative_base<br>Base = declarative_base()<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Users</span>(<span class="hljs-title class_ inherited__">Base</span>):<br>    __tablename__ = <span class="hljs-string">&#x27;users&#x27;</span><br><br>    <span class="hljs-built_in">id</span> = Column(INTEGER, primary_key=<span class="hljs-literal">True</span>, autoincrement=<span class="hljs-literal">True</span>)<br>    name = Column(VARCHAR(<span class="hljs-number">256</span>), nullable=<span class="hljs-literal">False</span>)<br>    age = Column(INTEGER, nullable=<span class="hljs-literal">True</span>)<br>    place = Column(VARCHAR(<span class="hljs-number">256</span>), nullable=<span class="hljs-literal">True</span>)<br>    insert_time = Column(DATETIME, default=dt.now())<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__repr__</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">f&quot;User(id=<span class="hljs-subst">&#123;self.<span class="hljs-built_in">id</span>&#125;</span>, name=<span class="hljs-subst">&#123;self.name&#125;</span>, age=<span class="hljs-subst">&#123;self.age&#125;</span>, place=<span class="hljs-subst">&#123;self.place&#125;</span>))&quot;</span><br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">init_db</span>():<br>    engine = create_engine(<br>        <span class="hljs-string">&quot;mysql+pymysql://root:root@localhost:3306/orm_test&quot;</span>,<br>        echo=<span class="hljs-literal">True</span><br>    )<br>    <span class="hljs-comment"># 创建表</span><br>    Base.metadata.create_all(engine)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Create table successfully!&#x27;</span>)<br>    <span class="hljs-comment"># 删除表</span><br>    <span class="hljs-comment"># Base.metadata.drop_all(engine)</span><br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    init_db()<br></code></pre></td></tr></table></figure>
+<p><code>sqlmodel</code>模块创建表格的代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime <span class="hljs-keyword">as</span> dt<br><span class="hljs-keyword">from</span> sqlmodel <span class="hljs-keyword">import</span> Field, SQLModel, create_engine<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Users</span>(SQLModel, table=<span class="hljs-literal">True</span>):<br>    <span class="hljs-comment"># add table name</span><br>    __tablename__ = <span class="hljs-string">&quot;users&quot;</span><br>    <span class="hljs-built_in">id</span>: <span class="hljs-built_in">int</span> = Field(primary_key=<span class="hljs-literal">True</span>, nullable=<span class="hljs-literal">False</span>)<br>    name: <span class="hljs-built_in">str</span> = Field(nullable=<span class="hljs-literal">False</span>)<br>    age: <span class="hljs-built_in">int</span> = Field(nullable=<span class="hljs-literal">True</span>)<br>    place: <span class="hljs-built_in">str</span> = Field(nullable=<span class="hljs-literal">True</span>)<br>    insert_time: dt = Field(nullable=<span class="hljs-literal">True</span>, default=dt.now())<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__repr__</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">f&quot;Users(id=<span class="hljs-subst">&#123;self.<span class="hljs-built_in">id</span>&#125;</span>, name=<span class="hljs-subst">&#123;self.name&#125;</span>, age=<span class="hljs-subst">&#123;self.age&#125;</span>, place=<span class="hljs-subst">&#123;self.place&#125;</span>)&quot;</span><br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    <span class="hljs-comment"># 创建数据库引擎</span><br>    sqlite_url = <span class="hljs-string">&quot;mysql+pymysql://root:root@localhost:3306/orm_test&quot;</span><br>    engine = create_engine(sqlite_url, echo=<span class="hljs-literal">True</span>)<br><br>    <span class="hljs-comment"># 创建所有表</span><br>    SQLModel.metadata.create_all(engine)<br>    <span class="hljs-comment"># 删除所有表</span><br>    <span class="hljs-comment"># SQLModel.metadata.drop_all(engine)</span><br></code></pre></td></tr></table></figure>
+<p>创建的<code>users</code>表结构描述如下：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs gherkin">mysql&gt; desc users;<br>+-------------+--------------+------+-----+---------+----------------+<br>|<span class="hljs-string"> Field       </span>|<span class="hljs-string"> Type         </span>|<span class="hljs-string"> Null </span>|<span class="hljs-string"> Key </span>|<span class="hljs-string"> Default </span>|<span class="hljs-string"> Extra          </span>|<br>+-------------+--------------+------+-----+---------+----------------+<br>|<span class="hljs-string"> id          </span>|<span class="hljs-string"> int          </span>|<span class="hljs-string"> NO   </span>|<span class="hljs-string"> PRI </span>|<span class="hljs-string"> NULL    </span>|<span class="hljs-string"> auto_increment </span>|<br>|<span class="hljs-string"> name        </span>|<span class="hljs-string"> varchar(256) </span>|<span class="hljs-string"> NO   </span>|<span class="hljs-string">     </span>|<span class="hljs-string"> NULL    </span>|<span class="hljs-string">                </span>|<br>|<span class="hljs-string"> age         </span>|<span class="hljs-string"> int          </span>|<span class="hljs-string"> YES  </span>|<span class="hljs-string">     </span>|<span class="hljs-string"> NULL    </span>|<span class="hljs-string">                </span>|<br>|<span class="hljs-string"> place       </span>|<span class="hljs-string"> varchar(256) </span>|<span class="hljs-string"> YES  </span>|<span class="hljs-string">     </span>|<span class="hljs-string"> NULL    </span>|<span class="hljs-string">                </span>|<br>|<span class="hljs-string"> insert_time </span>|<span class="hljs-string"> datetime     </span>|<span class="hljs-string"> YES  </span>|<span class="hljs-string">     </span>|<span class="hljs-string"> NULL    </span>|<span class="hljs-string">                </span>|<br>+-------------+--------------+------+-----+---------+----------------+<br></code></pre></td></tr></table></figure>
+<h2 id="orm框架实现同步crud">ORM框架实现同步CRUD</h2>
+<p>常见的MySQL数据库操作为新增(Create)、查询(Read)、修改(Update)、删除(Delete),即CRUD.</p>
+<ul>
+<li>使用<code>sqlalchemy</code>模块来实现同步CRUD</li>
+</ul>
+<p>Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> sqlalchemy <span class="hljs-keyword">import</span> create_engine<br><span class="hljs-keyword">from</span> sqlalchemy.orm <span class="hljs-keyword">import</span> sessionmaker<br><span class="hljs-keyword">from</span> contextlib <span class="hljs-keyword">import</span> contextmanager<br><br><span class="hljs-keyword">from</span> src.models.sqlalchemy_create_table <span class="hljs-keyword">import</span> Users<br><br><span class="hljs-comment"># 初始化数据库连接</span><br>engine = create_engine(<span class="hljs-string">&quot;mysql+pymysql://root:root@localhost:3306/orm_test&quot;</span>)<br>DBSession = sessionmaker(bind=engine)<br>session = DBSession()<br><br><br><span class="hljs-comment"># 封装为上下文管理器</span><br><span class="hljs-meta">@contextmanager</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">session_maker</span>(<span class="hljs-params">session=session</span>):<br>    <span class="hljs-keyword">try</span>:<br>        <span class="hljs-keyword">yield</span> session<br>        session.commit()<br>    <span class="hljs-keyword">except</span> Exception: <span class="hljs-comment"># noqa</span><br>        session.rollback()<br>        <span class="hljs-keyword">raise</span><br>    <span class="hljs-keyword">finally</span>:<br>        session.close()<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">insert_data</span>():<br>    <span class="hljs-keyword">with</span> session_maker() <span class="hljs-keyword">as</span> db_session:<br>        <span class="hljs-comment"># 插入单条数据</span><br>        entity = &#123;<span class="hljs-string">&#x27;name&#x27;</span>: <span class="hljs-string">&#x27;Jack&#x27;</span>, <span class="hljs-string">&#x27;age&#x27;</span>: <span class="hljs-number">25</span>, <span class="hljs-string">&#x27;place&#x27;</span>: <span class="hljs-string">&#x27;USA&#x27;</span>&#125;<br>        db_session.add(Users(**entity))<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;插入1条数据&quot;</span>)<br><br>    <span class="hljs-keyword">with</span> session_maker() <span class="hljs-keyword">as</span> db_session:<br>        <span class="hljs-comment"># 插入多条数据</span><br>        users = [<br>            &#123;<span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;Green&quot;</span>, <span class="hljs-string">&quot;age&quot;</span>: <span class="hljs-number">26</span>, <span class="hljs-string">&quot;place&quot;</span>: <span class="hljs-string">&quot;UK&quot;</span>&#125;,<br>            &#123;<span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;Alex&quot;</span>, <span class="hljs-string">&quot;age&quot;</span>: <span class="hljs-number">31</span>, <span class="hljs-string">&quot;place&quot;</span>: <span class="hljs-string">&quot;GER&quot;</span>&#125;,<br>            &#123;<span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;Chen&quot;</span>, <span class="hljs-string">&quot;age&quot;</span>: <span class="hljs-number">52</span>, <span class="hljs-string">&quot;place&quot;</span>: <span class="hljs-string">&quot;CHN&quot;</span>&#125;,<br>            &#123;<span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;Zhang&quot;</span>, <span class="hljs-string">&quot;age&quot;</span>: <span class="hljs-number">42</span>, <span class="hljs-string">&quot;place&quot;</span>: <span class="hljs-string">&quot;CHN&quot;</span>&#125;<br>        ]<br>        entities = [Users(**user) <span class="hljs-keyword">for</span> user <span class="hljs-keyword">in</span> users]<br>        db_session.add_all(entities)<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;插入<span class="hljs-subst">&#123;<span class="hljs-built_in">len</span>(entities)&#125;</span>条数据&quot;</span>)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">query_data</span>():<br>    <span class="hljs-keyword">with</span> session_maker() <span class="hljs-keyword">as</span> db_session:<br>        <span class="hljs-comment"># 查询第1条数据</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;查询第1条数据&quot;</span>)<br>        user = db_session.query(Users).first()<br>        <span class="hljs-built_in">print</span>(user)<br>        <span class="hljs-comment"># 查询所有数据</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;查询所有数据&quot;</span>)<br>        users = db_session.query(Users).<span class="hljs-built_in">all</span>()<br>        <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> users:<br>            <span class="hljs-built_in">print</span>(u)<br>        <span class="hljs-comment"># 查询指定字段</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;查询指定字段: name, age&quot;</span>)<br>        user = db_session.query(Users.name, Users.age).<span class="hljs-built_in">all</span>()<br>        <span class="hljs-built_in">print</span>(user)<br>        <span class="hljs-comment"># 条件查询1</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;条件查询: age &gt; 30&quot;</span>)<br>        user = db_session.query(Users).<span class="hljs-built_in">filter</span>(Users.age &gt; <span class="hljs-number">30</span>).<span class="hljs-built_in">all</span>()<br>        <span class="hljs-built_in">print</span>(user)<br>        <span class="hljs-comment"># 条件查询2</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;条件查询: age &gt; 50 and place == &#x27;CHN&#x27;&quot;</span>)<br>        user = db_session.query(Users).<span class="hljs-built_in">filter</span>(Users.age &gt; <span class="hljs-number">50</span>, Users.place == <span class="hljs-string">&#x27;CHN&#x27;</span>).<span class="hljs-built_in">all</span>()<br>        <span class="hljs-built_in">print</span>(user)<br>        <span class="hljs-comment"># 排序查询</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;排序查询&quot;</span>)<br>        user = db_session.query(Users).order_by(Users.age.desc()).<span class="hljs-built_in">all</span>()<br>        <span class="hljs-built_in">print</span>(user)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">update_data</span>():<br>    <span class="hljs-keyword">with</span> session_maker() <span class="hljs-keyword">as</span> db_session:<br>        <span class="hljs-comment"># 更新数据</span><br>        <span class="hljs-comment"># 1. 查询数据</span><br>        user = db_session.query(Users).<span class="hljs-built_in">filter</span>(Users.name == <span class="hljs-string">&#x27;Zhang&#x27;</span>).first()<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;更新前数据: &quot;</span>, user)<br>        <span class="hljs-comment"># 2. 更新数据</span><br>        user.age = <span class="hljs-number">45</span><br>        db_session.flush()<br>        <span class="hljs-comment"># 3. 再次查询数据</span><br>        user = db_session.query(Users).<span class="hljs-built_in">filter</span>(Users.name == <span class="hljs-string">&#x27;Zhang&#x27;</span>).first()<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;更新后数据: &quot;</span>, user)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">delete_data</span>():<br>    <span class="hljs-keyword">with</span> session_maker() <span class="hljs-keyword">as</span> db_session:<br>        <span class="hljs-comment"># 删除数据</span><br>        <span class="hljs-comment"># 1. 查询数据</span><br>        user = db_session.query(Users).<span class="hljs-built_in">filter</span>(Users.name == <span class="hljs-string">&#x27;Zhang&#x27;</span>).first()<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;删除前数据: &quot;</span>, user)<br>        <span class="hljs-comment"># 2. 删除数据</span><br>        db_session.delete(user)<br>        db_session.flush()<br>        <span class="hljs-comment"># 3. 再次查询数据</span><br>        user = db_session.query(Users).<span class="hljs-built_in">filter</span>(Users.name == <span class="hljs-string">&#x27;Zhang&#x27;</span>).first()<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;删除后数据: &quot;</span>, user)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;*&#x27;</span> * <span class="hljs-number">20</span>, <span class="hljs-string">&#x27;插入数据&#x27;</span>, <span class="hljs-string">&#x27;*&#x27;</span> * <span class="hljs-number">20</span>)<br>    insert_data()<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;*&#x27;</span> * <span class="hljs-number">20</span>, <span class="hljs-string">&#x27;查询数据&#x27;</span>, <span class="hljs-string">&#x27;*&#x27;</span> * <span class="hljs-number">20</span>)<br>    query_data()<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;*&#x27;</span> * <span class="hljs-number">20</span>, <span class="hljs-string">&#x27;更新数据&#x27;</span>, <span class="hljs-string">&#x27;*&#x27;</span> * <span class="hljs-number">20</span>)<br>    update_data()<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;*&#x27;</span> * <span class="hljs-number">20</span>, <span class="hljs-string">&#x27;删除数据&#x27;</span>, <span class="hljs-string">&#x27;*&#x27;</span> * <span class="hljs-number">20</span>)<br>    delete_data()<br></code></pre></td></tr></table></figure>
+<ul>
+<li>使用<code>sqlmodel</code>模块来实现同步CRUD</li>
+</ul>
+<p>Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> contextlib <span class="hljs-keyword">import</span> contextmanager<br><span class="hljs-keyword">from</span> sqlmodel <span class="hljs-keyword">import</span> create_engine, Session, select<br><br><span class="hljs-keyword">from</span> src.models.sqlmodel_create_table <span class="hljs-keyword">import</span> Users<br><br><span class="hljs-comment"># 创建数据库引擎</span><br>mysql_url = <span class="hljs-string">&quot;mysql+pymysql://root:root@localhost:3306/orm_test&quot;</span><br>engine = create_engine(mysql_url)<br><br><br><span class="hljs-comment"># 封装上下文</span><br><span class="hljs-meta">@contextmanager</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">session_maker</span>(<span class="hljs-params">session=Session(<span class="hljs-params">engine</span>)</span>):<br>    <span class="hljs-keyword">try</span>:<br>        <span class="hljs-keyword">yield</span> session<br>        session.commit()<br>    <span class="hljs-keyword">except</span> Exception: <span class="hljs-comment"># noqa</span><br>        session.rollback()<br>        <span class="hljs-keyword">raise</span><br>    <span class="hljs-keyword">finally</span>:<br>        session.close()<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">insert_data</span>():<br>    <span class="hljs-keyword">with</span> session_maker() <span class="hljs-keyword">as</span> db_session:<br>        <span class="hljs-comment"># 插入单条数据</span><br>        entity = &#123;<span class="hljs-string">&#x27;name&#x27;</span>: <span class="hljs-string">&#x27;Jack&#x27;</span>, <span class="hljs-string">&#x27;age&#x27;</span>: <span class="hljs-number">25</span>, <span class="hljs-string">&#x27;place&#x27;</span>: <span class="hljs-string">&#x27;USA&#x27;</span>&#125;<br>        db_session.add(Users(**entity))<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;插入1条数据&quot;</span>)<br><br>    <span class="hljs-keyword">with</span> session_maker() <span class="hljs-keyword">as</span> db_session:<br>        <span class="hljs-comment"># 插入多条数据</span><br>        users = [<br>            &#123;<span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;Green&quot;</span>, <span class="hljs-string">&quot;age&quot;</span>: <span class="hljs-number">26</span>, <span class="hljs-string">&quot;place&quot;</span>: <span class="hljs-string">&quot;UK&quot;</span>&#125;,<br>            &#123;<span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;Alex&quot;</span>, <span class="hljs-string">&quot;age&quot;</span>: <span class="hljs-number">31</span>, <span class="hljs-string">&quot;place&quot;</span>: <span class="hljs-string">&quot;GER&quot;</span>&#125;,<br>            &#123;<span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;Chen&quot;</span>, <span class="hljs-string">&quot;age&quot;</span>: <span class="hljs-number">52</span>, <span class="hljs-string">&quot;place&quot;</span>: <span class="hljs-string">&quot;CHN&quot;</span>&#125;,<br>            &#123;<span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;Zhang&quot;</span>, <span class="hljs-string">&quot;age&quot;</span>: <span class="hljs-number">42</span>, <span class="hljs-string">&quot;place&quot;</span>: <span class="hljs-string">&quot;CHN&quot;</span>&#125;<br>        ]<br>        entities = [Users(**user) <span class="hljs-keyword">for</span> user <span class="hljs-keyword">in</span> users]<br>        db_session.add_all(entities)<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;插入<span class="hljs-subst">&#123;<span class="hljs-built_in">len</span>(entities)&#125;</span>条数据&quot;</span>)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">query_data</span>():<br>    <span class="hljs-keyword">with</span> session_maker() <span class="hljs-keyword">as</span> db_session:<br>        <span class="hljs-comment"># 查询第1条数据</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;查询第1条数据&quot;</span>)<br>        statement = select(Users)<br>        user = db_session.<span class="hljs-built_in">exec</span>(statement).first()<br>        <span class="hljs-built_in">print</span>(user)<br>        <span class="hljs-comment"># 查询所有数据</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;查询所有数据&quot;</span>)<br>        statement = select(Users)<br>        users = db_session.<span class="hljs-built_in">exec</span>(statement).<span class="hljs-built_in">all</span>()<br>        <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> users:<br>            <span class="hljs-built_in">print</span>(u)<br>        <span class="hljs-comment"># 查询指定字段</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;查询指定字段: name, age&quot;</span>)<br>        statement = select(Users.name, Users.age)<br>        users = db_session.<span class="hljs-built_in">exec</span>(statement).<span class="hljs-built_in">all</span>()<br>        <span class="hljs-built_in">print</span>(users)<br>        <span class="hljs-comment"># 条件查询1</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;条件查询: age &gt; 30&quot;</span>)<br>        statement = select(Users).where(Users.age &gt; <span class="hljs-number">30</span>)<br>        users = db_session.<span class="hljs-built_in">exec</span>(statement).<span class="hljs-built_in">all</span>()<br>        <span class="hljs-built_in">print</span>(users)<br>        <span class="hljs-comment"># 条件查询2</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;条件查询: age &gt; 50 and place == &#x27;CHN&#x27;&quot;</span>)<br>        statement = select(Users).where(Users.age &gt; <span class="hljs-number">50</span>, Users.place == <span class="hljs-string">&#x27;CHN&#x27;</span>)<br>        users = db_session.<span class="hljs-built_in">exec</span>(statement).<span class="hljs-built_in">all</span>()<br>        <span class="hljs-built_in">print</span>(users)<br>        <span class="hljs-comment"># # 排序查询</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;排序查询&quot;</span>)<br>        statement = select(Users).order_by(Users.age.desc())<br>        users = db_session.<span class="hljs-built_in">exec</span>(statement).<span class="hljs-built_in">all</span>()<br>        <span class="hljs-built_in">print</span>(users)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">update_data</span>():<br>    <span class="hljs-keyword">with</span> session_maker() <span class="hljs-keyword">as</span> db_session:<br>        <span class="hljs-comment"># 更新数据</span><br>        <span class="hljs-comment"># 1. 查询数据</span><br>        statement = select(Users).where(Users.name == <span class="hljs-string">&#x27;Zhang&#x27;</span>)<br>        user = db_session.<span class="hljs-built_in">exec</span>(statement).first()<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;更新前数据: &quot;</span>, user)<br>        <span class="hljs-comment"># 2. 更新数据</span><br>        user.age = <span class="hljs-number">45</span><br>        db_session.flush()<br>        <span class="hljs-comment"># 3. 再次查询数据</span><br>        statement = select(Users).where(Users.name == <span class="hljs-string">&#x27;Zhang&#x27;</span>)<br>        user = db_session.<span class="hljs-built_in">exec</span>(statement).first()<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;更新后数据: &quot;</span>, user)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">delete_data</span>():<br>    <span class="hljs-keyword">with</span> session_maker() <span class="hljs-keyword">as</span> db_session:<br>        <span class="hljs-comment"># 删除数据</span><br>        <span class="hljs-comment"># 1. 查询数据</span><br>        statement = select(Users).where(Users.name == <span class="hljs-string">&#x27;Zhang&#x27;</span>)<br>        user = db_session.<span class="hljs-built_in">exec</span>(statement).first()<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;删除前数据: &quot;</span>, user)<br>        <span class="hljs-comment"># 2. 删除数据</span><br>        db_session.delete(user)<br>        db_session.flush()<br>        <span class="hljs-comment"># 3. 再次查询数据</span><br>        statement = select(Users).where(Users.name == <span class="hljs-string">&#x27;Zhang&#x27;</span>)<br>        user = db_session.<span class="hljs-built_in">exec</span>(statement).first()<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;删除后数据: &quot;</span>, user)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;*&#x27;</span> * <span class="hljs-number">20</span>, <span class="hljs-string">&#x27;插入数据&#x27;</span>, <span class="hljs-string">&#x27;*&#x27;</span> * <span class="hljs-number">20</span>)<br>    insert_data()<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;*&#x27;</span> * <span class="hljs-number">20</span>, <span class="hljs-string">&#x27;查询数据&#x27;</span>, <span class="hljs-string">&#x27;*&#x27;</span> * <span class="hljs-number">20</span>)<br>    query_data()<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;*&#x27;</span> * <span class="hljs-number">20</span>, <span class="hljs-string">&#x27;更新数据&#x27;</span>, <span class="hljs-string">&#x27;*&#x27;</span> * <span class="hljs-number">20</span>)<br>    update_data()<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;*&#x27;</span> * <span class="hljs-number">20</span>, <span class="hljs-string">&#x27;删除数据&#x27;</span>, <span class="hljs-string">&#x27;*&#x27;</span> * <span class="hljs-number">20</span>)<br>    delete_data()<br></code></pre></td></tr></table></figure>
+<p><code>sqlmodel</code>模块的输出结果如下（<code>sqlalchemy</code>模块的结果类似）：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs routeros">******************** 插入数据 ********************<br>插入1条数据<br>插入4条数据<br>******************** 查询数据 ********************<br>查询第1条数据<br><span class="hljs-attribute">place</span>=<span class="hljs-string">&#x27;USA&#x27;</span> <span class="hljs-attribute">id</span>=1 <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;Jack&#x27;</span> <span class="hljs-attribute">age</span>=25 <span class="hljs-attribute">insert_time</span>=datetime.datetime(2025, 2, 28, 21, 27, 18)<br>查询所有数据<br><span class="hljs-attribute">place</span>=<span class="hljs-string">&#x27;USA&#x27;</span> <span class="hljs-attribute">id</span>=1 <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;Jack&#x27;</span> <span class="hljs-attribute">age</span>=25 <span class="hljs-attribute">insert_time</span>=datetime.datetime(2025, 2, 28, 21, 27, 18)<br><span class="hljs-attribute">place</span>=<span class="hljs-string">&#x27;UK&#x27;</span> <span class="hljs-attribute">id</span>=2 <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;Green&#x27;</span> <span class="hljs-attribute">age</span>=26 <span class="hljs-attribute">insert_time</span>=datetime.datetime(2025, 2, 28, 21, 27, 18)<br><span class="hljs-attribute">place</span>=<span class="hljs-string">&#x27;GER&#x27;</span> <span class="hljs-attribute">id</span>=3 <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;Alex&#x27;</span> <span class="hljs-attribute">age</span>=31 <span class="hljs-attribute">insert_time</span>=datetime.datetime(2025, 2, 28, 21, 27, 18)<br><span class="hljs-attribute">place</span>=<span class="hljs-string">&#x27;CHN&#x27;</span> <span class="hljs-attribute">id</span>=4 <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;Chen&#x27;</span> <span class="hljs-attribute">age</span>=52 <span class="hljs-attribute">insert_time</span>=datetime.datetime(2025, 2, 28, 21, 27, 18)<br><span class="hljs-attribute">place</span>=<span class="hljs-string">&#x27;CHN&#x27;</span> <span class="hljs-attribute">id</span>=5 <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;Zhang&#x27;</span> <span class="hljs-attribute">age</span>=42 <span class="hljs-attribute">insert_time</span>=datetime.datetime(2025, 2, 28, 21, 27, 18)<br>查询指定字段: name, age<br>[(<span class="hljs-string">&#x27;Jack&#x27;</span>, 25), (<span class="hljs-string">&#x27;Green&#x27;</span>, 26), (<span class="hljs-string">&#x27;Alex&#x27;</span>, 31), (<span class="hljs-string">&#x27;Chen&#x27;</span>, 52), (<span class="hljs-string">&#x27;Zhang&#x27;</span>, 42)]<br>条件查询: age &gt; 30<br>[Users(<span class="hljs-attribute">id</span>=3, <span class="hljs-attribute">name</span>=Alex, <span class="hljs-attribute">age</span>=31, <span class="hljs-attribute">place</span>=GER), Users(<span class="hljs-attribute">id</span>=4, <span class="hljs-attribute">name</span>=Chen, <span class="hljs-attribute">age</span>=52, <span class="hljs-attribute">place</span>=CHN), Users(<span class="hljs-attribute">id</span>=5, <span class="hljs-attribute">name</span>=Zhang, <span class="hljs-attribute">age</span>=42, <span class="hljs-attribute">place</span>=CHN)]<br>条件查询: age &gt; 50 <span class="hljs-keyword">and</span> place == <span class="hljs-string">&#x27;CHN&#x27;</span><br>[Users(<span class="hljs-attribute">id</span>=4, <span class="hljs-attribute">name</span>=Chen, <span class="hljs-attribute">age</span>=52, <span class="hljs-attribute">place</span>=CHN)]<br>排序查询<br>[Users(<span class="hljs-attribute">id</span>=4, <span class="hljs-attribute">name</span>=Chen, <span class="hljs-attribute">age</span>=52, <span class="hljs-attribute">place</span>=CHN), Users(<span class="hljs-attribute">id</span>=5, <span class="hljs-attribute">name</span>=Zhang, <span class="hljs-attribute">age</span>=42, <span class="hljs-attribute">place</span>=CHN), Users(<span class="hljs-attribute">id</span>=3, <span class="hljs-attribute">name</span>=Alex, <span class="hljs-attribute">age</span>=31, <span class="hljs-attribute">place</span>=GER), Users(<span class="hljs-attribute">id</span>=2, <span class="hljs-attribute">name</span>=Green, <span class="hljs-attribute">age</span>=26, <span class="hljs-attribute">place</span>=UK), Users(<span class="hljs-attribute">id</span>=1, <span class="hljs-attribute">name</span>=Jack, <span class="hljs-attribute">age</span>=25, <span class="hljs-attribute">place</span>=USA)]<br>******************** 更新数据 ********************<br>更新前数据:  <span class="hljs-attribute">place</span>=<span class="hljs-string">&#x27;CHN&#x27;</span> <span class="hljs-attribute">id</span>=5 <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;Zhang&#x27;</span> <span class="hljs-attribute">age</span>=42 <span class="hljs-attribute">insert_time</span>=datetime.datetime(2025, 2, 28, 21, 27, 18)<br>更新后数据:  <span class="hljs-attribute">place</span>=<span class="hljs-string">&#x27;CHN&#x27;</span> <span class="hljs-attribute">id</span>=5 <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;Zhang&#x27;</span> <span class="hljs-attribute">age</span>=45 <span class="hljs-attribute">insert_time</span>=datetime.datetime(2025, 2, 28, 21, 27, 18)<br>******************** 删除数据 ********************<br>删除前数据:  <span class="hljs-attribute">place</span>=<span class="hljs-string">&#x27;CHN&#x27;</span> <span class="hljs-attribute">id</span>=5 <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;Zhang&#x27;</span> <span class="hljs-attribute">age</span>=45 <span class="hljs-attribute">insert_time</span>=datetime.datetime(2025, 2, 28, 21, 27, 18)<br>删除后数据:  None<br></code></pre></td></tr></table></figure>
+<h2 id="orm框架实现异步crud">ORM框架实现异步CRUD</h2>
+<p>接下来介绍如何使用异步来实现MySQL数据库的操作。</p>
+<ul>
+<li>使用<code>sqlalchemy</code>模块来实现异步CRUD</li>
+</ul>
+<p>Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @place: Pudong, Shanghai</span><br><span class="hljs-comment"># @file: sqlalchemy_async_crud.py</span><br><span class="hljs-comment"># @time: 2025/2/28 19:45</span><br><span class="hljs-comment"># 使用SQLAlchemy异步操作数据库</span><br><span class="hljs-keyword">import</span> asyncio<br><span class="hljs-keyword">from</span> sqlalchemy <span class="hljs-keyword">import</span> select<br><span class="hljs-keyword">from</span> sqlalchemy.orm <span class="hljs-keyword">import</span> sessionmaker<br><span class="hljs-keyword">from</span> sqlalchemy.ext.asyncio <span class="hljs-keyword">import</span> create_async_engine, AsyncSession<br><br><span class="hljs-keyword">from</span> src.models.sqlalchemy_create_table <span class="hljs-keyword">import</span> Users<br><br><span class="hljs-comment"># 初始化数据库连接</span><br>async_engine = create_async_engine(<span class="hljs-string">&quot;mysql+aiomysql://root:root@localhost:3306/orm_test&quot;</span>)<br>async_session = sessionmaker(bind=async_engine, class_=AsyncSession)<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">insert_data</span>():<br>    <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> async_session() <span class="hljs-keyword">as</span> db_session:<br>        <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> db_session.begin():<br>            <span class="hljs-comment"># 插入单条数据</span><br>            entity = &#123;<span class="hljs-string">&#x27;name&#x27;</span>: <span class="hljs-string">&#x27;Jack&#x27;</span>, <span class="hljs-string">&#x27;age&#x27;</span>: <span class="hljs-number">25</span>, <span class="hljs-string">&#x27;place&#x27;</span>: <span class="hljs-string">&#x27;USA&#x27;</span>&#125;<br>            db_session.add(Users(**entity))<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;插入1条数据&quot;</span>)<br><br>        <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> db_session.begin():<br>            <span class="hljs-comment"># 插入多条数据</span><br>            users = [<br>                &#123;<span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;Green&quot;</span>, <span class="hljs-string">&quot;age&quot;</span>: <span class="hljs-number">26</span>, <span class="hljs-string">&quot;place&quot;</span>: <span class="hljs-string">&quot;UK&quot;</span>&#125;,<br>                &#123;<span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;Alex&quot;</span>, <span class="hljs-string">&quot;age&quot;</span>: <span class="hljs-number">31</span>, <span class="hljs-string">&quot;place&quot;</span>: <span class="hljs-string">&quot;GER&quot;</span>&#125;,<br>                &#123;<span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;Chen&quot;</span>, <span class="hljs-string">&quot;age&quot;</span>: <span class="hljs-number">52</span>, <span class="hljs-string">&quot;place&quot;</span>: <span class="hljs-string">&quot;CHN&quot;</span>&#125;,<br>                &#123;<span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;Zhang&quot;</span>, <span class="hljs-string">&quot;age&quot;</span>: <span class="hljs-number">42</span>, <span class="hljs-string">&quot;place&quot;</span>: <span class="hljs-string">&quot;CHN&quot;</span>&#125;<br>            ]<br>            entities = [Users(**user) <span class="hljs-keyword">for</span> user <span class="hljs-keyword">in</span> users]<br>            db_session.add_all(entities)<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;插入<span class="hljs-subst">&#123;<span class="hljs-built_in">len</span>(entities)&#125;</span>条数据&quot;</span>)<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">query_data</span>():<br>    <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> async_session() <span class="hljs-keyword">as</span> db_session:<br>        <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> db_session.begin():<br>            <span class="hljs-comment"># 查询第1条数据</span><br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;查询第1条数据&quot;</span>)<br>            statement = select(Users)<br>            user = <span class="hljs-keyword">await</span> db_session.execute(statement)<br>            <span class="hljs-built_in">print</span>(user.first())<br>            <span class="hljs-comment"># 查询所有数据</span><br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;查询所有数据&quot;</span>)<br>            statement = select(Users)<br>            users = <span class="hljs-keyword">await</span> db_session.execute(statement)<br>            <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> users.scalars():<br>                <span class="hljs-built_in">print</span>(u)<br>            <span class="hljs-comment"># 查询指定字段</span><br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;查询指定字段: name and age&quot;</span>)<br>            statement = select(Users.name, Users.age)<br>            users = <span class="hljs-keyword">await</span> db_session.execute(statement)<br>            <span class="hljs-built_in">print</span>(users.<span class="hljs-built_in">all</span>())<br>            <span class="hljs-comment"># 条件查询1</span><br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;条件查询: age &gt; 30&quot;</span>)<br>            statement = select(Users).where(Users.age &gt; <span class="hljs-number">30</span>)<br>            users = <span class="hljs-keyword">await</span> db_session.execute(statement)<br>            <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> users.scalars():<br>                <span class="hljs-built_in">print</span>(u)<br>            <span class="hljs-comment"># 条件查询2</span><br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;条件查询: age &gt; 50 and place == &#x27;CHN&#x27;&quot;</span>)<br>            statement = select(Users).where((Users.age &gt; <span class="hljs-number">50</span>) &amp; (Users.place == <span class="hljs-string">&#x27;CHN&#x27;</span>))<br>            users = <span class="hljs-keyword">await</span> db_session.execute(statement)<br>            <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> users.scalars():<br>                <span class="hljs-built_in">print</span>(u)<br>            <span class="hljs-comment"># 排序查询</span><br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;排序查询&quot;</span>)<br>            statement = select(Users).order_by(Users.age.desc())<br>            users = <span class="hljs-keyword">await</span> db_session.execute(statement)<br>            <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> users.scalars():<br>                <span class="hljs-built_in">print</span>(u)<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">update_data</span>():<br>    <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> async_session() <span class="hljs-keyword">as</span> db_session:<br>        <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> db_session.begin():<br>            <span class="hljs-comment"># 更新数据</span><br>            <span class="hljs-comment"># 1. 查询数据</span><br>            statement = select(Users).where(Users.name == <span class="hljs-string">&#x27;Zhang&#x27;</span>)<br>            user = <span class="hljs-keyword">await</span> db_session.execute(statement)<br>            user = user.scalars().first()<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;更新前数据: &quot;</span>, user)<br>            <span class="hljs-comment"># 2. 更新数据</span><br>            user.age = <span class="hljs-number">45</span><br>            <span class="hljs-comment"># 3. 再次查询数据</span><br>            statement = select(Users).where(Users.name == <span class="hljs-string">&#x27;Zhang&#x27;</span>)<br>            user = <span class="hljs-keyword">await</span> db_session.execute(statement)<br>            user = user.scalars().first()<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;更新后数据: &quot;</span>, user)<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">delete_data</span>():<br>    <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> async_session() <span class="hljs-keyword">as</span> db_session:<br>        <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> db_session.begin():<br>            <span class="hljs-comment"># 删除数据</span><br>            <span class="hljs-comment"># 1. 查询数据</span><br>            statement = select(Users).where(Users.name == <span class="hljs-string">&#x27;Zhang&#x27;</span>)<br>            user = <span class="hljs-keyword">await</span> db_session.execute(statement)<br>            user = user.scalars().first()<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;删除前数据: &quot;</span>, user)<br>            <span class="hljs-comment"># 2. 删除数据</span><br>            <span class="hljs-keyword">await</span> db_session.delete(user)<br>            <span class="hljs-comment"># 3. 再次查询数据</span><br>            statement = select(Users).where(Users.name == <span class="hljs-string">&#x27;Zhang&#x27;</span>)<br>            user = <span class="hljs-keyword">await</span> db_session.execute(statement)<br>            user = user.scalars().first()<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;删除后数据: &quot;</span>, user)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    <span class="hljs-comment"># 异步插入数据</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;异步插入数据&quot;</span>)<br>    loop = asyncio.get_event_loop()<br>    loop.run_until_complete(insert_data())<br>    <span class="hljs-comment"># 异步查询数据</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;异步查询数据&quot;</span>)<br>    loop = asyncio.get_event_loop()<br>    loop.run_until_complete(query_data())<br>    <span class="hljs-comment"># 异步更新数据</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;异步更新数据&quot;</span>)<br>    loop = asyncio.get_event_loop()<br>    loop.run_until_complete(update_data())<br>    <span class="hljs-comment"># 异步删除数据</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;异步删除数据&quot;</span>)<br>    loop = asyncio.get_event_loop()<br>    loop.run_until_complete(delete_data())<br></code></pre></td></tr></table></figure>
+<ul>
+<li>使用<code>sqlmodel</code>模块来实现异步CRUD</li>
+</ul>
+<p>Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-comment"># @place: Pudong, Shanghai</span><br><span class="hljs-comment"># @file: sqlmodel_async_crud.py</span><br><span class="hljs-comment"># @time: 2025/2/28 20:12</span><br><span class="hljs-comment"># 使用SQLModel异步CRUD操作</span><br><span class="hljs-keyword">import</span> asyncio<br><span class="hljs-keyword">from</span> sqlmodel.ext.asyncio.session <span class="hljs-keyword">import</span> AsyncSession<br><span class="hljs-keyword">from</span> sqlmodel <span class="hljs-keyword">import</span> select<br><span class="hljs-keyword">from</span> sqlalchemy.ext.asyncio <span class="hljs-keyword">import</span> create_async_engine<br><br><span class="hljs-keyword">from</span> src.models.sqlmodel_create_table <span class="hljs-keyword">import</span> Users<br><br><span class="hljs-comment"># 初始化数据库连接</span><br>async_engine = create_async_engine(<span class="hljs-string">&quot;mysql+aiomysql://root:root@localhost:3306/orm_test&quot;</span>)<br>async_session = AsyncSession(async_engine)<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">insert_data</span>():<br>    <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> async_session <span class="hljs-keyword">as</span> db_session:<br>        <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> db_session.begin():<br>            <span class="hljs-comment"># 插入单条数据</span><br>            entity = &#123;<span class="hljs-string">&#x27;name&#x27;</span>: <span class="hljs-string">&#x27;Jack&#x27;</span>, <span class="hljs-string">&#x27;age&#x27;</span>: <span class="hljs-number">25</span>, <span class="hljs-string">&#x27;place&#x27;</span>: <span class="hljs-string">&#x27;USA&#x27;</span>&#125;<br>            db_session.add(Users(**entity))<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;插入1条数据&quot;</span>)<br><br>    <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> async_session <span class="hljs-keyword">as</span> db_session:<br>        <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> db_session.begin():<br>            <span class="hljs-comment"># 插入多条数据</span><br>            users = [<br>                &#123;<span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;Green&quot;</span>, <span class="hljs-string">&quot;age&quot;</span>: <span class="hljs-number">26</span>, <span class="hljs-string">&quot;place&quot;</span>: <span class="hljs-string">&quot;UK&quot;</span>&#125;,<br>                &#123;<span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;Alex&quot;</span>, <span class="hljs-string">&quot;age&quot;</span>: <span class="hljs-number">31</span>, <span class="hljs-string">&quot;place&quot;</span>: <span class="hljs-string">&quot;GER&quot;</span>&#125;,<br>                &#123;<span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;Chen&quot;</span>, <span class="hljs-string">&quot;age&quot;</span>: <span class="hljs-number">52</span>, <span class="hljs-string">&quot;place&quot;</span>: <span class="hljs-string">&quot;CHN&quot;</span>&#125;,<br>                &#123;<span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;Zhang&quot;</span>, <span class="hljs-string">&quot;age&quot;</span>: <span class="hljs-number">42</span>, <span class="hljs-string">&quot;place&quot;</span>: <span class="hljs-string">&quot;CHN&quot;</span>&#125;<br>            ]<br>            entities = [Users(**user) <span class="hljs-keyword">for</span> user <span class="hljs-keyword">in</span> users]<br>            db_session.add_all(entities)<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;插入<span class="hljs-subst">&#123;<span class="hljs-built_in">len</span>(entities)&#125;</span>条数据&quot;</span>)<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">query_data</span>():<br>    <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> async_session <span class="hljs-keyword">as</span> db_session:<br>        <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> db_session.begin():<br>            <span class="hljs-comment"># 查询第1条数据</span><br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;查询第1条数据&quot;</span>)<br>            statement = select(Users)<br>            user = <span class="hljs-keyword">await</span> db_session.<span class="hljs-built_in">exec</span>(statement)<br>            <span class="hljs-built_in">print</span>(user.first())<br>            <span class="hljs-comment"># 查询所有数据</span><br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;查询所有数据&quot;</span>)<br>            statement = select(Users)<br>            users = <span class="hljs-keyword">await</span> db_session.<span class="hljs-built_in">exec</span>(statement)<br>            <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> users.<span class="hljs-built_in">all</span>():<br>                <span class="hljs-built_in">print</span>(u)<br>            <span class="hljs-comment"># 查询指定字段</span><br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;查询指定字段: name and age&quot;</span>)<br>            statement = select(Users.name, Users.age)<br>            users = <span class="hljs-keyword">await</span> db_session.<span class="hljs-built_in">exec</span>(statement)<br>            <span class="hljs-built_in">print</span>(users.<span class="hljs-built_in">all</span>())<br>            <span class="hljs-comment"># 条件查询1</span><br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;条件查询: age &gt; 30&quot;</span>)<br>            statement = select(Users).where(Users.age &gt; <span class="hljs-number">30</span>)<br>            users = <span class="hljs-keyword">await</span> db_session.<span class="hljs-built_in">exec</span>(statement)<br>            <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> users.<span class="hljs-built_in">all</span>():<br>                <span class="hljs-built_in">print</span>(u)<br>            <span class="hljs-comment"># 条件查询2</span><br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;条件查询: age &gt; 50 and place == &#x27;CHN&#x27;&quot;</span>)<br>            statement = select(Users).where(Users.age &gt; <span class="hljs-number">50</span>).where(Users.place == <span class="hljs-string">&#x27;CHN&#x27;</span>)<br>            users = <span class="hljs-keyword">await</span> db_session.<span class="hljs-built_in">exec</span>(statement)<br>            <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> users.<span class="hljs-built_in">all</span>():<br>                <span class="hljs-built_in">print</span>(u)<br>            <span class="hljs-comment"># 排序查询</span><br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;排序查询&quot;</span>)<br>            statement = select(Users).order_by(Users.age)<br>            users = <span class="hljs-keyword">await</span> db_session.<span class="hljs-built_in">exec</span>(statement)<br>            <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> users.<span class="hljs-built_in">all</span>():<br>                <span class="hljs-built_in">print</span>(u)<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">update_data</span>():<br>    <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> async_session <span class="hljs-keyword">as</span> db_session:<br>        <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> db_session.begin():<br>            <span class="hljs-comment"># 更新数据</span><br>            <span class="hljs-comment"># 1. 查询数据</span><br>            statement = select(Users).where(Users.name == <span class="hljs-string">&#x27;Zhang&#x27;</span>)<br>            result = <span class="hljs-keyword">await</span> db_session.<span class="hljs-built_in">exec</span>(statement)<br>            user = result.first()<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;更新前数据: &quot;</span>, user)<br>            <span class="hljs-comment"># 2. 更新数据</span><br>            user.age = <span class="hljs-number">45</span><br>            db_session.add(user)<br>        <span class="hljs-keyword">await</span> db_session.commit()<br><br>        <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> db_session.begin():<br>            <span class="hljs-comment"># 3. 再次查询数据</span><br>            statement = select(Users).where(Users.name == <span class="hljs-string">&#x27;Zhang&#x27;</span>)<br>            user = <span class="hljs-keyword">await</span> db_session.<span class="hljs-built_in">exec</span>(statement)<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;更新后数据: &quot;</span>, user.first())<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">delete_data</span>():<br>    <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> async_session <span class="hljs-keyword">as</span> db_session:<br>        <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> db_session.begin():<br>            <span class="hljs-comment"># 删除数据</span><br>            <span class="hljs-comment"># 1. 查询数据</span><br>            statement = select(Users).where(Users.name == <span class="hljs-string">&#x27;Zhang&#x27;</span>)<br>            result = <span class="hljs-keyword">await</span> db_session.<span class="hljs-built_in">exec</span>(statement)<br>            user = result.first()<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;删除前数据: &quot;</span>, user)<br>            <span class="hljs-comment"># 2. 删除数据</span><br>            <span class="hljs-keyword">await</span> db_session.delete(user)<br>        <span class="hljs-keyword">await</span> db_session.commit()<br>        <span class="hljs-comment"># 3. 再次查询数据</span><br>        <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> db_session.begin():<br>            statement = select(Users).where(Users.name == <span class="hljs-string">&#x27;Zhang&#x27;</span>)<br>            user = <span class="hljs-keyword">await</span> db_session.<span class="hljs-built_in">exec</span>(statement)<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;删除后数据: &quot;</span>, user.first())<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    <span class="hljs-comment"># 异步插入数据</span><br>    <span class="hljs-comment"># print(&quot;异步插入数据&quot;)</span><br>    <span class="hljs-comment"># loop = asyncio.get_event_loop()</span><br>    <span class="hljs-comment"># loop.run_until_complete(insert_data())</span><br>    <span class="hljs-comment"># 异步查询数据</span><br>    <span class="hljs-comment"># print(&quot;异步查询数据&quot;)</span><br>    <span class="hljs-comment"># loop = asyncio.get_event_loop()</span><br>    <span class="hljs-comment"># loop.run_until_complete(query_data())</span><br>    <span class="hljs-comment"># 异步更新数据</span><br>    <span class="hljs-comment"># print(&quot;异步更新数据&quot;)</span><br>    <span class="hljs-comment"># loop = asyncio.get_event_loop()</span><br>    <span class="hljs-comment"># loop.run_until_complete(update_data())</span><br>    <span class="hljs-comment"># 异步删除数据</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;异步删除数据&quot;</span>)<br>    loop = asyncio.get_event_loop()<br>    loop.run_until_complete(delete_data())<br></code></pre></td></tr></table></figure>
+<p><code>sqlmodel</code>模块的输出结果如下（<code>sqlalchemy</code>模块的结果类似）：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs routeros">异步插入数据<br>插入1条数据<br>插入4条数据<br>查询第1条数据<br><span class="hljs-attribute">place</span>=<span class="hljs-string">&#x27;USA&#x27;</span> <span class="hljs-attribute">insert_time</span>=datetime.datetime(2025, 2, 28, 21, 33, 8) <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;Jack&#x27;</span> <span class="hljs-attribute">id</span>=1 <span class="hljs-attribute">age</span>=25<br>查询所有数据<br><span class="hljs-attribute">place</span>=<span class="hljs-string">&#x27;USA&#x27;</span> <span class="hljs-attribute">insert_time</span>=datetime.datetime(2025, 2, 28, 21, 33, 8) <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;Jack&#x27;</span> <span class="hljs-attribute">id</span>=1 <span class="hljs-attribute">age</span>=25<br><span class="hljs-attribute">place</span>=<span class="hljs-string">&#x27;UK&#x27;</span> <span class="hljs-attribute">insert_time</span>=datetime.datetime(2025, 2, 28, 21, 33, 8) <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;Green&#x27;</span> <span class="hljs-attribute">id</span>=2 <span class="hljs-attribute">age</span>=26<br><span class="hljs-attribute">place</span>=<span class="hljs-string">&#x27;GER&#x27;</span> <span class="hljs-attribute">insert_time</span>=datetime.datetime(2025, 2, 28, 21, 33, 8) <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;Alex&#x27;</span> <span class="hljs-attribute">id</span>=3 <span class="hljs-attribute">age</span>=31<br><span class="hljs-attribute">place</span>=<span class="hljs-string">&#x27;CHN&#x27;</span> <span class="hljs-attribute">insert_time</span>=datetime.datetime(2025, 2, 28, 21, 33, 8) <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;Chen&#x27;</span> <span class="hljs-attribute">id</span>=4 <span class="hljs-attribute">age</span>=52<br><span class="hljs-attribute">place</span>=<span class="hljs-string">&#x27;CHN&#x27;</span> <span class="hljs-attribute">insert_time</span>=datetime.datetime(2025, 2, 28, 21, 33, 8) <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;Zhang&#x27;</span> <span class="hljs-attribute">id</span>=5 <span class="hljs-attribute">age</span>=42<br>查询指定字段: name <span class="hljs-keyword">and</span> age<br>[(<span class="hljs-string">&#x27;Jack&#x27;</span>, 25), (<span class="hljs-string">&#x27;Green&#x27;</span>, 26), (<span class="hljs-string">&#x27;Alex&#x27;</span>, 31), (<span class="hljs-string">&#x27;Chen&#x27;</span>, 52), (<span class="hljs-string">&#x27;Zhang&#x27;</span>, 42)]<br>条件查询: age &gt; 30<br><span class="hljs-attribute">place</span>=<span class="hljs-string">&#x27;GER&#x27;</span> <span class="hljs-attribute">insert_time</span>=datetime.datetime(2025, 2, 28, 21, 33, 8) <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;Alex&#x27;</span> <span class="hljs-attribute">id</span>=3 <span class="hljs-attribute">age</span>=31<br><span class="hljs-attribute">place</span>=<span class="hljs-string">&#x27;CHN&#x27;</span> <span class="hljs-attribute">insert_time</span>=datetime.datetime(2025, 2, 28, 21, 33, 8) <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;Chen&#x27;</span> <span class="hljs-attribute">id</span>=4 <span class="hljs-attribute">age</span>=52<br><span class="hljs-attribute">place</span>=<span class="hljs-string">&#x27;CHN&#x27;</span> <span class="hljs-attribute">insert_time</span>=datetime.datetime(2025, 2, 28, 21, 33, 8) <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;Zhang&#x27;</span> <span class="hljs-attribute">id</span>=5 <span class="hljs-attribute">age</span>=42<br>条件查询: age &gt; 50 <span class="hljs-keyword">and</span> place == <span class="hljs-string">&#x27;CHN&#x27;</span><br><span class="hljs-attribute">place</span>=<span class="hljs-string">&#x27;CHN&#x27;</span> <span class="hljs-attribute">insert_time</span>=datetime.datetime(2025, 2, 28, 21, 33, 8) <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;Chen&#x27;</span> <span class="hljs-attribute">id</span>=4 <span class="hljs-attribute">age</span>=52<br>排序查询<br><span class="hljs-attribute">place</span>=<span class="hljs-string">&#x27;USA&#x27;</span> <span class="hljs-attribute">insert_time</span>=datetime.datetime(2025, 2, 28, 21, 33, 8) <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;Jack&#x27;</span> <span class="hljs-attribute">id</span>=1 <span class="hljs-attribute">age</span>=25<br><span class="hljs-attribute">place</span>=<span class="hljs-string">&#x27;UK&#x27;</span> <span class="hljs-attribute">insert_time</span>=datetime.datetime(2025, 2, 28, 21, 33, 8) <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;Green&#x27;</span> <span class="hljs-attribute">id</span>=2 <span class="hljs-attribute">age</span>=26<br><span class="hljs-attribute">place</span>=<span class="hljs-string">&#x27;GER&#x27;</span> <span class="hljs-attribute">insert_time</span>=datetime.datetime(2025, 2, 28, 21, 33, 8) <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;Alex&#x27;</span> <span class="hljs-attribute">id</span>=3 <span class="hljs-attribute">age</span>=31<br><span class="hljs-attribute">place</span>=<span class="hljs-string">&#x27;CHN&#x27;</span> <span class="hljs-attribute">insert_time</span>=datetime.datetime(2025, 2, 28, 21, 33, 8) <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;Zhang&#x27;</span> <span class="hljs-attribute">id</span>=5 <span class="hljs-attribute">age</span>=42<br><span class="hljs-attribute">place</span>=<span class="hljs-string">&#x27;CHN&#x27;</span> <span class="hljs-attribute">insert_time</span>=datetime.datetime(2025, 2, 28, 21, 33, 8) <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;Chen&#x27;</span> <span class="hljs-attribute">id</span>=4 <span class="hljs-attribute">age</span>=52<br>异步更新数据<br>更新前数据:  <span class="hljs-attribute">place</span>=<span class="hljs-string">&#x27;CHN&#x27;</span> <span class="hljs-attribute">insert_time</span>=datetime.datetime(2025, 2, 28, 21, 33, 8) <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;Zhang&#x27;</span> <span class="hljs-attribute">id</span>=5 <span class="hljs-attribute">age</span>=42<br>更新后数据:  <span class="hljs-attribute">place</span>=<span class="hljs-string">&#x27;CHN&#x27;</span> <span class="hljs-attribute">insert_time</span>=datetime.datetime(2025, 2, 28, 21, 33, 8) <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;Zhang&#x27;</span> <span class="hljs-attribute">id</span>=5 <span class="hljs-attribute">age</span>=45<br>异步删除数据<br>删除前数据:  <span class="hljs-attribute">place</span>=<span class="hljs-string">&#x27;CHN&#x27;</span> <span class="hljs-attribute">insert_time</span>=datetime.datetime(2025, 2, 28, 21, 33, 8) <span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;Zhang&#x27;</span> <span class="hljs-attribute">id</span>=5 <span class="hljs-attribute">age</span>=45<br>删除后数据:  None<br></code></pre></td></tr></table></figure>
+<h2 id="总结">总结</h2>
+<p>本文在之前文章的基础上，添加了两个ORM框架(<code>sqlalchemy</code>和<code>sqlmodel</code>)之间的代码对比，并介绍了这两个ORM框架如何实现创建表格、同步CRUD、异步CRUD。</p>
+<p>本文演示的Python代码已开源，网址为：<a
+target="_blank" rel="noopener" href="https://github.com/percent4/ORM_test">https://github.com/percent4/ORM_test</a>
+.</p>
+<p>后续文章将会介绍如何使用Alembic来实现MySQL数据库迁移。</p>
+<p>欢迎关注我的公众号<strong>NLP奇幻之旅</strong>，原创技术文章第一时间推送。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+<p>欢迎关注我的知识星球“<strong>自然语言处理奇幻之旅</strong>”，笔者正在努力构建自己的技术社区。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" class="category-chain-item">数据库</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/MySQL/" class="print-no-link">#MySQL</a>
+      
+        <a href="/tags/ORM/" class="print-no-link">#ORM</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>使用ORM框架操作MySQL数据库</div>
+      <div>https://percent4.github.io/使用ORM框架操作MySQL数据库/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年4月27日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/MySQL%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%81%E7%A7%BB%E5%88%A9%E5%99%A8Alembic/" title="MySQL数据库迁移利器Alembic">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">MySQL数据库迁移利器Alembic</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/%E5%88%A9%E7%94%A8DeepSeek%E5%AE%9E%E7%8E%B0%E6%8B%BF%E7%9F%B3%E5%AD%90%E6%B8%B8%E6%88%8F%EF%BC%9AMCTS%E7%AE%97%E6%B3%95%E7%9A%84%E6%B7%B1%E5%BA%A6%E6%8E%A2%E7%B4%A2/" title="利用DeepSeek实现拿石子游戏：MCTS算法的深度探索">
+                        <span class="hidden-mobile">利用DeepSeek实现拿石子游戏：MCTS算法的深度探索</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,925 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍如何使用Langfuse来提升大模型（LLM）和Agents的可观测性。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（一百一十三）使用Langfuse提升LLM和Agents的可观测性">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E4%B8%80%E5%8D%81%E4%B8%89%EF%BC%89%E4%BD%BF%E7%94%A8Langfuse%E6%8F%90%E5%8D%87LLM%E5%92%8CAgents%E7%9A%84%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍如何使用Langfuse来提升大模型（LLM）和Agents的可观测性。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2025/03/14/RTz85pNjlfSnoBV.png">
+<meta property="og:image" content="https://s2.loli.net/2025/03/14/OGrcC2vFpdz4gSA.png">
+<meta property="og:image" content="https://s2.loli.net/2025/03/14/1o6geKAtpjTU2aI.png">
+<meta property="og:image" content="https://s2.loli.net/2025/03/14/i3ItjwSMFJaEyAr.png">
+<meta property="og:image" content="https://s2.loli.net/2025/03/14/sjuAK1qHLQ5nB6c.png">
+<meta property="og:image" content="https://s2.loli.net/2025/03/14/ofzEgCpmT2eiWFk.png">
+<meta property="og:image" content="https://s2.loli.net/2025/03/14/4UTYlNZDo5wmh2f.png">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg">
+<meta property="article:published_time" content="2025-04-27T14:39:06.000Z">
+<meta property="article:modified_time" content="2025-04-27T14:40:09.123Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="Langfuse">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2025/03/14/RTz85pNjlfSnoBV.png">
+  
+  
+  
+  <title>NLP（一百一十三）使用Langfuse提升LLM和Agents的可观测性 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（一百一十三）使用Langfuse提升LLM和Agents的可观测性"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-04-27 22:39" pubdate>
+          星期日, 四月 27日 2025, 10:39 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          10k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          86 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（一百一十三）使用Langfuse提升LLM和Agents的可观测性</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍如何使用Langfuse来提升大模型（LLM）和Agents的可观测性。</p>
+</blockquote>
+<p>在日常使用大模型（LLM）和 Agents
+时，我们常常需要追踪它们的响应情况和成本。借助
+<code>Langfuse</code>，我们可以大幅提升 LLM 和 Agents
+的可观测性，实现更精细的监控与优化。</p>
+<h2 id="简介">简介</h2>
+<p><code>Langfuse</code>是一个开源的大型语言模型（LLM）工程平台，专注于为开发者和研究人员提供灵活且高效的语言模型开发环境。它旨在解决
+LLM 应用的工程化挑战，包括模型训练、部署、监控和优化等方面的问题。</p>
+<p><strong>主要特点</strong>:</p>
+<ul>
+<li><p>高度可定制化：<code>Langfuse</code>提供丰富的配置选项和灵活的 API
+接口，允许用户根据实际需求定制 LLM 的功能和性能。</p></li>
+<li><p>高效资源管理：用户可以轻松管理和调度各种计算资源，提高资源利用率。</p></li>
+<li><p>完善的监控运维体系：内置强大的监控和运维工具，实时监控 LLM
+的运行状态和性能指标。</p></li>
+<li><p>多功能支持：包括 LLM 可观测性、提示管理、LLM
+评估、数据集管理、LLM 指标分析等功能。</p></li>
+</ul>
+<p><strong>应用场景</strong></p>
+<p><code>Langfuse</code>适用于构建生产级 LLM
+应用，特别是在需要快速开发和优化自定义对话系统、机器翻译系统等场景。它支持多种编程语言和框架，降低了开发门槛，使得初学者也能快速上手。</p>
+<p>接下来，笔者将会分别介绍<code>Langfuse</code>如何提升LLM与Agents的可观测性。</p>
+<h2 id="langfuse与llm">Langfuse与LLM</h2>
+<p>首先我们需要创建一个<code>Langfuse</code>账号，同时生成LANGFUSE_SECRET_KEY、LANGFUSE_PUBLIC_KEY和LANGFUSE_HOST变量。我们将这些变量以及LLM的API
+key都放在环境变量中。</p>
+<ul>
+<li>Langfuse与OpenAI</li>
+</ul>
+<p><code>Langfuse</code>已支持OpenAI，因此调用方式非常简单，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><span class="hljs-keyword">from</span> langfuse.decorators <span class="hljs-keyword">import</span> observe<br><span class="hljs-keyword">from</span> langfuse.openai <span class="hljs-keyword">import</span> openai<br><br>load_dotenv()<br><br><br><span class="hljs-meta">@observe()</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">story</span>():<br>    response = openai.chat.completions.create(<br>        model=<span class="hljs-string">&quot;gpt-4o&quot;</span>,<br>        messages=[&#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;What is Langfuse?&quot;</span>&#125;],<br>    )<br>    <span class="hljs-keyword">return</span> response.choices[<span class="hljs-number">0</span>].message.content<br><br><br><span class="hljs-meta">@observe()</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    <span class="hljs-keyword">return</span> story()<br><br><br>main()<br></code></pre></td></tr></table></figure>
+<p><code>Langfuse</code>提供了<strong>Tracing</strong>功能，它能帮助我们来追踪LLM的响应情况与成本。</p>
+<p><img src="https://s2.loli.net/2025/03/14/RTz85pNjlfSnoBV.png" srcset="/img/loading.gif" lazyload /></p>
+<p>从上图中，我们可以看到该LLM的调用路径为main() -&gt; story() -&gt;
+OpenAI-generation，还能观察到调用的模型、参数、响应时间、输入与输出token数量、token成本等信息，这对于我们掌握LLM的响应无疑有很大的帮助。</p>
+<ul>
+<li>Langfuse与任意LLM</li>
+</ul>
+<p>更为强大的是，Langfuse还具有任意LLM的追踪能力。我们以Anthropic的Claude系列模型为例，代码如下:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><br><span class="hljs-keyword">from</span> langfuse.decorators <span class="hljs-keyword">import</span> observe, langfuse_context<br><span class="hljs-keyword">import</span> anthropic<br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><br>load_dotenv()<br><br>anthopic_client = anthropic.Anthropic(api_key=os.getenv(<span class="hljs-string">&quot;ANTHROPIC_API_KEY&quot;</span>))<br><br><br><span class="hljs-comment"># Wrap LLM function with decorator</span><br><span class="hljs-meta">@observe(<span class="hljs-params">as_type=<span class="hljs-string">&quot;generation&quot;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">anthropic_completion</span>(<span class="hljs-params">**kwargs</span>):<br>    <span class="hljs-comment"># optional, extract some fields from kwargs</span><br>    kwargs_clone = kwargs.copy()<br>    _<span class="hljs-built_in">input</span> = kwargs_clone.pop(<span class="hljs-string">&#x27;messages&#x27;</span>, <span class="hljs-literal">None</span>)<br>    model = kwargs_clone.pop(<span class="hljs-string">&#x27;model&#x27;</span>, <span class="hljs-literal">None</span>)<br>    langfuse_context.update_current_observation(<br>        <span class="hljs-built_in">input</span>=_<span class="hljs-built_in">input</span>,<br>        model=model,<br>        metadata=kwargs_clone<br>    )<br><br>    response = anthopic_client.messages.create(**kwargs)<br><br>    <span class="hljs-comment"># See docs for more details on token counts and usd cost in Langfuse</span><br>    <span class="hljs-comment"># https://langfuse.com/docs/model-usage-and-cost</span><br>    langfuse_context.update_current_observation(<br>        usage_details=&#123;<br>            <span class="hljs-string">&quot;input&quot;</span>: response.usage.input_tokens,<br>            <span class="hljs-string">&quot;output&quot;</span>: response.usage.output_tokens<br>        &#125;<br>    )<br>    <span class="hljs-keyword">return</span> response.content[<span class="hljs-number">0</span>].text<br><br><br><span class="hljs-meta">@observe()</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    <span class="hljs-keyword">return</span> anthropic_completion(<br>        model=<span class="hljs-string">&quot;claude-3-opus-20240229&quot;</span>,<br>        max_tokens=<span class="hljs-number">1024</span>,<br>        messages=[<br>            &#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;Hello, Claude&quot;</span>&#125;<br>        ]<br>    )<br><br><br>main()<br></code></pre></td></tr></table></figure>
+<p>从上面的代码中，我们可以看到Tracing(追踪)过程中的参数为message,
+model, 输入、输出token以及其它参数等。</p>
+<p><img src="https://s2.loli.net/2025/03/14/OGrcC2vFpdz4gSA.png" srcset="/img/loading.gif" lazyload /></p>
+<ul>
+<li>自定义配置</li>
+</ul>
+<p>在<code>Langfuse</code>中，你可以自己设置调用LLM的任务名称，trace_id和session_id等信息。笔者使用<code>Langfuse</code>的Low-Level
+SDK实现示例代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> uuid <span class="hljs-keyword">import</span> uuid4<br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><span class="hljs-keyword">from</span> langfuse <span class="hljs-keyword">import</span> Langfuse<br><span class="hljs-keyword">from</span> openai <span class="hljs-keyword">import</span> OpenAI<br><br>load_dotenv()<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">story</span>(<span class="hljs-params">**kwargs</span>):<br>    langfuse = Langfuse(environment=<span class="hljs-string">&quot;development&quot;</span>)<br>    trace = langfuse.trace(<br>        <span class="hljs-built_in">id</span>=kwargs.get(<span class="hljs-string">&quot;langfuse_observation_id&quot;</span>),<br>        name=kwargs.get(<span class="hljs-string">&quot;name&quot;</span>),<br>        tags=kwargs.get(<span class="hljs-string">&quot;tags&quot;</span>),<br>        session_id=kwargs.get(<span class="hljs-string">&quot;session_id&quot;</span>)<br>    )<br><br>    model_name = <span class="hljs-string">&quot;gpt-4o&quot;</span><br>    max_tokens = <span class="hljs-number">1000</span><br>    temperature = <span class="hljs-number">0.5</span><br>    messages = [&#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;What is Langfuse?&quot;</span>&#125;]<br>    <span class="hljs-comment"># creates generation</span><br>    generation = trace.generation(<br>        name=<span class="hljs-string">&quot;my-first-generation&quot;</span>,<br>        model=model_name,<br>        model_parameters=&#123;<span class="hljs-string">&quot;maxTokens&quot;</span>: max_tokens, <span class="hljs-string">&quot;temperature&quot;</span>: temperature&#125;,<br>        <span class="hljs-built_in">input</span>=messages<br>    )<br>    <span class="hljs-comment"># creates chat completion</span><br>    client = OpenAI(api_key=os.getenv(<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>))<br>    response = client.chat.completions.create(<br>        model=model_name,<br>        messages=messages<br>    )<br>    <span class="hljs-comment"># update span and sets end_time</span><br>    generation.end(<br>        output=response.choices[<span class="hljs-number">0</span>].message.content,<br>        usage_details=response.usage<br>    )<br><br>    <span class="hljs-keyword">return</span> response.choices[<span class="hljs-number">0</span>].message.content<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    name = <span class="hljs-string">&quot;My first trace v5&quot;</span><br>    custom_observation_id = <span class="hljs-built_in">str</span>(uuid4())<br>    session_id = <span class="hljs-built_in">str</span>(uuid4())<br>    tags = [<span class="hljs-string">&quot;langfuse&quot;</span>, <span class="hljs-string">&quot;openai&quot;</span>, <span class="hljs-string">&quot;gpt-4o&quot;</span>]<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;trace_id: &quot;</span>, custom_observation_id)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;session_id: &quot;</span>, session_id)<br>    <span class="hljs-keyword">return</span> story(langfuse_observation_id=custom_observation_id, name=name, tags=tags, session_id=session_id)<br><br><br>main()<br></code></pre></td></tr></table></figure>
+<p>观测结果如下图所示：</p>
+<p><img src="https://s2.loli.net/2025/03/14/1o6geKAtpjTU2aI.png" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="langfuse与agents">Langfuse与Agents</h2>
+<p>OpenAI在前几天开源了它们的Multi
+Agents框架<code>openai-agents-python</code>，该工具允许你很方便地创建多智能体应用，其安装命令为：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">pip install openai-agents<br></code></pre></td></tr></table></figure>
+<ul>
+<li>Single Agent</li>
+</ul>
+<p>以单智能体为例，Langfuse的观测代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> base64<br><span class="hljs-keyword">import</span> logfire<br><span class="hljs-keyword">import</span> asyncio<br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><span class="hljs-keyword">from</span> agents <span class="hljs-keyword">import</span> Agent, Runner<br><br>load_dotenv()<br><br><span class="hljs-comment"># Build Basic Auth header.</span><br>LANGFUSE_AUTH = base64.b64encode(<br>    <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;os.environ.get(<span class="hljs-string">&#x27;LANGFUSE_PUBLIC_KEY&#x27;</span>)&#125;</span>:<span class="hljs-subst">&#123;os.environ.get(<span class="hljs-string">&#x27;LANGFUSE_SECRET_KEY&#x27;</span>)&#125;</span>&quot;</span>.encode()<br>).decode()<br><br><span class="hljs-comment"># Configure OpenTelemetry endpoint &amp; headers</span><br>os.environ[<span class="hljs-string">&quot;OTEL_EXPORTER_OTLP_ENDPOINT&quot;</span>] = os.environ.get(<span class="hljs-string">&quot;LANGFUSE_HOST&quot;</span>) + <span class="hljs-string">&quot;/api/public/otel&quot;</span><br>os.environ[<span class="hljs-string">&quot;OTEL_EXPORTER_OTLP_HEADERS&quot;</span>] = <span class="hljs-string">f&quot;Authorization=Basic <span class="hljs-subst">&#123;LANGFUSE_AUTH&#125;</span>&quot;</span><br><br><span class="hljs-comment"># Configure logfire instrumentation.</span><br>logfire.configure(<br>    service_name=<span class="hljs-string">&#x27;my_agent_service&#x27;</span>,<br>    send_to_logfire=<span class="hljs-literal">False</span><br>)<br><span class="hljs-comment"># This method automatically patches the OpenAI Agents SDK to send logs via OTLP to Langfuse.</span><br>logfire.instrument_openai_agents()<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    agent = Agent(<br>        name=<span class="hljs-string">&quot;Assistant&quot;</span>,<br>        instructions=<span class="hljs-string">&quot;You are a helpful assistant.&quot;</span>,<br>    )<br>    result = <span class="hljs-keyword">await</span> Runner.run(agent, <span class="hljs-string">&quot;What is the captial of France?&quot;</span>)<br>    <span class="hljs-built_in">print</span>(result.final_output)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    asyncio.run(main())<br><br></code></pre></td></tr></table></figure>
+<p>输出结果为：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">13</span>:<span class="hljs-number">34</span>:<span class="hljs-number">39</span>.<span class="hljs-number">454</span> OpenAI Agents trace: Agent workflow<br><span class="hljs-attribute">13</span>:<span class="hljs-number">34</span>:<span class="hljs-number">39</span>.<span class="hljs-number">455</span>   Agent run: &#x27;Assistant&#x27;<br><span class="hljs-attribute">13</span>:<span class="hljs-number">34</span>:<span class="hljs-number">39</span>.<span class="hljs-number">460</span>     Responses API with &#x27;gpt-<span class="hljs-number">4</span>o&#x27;<br><span class="hljs-attribute">The</span> capital of France is Paris.<br></code></pre></td></tr></table></figure>
+<p>观测结果如下图：</p>
+<figure>
+<img src="https://s2.loli.net/2025/03/14/i3ItjwSMFJaEyAr.png" srcset="/img/loading.gif" lazyload
+alt="single agent" />
+<figcaption aria-hidden="true">single agent</figcaption>
+</figure>
+<ul>
+<li>Multi Agents</li>
+</ul>
+<p>以多智能体为例（本例中构建了3个Agent，分别负责中译英、英译中、Agent选择），Langfuse的观测代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> base64<br><span class="hljs-keyword">import</span> logfire<br><span class="hljs-keyword">import</span> asyncio<br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><span class="hljs-keyword">from</span> agents <span class="hljs-keyword">import</span> Agent, Runner<br><br><br>load_dotenv()<br><br><span class="hljs-comment"># Build Basic Auth header.</span><br>LANGFUSE_AUTH = base64.b64encode(<br>    <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;os.environ.get(<span class="hljs-string">&#x27;LANGFUSE_PUBLIC_KEY&#x27;</span>)&#125;</span>:<span class="hljs-subst">&#123;os.environ.get(<span class="hljs-string">&#x27;LANGFUSE_SECRET_KEY&#x27;</span>)&#125;</span>&quot;</span>.encode()<br>).decode()<br><br><span class="hljs-comment"># Configure OpenTelemetry endpoint &amp; headers</span><br>os.environ[<span class="hljs-string">&quot;OTEL_EXPORTER_OTLP_ENDPOINT&quot;</span>] = os.environ.get(<span class="hljs-string">&quot;LANGFUSE_HOST&quot;</span>) + <span class="hljs-string">&quot;/api/public/otel&quot;</span><br>os.environ[<span class="hljs-string">&quot;OTEL_EXPORTER_OTLP_HEADERS&quot;</span>] = <span class="hljs-string">f&quot;Authorization=Basic <span class="hljs-subst">&#123;LANGFUSE_AUTH&#125;</span>&quot;</span><br><br><span class="hljs-comment"># Configure logfire instrumentation.</span><br>logfire.configure(<br>    service_name=<span class="hljs-string">&#x27;my_agent_service&#x27;</span>,<br>    send_to_logfire=<span class="hljs-literal">False</span><br>)<br><span class="hljs-comment"># This method automatically patches the OpenAI Agents SDK to send logs via OTLP to Langfuse.</span><br>logfire.instrument_openai_agents()<br><br>zh2en_agent = Agent(<br>    name=<span class="hljs-string">&quot;Chinese to English agent&quot;</span>,<br>    instructions=<span class="hljs-string">&quot;You are a translator from Chinese to English.&quot;</span>,<br>)<br><br>en2zh_agent = Agent(<br>    name=<span class="hljs-string">&quot;English to Chinese agent&quot;</span>,<br>    instructions=<span class="hljs-string">&quot;You are a translator from English to Chinese.&quot;</span>,<br>)<br><br>translation_agent = Agent(<br>    name=<span class="hljs-string">&quot;Translation agent&quot;</span>,<br>    instructions=<span class="hljs-string">&quot;You are a translation agent. If the input is in Chinese, translate it to English.&quot;</span><br>                 <span class="hljs-string">&quot; If the input is in English, translate it to Chinese.&quot;</span>,<br>    handoffs=[zh2en_agent, en2zh_agent],<br>)<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    result = <span class="hljs-keyword">await</span> Runner.run(translation_agent, <span class="hljs-built_in">input</span>=<span class="hljs-string">&quot;The Shawshank Redemption&quot;</span>)<br>    <span class="hljs-built_in">print</span>(result.final_output)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    asyncio.run(main())<br><br></code></pre></td></tr></table></figure>
+<p>输出结果如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-number">13</span>:<span class="hljs-number">38</span>:<span class="hljs-number">56.614</span> OpenAI Agents trace: Agent workflow<br><span class="hljs-number">13</span>:<span class="hljs-number">38</span>:<span class="hljs-number">56.615</span>   Agent run: <span class="hljs-string">&#x27;Translation agent&#x27;</span><br><span class="hljs-number">13</span>:<span class="hljs-number">38</span>:<span class="hljs-number">56.620</span>     Responses API <span class="hljs-keyword">with</span> <span class="hljs-string">&#x27;gpt-4o&#x27;</span><br><span class="hljs-number">13</span>:<span class="hljs-number">38</span>:<span class="hljs-number">58.060</span>     Handoff: Translation agent -&gt; <span class="hljs-literal">None</span><br><span class="hljs-number">13</span>:<span class="hljs-number">38</span>:<span class="hljs-number">58.061</span>   Agent run: <span class="hljs-string">&#x27;English to Chinese agent&#x27;</span><br><span class="hljs-number">13</span>:<span class="hljs-number">38</span>:<span class="hljs-number">58.061</span>     Responses API <span class="hljs-keyword">with</span> <span class="hljs-string">&#x27;gpt-4o&#x27;</span><br>《肖申克的救赎》<br></code></pre></td></tr></table></figure>
+<p>观测结果如下图：</p>
+<figure>
+<img src="https://s2.loli.net/2025/03/14/sjuAK1qHLQ5nB6c.png" srcset="/img/loading.gif" lazyload
+alt="multi agents" />
+<figcaption aria-hidden="true">multi agents</figcaption>
+</figure>
+<ul>
+<li>Multi Agents with function calling</li>
+</ul>
+<p><code>openai-agents-python</code>框架支持多智能体的同时还支持工具调用（function
+calling），笔者以Weather Agent和Time
+Agent为例，分别调用get_weather和get_time函数，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> base64<br><span class="hljs-keyword">import</span> logfire<br><span class="hljs-keyword">import</span> asyncio<br><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime<br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><span class="hljs-keyword">from</span> agents <span class="hljs-keyword">import</span> Agent, Runner, function_tool<br><br><br>load_dotenv()<br><br><span class="hljs-comment"># Build Basic Auth header.</span><br>LANGFUSE_AUTH = base64.b64encode(<br>    <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;os.environ.get(<span class="hljs-string">&#x27;LANGFUSE_PUBLIC_KEY&#x27;</span>)&#125;</span>:<span class="hljs-subst">&#123;os.environ.get(<span class="hljs-string">&#x27;LANGFUSE_SECRET_KEY&#x27;</span>)&#125;</span>&quot;</span>.encode()<br>).decode()<br><br><span class="hljs-comment"># Configure OpenTelemetry endpoint &amp; headers</span><br>os.environ[<span class="hljs-string">&quot;OTEL_EXPORTER_OTLP_ENDPOINT&quot;</span>] = os.environ.get(<span class="hljs-string">&quot;LANGFUSE_HOST&quot;</span>) + <span class="hljs-string">&quot;/api/public/otel&quot;</span><br>os.environ[<span class="hljs-string">&quot;OTEL_EXPORTER_OTLP_HEADERS&quot;</span>] = <span class="hljs-string">f&quot;Authorization=Basic <span class="hljs-subst">&#123;LANGFUSE_AUTH&#125;</span>&quot;</span><br><br><span class="hljs-comment"># Configure logfire instrumentation.</span><br>logfire.configure(<br>    service_name=<span class="hljs-string">&#x27;my_agent_service&#x27;</span>,<br>    send_to_logfire=<span class="hljs-literal">False</span><br>)<br><span class="hljs-comment"># This method automatically patches the OpenAI Agents SDK to send logs via OTLP to Langfuse.</span><br>logfire.instrument_openai_agents()<br><br><br><span class="hljs-meta">@function_tool</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_weather</span>(<span class="hljs-params">city: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">str</span>:<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">f&quot;The weather in <span class="hljs-subst">&#123;city&#125;</span> is sunny.&quot;</span><br><br><br><span class="hljs-meta">@function_tool</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_now_time</span>() -&gt; <span class="hljs-built_in">str</span>:<br>    now_time = datetime.now().strftime(<span class="hljs-string">&quot;%Y-%m-%d %H:%M:%S&quot;</span>)<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">f&quot;The current time is <span class="hljs-subst">&#123;now_time&#125;</span>.&quot;</span><br><br><br>weather_agent = Agent(<br>    name=<span class="hljs-string">&quot;Weather agent&quot;</span>,<br>    instructions=<span class="hljs-string">&quot;You are a weather agent.&quot;</span>,<br>    tools=[get_weather],<br>)<br><br>time_agent = Agent(<br>    name=<span class="hljs-string">&quot;Time agent&quot;</span>,<br>    instructions=<span class="hljs-string">&quot;You are a time agent.&quot;</span>,<br>    tools=[get_now_time],<br>)<br><br>agent = Agent(<br>    name=<span class="hljs-string">&quot;Agent&quot;</span>,<br>    instructions=<span class="hljs-string">&quot;You are an helpful agent.&quot;</span>,<br>    handoffs=[weather_agent, time_agent],<br>)<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    result1 = <span class="hljs-keyword">await</span> Runner.run(agent, <span class="hljs-built_in">input</span>=<span class="hljs-string">&quot;What&#x27;s the weather in Tokyo?&quot;</span>)<br>    <span class="hljs-built_in">print</span>(result1.final_output)<br>    <span class="hljs-comment"># The weather in Tokyo is sunny.</span><br>    result2 = <span class="hljs-keyword">await</span> Runner.run(agent, <span class="hljs-built_in">input</span>=<span class="hljs-string">&quot;What&#x27;s the time now?&quot;</span>)<br>    <span class="hljs-built_in">print</span>(result2.final_output)<br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    asyncio.run(main())<br></code></pre></td></tr></table></figure>
+<p>Agent调用情况如下图：</p>
+<figure>
+<img src="https://s2.loli.net/2025/03/14/ofzEgCpmT2eiWFk.png" srcset="/img/loading.gif" lazyload
+alt="multi agents with function calling" />
+<figcaption aria-hidden="true">multi agents with function
+calling</figcaption>
+</figure>
+<p>调用工具输出如下图：</p>
+<figure>
+<img src="https://s2.loli.net/2025/03/14/4UTYlNZDo5wmh2f.png" srcset="/img/loading.gif" lazyload
+alt="function output" />
+<figcaption aria-hidden="true">function output</figcaption>
+</figure>
+<h2 id="总结">总结</h2>
+<p>本文介绍了如何使用<code>Langfuse</code>
+来提升大模型（LLM）和多智能体（Agents）的可观测性。Langfuse 作为一个开源
+LLM 工程平台，提供了强大的 Tracing（追踪） 功能，使开发者能够详细监控
+LLM 的调用路径、输入输出、响应时间和成本等关键指标。文章展示了如何在
+OpenAI 和 Anthropic 的 LLM 调用中集成
+Langfuse，并通过自定义配置进一步增强可观测性。</p>
+<p>此外，文章还介绍了 Langfuse 与 OpenAI Agents 框架
+结合使用的案例，包括单智能体、多智能体以及工具调用（function
+calling）的场景。通过
+Langfuse，开发者可以清晰地跟踪智能体的决策路径、交互过程以及外部 API
+的调用情况，从而优化 LLM 应用的稳定性和性能。</p>
+<p>当然，<code>Langfuse</code>的功能是十分强大的，远不仅于此，笔者后续将会继续探索~</p>
+<p>欢迎关注我的公众号<strong>NLP奇幻之旅</strong>，原创技术文章第一时间推送。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+<p>欢迎关注我的知识星球“<strong>自然语言处理奇幻之旅</strong>”，笔者正在努力构建自己的技术社区。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Langfuse/" class="print-no-link">#Langfuse</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（一百一十三）使用Langfuse提升LLM和Agents的可观测性</div>
+      <div>https://percent4.github.io/NLP（一百一十三）使用Langfuse提升LLM和Agents的可观测性/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年4月27日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E4%B8%80%E5%8D%81%E4%BA%8C%EF%BC%89%E5%BE%AE%E8%B0%83LLM%EF%BC%8C%E8%A7%A3%E9%94%81%E6%8E%A8%E7%90%86%E8%83%BD%E5%8A%9B%E2%80%94%E2%80%94GRPO%E7%AE%97%E6%B3%95%E5%A6%82%E4%BD%95%E6%8F%90%E5%8D%87%E4%BA%BA%E7%89%A9%E5%85%B3%E7%B3%BB%E5%88%86%E7%B1%BB/" title="NLP（一百一十二）微调LLM，解锁推理能力——GRPO算法如何提升人物关系分类">
+                        <span class="hidden-mobile">NLP（一百一十二）微调LLM，解锁推理能力——GRPO算法如何提升人物关系分类</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
