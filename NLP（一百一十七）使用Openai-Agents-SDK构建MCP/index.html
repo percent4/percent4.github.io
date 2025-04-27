@@ -1,0 +1,981 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍如何在OpenAI开源的Agent框架OpenAI Agents中使用MCP，实现文件操作、Redis操作以及播放音乐等操作。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（一百一十七）使用Openai_Agents_SDK构建MCP">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E4%B8%80%E5%8D%81%E4%B8%83%EF%BC%89%E4%BD%BF%E7%94%A8Openai-Agents-SDK%E6%9E%84%E5%BB%BAMCP/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍如何在OpenAI开源的Agent框架OpenAI Agents中使用MCP，实现文件操作、Redis操作以及播放音乐等操作。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2025/04/03/4ikwLMfXomF6AaU.png">
+<meta property="og:image" content="https://s2.loli.net/2025/04/03/F968RqsGMA15wUk.png">
+<meta property="og:image" content="https://s2.loli.net/2025/04/03/6JZg4ounqFDdWVT.png">
+<meta property="og:image" content="https://s2.loli.net/2025/04/03/FMtWmnSixDoNRg6.png">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg">
+<meta property="article:published_time" content="2025-04-27T14:52:26.000Z">
+<meta property="article:modified_time" content="2025-04-27T14:53:22.628Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="MCP">
+<meta property="article:tag" content="Agent">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2025/04/03/4ikwLMfXomF6AaU.png">
+  
+  
+  
+  <title>NLP（一百一十七）使用Openai_Agents_SDK构建MCP - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（一百一十七）使用Openai_Agents_SDK构建MCP"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-04-27 22:52" pubdate>
+          星期日, 四月 27日 2025, 10:52 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          22k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          184 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（一百一十七）使用Openai_Agents_SDK构建MCP</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍如何在OpenAI开源的Agent框架OpenAI
+Agents中使用MCP，实现文件操作、Redis操作以及播放音乐等操作。</p>
+</blockquote>
+<h2 id="前言">前言</h2>
+<p>在文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/dl7VF3nbpHOLE1LVAmlgZw">NLP(一百一十五)MCP入门与实践</a>与文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/o37mqJoKiHTtvM_LvlBINQ">NLP（一百一十六）使用MCP实现网络爬虫与数独自动化求解</a>中，笔者介绍了如何在<strong>Cursor</strong>中使用MCP框架来实现文件操作、B站视频搜索、网络爬虫以及自动化求解数独等任务。上述两篇文章作为MCP的入门文章，能够让读者切实体验到MCP的强大与便利。</p>
+<p>在今年的3月初，<strong>OpenAI</strong>官方宣布了自己公司的Agent
+SDK（参考网站: <a
+target="_blank" rel="noopener" href="https://openai.com/index/new-tools-for-building-agents/">https://openai.com/index/new-tools-for-building-agents/</a>），其在Github上对应的项目为<code>openai-agents-python</code>，网址为<a
+target="_blank" rel="noopener" href="https://github.com/openai/openai-agents-python">https://github.com/openai/openai-agents-python</a>
+。</p>
+<p>就在一周前（3月27日），<strong>OpenAI</strong>再次释放大招，Agent
+SDK接入行业标准MCP，下一步将加持ChatGPT桌面版，欲彻底颠覆个人AI工作流。</p>
+<p>这是一个不错的信号，强如<strong>OpenAI</strong>，也开始支持和拥抱对手的MCP协议，这正说明了MCP符合当前Agent的发展趋势。</p>
+<p>本文将会在<code>openai-agents-python</code>项目官方例子的基础上，结合笔者在之前文章的经验和后续欲尝试的项目，给出几个使用的例子，并使用<strong>Langfuse</strong>进行可视化追踪，来演示如何在<code>openai-agents-python</code>中更好地使用MCP。</p>
+<p>关于<strong>Langfuse</strong>的介绍与使用，可参考文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/IeLf4WE_ohfkKFn9Lpn8AA">NLP（一百一十三）使用Langfuse提升LLM和Agents的可观测性</a>
+。</p>
+<p>Let's go!</p>
+<h2 id="准备工作">准备工作</h2>
+<ul>
+<li><p>为了使用OpenAI中的大模型（LLM），你需要在OpenAI中注册账号并获取API
+Key.</p></li>
+<li><p>在使用<code>openai-agents-python</code>，先安装其对应的Python第三方模块：</p></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">pip install openai-agents<br></code></pre></td></tr></table></figure>
+<ul>
+<li><p>为了使用MCP，笔者在本地电脑上已安装了NPM和Python环境管理工具<code>uv</code>，如果需要<strong>Langfuse</strong>来进行Agents的观测，则需注册Langfuse账号并安装langfuse第三方模块。</p></li>
+<li><p>在演示redis操作时，需在本地电脑上安装好redis数据库。</p></li>
+<li><p>在演示播放本地音乐时，需安装工具<code>sox</code>，Mac电脑安装方式如下:</p></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">brew install sox<br></code></pre></td></tr></table></figure>
+<h2 id="文件操作">文件操作</h2>
+<p>我们使用<code>filesystem</code>这个MCP
+Server来实现本地文件操作，其官方网址为：https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem
+，以NPX方式在本地电脑使用，操作路径设置为<code>/Users/admin/papers</code>，该文件夹包括笔者下载的论文PDF文档。</p>
+<p>笔者的输入问题为:</p>
+<blockquote>
+<p>帮我找下这个路径下面的所有关于LLAMA的论文</p>
+</blockquote>
+<p>以下是使用<code>openai-agents</code>模块来实现文件系统的操作脚本，Python代码如下:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> base64<br><span class="hljs-keyword">import</span> logfire<br><span class="hljs-keyword">import</span> shutil<br><span class="hljs-keyword">import</span> asyncio<br><span class="hljs-keyword">from</span> agents <span class="hljs-keyword">import</span> Agent, Runner<br><span class="hljs-keyword">from</span> agents.mcp <span class="hljs-keyword">import</span> MCPServer, MCPServerStdio<br><br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><br>load_dotenv()<br><br><span class="hljs-comment"># Build Basic Auth header.</span><br>LANGFUSE_AUTH = base64.b64encode(<br>    <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;os.environ.get(<span class="hljs-string">&#x27;LANGFUSE_PUBLIC_KEY&#x27;</span>)&#125;</span>:<span class="hljs-subst">&#123;os.environ.get(<span class="hljs-string">&#x27;LANGFUSE_SECRET_KEY&#x27;</span>)&#125;</span>&quot;</span>.encode()<br>).decode()<br><br><span class="hljs-comment"># Configure OpenTelemetry endpoint &amp; headers</span><br>os.environ[<span class="hljs-string">&quot;OTEL_EXPORTER_OTLP_ENDPOINT&quot;</span>] = os.environ.get(<span class="hljs-string">&quot;LANGFUSE_HOST&quot;</span>) + <span class="hljs-string">&quot;/api/public/otel&quot;</span><br>os.environ[<span class="hljs-string">&quot;OTEL_EXPORTER_OTLP_HEADERS&quot;</span>] = <span class="hljs-string">f&quot;Authorization=Basic <span class="hljs-subst">&#123;LANGFUSE_AUTH&#125;</span>&quot;</span><br><br><span class="hljs-comment"># Configure logfire instrumentation.</span><br>logfire.configure(<br>    service_name=<span class="hljs-string">&#x27;my_agent_service&#x27;</span>,<br>    send_to_logfire=<span class="hljs-literal">False</span><br>)<br><span class="hljs-comment"># This method automatically patches the OpenAI Agents SDK to send logs via OTLP to Langfuse.</span><br>logfire.instrument_openai_agents()<br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">run</span>(<span class="hljs-params">mcp_server: MCPServer</span>):<br>    agent = Agent(<br>        name=<span class="hljs-string">&quot;File System Assistant&quot;</span>,<br>        model=<span class="hljs-string">&quot;gpt-4o&quot;</span>,<br>        instructions=<span class="hljs-string">&quot;Use the tools to read, write, and search the filesystem and answer questions based on those files.&quot;</span>,<br>        mcp_servers=[mcp_server],<br>    )<br><br>    message = <span class="hljs-string">&quot;帮我找下这个路径下面的所有关于LLAMA的论文&quot;</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Running: <span class="hljs-subst">&#123;message&#125;</span>&quot;</span>)<br>    result = <span class="hljs-keyword">await</span> Runner.run(starting_agent=agent, <span class="hljs-built_in">input</span>=message)<br>    <span class="hljs-built_in">print</span>(result.final_output)<br><br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    samples_dir = <span class="hljs-string">&quot;/Users/admin/papers&quot;</span><br><br>    <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> MCPServerStdio(<br>        name=<span class="hljs-string">&quot;Filesystem Server, via npx&quot;</span>,<br>        params=&#123;<br>            <span class="hljs-string">&quot;command&quot;</span>: <span class="hljs-string">&quot;npx&quot;</span>,<br>            <span class="hljs-string">&quot;args&quot;</span>: [<span class="hljs-string">&quot;-y&quot;</span>, <span class="hljs-string">&quot;@modelcontextprotocol/server-filesystem&quot;</span>, samples_dir],<br>        &#125;,<br>    ) <span class="hljs-keyword">as</span> server:<br>        <span class="hljs-keyword">await</span> run(server)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    <span class="hljs-comment"># Let&#x27;s make sure the user has npx installed</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> shutil.which(<span class="hljs-string">&quot;npx&quot;</span>):<br>        <span class="hljs-keyword">raise</span> RuntimeError(<span class="hljs-string">&quot;npx is not installed. Please install it with `npm install -g npx`.&quot;</span>)<br><br>    asyncio.run(main())<br></code></pre></td></tr></table></figure>
+<p>上述脚本的输出结果如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs shell">Secure MCP Filesystem Server running on stdio<br>Allowed directories: [ &#x27;/Users/admin/papers&#x27; ]<br>Running: 帮我找下这个路径下面的所有关于LLAMA的论文<br>15:46:36.985 OpenAI Agents trace: Agent workflow<br>15:46:36.986   Agent run: &#x27;File System Assistant&#x27;<br>15:46:36.986     OpenAI agents: mcp_tools span<br>15:46:37.007     Responses API with &#x27;gpt-4o&#x27;<br>15:46:40.497     Function: directory_tree<br>15:46:40.500     Responses API with &#x27;gpt-4o&#x27;<br>15:46:43.545     Function: list_allowed_directories<br>15:46:43.549     Responses API with &#x27;gpt-4o&#x27;<br>15:46:46.215     Function: search_files<br>15:46:46.226     Responses API with &#x27;gpt-4o&#x27;<br>我在指定路径下找到了以下关于LLAMA的论文：<br><br>1. LLaMA.pdf<br>2. The Llama 3 Herd of Models.pdf<br>3. llama-2-70b.pdf<br></code></pre></td></tr></table></figure>
+<p>在<strong>Langfuse</strong>中对上述工作流进行观测，如下图：</p>
+<figure>
+<img src="https://s2.loli.net/2025/04/03/4ikwLMfXomF6AaU.png" srcset="/img/loading.gif" lazyload
+alt="使用Agent和MCP实现文件操作" />
+<figcaption aria-hidden="true">使用Agent和MCP实现文件操作</figcaption>
+</figure>
+<p>从上述中可知，Agent先对用户问题进行理解，再调用了MCP Server中的工具:
+directory_tree, list_allowed_directories,
+search_files，最后回答用户问题。流程上与上述终端输出一致，但在Langfuse能看到更多细节。比如调用工具的入参与返回结果，LLM调用的参数、花费，以及各阶段耗时、整体耗时等。</p>
+<h4 id="tips">Tips</h4>
+<p>在<code>openai-agents</code>模块中提供了两类server，说明如下：</p>
+<ul>
+<li><strong>stdio</strong>
+server以你开发的应用中的子进程方式运行，你可以把它们当作被本地运行。</li>
+<li><strong>HTTP over SSE</strong>
+server以远程方式运行。你需要使用URL进行连接。</li>
+</ul>
+<p>上述两类server在模块中对应的类<code>MCPServerStdio</code>和<code>MCPServerSse</code>.</p>
+<h2 id="redis操作">Redis操作</h2>
+<p>我们使用<code>Redis MCP Server</code>来实现Redis操作，其官方网址为<a
+target="_blank" rel="noopener" href="https://glama.ai/mcp/servers/@farhankaz/redis-mcp">https://glama.ai/mcp/servers/<span
+class="citation"
+data-cites="farhankaz/redis-mcp">@farhankaz/redis-mcp</span></a>，以NPX方式运行，操作的Redis为本地Redis数据库。</p>
+<p>笔者输入的问题为：</p>
+<blockquote>
+<p>将所有这个路径下的PDF论文的绝对路径，都保存至redis中db为0,
+key=papers中的set中。</p>
+</blockquote>
+<p>在这里我们将同时使用<code>filesystem</code>和<code>Redis MCP Server</code>这两个MCP
+Server，并设定路径下的PDF文档名称保存至Redis.</p>
+<p>以下是使用<code>openai-agents</code>模块来实现文件系统操作和Redis操作的脚本，Python代码如下:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> base64<br><span class="hljs-keyword">import</span> logfire<br><span class="hljs-keyword">import</span> shutil<br><span class="hljs-keyword">import</span> asyncio<br><span class="hljs-keyword">from</span> agents <span class="hljs-keyword">import</span> Agent, Runner<br><span class="hljs-keyword">from</span> agents.mcp <span class="hljs-keyword">import</span> MCPServer, MCPServerStdio<br><br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><br>load_dotenv()<br><br><span class="hljs-comment"># Build Basic Auth header.</span><br>LANGFUSE_AUTH = base64.b64encode(<br>    <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;os.environ.get(<span class="hljs-string">&#x27;LANGFUSE_PUBLIC_KEY&#x27;</span>)&#125;</span>:<span class="hljs-subst">&#123;os.environ.get(<span class="hljs-string">&#x27;LANGFUSE_SECRET_KEY&#x27;</span>)&#125;</span>&quot;</span>.encode()<br>).decode()<br><br><span class="hljs-comment"># Configure OpenTelemetry endpoint &amp; headers</span><br>os.environ[<span class="hljs-string">&quot;OTEL_EXPORTER_OTLP_ENDPOINT&quot;</span>] = os.environ.get(<span class="hljs-string">&quot;LANGFUSE_HOST&quot;</span>) + <span class="hljs-string">&quot;/api/public/otel&quot;</span><br>os.environ[<span class="hljs-string">&quot;OTEL_EXPORTER_OTLP_HEADERS&quot;</span>] = <span class="hljs-string">f&quot;Authorization=Basic <span class="hljs-subst">&#123;LANGFUSE_AUTH&#125;</span>&quot;</span><br><br><span class="hljs-comment"># Configure logfire instrumentation.</span><br>logfire.configure(<br>    service_name=<span class="hljs-string">&#x27;my_agent_service&#x27;</span>,<br>    send_to_logfire=<span class="hljs-literal">False</span><br>)<br><span class="hljs-comment"># This method automatically patches the OpenAI Agents SDK to send logs via OTLP to Langfuse.</span><br>logfire.instrument_openai_agents()<br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">run</span>(<span class="hljs-params">mcp_server_1: MCPServer, mcp_server_2: MCPServer</span>):<br>    agent = Agent(<br>        name=<span class="hljs-string">&quot;File System Assistant&quot;</span>,<br>        model=<span class="hljs-string">&quot;gpt-4o&quot;</span>,<br>        instructions=<span class="hljs-string">&quot;Use the tools to read, write, and search the filesystem and answer questions based on those files.&quot;</span>,<br>        mcp_servers=[mcp_server_1, mcp_server_2],<br>    )<br><br>    message = <span class="hljs-string">&quot;将所有这个路径下的PDF论文的绝对路径，都保存至redis中db为0, key=papers中的set中。&quot;</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Running: <span class="hljs-subst">&#123;message&#125;</span>&quot;</span>)<br>    result = <span class="hljs-keyword">await</span> Runner.run(starting_agent=agent, <span class="hljs-built_in">input</span>=message)<br>    <span class="hljs-built_in">print</span>(result.final_output)<br><br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    samples_dir = <span class="hljs-string">&quot;/Users/admin/papers&quot;</span><br><br>    file_server = MCPServerStdio(<br>        name=<span class="hljs-string">&quot;Filesystem Server, via npx&quot;</span>,<br>        params=&#123;<br>            <span class="hljs-string">&quot;command&quot;</span>: <span class="hljs-string">&quot;npx&quot;</span>,<br>            <span class="hljs-string">&quot;args&quot;</span>: [<span class="hljs-string">&quot;-y&quot;</span>, <span class="hljs-string">&quot;@modelcontextprotocol/server-filesystem&quot;</span>, samples_dir],<br>        &#125;,<br>    )<br><br>    redis_server = MCPServerStdio(<br>        name=<span class="hljs-string">&quot;Redis Server, via npx&quot;</span>,<br>        params=&#123;<br>            <span class="hljs-string">&quot;command&quot;</span>: <span class="hljs-string">&quot;npx&quot;</span>,<br>            <span class="hljs-string">&quot;args&quot;</span>: [<span class="hljs-string">&quot;redis-mcp&quot;</span>, <span class="hljs-string">&quot;--redis-host&quot;</span>, <span class="hljs-string">&quot;localhost&quot;</span>, <span class="hljs-string">&quot;--redis-port&quot;</span>, <span class="hljs-string">&quot;6379&quot;</span>],<br>            <span class="hljs-string">&quot;disabled&quot;</span>: <span class="hljs-literal">False</span><br>        &#125;<br>    )<br><br>    <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> file_server <span class="hljs-keyword">as</span> file_server, redis_server <span class="hljs-keyword">as</span> redis_server:<br>        <span class="hljs-keyword">await</span> run(file_server, redis_server)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    <span class="hljs-comment"># Let&#x27;s make sure the user has npx installed</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> shutil.which(<span class="hljs-string">&quot;npx&quot;</span>):<br>        <span class="hljs-keyword">raise</span> RuntimeError(<span class="hljs-string">&quot;npx is not installed. Please install it with `npm install -g npx`.&quot;</span>)<br><br>    asyncio.run(main())<br></code></pre></td></tr></table></figure>
+<p>运行上述脚本，输出结果如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs shell">Secure MCP Filesystem Server running on stdio<br>Allowed directories: [ &#x27;/Users/admin/papers&#x27; ]<br>npm WARN exec The following package was not found and will be installed: redis-mcp@0.0.4<br>Running: 将所有这个路径下的PDF论文的绝对路径，都保存至redis中db为0, key=papers中的set中。<br>16:00:56.948 OpenAI Agents trace: Agent workflow<br>16:00:56.950   Agent run: &#x27;File System Assistant&#x27;<br>16:00:56.950     OpenAI agents: mcp_tools span<br>16:00:56.954     OpenAI agents: mcp_tools span<br>16:00:56.973     Responses API with &#x27;gpt-4o&#x27;<br>16:00:59.962     Function: list_allowed_directories<br>16:00:59.964     Responses API with &#x27;gpt-4o&#x27;<br>16:01:01.559     Function: search_files<br>16:01:01.578     Responses API with &#x27;gpt-4o&#x27;<br>16:01:11.254     Function: sadd<br>16:01:11.294     Responses API with &#x27;gpt-4o&#x27;<br>已将路径下所有PDF论文的绝对路径保存至 Redis 中，键为 `papers` 的集合中。<br></code></pre></td></tr></table></figure>
+<p>Langfuse观测如下图：</p>
+<figure>
+<img src="https://s2.loli.net/2025/04/03/F968RqsGMA15wUk.png" srcset="/img/loading.gif" lazyload
+alt="使用Agent和MCP实现Redis操作" />
+<figcaption aria-hidden="true">使用Agent和MCP实现Redis操作</figcaption>
+</figure>
+<p>我们观察到，Agent使用sadd函数将数据保存为集合(set)格式。</p>
+<p>在Redis中查看数据，结果如下：</p>
+<figure>
+<img src="https://s2.loli.net/2025/04/03/6JZg4ounqFDdWVT.png" srcset="/img/loading.gif" lazyload
+alt="Redis中的数据" />
+<figcaption aria-hidden="true">Redis中的数据</figcaption>
+</figure>
+<h2 id="官方sse例子">官方SSE例子</h2>
+<p>在<code>openai-agents</code>官网的SSE例子中，实现的MCP
+Server如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> random<br><br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">from</span> mcp.server.fastmcp <span class="hljs-keyword">import</span> FastMCP<br><br><span class="hljs-comment"># Create server</span><br>mcp = FastMCP(<span class="hljs-string">&quot;Echo Server&quot;</span>)<br><br><br><span class="hljs-meta">@mcp.tool()</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">add</span>(<span class="hljs-params">a: <span class="hljs-built_in">int</span>, b: <span class="hljs-built_in">int</span></span>) -&gt; <span class="hljs-built_in">int</span>:<br>    <span class="hljs-string">&quot;&quot;&quot;Add two numbers&quot;&quot;&quot;</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;[debug-server] add(<span class="hljs-subst">&#123;a&#125;</span>, <span class="hljs-subst">&#123;b&#125;</span>)&quot;</span>)<br>    <span class="hljs-keyword">return</span> a + b<br><br><br><span class="hljs-meta">@mcp.tool()</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_secret_word</span>() -&gt; <span class="hljs-built_in">str</span>:<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;[debug-server] get_secret_word()&quot;</span>)<br>    <span class="hljs-keyword">return</span> random.choice([<span class="hljs-string">&quot;apple&quot;</span>, <span class="hljs-string">&quot;banana&quot;</span>, <span class="hljs-string">&quot;cherry&quot;</span>])<br><br><br><span class="hljs-meta">@mcp.tool()</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_current_weather</span>(<span class="hljs-params">city: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">str</span>:<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;[debug-server] get_current_weather(<span class="hljs-subst">&#123;city&#125;</span>)&quot;</span>)<br><br>    endpoint = <span class="hljs-string">&quot;https://wttr.in&quot;</span><br>    response = requests.get(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;endpoint&#125;</span>/<span class="hljs-subst">&#123;city&#125;</span>&quot;</span>)<br>    <span class="hljs-keyword">return</span> response.text<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    mcp.run(transport=<span class="hljs-string">&quot;sse&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>在上述自己实现的MCP Server中，有三个工具可以调用，分别为：</p>
+<ul>
+<li>add: 两数相加</li>
+<li>get_secret_word: 获取秘密单词</li>
+<li>get_current_weather: 获取输入城市的天气情况</li>
+</ul>
+<p>在MCP
+Client中，用<code>MCPServerSse</code>来进行连接，Python代码如下:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> asyncio<br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> shutil<br><span class="hljs-keyword">import</span> base64<br><span class="hljs-keyword">import</span> logfire<br><span class="hljs-keyword">import</span> subprocess<br><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">Any</span><br><br><span class="hljs-keyword">from</span> agents <span class="hljs-keyword">import</span> Agent, Runner<br><span class="hljs-keyword">from</span> agents.mcp <span class="hljs-keyword">import</span> MCPServer, MCPServerSse<br><span class="hljs-keyword">from</span> agents.model_settings <span class="hljs-keyword">import</span> ModelSettings<br><br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><br>load_dotenv()<br><br><span class="hljs-comment"># Build Basic Auth header.</span><br>LANGFUSE_AUTH = base64.b64encode(<br>    <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;os.environ.get(<span class="hljs-string">&#x27;LANGFUSE_PUBLIC_KEY&#x27;</span>)&#125;</span>:<span class="hljs-subst">&#123;os.environ.get(<span class="hljs-string">&#x27;LANGFUSE_SECRET_KEY&#x27;</span>)&#125;</span>&quot;</span>.encode()<br>).decode()<br><br><span class="hljs-comment"># Configure OpenTelemetry endpoint &amp; headers</span><br>os.environ[<span class="hljs-string">&quot;OTEL_EXPORTER_OTLP_ENDPOINT&quot;</span>] = os.environ.get(<span class="hljs-string">&quot;LANGFUSE_HOST&quot;</span>) + <span class="hljs-string">&quot;/api/public/otel&quot;</span><br>os.environ[<span class="hljs-string">&quot;OTEL_EXPORTER_OTLP_HEADERS&quot;</span>] = <span class="hljs-string">f&quot;Authorization=Basic <span class="hljs-subst">&#123;LANGFUSE_AUTH&#125;</span>&quot;</span><br><br><span class="hljs-comment"># Configure logfire instrumentation.</span><br>logfire.configure(<br>    service_name=<span class="hljs-string">&#x27;my_agent_service&#x27;</span>,<br>    send_to_logfire=<span class="hljs-literal">False</span><br>)<br><span class="hljs-comment"># This method automatically patches the OpenAI Agents SDK to send logs via OTLP to Langfuse.</span><br>logfire.instrument_openai_agents()<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">run</span>(<span class="hljs-params">mcp_server: MCPServer</span>):<br>    agent = Agent(<br>        name=<span class="hljs-string">&quot;Assistant&quot;</span>,<br>        instructions=<span class="hljs-string">&quot;Use the tools to answer the questions.&quot;</span>,<br>        mcp_servers=[mcp_server],<br>        model_settings=ModelSettings(tool_choice=<span class="hljs-string">&quot;required&quot;</span>),<br>    )<br><br>    <span class="hljs-comment"># Use the `add` tool to add two numbers</span><br>    message = <span class="hljs-string">&quot;Add these numbers: 7 and 22.&quot;</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Running: <span class="hljs-subst">&#123;message&#125;</span>&quot;</span>)<br>    result = <span class="hljs-keyword">await</span> Runner.run(starting_agent=agent, <span class="hljs-built_in">input</span>=message)<br>    <span class="hljs-built_in">print</span>(result.final_output)<br><br>    <span class="hljs-comment"># Run the `get_weather` tool</span><br>    message = <span class="hljs-string">&quot;What&#x27;s the weather in Shanghai?&quot;</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;\n\nRunning: <span class="hljs-subst">&#123;message&#125;</span>&quot;</span>)<br>    result = <span class="hljs-keyword">await</span> Runner.run(starting_agent=agent, <span class="hljs-built_in">input</span>=message)<br>    <span class="hljs-built_in">print</span>(result.final_output)<br><br>    <span class="hljs-comment"># Run the `get_secret_word` tool</span><br>    message = <span class="hljs-string">&quot;What&#x27;s the secret word?&quot;</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;\n\nRunning: <span class="hljs-subst">&#123;message&#125;</span>&quot;</span>)<br>    result = <span class="hljs-keyword">await</span> Runner.run(starting_agent=agent, <span class="hljs-built_in">input</span>=message)<br>    <span class="hljs-built_in">print</span>(result.final_output)<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> MCPServerSse(<br>        name=<span class="hljs-string">&quot;SSE Python Server&quot;</span>,<br>        params=&#123;<br>            <span class="hljs-string">&quot;url&quot;</span>: <span class="hljs-string">&quot;http://localhost:8000/sse&quot;</span>,<br>        &#125;,<br>    ) <span class="hljs-keyword">as</span> server:<br>        <span class="hljs-keyword">await</span> run(server)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    <span class="hljs-comment"># Let&#x27;s make sure the user has uv installed</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> shutil.which(<span class="hljs-string">&quot;uv&quot;</span>):<br>        <span class="hljs-keyword">raise</span> RuntimeError(<br>            <span class="hljs-string">&quot;uv is not installed. Please install it: https://docs.astral.sh/uv/getting-started/installation/&quot;</span><br>        )<br><br>    <span class="hljs-comment"># We&#x27;ll run the SSE server in a subprocess. Usually this would be a remote server, but for this</span><br>    <span class="hljs-comment"># demo, we&#x27;ll run it locally at http://localhost:8000/sse</span><br>    process: subprocess.Popen[<span class="hljs-type">Any</span>] | <span class="hljs-literal">None</span> = <span class="hljs-literal">None</span><br>    <span class="hljs-keyword">try</span>:<br>        this_dir = os.path.dirname(os.path.abspath(__file__))<br>        server_file = os.path.join(this_dir, <span class="hljs-string">&quot;openai_agents_local_mcp_server.py&quot;</span>)<br><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Starting SSE server at http://localhost:8000/sse ...&quot;</span>)<br><br>        <span class="hljs-comment"># Run `uv run server.py` to start the SSE server</span><br>        process = subprocess.Popen([<span class="hljs-string">&quot;uv&quot;</span>, <span class="hljs-string">&quot;run&quot;</span>, server_file])<br>        <span class="hljs-comment"># Give it 3 seconds to start</span><br>        time.sleep(<span class="hljs-number">3</span>)<br><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;SSE server started. Running example...\n\n&quot;</span>)<br>    <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Error starting SSE server: <span class="hljs-subst">&#123;e&#125;</span>&quot;</span>)<br>        exit(<span class="hljs-number">1</span>)<br><br>    <span class="hljs-keyword">try</span>:<br>        asyncio.run(main())<br>    <span class="hljs-keyword">finally</span>:<br>        <span class="hljs-keyword">if</span> process:<br>            process.terminate()<br></code></pre></td></tr></table></figure>
+<p>在上述脚本中，会以子进程的方式来运行MCP
+Server（运行命令采用<code>uv</code>），并使用<code>MCPServerSse</code>类来连接子进程中的MCP
+Server。</p>
+<p>运行上述脚本，输出结果如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><code class="hljs shell">Starting SSE server at http://localhost:8000/sse ...<br>INFO:     Started server process [97601]<br>INFO:     Waiting for application startup.<br>INFO:     Application startup complete.<br>INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)<br>SSE server started. Running example...<br><br><br>INFO:     127.0.0.1:59992 - &quot;GET /sse HTTP/1.1&quot; 200 OK<br>INFO:     127.0.0.1:59994 - &quot;POST /messages/?session_id=8ef9d738e0b249cf81e70ba029c0fb77 HTTP/1.1&quot; 202 Accepted<br>Running: Add these numbers: 7 and 22.<br>03:06:38.062 OpenAI Agents trace: Agent workflow<br>03:06:38.063   Agent run: &#x27;Assistant&#x27;<br>03:06:38.063     OpenAI agents: mcp_tools span<br>INFO:     127.0.0.1:59994 - &quot;POST /messages/?session_id=8ef9d738e0b249cf81e70ba029c0fb77 HTTP/1.1&quot; 202 Accepted<br>INFO:     127.0.0.1:59994 - &quot;POST /messages/?session_id=8ef9d738e0b249cf81e70ba029c0fb77 HTTP/1.1&quot; 202 Accepted<br>[04/03/25 11:06:38] INFO     Processing request of type ListToolsRequest                                                                  server.py:534<br>03:06:38.093     Responses API with &#x27;gpt-4o&#x27;<br>03:06:41.730     Function: add<br>INFO:     127.0.0.1:59994 - &quot;POST /messages/?session_id=8ef9d738e0b249cf81e70ba029c0fb77 HTTP/1.1&quot; 202 Accepted<br>[04/03/25 11:06:41] INFO     Processing request of type CallToolRequest                                                                   server.py:534<br>[debug-server] add(7, 22)<br>03:06:41.735     Responses API with &#x27;gpt-4o&#x27;<br>The sum of 7 and 22 is 29.<br><br><br>Running: What&#x27;s the weather in Shanghai?<br>03:06:42.987 OpenAI Agents trace: Agent workflow<br>03:06:42.987   Agent run: &#x27;Assistant&#x27;<br>03:06:42.988     OpenAI agents: mcp_tools span<br>INFO:     127.0.0.1:59994 - &quot;POST /messages/?session_id=8ef9d738e0b249cf81e70ba029c0fb77 HTTP/1.1&quot; 202 Accepted<br>[04/03/25 11:06:42] INFO     Processing request of type ListToolsRequest                                                                  server.py:534<br>03:06:42.995     Responses API with &#x27;gpt-4o&#x27;<br>03:06:43.936     Function: get_current_weather<br>INFO:     127.0.0.1:59994 - &quot;POST /messages/?session_id=8ef9d738e0b249cf81e70ba029c0fb77 HTTP/1.1&quot; 202 Accepted<br>[04/03/25 11:06:43] INFO     Processing request of type CallToolRequest                                                                   server.py:534<br>[debug-server] get_current_weather(Shanghai)<br>03:06:45.572     Responses API with &#x27;gpt-4o&#x27;<br><span class="hljs-meta prompt_">#</span><span class="language-bash"><span class="hljs-comment">## Current Weather in Shanghai:</span></span><br>- **Condition:** Sunny<br>- **Temperature:** 14°C (feels like 13°C)<br>- **Wind:** 13 km/h ←<br>- **Visibility:** 10 km<br>- **Precipitation:** 0.0 mm<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_">#</span><span class="language-bash"><span class="hljs-comment">## Forecast:</span></span><br>- **Morning:** Partly Cloudy, 14°C<br>- **Noon:** Sunny, 17°C<br>- **Evening:** Sunny, 14°C<br>- **Night:** Clear, 12°C<br><br>No precipitation expected throughout the day.<br><br><br>Running: What&#x27;s the secret word?<br>03:06:48.980 OpenAI Agents trace: Agent workflow<br>03:06:48.981   Agent run: &#x27;Assistant&#x27;<br>03:06:48.982     OpenAI agents: mcp_tools span<br>INFO:     127.0.0.1:60084 - &quot;POST /messages/?session_id=8ef9d738e0b249cf81e70ba029c0fb77 HTTP/1.1&quot; 202 Accepted<br>[04/03/25 11:06:48] INFO     Processing request of type ListToolsRequest                                                                  server.py:534<br>03:06:48.991     Responses API with &#x27;gpt-4o&#x27;<br>03:06:49.755     Function: [Scrubbed due to &#x27;secret&#x27;]<br>INFO:     127.0.0.1:60084 - &quot;POST /messages/?session_id=8ef9d738e0b249cf81e70ba029c0fb77 HTTP/1.1&quot; 202 Accepted<br>[04/03/25 11:06:49] INFO     Processing request of type CallToolRequest                                                                   server.py:534<br>[debug-server] get_secret_word()<br>03:06:49.762     Responses API with &#x27;gpt-4o&#x27;<br>The secret word is &quot;apple.&quot;<br>INFO:     Shutting down<br>INFO:     Waiting for background tasks to complete.<br></code></pre></td></tr></table></figure>
+<p>在上面的输出中，我们可以看到MCP Server与MCP Client的交互过程以及MCP
+Client的大体运行流程。</p>
+<p>以问题<code>Add these numbers: 7 and 22.</code>为例，Langfuse中的观测情况如下：</p>
+<p><img src="https://s2.loli.net/2025/04/03/FMtWmnSixDoNRg6.png" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="播放音乐">播放音乐</h2>
+<p>笔者在本地电脑中已安装<code>sox</code>，该工具支持以终端命令行的方式来播放本地音乐文件，命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">play xxx.mp3<br></code></pre></td></tr></table></figure>
+<p>我们来自行实现音乐播放MCP Server，Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><br><span class="hljs-keyword">from</span> mcp.server.fastmcp <span class="hljs-keyword">import</span> FastMCP<br><br><span class="hljs-comment"># Create server</span><br>mcp = FastMCP(<span class="hljs-string">&quot;Music Play Server&quot;</span>)<br><br><br><span class="hljs-meta">@mcp.tool()</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">play_music</span>(<span class="hljs-params">music_file_path: <span class="hljs-built_in">str</span></span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    Play a music file.</span><br><span class="hljs-string">    Args:</span><br><span class="hljs-string">        music_file_path: The absolute path to the music file to play.</span><br><span class="hljs-string">    Returns:</span><br><span class="hljs-string">        A message indicating that the music is playing.</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;[debug-server] play_music(<span class="hljs-subst">&#123;music_file_path&#125;</span>)&quot;</span>)<br>    os.system(<span class="hljs-string">f&quot;play <span class="hljs-subst">&#123;music_file_path&#125;</span>&quot;</span>)<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">f&quot;Playing <span class="hljs-subst">&#123;music_file_path&#125;</span>&quot;</span><br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    mcp.run(transport=<span class="hljs-string">&quot;sse&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>这个MCP
+Server只有一个可调用的工具，那就是播放输入文件路径的音乐。</p>
+<p>笔者输入的问题为：</p>
+<blockquote>
+<p>给我播放这个目录下的小情歌这首歌曲。</p>
+</blockquote>
+<p>在MCP
+Client中，使用<code>filesystem</code>来实现文件操作，设定目录为音乐文件所在目录，并使用上述MCP
+Server实现歌曲播放。实现的Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> asyncio<br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> shutil<br><span class="hljs-keyword">import</span> base64<br><span class="hljs-keyword">import</span> logfire<br><span class="hljs-keyword">import</span> subprocess<br><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">Any</span><br><br><span class="hljs-keyword">from</span> agents <span class="hljs-keyword">import</span> Agent, Runner<br><span class="hljs-keyword">from</span> agents.mcp <span class="hljs-keyword">import</span> MCPServer, MCPServerSse, MCPServerStdio<br><span class="hljs-keyword">from</span> agents.model_settings <span class="hljs-keyword">import</span> ModelSettings<br><br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><br>load_dotenv()<br><br><span class="hljs-comment"># Build Basic Auth header.</span><br>LANGFUSE_AUTH = base64.b64encode(<br>    <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;os.environ.get(<span class="hljs-string">&#x27;LANGFUSE_PUBLIC_KEY&#x27;</span>)&#125;</span>:<span class="hljs-subst">&#123;os.environ.get(<span class="hljs-string">&#x27;LANGFUSE_SECRET_KEY&#x27;</span>)&#125;</span>&quot;</span>.encode()<br>).decode()<br><br><span class="hljs-comment"># Configure OpenTelemetry endpoint &amp; headers</span><br>os.environ[<span class="hljs-string">&quot;OTEL_EXPORTER_OTLP_ENDPOINT&quot;</span>] = os.environ.get(<span class="hljs-string">&quot;LANGFUSE_HOST&quot;</span>) + <span class="hljs-string">&quot;/api/public/otel&quot;</span><br>os.environ[<span class="hljs-string">&quot;OTEL_EXPORTER_OTLP_HEADERS&quot;</span>] = <span class="hljs-string">f&quot;Authorization=Basic <span class="hljs-subst">&#123;LANGFUSE_AUTH&#125;</span>&quot;</span><br><br><span class="hljs-comment"># Configure logfire instrumentation.</span><br>logfire.configure(<br>    service_name=<span class="hljs-string">&#x27;my_agent_service&#x27;</span>,<br>    send_to_logfire=<span class="hljs-literal">False</span><br>)<br><span class="hljs-comment"># This method automatically patches the OpenAI Agents SDK to send logs via OTLP to Langfuse.</span><br>logfire.instrument_openai_agents()<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">run</span>(<span class="hljs-params">mcp_server1: MCPServer, mcp_server2: MCPServer</span>):<br>    agent = Agent(<br>        name=<span class="hljs-string">&quot;Assistant&quot;</span>,<br>        instructions=<span class="hljs-string">&quot;Use the tools to help me create a music operation.&quot;</span>,<br>        mcp_servers=[mcp_server1, mcp_server2],<br>        model_settings=ModelSettings(tool_choice=<span class="hljs-string">&quot;required&quot;</span>),<br>    )<br><br>    <span class="hljs-comment"># Use the `add` tool to add two numbers</span><br>    message = <span class="hljs-string">&quot;给我播放这个目录下的小情歌这首歌曲。&quot;</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Running: <span class="hljs-subst">&#123;message&#125;</span>&quot;</span>)<br>    result = <span class="hljs-keyword">await</span> Runner.run(starting_agent=agent, <span class="hljs-built_in">input</span>=message)<br>    <span class="hljs-built_in">print</span>(result.final_output)<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    music_server = MCPServerSse(<br>        name=<span class="hljs-string">&quot;Music Play Server&quot;</span>,<br>        params=&#123;<br>            <span class="hljs-string">&quot;url&quot;</span>: <span class="hljs-string">&quot;http://localhost:8000/sse&quot;</span>,<br>        &#125;,<br>    )<br>    file_system_server = MCPServerStdio(<br>        name=<span class="hljs-string">&quot;Filesystem Server, via npx&quot;</span>,<br>        params=&#123;<br>            <span class="hljs-string">&quot;command&quot;</span>: <span class="hljs-string">&quot;npx&quot;</span>,<br>            <span class="hljs-string">&quot;args&quot;</span>: [<span class="hljs-string">&quot;-y&quot;</span>, <span class="hljs-string">&quot;@modelcontextprotocol/server-filesystem&quot;</span>, <span class="hljs-string">&quot;/Users/admin/Music/my_music&quot;</span>],<br>        &#125;<br>    )<br><br>    <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> music_server <span class="hljs-keyword">as</span> mcp_server1, file_system_server <span class="hljs-keyword">as</span> mcp_server2:<br>        <span class="hljs-keyword">await</span> run(mcp_server1=mcp_server1, mcp_server2=mcp_server2)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    <span class="hljs-comment"># Let&#x27;s make sure the user has uv installed</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> shutil.which(<span class="hljs-string">&quot;uv&quot;</span>):<br>        <span class="hljs-keyword">raise</span> RuntimeError(<br>            <span class="hljs-string">&quot;uv is not installed. Please install it: https://docs.astral.sh/uv/getting-started/installation/&quot;</span><br>        )<br><br>    <span class="hljs-comment"># We&#x27;ll run the SSE server in a subprocess. Usually this would be a remote server, but for this</span><br>    <span class="hljs-comment"># demo, we&#x27;ll run it locally at http://localhost:8000/sse</span><br>    process: subprocess.Popen[<span class="hljs-type">Any</span>] | <span class="hljs-literal">None</span> = <span class="hljs-literal">None</span><br>    <span class="hljs-keyword">try</span>:<br>        this_dir = os.path.dirname(os.path.abspath(__file__))<br>        server_file = os.path.join(this_dir, <span class="hljs-string">&quot;openai_agents_music_server.py&quot;</span>)<br><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Starting SSE server at http://localhost:8000/sse ...&quot;</span>)<br><br>        <span class="hljs-comment"># Run `uv run server.py` to start the SSE server</span><br>        process = subprocess.Popen([<span class="hljs-string">&quot;uv&quot;</span>, <span class="hljs-string">&quot;run&quot;</span>, server_file])<br>        <span class="hljs-comment"># Give it 3 seconds to start</span><br>        time.sleep(<span class="hljs-number">3</span>)<br><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;SSE server started. Running example...\n\n&quot;</span>)<br>    <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Error starting SSE server: <span class="hljs-subst">&#123;e&#125;</span>&quot;</span>)<br>        exit(<span class="hljs-number">1</span>)<br><br>    <span class="hljs-keyword">try</span>:<br>        asyncio.run(main())<br>    <span class="hljs-keyword">finally</span>:<br>        <span class="hljs-keyword">if</span> process:<br>            process.terminate()<br></code></pre></td></tr></table></figure>
+<p>运行的输出结果如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><code class="hljs shell">Starting SSE server at http://localhost:8000/sse ...<br>INFO:     Started server process [28954]<br>INFO:     Waiting for application startup.<br>INFO:     Application startup complete.<br>INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)<br>SSE server started. Running example...<br><br><br>INFO:     127.0.0.1:53841 - &quot;GET /sse HTTP/1.1&quot; 200 OK<br>INFO:     127.0.0.1:53843 - &quot;POST /messages/?session_id=2fcc60b6348a4b60aee082a79dba8faa HTTP/1.1&quot; 202 Accepted<br>INFO:     127.0.0.1:53843 - &quot;POST /messages/?session_id=2fcc60b6348a4b60aee082a79dba8faa HTTP/1.1&quot; 202 Accepted<br>Secure MCP Filesystem Server running on stdio<br>Allowed directories: [ &#x27;/Users/admin/Music/my_music&#x27; ]<br>Running: 给我播放这个目录下的小情歌这首歌曲。<br>12:01:24.716 OpenAI Agents trace: Agent workflow<br>12:01:24.717   Agent run: &#x27;Assistant&#x27;<br>12:01:24.718     OpenAI agents: mcp_tools span<br>INFO:     127.0.0.1:53843 - &quot;POST /messages/?session_id=2fcc60b6348a4b60aee082a79dba8faa HTTP/1.1&quot; 202 Accepted<br>[04/03/25 20:01:24] INFO     Processing request of type ListToolsRequest                                                              server.py:534<br>12:01:24.724     OpenAI agents: mcp_tools span<br>12:01:24.745     Responses API with &#x27;gpt-4o&#x27;<br>12:01:28.638     Function: list_allowed_directories<br>12:01:28.640     Responses API with &#x27;gpt-4o&#x27;<br>12:01:29.854     Function: search_files<br>12:01:29.861     Responses API with &#x27;gpt-4o&#x27;<br>12:01:31.216     Function: play_music<br>INFO:     127.0.0.1:53855 - &quot;POST /messages/?session_id=2fcc60b6348a4b60aee082a79dba8faa HTTP/1.1&quot; 202 Accepted<br>[04/03/25 20:01:31] INFO     Processing request of type CallToolRequest                                                               server.py:534<br>[debug-server] play_music(/Users/admin/Music/my_music/小情歌_苏打绿.mp3)<br><br>/Users/admin/Music/my_music/小情歌_苏打绿.mp3:<br><br> File Size: 4.38M     Bit Rate: 128k<br>  Encoding: MPEG audio    <br>  Channels: 2 @ 16-bit   <br>Samplerate: 44100Hz      <br>Replaygain: off         <br>  Duration: 00:04:33.67  <br><br>In:100%  00:04:33.63 [00:00:00.03] Out:13.1M [      |      ]        Clip:6    <br>play WARN rate: rate clipped 3 samples; decrease volume?<br>play WARN sox: `coreaudio&#x27; output clipped 3 samples; decrease volume?<br>Done.<br>12:06:05.160     Responses API with &#x27;gpt-4o&#x27;<br>正在播放《小情歌》 by 苏打绿。享受音乐吧！🎵<br>INFO:     Shutting down<br>INFO:     Waiting for background tasks to complete.<br></code></pre></td></tr></table></figure>
+<p>这个程序成功播放了《小情歌》歌曲，并在歌曲播放完毕后给出问题答复。</p>
+<h2 id="总结">总结</h2>
+<p>本文介绍了如何在 OpenAI 的 Agent SDK 中使用 MCP 框架，以提升 AI
+工作流的效率和可观测性。本文首先阐述了 OpenAI 对 MCP
+协议的支持，强调了其发展趋势。</p>
+<p>本文提供了几个基于<code>openai-agents-python</code>
+项目的实用例子，包括文件操作、Redis
+操作和播放音乐。这些例子展示了如何结合使用 MCP
+Server，例如<code>filesystem</code>和<code>Redis MCP Server</code>，来完成复杂的任务。</p>
+<p>此外，本文还展示了如何创建自定义的 MCP Server，例如播放音乐的
+Server，并使用 SSE 进行远程调用。</p>
+<p>通过这些例子，读者可以了解到在<code>openai-agents-python</code>
+中使用 MCP 的基本方法，以及如何利用 MCP 实现各种自动化任务。</p>
+<p>总而言之，<strong>MCP</strong>提供了一种强大且灵活的方式来扩展 AI
+Agent
+的能力，使其能够与各种工具和服务进行交互，从而实现更复杂的任务。</p>
+<h2 id="参考文献">参考文献</h2>
+<ol type="1">
+<li>New tools for building agents: <a
+target="_blank" rel="noopener" href="https://openai.com/index/new-tools-for-building-agents/">https://openai.com/index/new-tools-for-building-agents/</a></li>
+<li>OpenAI Agents SDK: <a
+target="_blank" rel="noopener" href="https://github.com/openai/openai-agents-python">https://github.com/openai/openai-agents-python</a></li>
+<li>Filesystem MCP Server: <a
+target="_blank" rel="noopener" href="https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem">https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem</a></li>
+<li>Redis MCP Server: <a
+target="_blank" rel="noopener" href="https://glama.ai/mcp/servers/@farhankaz/redis-mcp">https://glama.ai/mcp/servers/<span
+class="citation"
+data-cites="farhankaz/redis-mcp">@farhankaz/redis-mcp</span></a></li>
+<li>Model context protocol (MCP) in OpenAI Agents SDK: <a
+target="_blank" rel="noopener" href="https://openai.github.io/openai-agents-python/mcp/">https://openai.github.io/openai-agents-python/mcp/</a></li>
+<li>在终端命令行下播放音乐的命令: <a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/pinganzi/p/7353074.html">https://www.cnblogs.com/pinganzi/p/7353074.html</a></li>
+</ol>
+<p>欢迎关注我的公众号<strong>NLP奇幻之旅</strong>，原创技术文章第一时间推送。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+<p>欢迎关注我的知识星球“<strong>自然语言处理奇幻之旅</strong>”，笔者正在努力构建自己的技术社区。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/MCP/" class="print-no-link">#MCP</a>
+      
+        <a href="/tags/Agent/" class="print-no-link">#Agent</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（一百一十七）使用Openai_Agents_SDK构建MCP</div>
+      <div>https://percent4.github.io/NLP（一百一十七）使用Openai-Agents-SDK构建MCP/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年4月27日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E4%B8%80%E5%8D%81%E5%85%AB%EF%BC%89SQLite-Agent-Docker%EF%BC%9A%E4%B8%80%E7%AB%99%E5%BC%8F%E6%89%93%E9%80%A0%E6%99%BA%E8%83%BD%E6%95%B0%E6%8D%AE%E5%BA%93%E5%8A%A9%E6%89%8B/" title="NLP（一百一十八）SQLite+Agent+Docker：一站式打造智能数据库助手">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">NLP（一百一十八）SQLite+Agent+Docker：一站式打造智能数据库助手</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/VSCode%EF%BC%88Cursor%EF%BC%89%E4%B8%AD%E7%9A%84Python%E4%BB%A3%E7%A0%81%E8%B0%83%E8%AF%95/" title="VSCode（Cursor）中的Python代码调试">
+                        <span class="hidden-mobile">VSCode（Cursor）中的Python代码调试</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

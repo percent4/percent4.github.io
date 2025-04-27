@@ -1,0 +1,899 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍如何使用MCP来实现网络爬虫与数独自动化求解。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（一百一十六）使用MCP实现网络爬虫与数独自动化求解">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E4%B8%80%E5%8D%81%E5%85%AD%EF%BC%89%E4%BD%BF%E7%94%A8MCP%E5%AE%9E%E7%8E%B0%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB%E4%B8%8E%E6%95%B0%E7%8B%AC%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B1%82%E8%A7%A3/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍如何使用MCP来实现网络爬虫与数独自动化求解。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2025/03/29/OTHLuU9CZqaExP1.png">
+<meta property="og:image" content="https://s2.loli.net/2025/03/29/xZhARMz3UdObE5C.png">
+<meta property="og:image" content="https://s2.loli.net/2025/03/29/US4MJ8D5BKLvX9t.png">
+<meta property="og:image" content="https://s2.loli.net/2025/03/29/G5gZzdjFna23fes.png">
+<meta property="og:image" content="https://s2.loli.net/2025/03/29/Dv8Zfbxi5wEoqY4.png">
+<meta property="og:image" content="https://s2.loli.net/2025/03/29/rLwgjuasPOJ6e9G.png">
+<meta property="og:image" content="https://s2.loli.net/2025/03/29/alKFhM4NvHrcdxu.png">
+<meta property="og:image" content="https://s2.loli.net/2025/03/29/TgQjHzM254JEd9R.png">
+<meta property="article:published_time" content="2025-04-27T14:48:36.000Z">
+<meta property="article:modified_time" content="2025-04-27T14:49:11.395Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="MCP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2025/03/29/OTHLuU9CZqaExP1.png">
+  
+  
+  
+  <title>NLP（一百一十六）使用MCP实现网络爬虫与数独自动化求解 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（一百一十六）使用MCP实现网络爬虫与数独自动化求解"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-04-27 22:48" pubdate>
+          星期日, 四月 27日 2025, 10:48 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          3.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          31 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（一百一十六）使用MCP实现网络爬虫与数独自动化求解</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍如何使用MCP来实现网络爬虫与数独自动化求解。</p>
+</blockquote>
+<h2 id="引言">引言</h2>
+<p>在文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/dl7VF3nbpHOLE1LVAmlgZw">NLP(一百一十五)MCP入门与实践</a>中，笔者介绍了MCP的基础概念，如何简单使用官方MCP
+Server，并自行实现了一个基于自定义工具实现MCP
+Server的用于解决数独的项目。</p>
+<p>在本文中，笔者将会介绍两个更复杂的MCP的应用例子：网络爬虫与数独自动化求解。</p>
+<p>在此之前，我们还需要再引入一个MCP Server:
+<code>Playwright MCP Server</code>，网址为 <a
+target="_blank" rel="noopener" href="https://github.com/executeautomation/mcp-playwright">https://github.com/executeautomation/mcp-playwright</a>
+，其描述如下：</p>
+<blockquote>
+<p>一个模型上下文协议（Model Context Protocol）服务器，提供基于
+Playwright
+的浏览器自动化功能。该服务器使大模型（LLMs）能够与网页交互、截取屏幕截图、生成测试代码、爬取网页内容，并在真实的浏览器环境中执行
+JavaScript。</p>
+</blockquote>
+<p>笔者使用的MCP Host为Cursor,
+并且系统中已安装了npm。为了使用<code>Playwright MCP Server</code>，系统中还需要安装Chromium浏览器和必要的Python环境。不过如果你的系统中没有安装Chromium浏览器和必要的Python模块，那也没有关系，Cursor会在使用Agent执行操作时帮你安装好这些工具（由此可见MCP是如此的强大）。</p>
+<p>在Cursor中配置使用<code>Playwright MCP Server</code>，如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs shell">&#123;<br>  &quot;mcpServers&quot;: &#123;<br>    &quot;playwright&quot;: &#123;<br>      &quot;command&quot;: &quot;npx&quot;,<br>      &quot;args&quot;: [&quot;-y&quot;, &quot;@executeautomation/playwright-mcp-server&quot;]<br>    &#125;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>至此，我们已经准备好了所有的MCP
+Server。下图中的filesystem和sudoku_solver这两个MCP Server已经在文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/dl7VF3nbpHOLE1LVAmlgZw">NLP(一百一十五)MCP入门与实践</a>中介绍过了，这里不再赘述。</p>
+<p><img src="https://s2.loli.net/2025/03/29/OTHLuU9CZqaExP1.png" srcset="/img/loading.gif" lazyload /></p>
+<p>有了上述的准备工具，笔者将会详细介绍两个例子：</p>
+<ul>
+<li>网络爬虫：爬取网页中的表格数据，并绘制成条形图</li>
+<li>数独自动化求解：爬虫页面中的数独，调用API工具求解，并将最后结果填充至页面，最后验证这个数独是否求解成功</li>
+</ul>
+<h2 id="网络爬虫">网络爬虫</h2>
+<p><code>Playwright MCP Server</code>可以帮助我们与网页交互，因此我们能借助这个工具来实现网络爬虫。</p>
+<p>以网页<code>https://www.cnsuv.com/sales/brand/</code>为例，笔者想爬取这个页面中的汽车销量表格数据。</p>
+<figure>
+<img src="https://s2.loli.net/2025/03/29/xZhARMz3UdObE5C.png" srcset="/img/loading.gif" lazyload
+alt="汽车销量网页" />
+<figcaption aria-hidden="true">汽车销量网页</figcaption>
+</figure>
+<p>在Cursor中，我们在Chat输入框中输入prompt如下:</p>
+<blockquote>
+<p>帮我爬取这个网页中的汽车品牌销量排行榜表格，并将表格内容保存为csv文件。网址为@https://www.cnsuv.com/sales/brand/</p>
+</blockquote>
+<p>Claude-3.5-Sonnet模型在执行Agent时，操作过程如下图所示：</p>
+<p><img src="https://s2.loli.net/2025/03/29/US4MJ8D5BKLvX9t.png" srcset="/img/loading.gif" lazyload /></p>
+<p>从上面的执行过程我们可以看到，Agent调用了<code>Playwright MCP Server</code>编写了爬虫代码，并保存至本地。在运行在这个脚本时，发现没有安装playwright模块，然后执行了安装这个模块的动作。最后将爬取的表格数据保存为csv文件，并展示了前5行数据以及文件的保存路径和元数据。</p>
+<p>我们将保存后的csv数据展示如下：</p>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs dns">排名,品牌名称,国别,销量,市场份额<br>,比亚迪,中国,<span class="hljs-number">192101,13.75</span>%<br>,大众,德国,<span class="hljs-number">123823,8.86</span>%<br>,吉利汽车,中国,<span class="hljs-number">119366,8.54</span>%<br><span class="hljs-number">4</span>,丰田,日本,<span class="hljs-number">83274,5.96</span>%<br><span class="hljs-number">5</span>,五菱汽车,中国,<span class="hljs-number">63999,4.58</span>%<br><span class="hljs-number">6</span>,长安,中国,<span class="hljs-number">51611,3.69</span>%<br><span class="hljs-number">7</span>,奇瑞,中国,<span class="hljs-number">36380,2.6</span>%<br><span class="hljs-number">8</span>,奔驰,德国,<span class="hljs-number">36121,2.59</span>%<br><span class="hljs-number">9</span>,本田,日本,<span class="hljs-number">33787,2.42</span>%<br><span class="hljs-number">10</span>,奥迪,德国,<span class="hljs-number">33530,2.4</span>%<br><span class="hljs-number">11</span>,宝马,德国,<span class="hljs-number">32236,2.31</span>%<br><span class="hljs-number">12</span>,吉利银河,中国,<span class="hljs-number">30331,2.17</span>%<br><span class="hljs-number">13</span>,小鹏汽车,中国,<span class="hljs-number">27951,2</span>%<br><span class="hljs-number">14</span>,日产,日本,<span class="hljs-number">27037,1.94</span>%<br><span class="hljs-number">15</span>,红旗,中国,<span class="hljs-number">26995,1.93</span>%<br><span class="hljs-number">16</span>,特斯拉,美国,<span class="hljs-number">26777,1.92</span>%<br><span class="hljs-number">17</span>,捷途,中国,<span class="hljs-number">26421,1.89</span>%<br><span class="hljs-number">18</span>,理想,中国,<span class="hljs-number">26264,1.88</span>%<br><span class="hljs-number">19</span>,小米汽车,中国,<span class="hljs-number">23728,1.7</span>%<br><span class="hljs-number">20</span>,别克,美国,<span class="hljs-number">23603,1.69</span>%<br><span class="hljs-number">21</span>,零跑汽车,中国,<span class="hljs-number">22064,1.58</span>%<br><span class="hljs-number">22</span>,哈弗,中国,<span class="hljs-number">21648,1.55</span>%<br><span class="hljs-number">23</span>,AITO,中国,<span class="hljs-number">21517,1.54</span>%<br><span class="hljs-number">24</span>,广汽埃安,中国,<span class="hljs-number">19080,1.37</span>%<br><span class="hljs-number">25</span>,深蓝汽车,中国,<span class="hljs-number">16584,1.19</span>%<br><span class="hljs-number">26</span>,领克,中国,<span class="hljs-number">15763,1.13</span>%<br><span class="hljs-number">27</span>,广汽传祺,中国,<span class="hljs-number">15500,1.11</span>%<br><span class="hljs-number">28</span>,极氪,中国,<span class="hljs-number">14039,1</span>%<br><span class="hljs-number">29</span>,荣威,中国,<span class="hljs-number">10748,0.77</span>%<br><span class="hljs-number">30</span>,蔚来,中国,<span class="hljs-number">9143,0.65</span>%<br></code></pre></td></tr></table></figure>
+<p>这是一件很酷的事情，因为我不用写一行代码，就能爬取网页中的表格数据，且数据内容基本完整可用。</p>
+<p>接下来，我想用上面的爬取数据来绘制汽车销量条形图。在Cursor这种输入prompt如下：</p>
+<blockquote>
+<p>你能将爬取到的汽车销量表按照他们的销量来绘制条形图吗？</p>
+</blockquote>
+<p><img src="https://s2.loli.net/2025/03/29/G5gZzdjFna23fes.png" srcset="/img/loading.gif" lazyload /></p>
+<p>Agent会使用matplotlib模块来绘制条形图，但发现系统中没有安装这个模块，它就会提示安装这个模块，这些操作看起来十分智能。安装完毕后，Agent运行脚本脚本，并输出图片路径，十分完美地解决了笔者的需求。</p>
+<p>Agent绘制的汽车销量条形图如下：</p>
+<p><img src="https://s2.loli.net/2025/03/29/Dv8Zfbxi5wEoqY4.png" srcset="/img/loading.gif" lazyload /></p>
+<p>基于<code>Playwright MCP Server</code>，MCP框架完美了实现了笔者的表格数据爬虫，并绘制了汽车销量条形图，符合笔者的需要。在整个过程中，笔者没有写一行代码，而这正是MCP框架的强大之处！当然，Agent在解决过程中并非是一帆风顺的，笔者也是尝试了几次回复之后，才得到上述的完整解答过程。</p>
+<h2 id="数独自动化求解">数独自动化求解</h2>
+<p>在文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/dl7VF3nbpHOLE1LVAmlgZw">NLP(一百一十五)MCP入门与实践</a>，笔者使用自行实现的MCP
+Server来实现数独图片的解答。当时的输入为数独图片，输出为二维数组，使用的工具是OCR和数独解决API。</p>
+<p>在本文中，笔者将会使用<code>Playwright MCP Server</code>，直接从网页中爬取数独，并调用API进行解答，最后将答案填充至网页中并进行验证。</p>
+<p>以网页<code>https://cn.sudokupuzzle.org/p2.php</code>中的第一个数独为例，我们使用MCP框架来执行上述需求。网页截图如下：</p>
+<p><img src="https://s2.loli.net/2025/03/29/rLwgjuasPOJ6e9G.png" srcset="/img/loading.gif" lazyload /></p>
+<p>笔者在Cursor的Chat中输入prompt如下：</p>
+<blockquote>
+<p>爬取 <span class="citation"
+data-cites="https://cn.sudokupuzzle.org/p2.php">@https://cn.sudokupuzzle.org/p2.php</span>
+这个页面中的数独表格，selector为body &gt; form &gt; table &gt; tbody
+&gt; tr:nth-child(2) &gt; td &gt; table &gt; tbody,
+其中空格用数字0代替。然后解决这个数独，将原始数独和解决后的数独保存为json文件，再将这个结果填充到原先的页面，点击检查按钮验证是否解决成功。告诉我保存的json文件路径以及是否解决了这个页面中的数独。</p>
+</blockquote>
+<p>Agent的完整执行过程如下图：</p>
+<p><img src="https://s2.loli.net/2025/03/29/alKFhM4NvHrcdxu.png" srcset="/img/loading.gif" lazyload /></p>
+<p>事实上，Agent在执行过程中遇到了不少麻烦，最主要的是爬取数独表格数据时会遇到各种问题，好在Agent经过多次思考和尝试后，还是成功拿到了数独表格数据。接下来Agent调用API解决数独，并保存为json文件。最后，Agent将结果填充至原网页，并点击检查按钮进行验证，另外惊讶的是，Agent成功实现了上述填充、验证操作，并最终得到了完美解答的验证结果。验证页面如下：</p>
+<p><img src="https://s2.loli.net/2025/03/29/TgQjHzM254JEd9R.png" srcset="/img/loading.gif" lazyload /></p>
+<p>这样，笔者就使用MCP框架完成了数独的自动化求解。</p>
+<h2 id="总结">总结</h2>
+<p>本文介绍了如何使用 <code>Model Context Protocol (MCP)</code> 框架中的
+<code>Playwright MCP Server</code> 来实现 <strong>网页爬虫</strong> 和
+<strong>数独自动化求解</strong>。在<strong>爬虫任务</strong>中，我们利用
+MCP 让 Agent 自动编写代码，抓取网页中的汽车销量数据，并保存为 CSV
+文件。随后，Agent
+进一步解析数据并生成条形图，实现了从数据抓取到可视化的完整流程，而这一切都无需手写代码。</p>
+<p>在<strong>数独求解任务</strong>中，MCP 直接从网页爬取数独题目，并调用
+API 进行求解，最后将答案填充至原网页并进行验证。整个过程中，Agent
+能够自动处理爬取、数据转换、API 调用和网页交互等步骤，展现了 MCP
+在自动化任务中的高效性和智能化能力。</p>
+<p>通过这两个示例，我们可以看到 MCP 框架结合 LLM
+能够极大地提升自动化任务的便捷性和执行效率，适用于网页数据抓取、自动化测试、网页填充等多种应用场景，为工程实践带来了更多可能性。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/MCP/" class="print-no-link">#MCP</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（一百一十六）使用MCP实现网络爬虫与数独自动化求解</div>
+      <div>https://percent4.github.io/NLP（一百一十六）使用MCP实现网络爬虫与数独自动化求解/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年4月27日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/VSCode%EF%BC%88Cursor%EF%BC%89%E4%B8%AD%E7%9A%84Python%E4%BB%A3%E7%A0%81%E8%B0%83%E8%AF%95/" title="VSCode（Cursor）中的Python代码调试">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">VSCode（Cursor）中的Python代码调试</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E4%B8%80%E5%8D%81%E4%BA%94%EF%BC%89MCP%E5%85%A5%E9%97%A8%E4%B8%8E%E5%AE%9E%E8%B7%B5/" title="NLP（一百一十五）MCP入门与实践">
+                        <span class="hidden-mobile">NLP（一百一十五）MCP入门与实践</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

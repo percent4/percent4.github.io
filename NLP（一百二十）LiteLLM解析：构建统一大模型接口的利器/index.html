@@ -1,0 +1,886 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文介绍了如何使用 LiteLLM 以统一的 OpenAI 风格调用包括 OpenAI、Anthropic 和 Google 在内的多种主流大模型 API，并通过具体代码展示其 Completion 接口、路由机制的使用，以及在 OpenAI Agents 框架中集成任意模型的方式。LiteLLM 大大简化了多模型调用的复杂性，提高了多供应商大模型接入的效率与稳定性。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（一百二十）LiteLLM解析：构建统一大模型接口的利器">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E4%BA%8C%E5%8D%81%EF%BC%89LiteLLM%E8%A7%A3%E6%9E%90%EF%BC%9A%E6%9E%84%E5%BB%BA%E7%BB%9F%E4%B8%80%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%88%A9%E5%99%A8/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文介绍了如何使用 LiteLLM 以统一的 OpenAI 风格调用包括 OpenAI、Anthropic 和 Google 在内的多种主流大模型 API，并通过具体代码展示其 Completion 接口、路由机制的使用，以及在 OpenAI Agents 框架中集成任意模型的方式。LiteLLM 大大简化了多模型调用的复杂性，提高了多供应商大模型接入的效率与稳定性。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg">
+<meta property="article:published_time" content="2025-04-27T14:59:22.000Z">
+<meta property="article:modified_time" content="2025-04-27T15:00:17.967Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="LiteLLM">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+  
+  
+  
+  <title>NLP（一百二十）LiteLLM解析：构建统一大模型接口的利器 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（一百二十）LiteLLM解析：构建统一大模型接口的利器"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-04-27 22:59" pubdate>
+          星期日, 四月 27日 2025, 10:59 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          75 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（一百二十）LiteLLM解析：构建统一大模型接口的利器</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文介绍了如何使用 LiteLLM 以统一的 OpenAI 风格调用包括
+OpenAI、Anthropic 和 Google 在内的多种主流大模型
+API，并通过具体代码展示其 Completion 接口、路由机制的使用，以及在 OpenAI
+Agents 框架中集成任意模型的方式。LiteLLM
+大大简化了多模型调用的复杂性，提高了多供应商大模型接入的效率与稳定性。</p>
+</blockquote>
+<h2 id="前言">前言</h2>
+<p>在我们平时调用大模型API的时候，有些是采用公司对外提供的第三方API，如OpenAI,
+Anthropic, Google公司的LLM
+API，有些是采用自行部署的API，比如使用HuggingFace,
+vLLM部署的大模型API，有些是第三方集成公司提供的API，其它还有Groq,
+Mistral等模型的API调用。</p>
+<p>上述API调用方式五花八门，不同API之间的请求参数也不一样，需要使用不同的工具包或HTTP接口来完成调用。而<code>LiteLLM</code>的出现改变了这一切复杂、无序的现状，它允许你以OpenAI的请风格来完成任意大模型的调用。</p>
+<p><code>LiteLLM</code>的官方网站为https://docs.litellm.ai/，其对应的Python工具目前已支持以OpenAI的输入、输出格式来调用100多种大模型。其强大的功能如下：</p>
+<ul>
+<li>将输入转换为各服务商的
+completion（文本生成）、embedding（向量嵌入）和
+image_generation（图像生成）接口。</li>
+<li>保持输出格式一致，结果响应始终可通过
+['choices'][0]['message']['content'] 获取。</li>
+<li>支持多部署环境下的重试与回退机制（例如
+Azure/OpenAI）——路由器模块负责处理。</li>
+<li>通过<code>LiteLLM Proxy Server</code>追踪每个项目的开销，并设置预算。</li>
+</ul>
+<p>下面笔者将会介绍如何使用<code>LiteLLM</code>来完成OpenAI, Anthropic,
+Google公司的LLM
+API，<code>LiteLLM</code>中的路由机制，并在Agent框架<code>OpenAI Agents</code>中使用这三家公司的LLM.</p>
+<h2 id="completion">Completion</h2>
+<p>使用<code>LiteLLM</code>可轻松实现OpenAI, Anthropic, Google公司的LLM
+API，Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><span class="hljs-keyword">from</span> litellm <span class="hljs-keyword">import</span> completion<br><br>load_dotenv()<br><br><br><span class="hljs-comment"># set ENV variables</span><br>os.environ[<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>] = os.getenv(<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>)<br>os.environ[<span class="hljs-string">&quot;ANTHROPIC_API_KEY&quot;</span>] = os.getenv(<span class="hljs-string">&quot;ANTHROPIC_API_KEY&quot;</span>)<br>os.environ[<span class="hljs-string">&quot;GEMINI_API_KEY&quot;</span>] = os.getenv(<span class="hljs-string">&quot;GEMINI_API_KEY&quot;</span>)<br><br>messages = [&#123;<span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;Who are you?&quot;</span>, <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>&#125;]<br><br><span class="hljs-comment"># openai call</span><br>response = completion(model=<span class="hljs-string">&quot;openai/gpt-4o&quot;</span>, messages=messages)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;openai response:&quot;</span>)<br><span class="hljs-built_in">print</span>(response.choices[<span class="hljs-number">0</span>].message.content)<br><br><span class="hljs-comment"># anthropic call</span><br>response = completion(model=<span class="hljs-string">&quot;anthropic/claude-3-sonnet-20240229&quot;</span>, messages=messages)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;\nanthropic response:&quot;</span>)<br><span class="hljs-built_in">print</span>(response.choices[<span class="hljs-number">0</span>].message.content)<br><br><span class="hljs-comment"># gemini call</span><br>response = completion(model=<span class="hljs-string">&quot;gemini/gemini-2.0-flash&quot;</span>, messages=messages)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;\ngemini response:&quot;</span>)<br><span class="hljs-built_in">print</span>(response.choices[<span class="hljs-number">0</span>].message.content)<br></code></pre></td></tr></table></figure>
+<p>运行结果如下:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs shell">openai response:<br>I&#x27;m an AI language model developed by OpenAI, known as ChatGPT. I&#x27;m here to assist you with information, answer questions, and help with a wide range of topics. How can I assist you today?<br><br>anthropic response:<br>I am an artificial intelligence created by Anthropic. I am a large language model trained to assist with a variety of tasks like analysis, writing, research, answering questions and more. I have access to a large amount of information but I don&#x27;t have subjective experiences or a physical form. I&#x27;m an AI assistant  aimed at being helpful, honest and harmless.<br><br>gemini response:<br>I am a large language model, trained by Google.<br></code></pre></td></tr></table></figure>
+<p>上述代码以统一的调用方式实现了各个大模型的Completion接口。其它功能，如异步客户端，流式输出，错误处理，观测行为，接口花费等，都是用OpenAI风格统一实现的。因此，有了这个功能，我们就可以用熟悉的OpenAI风格来调用各个大模型的不同功能接口。</p>
+<h2 id="路由机制">路由机制</h2>
+<p><code>LiteLLM</code>的路由机制（Router）提供丰富的管理功能：</p>
+<ul>
+<li>在多个部署环境之间进行负载均衡（例如 Azure/OpenAI）。</li>
+<li>对重要请求进行优先级处理（即排队机制），以确保这些请求不会失败。</li>
+<li>基础可靠性逻辑：在多个部署/服务提供商之间支持冷却时间、回退机制、超时处理和重试（包括固定间隔与指数回退）。</li>
+</ul>
+<p>这些功能都是大模型调用经常会遇到的，路由机制很好地帮助我们保障了LLM
+API服务的稳定性。</p>
+<p>我们以路由策略为例，默认为基于权重的随机选择策略。示例Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> litellm <span class="hljs-keyword">import</span> Router<br><span class="hljs-keyword">import</span> asyncio<br><br><br>model_list = [&#123;<br>    <span class="hljs-string">&quot;model_name&quot;</span>: <span class="hljs-string">&quot;gcg&quot;</span>,    <span class="hljs-comment"># model alias</span><br>    <span class="hljs-string">&quot;litellm_params&quot;</span>: &#123;<br>        <span class="hljs-string">&quot;model&quot;</span>: <span class="hljs-string">&quot;openai/gpt-4o&quot;</span>,<br>        <span class="hljs-string">&quot;api_key&quot;</span>: <span class="hljs-string">&quot;sk-proj-xxx&quot;</span>,<br>        <span class="hljs-string">&quot;weight&quot;</span>: <span class="hljs-number">1</span><br>    &#125;<br>&#125;, &#123;<br>    <span class="hljs-string">&quot;model_name&quot;</span>: <span class="hljs-string">&quot;gcg&quot;</span>,    <span class="hljs-comment"># model alias</span><br>    <span class="hljs-string">&quot;litellm_params&quot;</span>: &#123;<br>        <span class="hljs-string">&quot;model&quot;</span>: <span class="hljs-string">&quot;anthropic/claude-3-5-sonnet-20240620&quot;</span>,<br>        <span class="hljs-string">&quot;api_key&quot;</span>: <span class="hljs-string">&quot;sk-ant-xxx&quot;</span>,<br>        <span class="hljs-string">&quot;weight&quot;</span>: <span class="hljs-number">1</span>,<br>    &#125;<br>&#125;<br>]<br><br>router = Router(model_list=model_list, routing_strategy=<span class="hljs-string">&quot;simple-shuffle&quot;</span>)<br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">router_acompletion</span>(<span class="hljs-params">i</span>):<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Running <span class="hljs-subst">&#123;i&#125;</span> task...&quot;</span>)<br>    response = <span class="hljs-keyword">await</span> router.acompletion(<br>        model=<span class="hljs-string">&quot;gcg&quot;</span>,<br>        messages=[&#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;Who are you? reply in one sentence.&quot;</span>&#125;]<br>    )<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;\nmodel: <span class="hljs-subst">&#123;response.model&#125;</span>, response: <span class="hljs-subst">&#123;response.choices[<span class="hljs-number">0</span>].message.content&#125;</span>&quot;</span>)<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">run</span>():<br>    tasks = [router_acompletion(i) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">5</span>)]<br>    <span class="hljs-keyword">await</span> asyncio.gather(*tasks)<br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    asyncio.run(run())<br></code></pre></td></tr></table></figure>
+<p>上述的五个协程中，每个协程都会随机调用别名为gcg的模型进行回复，gcg模型提供了权重相等的两种调用方式。</p>
+<p>运行结果如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs shell">Running 0 task...<br>Running 1 task...<br>Running 2 task...<br>Running 3 task...<br>Running 4 task...<br><br>model: claude-3-5-sonnet-20240620, response: I am an AI assistant created by Anthropic to be helpful, harmless, and honest.<br><br>model: claude-3-5-sonnet-20240620, response: I am an AI assistant created by Anthropic to be helpful, harmless, and honest.<br><br>model: claude-3-5-sonnet-20240620, response: I am an artificial intelligence created by Anthropic to engage in conversation and assist with tasks.<br><br>model: gpt-4o-2024-08-06, response: I am an AI language model developed by OpenAI, designed to assist with information and answer questions across a wide range of topics.<br><br>model: gpt-4o-2024-08-06, response: I am an AI language model created by OpenAI, here to assist you with information and answer your questions.<br></code></pre></td></tr></table></figure>
+<p><code>LiteLLM</code>的路由机制非常有用，笔者后续将会再单独详细介绍~</p>
+<h2
+id="openai-agents使用任何llm"><code>OpenAI Agents</code>使用任何LLM</h2>
+<p>在Agent框架<code>OpenAI Agents</code>，借用<code>LiteLLM</code>，可实现任意LLM的调用。安装命令如下:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">pip install &quot;openai-agents[litellm]&quot;<br></code></pre></td></tr></table></figure>
+<p>示例Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> asyncio<br><span class="hljs-keyword">import</span> base64<br><span class="hljs-keyword">import</span> logfire<br><span class="hljs-keyword">from</span> random <span class="hljs-keyword">import</span> choice<br><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime<br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><span class="hljs-keyword">from</span> agents <span class="hljs-keyword">import</span> Agent, Runner, function_tool<br><span class="hljs-keyword">from</span> agents.extensions.models.litellm_model <span class="hljs-keyword">import</span> LitellmModel<br><br><br>load_dotenv()<br><br>os.environ[<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>] = os.getenv(<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>)<br>os.environ[<span class="hljs-string">&quot;ANTHROPIC_API_KEY&quot;</span>] = os.getenv(<span class="hljs-string">&quot;ANTHROPIC_API_KEY&quot;</span>)<br>os.environ[<span class="hljs-string">&quot;GEMINI_API_KEY&quot;</span>] = os.getenv(<span class="hljs-string">&quot;GEMINI_API_KEY&quot;</span>)<br><br><span class="hljs-comment"># Build Basic Auth header.</span><br>LANGFUSE_AUTH = base64.b64encode(<br>    <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;os.environ.get(<span class="hljs-string">&#x27;LANGFUSE_PUBLIC_KEY&#x27;</span>)&#125;</span>:<span class="hljs-subst">&#123;os.environ.get(<span class="hljs-string">&#x27;LANGFUSE_SECRET_KEY&#x27;</span>)&#125;</span>&quot;</span>.encode()<br>).decode()<br><br><span class="hljs-comment"># Configure OpenTelemetry endpoint &amp; headers</span><br>os.environ[<span class="hljs-string">&quot;OTEL_EXPORTER_OTLP_ENDPOINT&quot;</span>] = os.environ.get(<span class="hljs-string">&quot;LANGFUSE_HOST&quot;</span>) + <span class="hljs-string">&quot;/api/public/otel&quot;</span><br>os.environ[<span class="hljs-string">&quot;OTEL_EXPORTER_OTLP_HEADERS&quot;</span>] = <span class="hljs-string">f&quot;Authorization=Basic <span class="hljs-subst">&#123;LANGFUSE_AUTH&#125;</span>&quot;</span><br><br><span class="hljs-comment"># Configure logfire instrumentation.</span><br>logfire.configure(<br>    service_name=<span class="hljs-string">&#x27;my_agent_service&#x27;</span>,<br>    send_to_logfire=<span class="hljs-literal">False</span><br>)<br><span class="hljs-comment"># This method automatically patches the OpenAI Agents SDK to send logs via OTLP to Langfuse.</span><br>logfire.instrument_openai_agents()<br><br>openai_model_name = <span class="hljs-string">&quot;openai/gpt-4o&quot;</span><br>anthropic_model_name = <span class="hljs-string">&quot;anthropic/claude-3-sonnet-20240229&quot;</span><br>gemini_model_name = <span class="hljs-string">&quot;gemini/gemini-2.0-flash&quot;</span><br><br>model = LitellmModel(model=openai_model_name)<br><br><br><span class="hljs-meta">@function_tool</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_weather</span>(<span class="hljs-params">city: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">str</span>:<br>    result = [<span class="hljs-string">&#x27;sunny&#x27;</span>, <span class="hljs-string">&#x27;cloudy&#x27;</span>, <span class="hljs-string">&#x27;rainy&#x27;</span>, <span class="hljs-string">&#x27;snowy&#x27;</span>]<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">f&quot;The weather in <span class="hljs-subst">&#123;city&#125;</span> is <span class="hljs-subst">&#123;choice(result)&#125;</span>.&quot;</span><br><br><br><span class="hljs-meta">@function_tool</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_now_time</span>() -&gt; <span class="hljs-built_in">str</span>:<br>    now_time = datetime.now().strftime(<span class="hljs-string">&quot;%Y-%m-%d %H:%M:%S&quot;</span>)<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">f&quot;The current time is <span class="hljs-subst">&#123;now_time&#125;</span>.&quot;</span><br><br><br>weather_agent = Agent(<br>    name=<span class="hljs-string">&quot;Weather agent&quot;</span>,<br>    instructions=<span class="hljs-string">&quot;You are a weather agent.&quot;</span>,<br>    model=model,<br>    tools=[get_weather],<br>)<br><br>time_agent = Agent(<br>    name=<span class="hljs-string">&quot;Time agent&quot;</span>,<br>    instructions=<span class="hljs-string">&quot;You are a time agent.&quot;</span>,<br>    model=model,<br>    tools=[get_now_time],<br>)<br><br>agent = Agent(<br>    name=<span class="hljs-string">&quot;Agent&quot;</span>,<br>    instructions=<span class="hljs-string">&quot;You are an helpful agent.&quot;</span>,<br>    model=model,<br>    handoffs=[weather_agent, time_agent],<br>)<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    result1 = <span class="hljs-keyword">await</span> Runner.run(agent, <span class="hljs-built_in">input</span>=<span class="hljs-string">&quot;What&#x27;s the weather in Tokyo?&quot;</span>)<br>    <span class="hljs-built_in">print</span>(result1.final_output)<br><br>    result2 = <span class="hljs-keyword">await</span> Runner.run(agent, <span class="hljs-built_in">input</span>=<span class="hljs-string">&quot;What&#x27;s the time now?&quot;</span>)<br>    <span class="hljs-built_in">print</span>(result2.final_output)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    asyncio.run(main())<br></code></pre></td></tr></table></figure>
+<p>以Gemini模型为例，运行的输出结果如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs shell">13:45:12.025 OpenAI Agents trace: Agent workflow<br>13:45:12.026   Agent run: &#x27;Agent&#x27;<br>13:45:12.027     Chat completion with &#x27;gemini/gemini-2.0-flash&#x27; [LLM]<br>13:45:12.972     Handoff: Agent → None<br>13:45:12.973   Agent run: &#x27;Weather agent&#x27;<br>13:45:12.974     Chat completion with &#x27;gemini/gemini-2.0-flash&#x27; [LLM]<br>13:45:14.013     Function: get_weather<br>13:45:14.015     Chat completion with &#x27;gemini/gemini-2.0-flash&#x27; [LLM]<br>The weather in Tokyo is cloudy.<br><br>13:45:14.615 OpenAI Agents trace: Agent workflow<br>13:45:14.615   Agent run: &#x27;Agent&#x27;<br>13:45:14.616     Chat completion with &#x27;gemini/gemini-2.0-flash&#x27; [LLM]<br>13:45:15.752     Handoff: Agent → None<br>13:45:15.752   Agent run: &#x27;Time agent&#x27;<br>13:45:15.753     Chat completion with &#x27;gemini/gemini-2.0-flash&#x27; [LLM]<br>13:45:16.420     Function: get_now_time<br>13:45:16.422     Chat completion with &#x27;gemini/gemini-2.0-flash&#x27; [LLM]<br>Right now, it&#x27;s 2025-04-25 21:45:16.<br></code></pre></td></tr></table></figure>
+<h2 id="总结">总结</h2>
+<p><code>LiteLLM</code>
+提供了一个轻量级的多模型统一接口，极大地降低了不同大模型之间切换和集成的技术门槛。它通过模拟
+OpenAI 的 API 结构，使得开发者几乎无需修改原有代码，即可接入如
+OpenAI、Anthropic、Google
+等多家厂商的大模型，适用于快速原型验证与上线部署。</p>
+<p>其内置的模型路由功能为多模型调用场景提供了强有力的支持，支持设置优先级、失败重试、负载均衡等策略，帮助开发者在性能、稳定性和成本之间灵活权衡。这一点在构建实际应用时尤为重要，特别是在模型表现和费用不确定的情况下。</p>
+<p>此外，<code>LiteLLM</code> 与 OpenAI Agents
+的兼容性也为构建多模态、多模型协作的智能体系统打开了通路。通过简单的配置，用户就能让
+Agent 使用来自任意厂商的模型，进一步提升了系统的可扩展性与灵活性。</p>
+<p>未来可以进一步探索<code>LiteLLM</code>
+在异步任务处理、调用链路监控、成本优化等方面的实践经验，拓展其在生产环境中的应用深度。</p>
+<h2 id="参考网站">参考网站</h2>
+<ol type="1">
+<li>LiteLLM - Getting Started: <a
+target="_blank" rel="noopener" href="https://docs.litellm.ai/">https://docs.litellm.ai/</a></li>
+<li>Using any model via LiteLLM: <a
+target="_blank" rel="noopener" href="https://openai.github.io/openai-agents-python/models/litellm/">https://openai.github.io/openai-agents-python/models/litellm/</a></li>
+</ol>
+<p>欢迎关注我的公众号<strong>NLP奇幻之旅</strong>，原创技术文章第一时间推送。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+<p>欢迎关注我的知识星球“<strong>自然语言处理奇幻之旅</strong>”，笔者正在努力构建自己的技术社区。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/LiteLLM/" class="print-no-link">#LiteLLM</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（一百二十）LiteLLM解析：构建统一大模型接口的利器</div>
+      <div>https://percent4.github.io/NLP（一百二十）LiteLLM解析：构建统一大模型接口的利器/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年4月27日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/Redis%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%80%EF%BC%89%E4%BD%BF%E7%94%A8Redis%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/" title="Redis进阶（一）使用Redis实现分布式锁">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Redis进阶（一）使用Redis实现分布式锁</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/Kafka%E5%85%A5%E9%97%A8%EF%BC%88%E4%BA%94%EF%BC%89Kafka-4-0%E9%9B%B6%E4%BE%9D%E8%B5%96Zookeeper%EF%BC%9ADocker%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2-%E5%8F%AF%E8%A7%86%E5%8C%96%E7%AE%A1%E7%90%86-Python%E5%AE%9E%E6%88%98/" title="Kafka入门（五）Kafka_4.0零依赖Zookeeper：Docker一键部署+可视化管理+Python实战">
+                        <span class="hidden-mobile">Kafka入门（五）Kafka_4.0零依赖Zookeeper：Docker一键部署+可视化管理+Python实战</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

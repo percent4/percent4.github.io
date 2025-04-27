@@ -1,0 +1,923 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍如何使用Redis来实现分布式锁，以及分布式锁的两个应用场景。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis进阶（一）使用Redis实现分布式锁">
+<meta property="og:url" content="https://percent4.github.io/Redis%E8%BF%9B%E9%98%B6%EF%BC%88%E4%B8%80%EF%BC%89%E4%BD%BF%E7%94%A8Redis%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍如何使用Redis来实现分布式锁，以及分布式锁的两个应用场景。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2025/04/27/Dhj34VZSpRekwr1.webp">
+<meta property="og:image" content="https://s2.loli.net/2025/04/27/wHA2DhMQSvVInqZ.png">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg">
+<meta property="article:published_time" content="2025-04-27T15:00:44.000Z">
+<meta property="article:modified_time" content="2025-04-27T15:01:32.021Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="Redis">
+<meta property="article:tag" content="分布式锁">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2025/04/27/Dhj34VZSpRekwr1.webp">
+  
+  
+  
+  <title>Redis进阶（一）使用Redis实现分布式锁 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Redis进阶（一）使用Redis实现分布式锁"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-04-27 23:00" pubdate>
+          星期日, 四月 27日 2025, 11:00 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          16k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          137 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Redis进阶（一）使用Redis实现分布式锁</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍如何使用Redis来实现分布式锁，以及分布式锁的两个应用场景。</p>
+</blockquote>
+<h2 id="前言">前言</h2>
+<p>在文章<a
+target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/voP4m_2a4OLLUz3oC6thzA">Redis快速入门</a>，笔者介绍了Redis的基本数据结构和使用方法，可以作为初学者Redis入门文章。</p>
+<p>笔者最近在使用定时任务的时候，发现一个问题：如果多台机器同时部署了同一个定时任务，则会出现同一资源被重复消费的问题。</p>
+<p>解决的方案是使用<code>分布式锁</code>。那么，何为<code>分布式锁</code>？</p>
+<p><code>分布式锁</code>，顾名思义，就是在分布式环境下使用的锁，通过锁解决<strong>控制共享资源访问</strong>
+的问题，来保证只有一个线程可以访问被保护的资源。用于实现<code>分布式锁</code>的组件通常都会具备以下的一些特性：</p>
+<ul>
+<li><strong>互斥性</strong>：提供分布式环境下的互斥，一个事件在同一个时间内只能被一个线程执行，这当然是分布式锁最基本的特性。</li>
+<li><strong>自动释放</strong>：为了应对分布式系统中各实例因通信故障导致锁不能释放的问题，自动释放的特性通常也是很有必要的。</li>
+<li><strong>分区容错性</strong>：应用在分布式系统的组件，具备分区容错性也是一项重要的特性，否则就会成为整个系统的瓶颈。</li>
+</ul>
+<p><img src="https://s2.loli.net/2025/04/27/Dhj34VZSpRekwr1.webp" srcset="/img/loading.gif" lazyload /></p>
+<p>有多种方案可以实现<code>分布式锁</code>:</p>
+<ul>
+<li>基于数据库实现</li>
+<li>基于Zookeeper实现</li>
+<li>基于Redis实现</li>
+</ul>
+<p>本文将会重点介绍如何使用Redis来实现<code>分布式锁</code>。</p>
+<p><code>分布式锁</code>的使用场景列举如下：</p>
+<ol type="1">
+<li><p><strong>防止缓存击穿</strong>
+比如查询一个热点数据，如果缓存中没有，就会有大量请求同时去查数据库，加大数据库压力。加锁可以保证同一时间只有一个请求查数据库，其他请求等待或快速返回。</p></li>
+<li><p><strong>保证任务的唯一执行</strong>
+比如定时任务在多个实例部署时，防止同一个任务被多个实例重复执行。加锁可以确保同一时刻，只有一个实例在执行。</p></li>
+<li><p><strong>控制并发资源</strong>
+比如购买库存、发放优惠券、下单等高并发场景，需要保证库存扣减或资源分配的正确性，加锁能避免超卖或重复领取的问题。</p></li>
+<li><p><strong>跨系统、跨服务协调</strong>
+在微服务架构中，不同服务之间可能需要协调某些操作，比如多个服务同时对一条数据进行修改，这时就需要分布式锁来保证一致性。</p></li>
+<li><p><strong>避免重复提交</strong>
+用户短时间内重复提交相同的请求（比如支付按钮连续点击），可以通过加锁来防止后端执行两次。</p></li>
+<li><p><strong>主备切换场景</strong>
+比如分布式系统中，某些服务需要通过抢占锁来决定谁是主节点（Leader
+Election）。</p></li>
+</ol>
+<p>本文将会介绍<code>分布式锁</code>在<strong>保证任务的唯一执行</strong>和<strong>避免重复提交</strong>这两个场景中的应用。</p>
+<h2 id="redis基础命令">Redis基础命令</h2>
+<p>在介绍如何使用Redis来实现<code>分布式锁</code>前，我们有必要先了解实现<code>分布式锁</code>的Redis基础命令。</p>
+<ul>
+<li>SETNX命令</li>
+</ul>
+<p>SETNX 是 set if not exists 的缩写，当且仅当 key 不存在时，则设置
+value 给这个key。若给定的 key 已经存在，则 SETNX
+不做任何动作。其返回值1表示该进程执行成功，将key值设置为value；返回值0表明该key已存在。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell">127.0.0.1:6379&gt; SETNX demo_task 100<br>(integer) 1<br>127.0.0.1:6379&gt; SETNX demo_task 100<br>(integer) 0<br></code></pre></td></tr></table></figure>
+<p>如上所示，第一次运行SETNX能成功，第二次运行时demo_task这个key已存在，返回值为0.</p>
+<ul>
+<li>GET, DEL命令</li>
+</ul>
+<p>GET命令获取key的值，如果存在，则返回；如果不存在，则返回nil.</p>
+<p>DEL命令为删除对应key.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell">127.0.0.1:6379&gt; GET demo_task<br>&quot;100&quot;<br>127.0.0.1:6379&gt; DEL demo_task<br>(integer) 1<br>127.0.0.1:6379&gt; GET demo_task<br>(nil)<br></code></pre></td></tr></table></figure>
+<ul>
+<li>设置超时</li>
+</ul>
+<p>超时在<code>分布式锁</code>中就是重置，避免因为各种原因导致锁长时间无法释放，做法就是给key加个超时时间。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell">127.0.0.1:6379&gt; SETNX demo_task 100<br>(integer) 1<br>127.0.0.1:6379&gt; EXPIRE demo_task 3600<br>(integer) 1<br></code></pre></td></tr></table></figure>
+<p>上述命令设置demo_task这个key，并设置超时时间为3600秒。但上述操作分为两步执行，不是<strong>原子命令</strong>。</p>
+<p>为了保证执行时的<strong>原子性</strong>，Redis 官方扩展了 SET
+命令，既能满足获取对象，又能保证设置超时的时间语义。上述命令可以改写成：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell">127.0.0.1:6379&gt; SET demo_task 100 NX PX 60000<br>OK<br>127.0.0.1:6379&gt; GET demo_task<br>&quot;100&quot;<br></code></pre></td></tr></table></figure>
+<p>在上述命令中，NX表明Not Exist, PX表示超时时间，单位毫秒。</p>
+<h2 id="python实现">Python实现</h2>
+<p>基于上面的Redis基础命令，我们实现Python来实现<code>分布式锁</code>。需要注意的是，在释放锁（即运行删除命令）的时候，需要对锁进行唯一标识，避免别的程序误删除设置的锁。</p>
+<p>下面是Python实现<code>分布式锁</code>的代码（文件名为<code>distribute_key_op.py</code>）:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> uuid<br><span class="hljs-keyword">import</span> math<br><span class="hljs-keyword">import</span> redis<br><span class="hljs-keyword">from</span> redis <span class="hljs-keyword">import</span> WatchError<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">acquire_lock_with_timeout</span>(<span class="hljs-params">conn, lock_name, lock_timeout=<span class="hljs-number">2</span></span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    基于 Redis 实现的分布式锁</span><br><span class="hljs-string"></span><br><span class="hljs-string">    :param conn: Redis 连接</span><br><span class="hljs-string">    :param lock_name: 锁的名称</span><br><span class="hljs-string">    :param lock_timeout: 锁的超时时间，默认 2 秒</span><br><span class="hljs-string">    :return:</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    identifier = <span class="hljs-built_in">str</span>(uuid.uuid4())<br>    lockname = <span class="hljs-string">f&#x27;lock:<span class="hljs-subst">&#123;lock_name&#125;</span>&#x27;</span><br>    lock_timeout = <span class="hljs-built_in">int</span>(math.ceil(lock_timeout))<br><br>    <span class="hljs-comment"># 如果不存在这个锁则加锁并设置过期时间，避免死锁</span><br>    <span class="hljs-keyword">if</span> conn.<span class="hljs-built_in">set</span>(lockname, identifier, ex=lock_timeout, nx=<span class="hljs-literal">True</span>):<br>        <span class="hljs-keyword">return</span> identifier<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span><br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">release_lock</span>(<span class="hljs-params">conn, lockname, identifier</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    释放锁</span><br><span class="hljs-string"></span><br><span class="hljs-string">    :param conn: Redis 连接</span><br><span class="hljs-string">    :param lockname: 锁的名称</span><br><span class="hljs-string">    :param identifier: 锁的标识</span><br><span class="hljs-string">    :return:</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-comment"># python中redis事务是通过pipeline的封装实现的</span><br>    <span class="hljs-keyword">with</span> conn.pipeline() <span class="hljs-keyword">as</span> pipe:<br>        lockname = <span class="hljs-string">f&#x27;lock:<span class="hljs-subst">&#123;lockname&#125;</span>&#x27;</span><br><br>        <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>            <span class="hljs-keyword">try</span>:<br>                <span class="hljs-comment"># watch 锁, 事务开始后如果该 key 被其他客户端改变, 事务操作会抛出 WatchError 异常</span><br>                pipe.watch(lockname)<br>                iden = pipe.get(lockname)<br>                <span class="hljs-keyword">if</span> iden <span class="hljs-keyword">and</span> iden.decode(<span class="hljs-string">&#x27;utf-8&#x27;</span>) == identifier:<br>                    <span class="hljs-comment"># 事务开始</span><br>                    pipe.multi()<br>                    pipe.delete(lockname)<br>                    pipe.execute()<br>                    <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span><br><br>                pipe.unwatch()<br>                <span class="hljs-keyword">break</span><br>            <span class="hljs-keyword">except</span> WatchError:<br>                <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;WatchError&quot;</span>)<br><br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span><br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    conn = redis.StrictRedis(host=<span class="hljs-string">&#x27;localhost&#x27;</span>, port=<span class="hljs-number">6379</span>, db=<span class="hljs-number">0</span>)<br>    identifier = acquire_lock_with_timeout(conn, <span class="hljs-string">&#x27;test&#x27;</span>, lock_timeout=<span class="hljs-number">120</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;identifier: <span class="hljs-subst">&#123;identifier&#125;</span>&quot;</span>)<br>    result = release_lock(conn, <span class="hljs-string">&#x27;test&#x27;</span>, identifier)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;result: <span class="hljs-subst">&#123;result&#125;</span>&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>运行结果如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">identifier: e66ff09b-f26e-4067-b42b-898a2d1c46fa<br>result: True<br></code></pre></td></tr></table></figure>
+<h2 id="定时任务唯一执行">定时任务唯一执行</h2>
+<p>设想场景：</p>
+<blockquote>
+<p>在MySQL表，存在5条数据，需要设置定时任务，对doc字段进行关键词提取，并将结果保存为JSON文件。</p>
+</blockquote>
+<p>MySQL表中对应数据如下：</p>
+<p><img src="https://s2.loli.net/2025/04/27/wHA2DhMQSvVInqZ.png" srcset="/img/loading.gif" lazyload /></p>
+<p>该表使用sqlalchemy模块创建，对应Python代码（mysql_create_table.py）如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">from</span> sqlalchemy.dialects.mysql <span class="hljs-keyword">import</span> INTEGER, TEXT<br><span class="hljs-keyword">from</span> sqlalchemy <span class="hljs-keyword">import</span> Column<br><span class="hljs-keyword">from</span> sqlalchemy <span class="hljs-keyword">import</span> create_engine<br><span class="hljs-keyword">from</span> sqlalchemy.ext.declarative <span class="hljs-keyword">import</span> declarative_base<br>Base = declarative_base()<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Doc</span>(<span class="hljs-title class_ inherited__">Base</span>):<br>    __tablename__ = <span class="hljs-string">&#x27;user_doc&#x27;</span><br><br>    <span class="hljs-built_in">id</span> = Column(INTEGER, primary_key=<span class="hljs-literal">True</span>, autoincrement=<span class="hljs-literal">True</span>)<br>    title = Column(TEXT, nullable=<span class="hljs-literal">True</span>)<br>    content = Column(TEXT, nullable=<span class="hljs-literal">True</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__repr__</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">f&quot;Doc(id=<span class="hljs-subst">&#123;self.<span class="hljs-built_in">id</span>&#125;</span>, title=<span class="hljs-subst">&#123;self.title&#125;</span>, content=<span class="hljs-subst">&#123;self.content[:<span class="hljs-number">100</span>]&#125;</span>)&quot;</span><br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">init_db</span>():<br>    engine = create_engine(<br>        <span class="hljs-string">&quot;mysql+pymysql://root:root@localhost:3306/orm_test&quot;</span>,<br>        echo=<span class="hljs-literal">True</span><br>    )<br>    <span class="hljs-comment"># 创建表</span><br>    Base.metadata.create_all(engine)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Create table successfully!&#x27;</span>)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    init_db()<br></code></pre></td></tr></table></figure>
+<p>定时任务(cron_doc_tag_1.py)脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> asyncio<br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><span class="hljs-keyword">from</span> openai <span class="hljs-keyword">import</span> AsyncOpenAI<br><span class="hljs-keyword">from</span> sqlalchemy <span class="hljs-keyword">import</span> create_engine<br><span class="hljs-keyword">from</span> sqlalchemy.orm <span class="hljs-keyword">import</span> sessionmaker<br><span class="hljs-keyword">from</span> apscheduler.schedulers.blocking <span class="hljs-keyword">import</span> BlockingScheduler<br><span class="hljs-keyword">from</span> apscheduler.triggers.cron <span class="hljs-keyword">import</span> CronTrigger<br><br><span class="hljs-keyword">from</span> mysql_create_table <span class="hljs-keyword">import</span> Doc<br><br>load_dotenv()<br><br><span class="hljs-comment"># 初始化数据库连接</span><br>engine = create_engine(<span class="hljs-string">&quot;mysql+pymysql://root:root@localhost:3306/orm_test&quot;</span>)<br>DBSession = sessionmaker(bind=engine)<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">process_doc</span>(<span class="hljs-params">doc_id, doc_content</span>):<br>    prompt = (<br>        <span class="hljs-string">&quot;According to the content of the ducument, extract less than 10 key words &quot;</span><br>        <span class="hljs-string">&quot;from the content, and return them in a string separated by commas.\n&quot;</span><br>        <span class="hljs-string">f&quot;Document content: <span class="hljs-subst">&#123;doc_content&#125;</span>\n&quot;</span><br>        <span class="hljs-string">&quot;Key words:&quot;</span><br>    )<br>    client = AsyncOpenAI(api_key=os.getenv(<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>))<br>    response = <span class="hljs-keyword">await</span> client.chat.completions.create(<br>        model=<span class="hljs-string">&quot;gpt-4o-mini&quot;</span>,<br>        messages=[&#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: prompt&#125;]<br>    )<br>    result = response.choices[<span class="hljs-number">0</span>].message.content<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;./redis_for_test/content_tags.json&quot;</span>, <span class="hljs-string">&quot;a&quot;</span>) <span class="hljs-keyword">as</span> f:<br>        json_data = &#123;<br>            <span class="hljs-string">&quot;doc_id&quot;</span>: doc_id,<br>            <span class="hljs-string">&quot;key_words&quot;</span>: result,<br>            <span class="hljs-string">&quot;task_id&quot;</span>: <span class="hljs-string">&quot;cron_doc_tag_1&quot;</span><br>        &#125;<br>        f.write(json.dumps(json_data, ensure_ascii=<span class="hljs-literal">False</span>) + <span class="hljs-string">&quot;\n&quot;</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;doc_id: <span class="hljs-subst">&#123;doc_id&#125;</span>, key_words: <span class="hljs-subst">&#123;result&#125;</span>&quot;</span>)<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">process_all_docs</span>():<br>    <span class="hljs-comment"># 创建新的会话</span><br>    session = DBSession()<br>    <span class="hljs-keyword">try</span>:<br>        <span class="hljs-comment"># 获取所有需要处理的文档</span><br>        docs = session.query(Doc).<span class="hljs-built_in">all</span>()<br>        <span class="hljs-keyword">for</span> doc <span class="hljs-keyword">in</span> docs:<br>            <span class="hljs-keyword">await</span> process_doc(doc.<span class="hljs-built_in">id</span>, doc.content)<br>    <span class="hljs-keyword">finally</span>:<br>        <span class="hljs-comment"># 确保会话被关闭</span><br>        session.close()<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">scheduled_job</span>():<br>    <span class="hljs-string">&quot;&quot;&quot;定时任务入口函数&quot;&quot;&quot;</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;开始执行文档处理任务...&quot;</span>)<br>    asyncio.run(process_all_docs())<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;文档处理任务完成&quot;</span>)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    <span class="hljs-string">&quot;&quot;&quot;主函数：配置和启动调度器&quot;&quot;&quot;</span><br>    scheduler = BlockingScheduler()<br><br>    <span class="hljs-comment"># 配置定时任务，每天20:30执行</span><br>    scheduler.add_job(<br>        scheduled_job,<br>        trigger=CronTrigger(hour=<span class="hljs-number">20</span>, minute=<span class="hljs-number">30</span>),<br>        <span class="hljs-built_in">id</span>=<span class="hljs-string">&#x27;process_docs_job&#x27;</span>,<br>        name=<span class="hljs-string">&#x27;处理文档标签任务&#x27;</span><br>    )<br><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;定时任务已启动，将在每天20:30执行...&quot;</span>)<br>    <span class="hljs-keyword">try</span>:<br>        scheduler.start()<br>    <span class="hljs-keyword">except</span> (KeyboardInterrupt, SystemExit):<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;定时任务已停止&quot;</span>)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    main()<br></code></pre></td></tr></table></figure>
+<p>复制该脚本，重命名为cron_doc_tag_1.py，并将文件写入时"task_id"改为
+"cron_doc_tag_2"。</p>
+<p>同时运行上述两个脚本，则这两个定时任务在20点30分会同时运行，但是，数据库中的每条记录都运行了两次。保存文件内容如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><span class="hljs-attr">&quot;doc_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;key_words&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Julie Wainwright, memoir, leadership, Pets.com, IPO, The RealReal, entrepreneurial, wisdom, insights.&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;task_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;cron_doc_tag_2&quot;</span><span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#123;</span><span class="hljs-attr">&quot;doc_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;key_words&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Julie Wainwright, memoir, leadership, Pets.com, setback, The RealReal, IPO, entrepreneur, wisdom&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;task_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;cron_doc_tag_1&quot;</span><span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#123;</span><span class="hljs-attr">&quot;doc_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;key_words&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;DeepMind, unionize, Google, AI, workers, military, contract, employees, protests.&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;task_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;cron_doc_tag_2&quot;</span><span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#123;</span><span class="hljs-attr">&quot;doc_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;key_words&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;DeepMind, unionize, Google, AI, protest, military, contract, employees, workers&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;task_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;cron_doc_tag_1&quot;</span><span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#123;</span><span class="hljs-attr">&quot;doc_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">3</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;key_words&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Google, October 25, Nest, Thermostats, updates, Europe, support, devices, homeowners.&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;task_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;cron_doc_tag_2&quot;</span><span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#123;</span><span class="hljs-attr">&quot;doc_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">3</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;key_words&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Google, Nest, thermostats, updates, support, Europe, devices, hardware, features, advancements&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;task_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;cron_doc_tag_1&quot;</span><span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#123;</span><span class="hljs-attr">&quot;doc_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">4</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;key_words&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Amazon, book sale, Independent Bookstore Day, competing, indie bookstores, ABA, market, calculated move, insensitive&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;task_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;cron_doc_tag_2&quot;</span><span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#123;</span><span class="hljs-attr">&quot;doc_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">4</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;key_words&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Amazon, book sale, Independent Bookstore Day, competition, indie bookstores, American Booksellers Association, market, calculated move, timing.&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;task_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;cron_doc_tag_1&quot;</span><span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#123;</span><span class="hljs-attr">&quot;doc_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">5</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;key_words&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Lately, app, ADHD, time management, reminders, reward system, points, users, travel plans&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;task_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;cron_doc_tag_2&quot;</span><span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#123;</span><span class="hljs-attr">&quot;doc_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">5</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;key_words&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Lately, ADHD, app, rewards, time management, points, reminders, developers, travel plans&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;task_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;cron_doc_tag_1&quot;</span><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<p>这并不符合我们的预期，我们的预期是即使这个定时任务部署在多台机器上，或者在不同地方启动时，该定时任务只需要执行一次。</p>
+<p>使用<code>分布式锁</code>可以保证我们的定时任务只执行一次。</p>
+<p>实现脚本（cron_doc_tag_1_with_lock.py）代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> asyncio<br><span class="hljs-keyword">import</span> redis<br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><span class="hljs-keyword">from</span> openai <span class="hljs-keyword">import</span> AsyncOpenAI<br><span class="hljs-keyword">from</span> sqlalchemy <span class="hljs-keyword">import</span> create_engine<br><span class="hljs-keyword">from</span> sqlalchemy.orm <span class="hljs-keyword">import</span> sessionmaker<br><span class="hljs-keyword">from</span> apscheduler.schedulers.blocking <span class="hljs-keyword">import</span> BlockingScheduler<br><span class="hljs-keyword">from</span> apscheduler.triggers.cron <span class="hljs-keyword">import</span> CronTrigger<br><br><span class="hljs-keyword">from</span> mysql_create_table <span class="hljs-keyword">import</span> Doc<br><span class="hljs-keyword">from</span> distribute_key_op <span class="hljs-keyword">import</span> acquire_lock_with_timeout, release_lock<br><br>load_dotenv()<br><br><span class="hljs-comment"># 初始化数据库连接</span><br>engine = create_engine(<span class="hljs-string">&quot;mysql+pymysql://root:root@localhost:3306/orm_test&quot;</span>)<br>DBSession = sessionmaker(bind=engine)<br><br><span class="hljs-comment"># 初始化Redis连接</span><br>redis_conn = redis.StrictRedis(host=<span class="hljs-string">&#x27;localhost&#x27;</span>, port=<span class="hljs-number">6379</span>, db=<span class="hljs-number">0</span>)<br>LOCK_NAME = <span class="hljs-string">&quot;doc_process_task&quot;</span><br>LOCK_TIMEOUT = <span class="hljs-number">600</span>  <span class="hljs-comment"># 锁的超时时间设置为10分钟</span><br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">process_doc</span>(<span class="hljs-params">doc_id, doc_content</span>):<br>    prompt = (<br>        <span class="hljs-string">&quot;According to the content of the document, extract less than 10 &quot;</span><br>        <span class="hljs-string">&quot;key words from the content, and return them in a string separated &quot;</span><br>        <span class="hljs-string">f&quot;by commas.\nDocument content: <span class="hljs-subst">&#123;doc_content&#125;</span>\nKey words:&quot;</span><br>    )<br>    client = AsyncOpenAI(api_key=os.getenv(<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>))<br>    response = <span class="hljs-keyword">await</span> client.chat.completions.create(<br>        model=<span class="hljs-string">&quot;gpt-4o&quot;</span>,<br>        messages=[&#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: prompt&#125;]<br>    )<br>    result = response.choices[<span class="hljs-number">0</span>].message.content<br>    file_path = <span class="hljs-string">&quot;/Users/admin/PycharmProjects/env_test/redis_for_test/content_tags_with_lock.json&quot;</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> os.path.exists(file_path):<br>        os.system(<span class="hljs-string">f&quot;touch <span class="hljs-subst">&#123;file_path&#125;</span>&quot;</span>)<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(file_path, <span class="hljs-string">&quot;a&quot;</span>) <span class="hljs-keyword">as</span> f:<br>        json_data = &#123;<br>            <span class="hljs-string">&quot;doc_id&quot;</span>: doc_id,<br>            <span class="hljs-string">&quot;key_words&quot;</span>: result,<br>            <span class="hljs-string">&quot;task_id&quot;</span>: <span class="hljs-string">&quot;cron_doc_tag_1&quot;</span><br>        &#125;<br>        f.write(json.dumps(json_data, ensure_ascii=<span class="hljs-literal">False</span>) + <span class="hljs-string">&quot;\n&quot;</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;doc_id: <span class="hljs-subst">&#123;doc_id&#125;</span>, key_words: <span class="hljs-subst">&#123;result&#125;</span>&quot;</span>)<br><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">process_all_docs</span>():<br>    <span class="hljs-comment"># 尝试获取分布式锁</span><br>    lock_identifier = acquire_lock_with_timeout(<br>        redis_conn,<br>        LOCK_NAME,<br>        lock_timeout=LOCK_TIMEOUT<br>    )<br><br>    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> lock_identifier:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;无法获取分布式锁，可能有其他实例正在执行任务&quot;</span>)<br>        <span class="hljs-keyword">return</span><br><br>    <span class="hljs-keyword">try</span>:<br>        <span class="hljs-comment"># 创建新的会话</span><br>        session = DBSession()<br>        <span class="hljs-keyword">try</span>:<br>            <span class="hljs-comment"># 获取所有需要处理的文档</span><br>            docs = session.query(Doc).<span class="hljs-built_in">all</span>()<br>            <span class="hljs-keyword">for</span> doc <span class="hljs-keyword">in</span> docs:<br>                <span class="hljs-keyword">await</span> process_doc(doc.<span class="hljs-built_in">id</span>, doc.content)<br>        <span class="hljs-keyword">finally</span>:<br>            <span class="hljs-comment"># 确保会话被关闭</span><br>            session.close()<br>    <span class="hljs-keyword">finally</span>:<br>        <span class="hljs-comment"># 释放分布式锁</span><br>        release_lock(redis_conn, LOCK_NAME, lock_identifier)<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;分布式锁已释放&quot;</span>)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">scheduled_job</span>():<br>    <span class="hljs-string">&quot;&quot;&quot;定时任务入口函数&quot;&quot;&quot;</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;开始执行文档处理任务...&quot;</span>)<br>    asyncio.run(process_all_docs())<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;文档处理任务完成&quot;</span>)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    <span class="hljs-string">&quot;&quot;&quot;主函数：配置和启动调度器&quot;&quot;&quot;</span><br>    scheduler = BlockingScheduler()<br><br>    <span class="hljs-comment"># 配置定时任务，每天21:30执行</span><br>    scheduler.add_job(<br>        scheduled_job,<br>        trigger=CronTrigger(hour=<span class="hljs-number">21</span>, minute=<span class="hljs-number">30</span>),<br>        <span class="hljs-built_in">id</span>=<span class="hljs-string">&#x27;process_docs_job&#x27;</span>,<br>        name=<span class="hljs-string">&#x27;处理文档标签任务&#x27;</span><br>    )<br><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;定时任务已启动，将在每天21:30执行...&quot;</span>)<br>    <span class="hljs-keyword">try</span>:<br>        scheduler.start()<br>    <span class="hljs-keyword">except</span> (KeyboardInterrupt, SystemExit):<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;定时任务已停止&quot;</span>)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    main()<br></code></pre></td></tr></table></figure>
+<p>复制该脚本，重命名为cron_doc_tag_2.py，并将文件写入时"task_id"改为
+"cron_doc_tag_2"。</p>
+<p>同时运行上述两个脚本，cron_doc_tag_1.py的运行结果如下：</p>
+<figure class="highlight erlang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs erlang">定时任务已启动，将在每天<span class="hljs-number">21</span>:<span class="hljs-number">30</span>执行...<br>开始执行文档处理任务...<br>无法获取分布式锁，可能有其他实例正在执行任务<br>文档处理任务完成<br></code></pre></td></tr></table></figure>
+<p>cron_doc_tag_2.py的运行结果如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-string">定时任务已启动，将在每天21:30执行...</span><br><span class="hljs-string">开始执行文档处理任务...</span><br><span class="hljs-attr">doc_id:</span> <span class="hljs-number">1</span><span class="hljs-string">,</span> <span class="hljs-attr">key_words:</span> <span class="hljs-string">Julie</span> <span class="hljs-string">Wainwright,</span> <span class="hljs-string">memoir,</span> <span class="hljs-string">leadership,</span> <span class="hljs-string">Pets.com,</span> <span class="hljs-string">The</span> <span class="hljs-string">RealReal,</span> <span class="hljs-string">entrepreneurship,</span> <span class="hljs-string">IPO,</span> <span class="hljs-string">setbacks,</span> <span class="hljs-string">Ahara,</span> <span class="hljs-string">resilience</span><br><span class="hljs-attr">doc_id:</span> <span class="hljs-number">2</span><span class="hljs-string">,</span> <span class="hljs-attr">key_words:</span> <span class="hljs-string">DeepMind,</span> <span class="hljs-string">unionize,</span> <span class="hljs-string">Google,</span> <span class="hljs-string">AI,</span> <span class="hljs-string">Communication</span> <span class="hljs-string">Workers</span> <span class="hljs-string">Union,</span> <span class="hljs-string">weapons,</span> <span class="hljs-string">surveillance,</span> <span class="hljs-string">Israeli</span> <span class="hljs-string">military,</span> <span class="hljs-string">cloud</span> <span class="hljs-string">computing,</span> <span class="hljs-string">protests</span><br><span class="hljs-attr">doc_id:</span> <span class="hljs-number">3</span><span class="hljs-string">,</span> <span class="hljs-attr">key_words:</span> <span class="hljs-string">Google,</span> <span class="hljs-string">Nest,</span> <span class="hljs-string">thermostats,</span> <span class="hljs-string">updates,</span> <span class="hljs-string">Europe,</span> <span class="hljs-string">support,</span> <span class="hljs-string">generation,</span> <span class="hljs-string">advancements,</span> <span class="hljs-string">temperature,</span> <span class="hljs-string">heating</span> <span class="hljs-string">systems</span><br><span class="hljs-attr">doc_id:</span> <span class="hljs-number">4</span><span class="hljs-string">,</span> <span class="hljs-attr">key_words:</span> <span class="hljs-string">Amazon,</span> <span class="hljs-string">Independent</span> <span class="hljs-string">Bookstore</span> <span class="hljs-string">Day,</span> <span class="hljs-string">American</span> <span class="hljs-string">Booksellers</span> <span class="hljs-string">Association,</span> <span class="hljs-string">indie</span> <span class="hljs-string">bookstores,</span> <span class="hljs-string">sale,</span> <span class="hljs-string">Bookshop.org,</span> <span class="hljs-string">market,</span> <span class="hljs-string">e-books,</span> <span class="hljs-string">timing,</span> <span class="hljs-string">Andy</span> <span class="hljs-string">Hunter</span><br><span class="hljs-attr">doc_id:</span> <span class="hljs-number">5</span><span class="hljs-string">,</span> <span class="hljs-attr">key_words:</span> <span class="hljs-string">Lately,</span> <span class="hljs-string">ADHD,</span> <span class="hljs-string">time</span> <span class="hljs-string">management,</span> <span class="hljs-string">rewards,</span> <span class="hljs-string">points,</span> <span class="hljs-string">Erik</span> <span class="hljs-string">MacInnis,</span> <span class="hljs-string">gamified,</span> <span class="hljs-string">reminders,</span> <span class="hljs-string">virtual</span> <span class="hljs-string">characters,</span> <span class="hljs-string">premium</span> <span class="hljs-string">subscription</span><br><span class="hljs-string">分布式锁已释放</span><br><span class="hljs-string">文档处理任务完成</span><br></code></pre></td></tr></table></figure>
+<p>保存文件内容如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><span class="hljs-attr">&quot;doc_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;key_words&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Julie Wainwright, memoir, leadership, Pets.com, The RealReal, entrepreneurship, IPO, setbacks, Ahara, resilience&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;task_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;cron_doc_tag_2&quot;</span><span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#123;</span><span class="hljs-attr">&quot;doc_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;key_words&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;DeepMind, unionize, Google, AI, Communication Workers Union, weapons, surveillance, Israeli military, cloud computing, protests&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;task_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;cron_doc_tag_2&quot;</span><span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#123;</span><span class="hljs-attr">&quot;doc_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">3</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;key_words&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Google, Nest, thermostats, updates, Europe, support, generation, advancements, temperature, heating systems&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;task_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;cron_doc_tag_2&quot;</span><span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#123;</span><span class="hljs-attr">&quot;doc_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">4</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;key_words&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Amazon, Independent Bookstore Day, American Booksellers Association, indie bookstores, sale, Bookshop.org, market, e-books, timing, Andy Hunter&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;task_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;cron_doc_tag_2&quot;</span><span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#123;</span><span class="hljs-attr">&quot;doc_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">5</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;key_words&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Lately, ADHD, time management, rewards, points, Erik MacInnis, gamified, reminders, virtual characters, premium subscription&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;task_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;cron_doc_tag_2&quot;</span><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<p>从上面的运行结果，我们可以看出，使用<code>分布式锁</code>可以保证定时任务唯一执行，避免同一资源被重复消费。</p>
+<h2 id="短时间内避免重复执行">短时间内避免重复执行</h2>
+<p>用户短时间内重复提交相同的请求（比如支付按钮连续点击），可以通过加锁来防止后端重复执行。</p>
+<p>设想场景：</p>
+<blockquote>
+<p>用户在短时间内重复点击了支付按钮，那么只有其中一个线程会执行真正的支付操作，而其它线程则不会执行支付操作。</p>
+</blockquote>
+<p>使用<code>分布式锁</code>来避免短时间内重复提交，其Python实现代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">import</span> redis<br><span class="hljs-keyword">import</span> threading<br><br><span class="hljs-keyword">from</span> distribute_key_op <span class="hljs-keyword">import</span> acquire_lock_with_timeout, release_lock<br><br><br><span class="hljs-comment"># 连接Redis</span><br>redis_client = redis.Redis(host=<span class="hljs-string">&#x27;localhost&#x27;</span>, port=<span class="hljs-number">6379</span>, db=<span class="hljs-number">0</span>)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">process_payment</span>(<span class="hljs-params">user_id, order_id</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    支付处理逻辑（假设耗时2秒）</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;[<span class="hljs-subst">&#123;threading.current_thread().name&#125;</span>] 正在处理用户 <span class="hljs-subst">&#123;user_id&#125;</span> 的订单 <span class="hljs-subst">&#123;order_id&#125;</span> 支付...&quot;</span>)<br>    time.sleep(<span class="hljs-number">2</span>)  <span class="hljs-comment"># 模拟支付耗时</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;[<span class="hljs-subst">&#123;threading.current_thread().name&#125;</span>] 用户 <span class="hljs-subst">&#123;user_id&#125;</span> 的订单 <span class="hljs-subst">&#123;order_id&#125;</span> 支付完成！&quot;</span>)<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span><br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">pay_order</span>(<span class="hljs-params">user_id, order_id</span>):<br>    <span class="hljs-keyword">try</span>:<br>        lock_key = <span class="hljs-string">f&quot;lock:pay:<span class="hljs-subst">&#123;user_id&#125;</span>:<span class="hljs-subst">&#123;order_id&#125;</span>&quot;</span><br>        <span class="hljs-comment"># 尝试加锁</span><br>        indentifier = acquire_lock_with_timeout(redis_client, lock_key, lock_timeout=<span class="hljs-number">120</span>)<br>        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> indentifier:<br>            <span class="hljs-comment"># 没拿到锁</span><br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;[<span class="hljs-subst">&#123;threading.current_thread().name&#125;</span>] 用户 <span class="hljs-subst">&#123;user_id&#125;</span> 的订单 <span class="hljs-subst">&#123;order_id&#125;</span> 正在处理中，请勿重复提交！&quot;</span>)<br>            <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;正在处理中，请稍后再试&quot;</span><br><br>        <span class="hljs-comment"># 成功拿到锁，处理支付</span><br>        success = process_payment(user_id, order_id)<br>        <span class="hljs-keyword">if</span> success:<br>            <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;支付成功&quot;</span><br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;支付失败&quot;</span><br><br>    <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;[<span class="hljs-subst">&#123;threading.current_thread().name&#125;</span>] 支付异常：<span class="hljs-subst">&#123;e&#125;</span>&quot;</span>)<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;支付异常&quot;</span><br><br>    <span class="hljs-keyword">finally</span>:<br>        <span class="hljs-comment"># 释放分布式锁</span><br>        <span class="hljs-keyword">if</span> indentifier:<br>            release_lock(redis_client, lock_key, indentifier)<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;[<span class="hljs-subst">&#123;threading.current_thread().name&#125;</span>] 分布式锁已释放&quot;</span>)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">simulate_multiple_payments</span>(<span class="hljs-params">user_id, order_id, num_threads=<span class="hljs-number">5</span></span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    模拟多个线程并发支付</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    threads = []<br><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(num_threads):<br>        t = threading.Thread(target=pay_order, args=(user_id, order_id), name=<span class="hljs-string">f&quot;Thread-<span class="hljs-subst">&#123;i+<span class="hljs-number">1</span>&#125;</span>&quot;</span>)<br>        threads.append(t)<br>        t.start()<br><br>    <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> threads:<br>        t.join()<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    user_id = <span class="hljs-number">12345</span><br>    order_id = <span class="hljs-string">&quot;order_98765&quot;</span><br><br>    <span class="hljs-comment"># 模拟5个线程同时支付</span><br>    simulate_multiple_payments(user_id, order_id, num_threads=<span class="hljs-number">5</span>)<br><br></code></pre></td></tr></table></figure>
+<p>输出结果如下：</p>
+<figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs prolog">[<span class="hljs-symbol">Thread</span><span class="hljs-number">-2</span>] 正在处理用户 <span class="hljs-number">12345</span> 的订单 order_98765 支付...<br>[<span class="hljs-symbol">Thread</span><span class="hljs-number">-4</span>] 用户 <span class="hljs-number">12345</span> 的订单 order_98765 正在处理中，请勿重复提交！<br>[<span class="hljs-symbol">Thread</span><span class="hljs-number">-3</span>] 用户 <span class="hljs-number">12345</span> 的订单 order_98765 正在处理中，请勿重复提交！<br>[<span class="hljs-symbol">Thread</span><span class="hljs-number">-5</span>] 用户 <span class="hljs-number">12345</span> 的订单 order_98765 正在处理中，请勿重复提交！<br>[<span class="hljs-symbol">Thread</span><span class="hljs-number">-1</span>] 用户 <span class="hljs-number">12345</span> 的订单 order_98765 正在处理中，请勿重复提交！<br>[<span class="hljs-symbol">Thread</span><span class="hljs-number">-2</span>] 用户 <span class="hljs-number">12345</span> 的订单 order_98765 支付完成！<br>[<span class="hljs-symbol">Thread</span><span class="hljs-number">-2</span>] 分布式锁已释放<br></code></pre></td></tr></table></figure>
+<p>从上面的运行结果可以看出，短时间内同时提交了5次支付请求，但只有Thread-2这个线程在真正执行支付操作，其它线程因为<code>分布式锁</code>的原因没有拿到锁，从而没有执行支付操作。</p>
+<h2 id="总结">总结</h2>
+<p>本文介绍了<code>分布式锁</code>的基础概念和使用场景，结合Redis基础命令，使用Python和Redis实现了<code>分布式锁</code>。</p>
+<p>在<code>分布式锁</code>的使用场景中，笔者介绍了如何使用它来保证定时任务的唯一执行，以及如何避免在短时间内重复操作。</p>
+<p>后续笔者介绍介绍更多Redis的使用场景，下一篇文章的主题将是如何使用Redis来实现消息队列。</p>
+<p>欢迎关注我的公众号<strong>NLP奇幻之旅</strong>，原创技术文章第一时间推送。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+<p>欢迎关注我的知识星球“<strong>自然语言处理奇幻之旅</strong>”，笔者正在努力构建自己的技术社区。</p>
+<center>
+<img src="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" class="category-chain-item">数据库</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Redis/" class="print-no-link">#Redis</a>
+      
+        <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/" class="print-no-link">#分布式锁</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Redis进阶（一）使用Redis实现分布式锁</div>
+      <div>https://percent4.github.io/Redis进阶（一）使用Redis实现分布式锁/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年4月27日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E4%BA%8C%E5%8D%81%EF%BC%89LiteLLM%E8%A7%A3%E6%9E%90%EF%BC%9A%E6%9E%84%E5%BB%BA%E7%BB%9F%E4%B8%80%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%88%A9%E5%99%A8/" title="NLP（一百二十）LiteLLM解析：构建统一大模型接口的利器">
+                        <span class="hidden-mobile">NLP（一百二十）LiteLLM解析：构建统一大模型接口的利器</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
