@@ -8,7 +8,7 @@ from pyecharts.charts import Map
 from pyecharts import options as opts
 
 # 省和直辖市
-with open("travel_config.yml", 'r', encoding='utf-8') as ymlfile:
+with open("/Users/admin/PycharmProjects/github_blog/source/personal_travel_map/travel_config.yml", 'r', encoding='utf-8') as ymlfile:
     province_city_dict = yaml.safe_load(ymlfile)
 
 province_list = [(k, len(v)) for k, v in province_city_dict.items()]
@@ -31,5 +31,5 @@ china_map = (
             is_piecewise=True
         ),
     )
-    .render("china.html")
+    .render("/Users/admin/PycharmProjects/github_blog/source/personal_travel_map/china.html")
 )

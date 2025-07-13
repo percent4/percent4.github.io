@@ -10,7 +10,7 @@ import pandas as pd
 now_date = datetime.date.today()
 print(now_date)
 
-df = pd.read_csv('stats.csv', delimiter=',')
+df = pd.read_csv('./source/pyecharts_pv_uv/stats.csv', delimiter=',')
 date_str_list = []
 pv_list = []
 uv_list = []
@@ -41,7 +41,7 @@ Line(init_opts=opts.InitOpts(width="100%", height="500px"))\
 )\
     .set_global_opts(
     title_opts=opts.TitleOpts(title="博客访问数据统计"),
-    toolbox_opts=opts.ToolboxOpts(is_show=True),
+    toolbox_opts=opts.ToolboxOpts(is_show=False),
     xaxis_opts=opts.AxisOpts(type_="category", boundary_gap=False),
 )\
     .render(f"{now_date}.html")

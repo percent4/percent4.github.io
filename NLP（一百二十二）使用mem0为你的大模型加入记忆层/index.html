@@ -1,0 +1,874 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍如何使用mem0工具来为你的大模型加入记忆层。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（一百二十二）使用mem0为你的大模型加入记忆层">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E4%BA%8C%E5%8D%81%E4%BA%8C%EF%BC%89%E4%BD%BF%E7%94%A8mem0%E4%B8%BA%E4%BD%A0%E7%9A%84%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%8A%A0%E5%85%A5%E8%AE%B0%E5%BF%86%E5%B1%82/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍如何使用mem0工具来为你的大模型加入记忆层。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2025/07/10/vXlREKCepxGtfhy.png">
+<meta property="og:image" content="https://s2.loli.net/2025/07/10/E5yfjHmi7uGANlr.png">
+<meta property="og:image" content="https://s2.loli.net/2025/07/10/nYzMOaZdDuip3JB.png">
+<meta property="og:image" content="https://s2.loli.net/2025/07/11/yNHJoXaCELOgckB.png">
+<meta property="og:image" content="https://s2.loli.net/2025/07/11/GnTv87YqPCjFxOs.png">
+<meta property="article:published_time" content="2025-07-13T09:21:41.000Z">
+<meta property="article:modified_time" content="2025-07-13T09:22:08.985Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="mem0">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2025/07/10/vXlREKCepxGtfhy.png">
+  
+  
+  
+  <title>NLP（一百二十二）使用mem0为你的大模型加入记忆层 - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（一百二十二）使用mem0为你的大模型加入记忆层"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-07-13 17:21" pubdate>
+          星期日, 七月 13日 2025, 5:21 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          12k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          103 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（一百二十二）使用mem0为你的大模型加入记忆层</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍如何使用mem0工具来为你的大模型加入记忆层。</p>
+</blockquote>
+<p>欢迎关注我的公众号<strong>NLP奇幻之旅</strong>，原创技术文章第一时间推送。</p>
+<p>欢迎关注我的知识星球“<strong>自然语言处理奇幻之旅</strong>”，笔者正在努力构建自己的技术社区。</p>
+<p>与那些使用参数化方式（Parametric Memory)或者增加模型上下文长度（长上下文）来实现大模型的记忆相比，使用<code>Memo</code>等工具来实现大模型的记忆的方式主要是依靠工程化能力，其背后的技术栈主要如下：</p>
+<ul>
+<li>使用LLM从多轮对话中提取记忆</li>
+<li>记忆层的更新机制（记忆的增删改查）</li>
+<li>记忆的召回机制（使用向量检索及图数据库Graph Memory）</li>
+</ul>
+<p><img src="https://s2.loli.net/2025/07/10/vXlREKCepxGtfhy.png" srcset="/img/loading.gif" lazyload alt="mem0.png"></p>
+<p><code>Mem0</code>主要采用工程化方式来实现多轮对话的长期记忆，从对话中提取所需的记忆，并在记忆层中实现记忆的更新，然后在新的对话中根据query召回相关记忆并使用LLM回复，使得回复更符合用户的个性和以往习惯，提升问答的体验，更懂用户。</p>
+<p><code>Mem0</code>的Github网址为<a target="_blank" rel="noopener" href="https://github.com/mem0ai/mem0%EF%BC%8C%E6%98%AF%E7%9B%AE%E5%89%8D%E5%B7%A5%E7%A8%8B%E5%8C%96%E5%AE%9E%E7%8E%B0LLM%E9%95%BF%E6%9C%9F%E8%AE%B0%E5%BF%86%E7%9A%84%E4%BB%A3%E8%A1%A8%E6%80%A7%E5%B7%A5%E4%BD%9C%E4%B9%8B%E4%B8%80%EF%BC%8C%E7%9B%AE%E5%89%8Dstart%E6%95%B0%E9%87%8F36.6K%EF%BC%8C%E6%B7%B1%E5%8F%97%E5%BC%80%E5%8F%91%E8%80%85%E9%9D%92%E7%9D%90%E3%80%82">https://github.com/mem0ai/mem0，是目前工程化实现LLM长期记忆的代表性工作之一，目前start数量36.6K，深受开发者青睐。</a></p>
+<p>本文将会简单介绍<code>Mem0</code>的使用方式，其背后的实现原理可以放在下一篇文章中进行详细探讨。</p>
+<h2 id="记忆层更新">记忆层更新</h2>
+<p><code>Mem0</code>的使用方式主要为使用托管平台和自定义托管。笔者在托管平台使用Google账号注册，并在本地安装所需第三方模块：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash">pip install mem0ai openai python-dotenv</span><br></code></pre></td></tr></table></figure>
+<p><code>Mem0</code>使用OpenAI的<code>gpt-4o-mini</code>为默认大模型从对话中抽取记忆。</p>
+<h3 id="新增记忆">新增记忆</h3>
+<p>下面是从对话中抽取记忆，并新增记忆，演示代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><span class="hljs-keyword">from</span> mem0 <span class="hljs-keyword">import</span> MemoryClient<br><br>load_dotenv()<br><br>client = MemoryClient(api_key=os.getenv(<span class="hljs-string">&quot;MEM0_API_KEY&quot;</span>))<br><br>messages = [<br>    &#123; <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;我身体比较肥胖，但是小王就比较瘦，多动就容易出汗，有什么好的运动方式吗？&quot;</span> &#125;,<br>    &#123; <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;assistant&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;我建议你尝试一下羽毛球，羽毛球是一项很好的有氧运动，可以锻炼你的心肺功能，同时也可以锻炼你的协调性和反应能力。&quot;</span> &#125;,<br>    &#123; <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;我和小王今天打了三个小时的羽毛球。&quot;</span> &#125;,<br>    &#123; <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;assistant&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;很棒啊，继续加油！&quot;</span> &#125;,<br>    &#123; <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;最近是夏天，听说云南的天气很凉爽，我想去云南旅游。&quot;</span> &#125;,<br>    &#123; <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;assistant&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;云南的天气确实很凉爽，但是最近是旅游旺季，人很多，你可以考虑错峰出行。&quot;</span> &#125;,<br>    &#123; <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;我最近在学Python，我想用Python写一个爬虫，爬取豆瓣电影的Top250。&quot;</span> &#125;,<br>    &#123; <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;assistant&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;Python写爬虫是一个很好的选择，但是你需要先学习爬虫的基础知识，比如HTTP请求、HTML解析、数据存储等。&quot;</span> &#125;,<br>]<br><br>client.add(messages, user_id=<span class="hljs-string">&quot;Jackie&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>在托管平台查看Jackie用户下，新增了8条Memory，如下图：</p>
+<p><img src="https://s2.loli.net/2025/07/10/E5yfjHmi7uGANlr.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p>从上图中，我们可以看到，<code>Mem0</code>提取的记忆不仅包含必要的元数据（比如id、用户、创建时间、更新时间），还给出了记忆的分类，比如身体比较肥胖属于health类别。</p>
+<h3 id="搜索记忆">搜索记忆</h3>
+<p><code>Mem0</code>支持对记忆进行检索，主要使用文本相似度方案实现。</p>
+<p>下面是对记忆进行搜索的示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><span class="hljs-keyword">from</span> mem0 <span class="hljs-keyword">import</span> MemoryClient<br><br>load_dotenv()<br><br>client = MemoryClient(api_key=os.getenv(<span class="hljs-string">&quot;MEM0_API_KEY&quot;</span>))<br><br>query = <span class="hljs-string">&quot;最近想去哪里旅行？&quot;</span><br>result = client.search(query, user_id=<span class="hljs-string">&quot;Jackie&quot;</span>)<br><br><span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> result:<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Memory id: <span class="hljs-subst">&#123;item[<span class="hljs-string">&#x27;id&#x27;</span>]&#125;</span>, memory: <span class="hljs-subst">&#123;item[<span class="hljs-string">&#x27;memory&#x27;</span>]&#125;</span>, category: <span class="hljs-subst">&#123;item[<span class="hljs-string">&#x27;categories&#x27;</span>]&#125;</span>, score: <span class="hljs-subst">&#123;<span class="hljs-built_in">round</span>(item[<span class="hljs-string">&#x27;score&#x27;</span>], <span class="hljs-number">4</span>)&#125;</span>&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>输出结果如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">Memory id:</span> <span class="hljs-string">cc6ef246-8010-4e67-9b99-55f717931a01,</span> <span class="hljs-attr">memory:</span> <span class="hljs-string">多动容易出汗,</span> <span class="hljs-attr">category:</span> [<span class="hljs-string">&#x27;health&#x27;</span>]<span class="hljs-string">,</span> <span class="hljs-attr">score:</span> <span class="hljs-number">0.4635</span><br><span class="hljs-attr">Memory id:</span> <span class="hljs-string">bdf34f26-128c-437a-96fa-a8c0ecce8cd3,</span> <span class="hljs-attr">memory:</span> <span class="hljs-string">身体比较肥胖,</span> <span class="hljs-attr">category:</span> [<span class="hljs-string">&#x27;health&#x27;</span>]<span class="hljs-string">,</span> <span class="hljs-attr">score:</span> <span class="hljs-number">0.4478</span><br><span class="hljs-attr">Memory id:</span> <span class="hljs-string">b87f7b82-fbbd-46cf-8600-655bba186de5,</span> <span class="hljs-attr">memory:</span> <span class="hljs-string">小王比较瘦,</span> <span class="hljs-attr">category:</span> []<span class="hljs-string">,</span> <span class="hljs-attr">score:</span> <span class="hljs-number">0.4355</span><br><span class="hljs-attr">Memory id:</span> <span class="hljs-string">f8a6c566-7828-4732-b4e0-93a449ceb6eb,</span> <span class="hljs-attr">memory:</span> <span class="hljs-string">今天和小王打了三个小时的羽毛球,</span> <span class="hljs-attr">category:</span> [<span class="hljs-string">&#x27;sports&#x27;</span>]<span class="hljs-string">,</span> <span class="hljs-attr">score:</span> <span class="hljs-number">0.4027</span><br><span class="hljs-attr">Memory id:</span> <span class="hljs-string">4c1f0b4e-fe12-45a9-a478-6547a3b3372f,</span> <span class="hljs-attr">memory:</span> <span class="hljs-string">想去云南旅游,</span> <span class="hljs-attr">category:</span> [<span class="hljs-string">&#x27;travel&#x27;</span>]<span class="hljs-string">,</span> <span class="hljs-attr">score:</span> <span class="hljs-number">0.4008</span><br><span class="hljs-attr">Memory id:</span> <span class="hljs-string">7e76025e-5593-4de5-a8cd-663b9945a9c1,</span> <span class="hljs-attr">memory:</span> <span class="hljs-string">最近在学Python,</span> <span class="hljs-attr">category:</span> [<span class="hljs-string">&#x27;technology&#x27;</span>]<span class="hljs-string">,</span> <span class="hljs-attr">score:</span> <span class="hljs-number">0.3962</span><br><span class="hljs-attr">Memory id:</span> <span class="hljs-string">ff9c32d5-498b-4d8b-ab72-4cbe52866099,</span> <span class="hljs-attr">memory:</span> <span class="hljs-string">最近是夏天,</span> <span class="hljs-attr">category:</span> [<span class="hljs-string">&#x27;misc&#x27;</span>]<span class="hljs-string">,</span> <span class="hljs-attr">score:</span> <span class="hljs-number">0.3882</span><br><span class="hljs-attr">Memory id:</span> <span class="hljs-string">68ebf5cc-269a-405f-8256-df5fcb5ba233,</span> <span class="hljs-attr">memory:</span> <span class="hljs-string">想用Python写一个爬虫爬取豆瓣电影的Top250,</span> <span class="hljs-attr">category:</span> [<span class="hljs-string">&#x27;technology&#x27;</span>]<span class="hljs-string">,</span> <span class="hljs-attr">score:</span> <span class="hljs-number">0.3614</span><br></code></pre></td></tr></table></figure>
+<p><code>Mem0</code>默认使用OpenAI的向量模型，从上面的输出结果看，该模型的召回效果一般，并没有达到理想效果。</p>
+<h3 id="更新记忆">更新记忆</h3>
+<p><code>Mem0</code>支持对记忆进行更新，示例代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><span class="hljs-keyword">from</span> mem0 <span class="hljs-keyword">import</span> MemoryClient<br><br>load_dotenv()<br><br>client = MemoryClient(api_key=os.getenv(<span class="hljs-string">&quot;MEM0_API_KEY&quot;</span>))<br><br><span class="hljs-comment"># update memory</span><br>memory_id=<span class="hljs-string">&quot;f8a6c566-7828-4732-b4e0-93a449ceb6eb&quot;</span><br>client.update(<br>    memory_id=memory_id,<br>    text=<span class="hljs-string">&quot;今天和小王打羽毛球，时间不是3小时，而是两小时。&quot;</span><br>)<br></code></pre></td></tr></table></figure>
+<p><img src="https://s2.loli.net/2025/07/10/nYzMOaZdDuip3JB.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p>从上图中可以看出，这条记忆已经更新了。</p>
+<h3 id="删除记忆">删除记忆</h3>
+<p><code>Mem0</code>支持对记忆进行更新，示例代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><span class="hljs-keyword">from</span> mem0 <span class="hljs-keyword">import</span> MemoryClient<br><br>load_dotenv()<br><br>client = MemoryClient(api_key=os.getenv(<span class="hljs-string">&quot;MEM0_API_KEY&quot;</span>))<br><br><span class="hljs-comment"># delete memory</span><br>memory_id=<span class="hljs-string">&quot;f8a6c566-7828-4732-b4e0-93a449ceb6eb&quot;</span><br>client.delete(memory_id=memory_id)<br></code></pre></td></tr></table></figure>
+<p>运行后，这条记忆已被成功删除。</p>
+<h3 id="加入记忆后的模型回复">加入记忆后的模型回复</h3>
+<p>让我们来尝试下，模型加入记忆前后的回复结果的对比。示例代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><span class="hljs-keyword">from</span> mem0 <span class="hljs-keyword">import</span> MemoryClient<br><span class="hljs-keyword">from</span> openai <span class="hljs-keyword">import</span> OpenAI<br><br>load_dotenv()<br><br>mem0_client = MemoryClient(api_key=os.getenv(<span class="hljs-string">&quot;MEM0_API_KEY&quot;</span>))<br>openai_client = OpenAI(api_key=os.getenv(<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>))<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_memory</span>(<span class="hljs-params">query: <span class="hljs-built_in">str</span>, limit: <span class="hljs-built_in">int</span> = <span class="hljs-number">3</span></span>) -&gt; <span class="hljs-built_in">str</span>:<br>    result = mem0_client.search(query, user_id=<span class="hljs-string">&quot;Jackie&quot;</span>)<br>    memories = []<br>    <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> result[:limit]:<br>        memories.append(item[<span class="hljs-string">&quot;memory&quot;</span>])<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;\n&quot;</span>.join(memories)<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_answer</span>(<span class="hljs-params">messages: <span class="hljs-built_in">list</span>[<span class="hljs-built_in">dict</span>]</span>) -&gt; <span class="hljs-built_in">str</span>:<br>    response = openai_client.chat.completions.create(<br>        model=<span class="hljs-string">&quot;gpt-4o-mini&quot;</span>,<br>        messages=messages,<br>        temperature=<span class="hljs-number">0.5</span>,<br>        max_tokens=<span class="hljs-number">1000</span><br>    )<br>    <span class="hljs-keyword">return</span> response.choices[<span class="hljs-number">0</span>].message.content<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    query = <span class="hljs-string">&quot;我想去云南旅游，需要注意什么？&quot;</span><br>    <span class="hljs-comment"># 未加入记忆的回答</span><br>    messages = [<br>        &#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: query&#125;<br>    ]<br>    answer = get_answer(messages)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;未加入记忆的回答：\n&quot;</span>, answer)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;-&quot;</span> * <span class="hljs-number">100</span>)<br><br>    <span class="hljs-comment"># 加入记忆的回答</span><br>    memory = get_memory(query)<br>    prompt = <span class="hljs-string">f&quot;&quot;&quot;</span><br><span class="hljs-string">    用户的问题是：<span class="hljs-subst">&#123;query&#125;</span></span><br><span class="hljs-string">    用户的姓名是：Jackie</span><br><span class="hljs-string">    用户的历史记忆是：<span class="hljs-subst">&#123;memory&#125;</span></span><br><span class="hljs-string">    请根据用户的问题和历史记忆，给出回答。</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    messages = [<br>        &#123;<span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: prompt&#125;,<br>    ]<br>    answer = get_answer(messages)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;加入记忆的回答：\n&quot;</span>, answer)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;-&quot;</span> * <span class="hljs-number">100</span>)<br><br></code></pre></td></tr></table></figure>
+<p>输出结果如下：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs markdown">未加入记忆的回答：<br> 去云南旅游时，有几个方面需要注意：<br><br><span class="hljs-bullet">1.</span> <span class="hljs-strong">**气候与穿着**</span>：云南地处高原，气候变化较大，早晚温差较大。建议准备适合的服装，尤其是保暖衣物和防晒用品。<br><br><span class="hljs-bullet">2.</span> <span class="hljs-strong">**高原反应**</span>：云南部分地区海拔较高，尤其是丽江、大理等地，初到时可能会有高原反应。建议适当休息，避免剧烈运动，多喝水，必要时可携带一些抗高原反应的药物。<br><br><span class="hljs-bullet">3.</span> <span class="hljs-strong">**饮食注意**</span>：云南的饮食以辣味为主，且有些地方的水质与饮食习惯可能与您平时不同。尽量选择当地人推荐的餐馆，避免生食和不洁食物。<br><br><span class="hljs-bullet">4.</span> <span class="hljs-strong">**交通安全**</span>：云南的部分山区道路较为复杂，出行时注意安全。如果自驾游，确保车辆状况良好，并了解当地交通规则。<br><br><span class="hljs-bullet">5.</span> <span class="hljs-strong">**文化习俗**</span>：云南是一个多民族聚居的地方，各民族有其独特的文化和习俗。在与当地人交流时，尊重他们的文化，避免不当行为。<br><br><span class="hljs-bullet">6.</span> <span class="hljs-strong">**自然保护**</span>：云南有许多独特的自然景观和生态环境，游玩时请注意环保，不打扰野生动物，遵循景区的相关规定。<br><br><span class="hljs-bullet">7.</span> <span class="hljs-strong">**提前规划**</span>：云南的旅游资源丰富，建议提前规划行程，选择自己感兴趣的景点，并预定好住宿。<br><br><span class="hljs-bullet">8.</span> <span class="hljs-strong">**注意安全**</span>：在游玩过程中，特别是在进行户外活动时，注意自身安全，遵循导游的指引。<br><br><span class="hljs-section">希望你在云南的旅行愉快！</span><br><span class="hljs-section">----------------------------------------------------------------------------------------------------</span><br>加入记忆的回答：<br> 你好，Jackie！去云南旅游是个不错的选择，那里有美丽的自然风光和丰富的文化。以下是一些你在云南旅游时需要注意的事项：<br><br><span class="hljs-bullet">1.</span> <span class="hljs-strong">**气候变化**</span>：云南的气候多变，早晚温差大。建议你准备适合的衣物，尤其是外套，以应对早晚的寒冷。<br><br><span class="hljs-bullet">2.</span> <span class="hljs-strong">**防晒措施**</span>：云南的紫外线较强，尤其是在高海拔地区。记得带上防晒霜、太阳帽和太阳镜，以保护皮肤。<br><br><span class="hljs-bullet">3.</span> <span class="hljs-strong">**水源安全**</span>：在云南的一些地区，饮用水可能不太安全，建议购买瓶装水，避免生水。<br><br><span class="hljs-bullet">4.</span> <span class="hljs-strong">**高原反应**</span>：如果你计划去大理、丽江等高海拔地区，注意可能出现的高原反应。适当休息，避免剧烈运动，逐渐适应海拔。<br><br><span class="hljs-bullet">5.</span> <span class="hljs-strong">**饮食习惯**</span>：云南的饮食以辣为主，如果你不太能吃辣，可以提前告知餐厅，选择适合自己的菜品。<br><br><span class="hljs-bullet">6.</span> <span class="hljs-strong">**保持水分**</span>：由于你提到容易出汗，保持充足的水分摄入非常重要，随身携带水瓶，及时补水。<br><br><span class="hljs-bullet">7.</span> <span class="hljs-strong">**注意安全**</span>：在旅游时，注意个人财物安全，尤其是在繁忙的旅游景点。<br><br>希望这些建议能帮助你更好地享受云南之旅！如果还有其他问题，随时问我哦。<br></code></pre></td></tr></table></figure>
+<p>大模型在加入用户记忆前，回复结果比较笼统，没有个性；但在加入用户记忆后，会结合用户的记忆，比如用户之前提到比较容易出汗，因此回复结果更个性化，针对性更强，有效提升了用户的体验。</p>
+<h2 id="自定义向量数据库">自定义向量数据库</h2>
+<p><code>Mem0</code>支持自定义向量数据库，笔者以本地启动的Milvus为例，演示如何使用自定义向量数据库：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><span class="hljs-keyword">from</span> mem0 <span class="hljs-keyword">import</span> Memory<br><span class="hljs-keyword">from</span> openai <span class="hljs-keyword">import</span> OpenAI<br><br>load_dotenv()<br><br>openai_client = OpenAI(api_key=os.getenv(<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>))<br><br>config = &#123;<br>    <span class="hljs-string">&quot;vector_store&quot;</span>: &#123;<br>        <span class="hljs-string">&quot;provider&quot;</span>: <span class="hljs-string">&quot;milvus&quot;</span>,<br>        <span class="hljs-string">&quot;config&quot;</span>: &#123;<br>            <span class="hljs-string">&quot;collection_name&quot;</span>: <span class="hljs-string">&quot;mem0_test&quot;</span>,<br>            <span class="hljs-string">&quot;embedding_model_dims&quot;</span>: <span class="hljs-string">&quot;1536&quot;</span>,<br>            <span class="hljs-string">&quot;url&quot;</span>: <span class="hljs-string">&quot;http://localhost:19530&quot;</span>,<br>            <span class="hljs-string">&quot;metric_type&quot;</span>: <span class="hljs-string">&quot;L2&quot;</span><br>        &#125;<br>    &#125;<br>&#125;<br><br>m = Memory.from_config(config)<br><br>messages = [<br>    &#123; <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;我身体比较肥胖，但是小王就比较瘦，多动就容易出汗，有什么好的运动方式吗？&quot;</span> &#125;,<br>    &#123; <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;assistant&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;我建议你尝试一下羽毛球，羽毛球是一项很好的有氧运动，可以锻炼你的心肺功能，同时也可以锻炼你的协调性和反应能力。&quot;</span> &#125;,<br>    &#123; <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;我和小王今天打了三个小时的羽毛球。&quot;</span> &#125;,<br>    &#123; <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;assistant&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;很棒啊，继续加油！&quot;</span> &#125;,<br>    &#123; <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;最近是夏天，听说云南的天气很凉爽，我想去云南旅游。&quot;</span> &#125;,<br>    &#123; <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;assistant&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;云南的天气确实很凉爽，但是最近是旅游旺季，人很多，你可以考虑错峰出行。&quot;</span> &#125;,<br>    &#123; <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;我最近在学Python，我想用Python写一个爬虫，爬取豆瓣电影的Top250。&quot;</span> &#125;,<br>    &#123; <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;assistant&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;Python写爬虫是一个很好的选择，但是你需要先学习爬虫的基础知识，比如HTTP请求、HTML解析、数据存储等。&quot;</span> &#125;,<br>]<br><br>m.add(messages, user_id=<span class="hljs-string">&quot;Jackie&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p><strong>注意</strong>：事先不需要在Milvus中创建mem0_test这个集合（Collection），<code>Mem0</code>会自动创建。</p>
+<p>运行上述脚本，发现在Milvus中已自动创建两个Collection（多出来的Collection名称为mem0migrations），mem0_test的Schema如下图：</p>
+<p><img src="https://s2.loli.net/2025/07/11/yNHJoXaCELOgckB.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p>mem0_test的数据如下图：</p>
+<p><img src="https://s2.loli.net/2025/07/11/GnTv87YqPCjFxOs.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p>其中metadata字段中的数据结构如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><span class="hljs-attr">&quot;user_id&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;Jackie&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;身体比较肥胖&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;hash&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;05eddefbd69e75b4360b1e1490163cc2&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;created_at&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;2025-07-10T09:22:57.110932-07:00&quot;</span><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+<p>对上述记忆进行搜索，演示代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><span class="hljs-keyword">from</span> mem0 <span class="hljs-keyword">import</span> Memory<br><span class="hljs-keyword">from</span> openai <span class="hljs-keyword">import</span> OpenAI<br><br>load_dotenv()<br><br>openai_client = OpenAI(api_key=os.getenv(<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>))<br><br>config = &#123;<br>    <span class="hljs-string">&quot;vector_store&quot;</span>: &#123;<br>        <span class="hljs-string">&quot;provider&quot;</span>: <span class="hljs-string">&quot;milvus&quot;</span>,<br>        <span class="hljs-string">&quot;config&quot;</span>: &#123;<br>            <span class="hljs-string">&quot;collection_name&quot;</span>: <span class="hljs-string">&quot;mem0_test&quot;</span>,<br>            <span class="hljs-string">&quot;embedding_model_dims&quot;</span>: <span class="hljs-string">&quot;1536&quot;</span>,<br>            <span class="hljs-string">&quot;url&quot;</span>: <span class="hljs-string">&quot;http://localhost:19530&quot;</span>,<br>            <span class="hljs-string">&quot;metric_type&quot;</span>: <span class="hljs-string">&quot;IP&quot;</span><br>        &#125;<br>    &#125;<br>&#125;<br><br>m = Memory.from_config(config)<br><br>query = <span class="hljs-string">&quot;最近想去哪里旅行？&quot;</span><br>result = m.search(query, user_id=<span class="hljs-string">&quot;Jackie&quot;</span>)<br><br><span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> result[<span class="hljs-string">&#x27;results&#x27;</span>]:<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Memory id: <span class="hljs-subst">&#123;item[<span class="hljs-string">&#x27;id&#x27;</span>]&#125;</span>, memory: <span class="hljs-subst">&#123;item[<span class="hljs-string">&#x27;memory&#x27;</span>]&#125;</span>, score: <span class="hljs-subst">&#123;<span class="hljs-built_in">round</span>(item[<span class="hljs-string">&#x27;score&#x27;</span>], <span class="hljs-number">4</span>)&#125;</span>&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>输出结果如下：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">Memory</span> id: <span class="hljs-number">53</span>fd7b3a-<span class="hljs-number">14</span>e4-<span class="hljs-number">4</span>c73-aa94-<span class="hljs-number">3454</span>c102fc1e, memory: 想去云南旅游, score: <span class="hljs-number">1</span>.<span class="hljs-number">102</span><br><span class="hljs-attribute">Memory</span> id: <span class="hljs-number">32</span>fde254-<span class="hljs-number">58</span>e1-<span class="hljs-number">495</span>a-<span class="hljs-number">91</span>bf-<span class="hljs-number">060</span>e9a683d4a, memory: 最近在学Python, score: <span class="hljs-number">1</span>.<span class="hljs-number">1775</span><br><span class="hljs-attribute">Memory</span> id: <span class="hljs-number">5858</span>ce24-<span class="hljs-number">460</span>c-<span class="hljs-number">4748</span>-a293-<span class="hljs-number">11</span>b295d3b115, memory: 今天打了三个小时的羽毛球, score: <span class="hljs-number">1</span>.<span class="hljs-number">6116</span><br><span class="hljs-attribute">Memory</span> id: <span class="hljs-number">03282861</span>-eb7d-<span class="hljs-number">47</span>ed-bc24-ea2cb5841e81, memory: 想用Python写一个爬虫，爬取豆瓣电影的Top250, score: <span class="hljs-number">1</span>.<span class="hljs-number">701</span><br><span class="hljs-attribute">Memory</span> id: <span class="hljs-number">03</span>f418a1-f6dd-<span class="hljs-number">4196</span>-<span class="hljs-number">9</span>c31-c29438888fde, memory: 小王比较瘦, score: <span class="hljs-number">1</span>.<span class="hljs-number">7036</span><br><span class="hljs-attribute">Memory</span> id: f3054d56-<span class="hljs-number">0</span>f49-<span class="hljs-number">4451</span>-<span class="hljs-number">9</span>aee-cf23c939f52d, memory: 身体比较肥胖, score: <span class="hljs-number">1</span>.<span class="hljs-number">7836</span><br><span class="hljs-attribute">Memory</span> id: e5e2de72-a235-<span class="hljs-number">42</span>f6-ab34-d910fa505748, memory: 多动容易出汗, score: <span class="hljs-number">1</span>.<span class="hljs-number">8162</span><br></code></pre></td></tr></table></figure>
+<p>由于我们在使用Milvus时对embedding字段指定的metric_type为L2（<code>Mem0</code>暂时只支持L2和IP这两个metric type，不支持COSINE），因此输出的相似度分数（score）不在0到1之间。</p>
+<h2 id="自定义大模型">自定义大模型</h2>
+<p><code>Memo</code>还支持自定义大模型和Embedding模型，我们以Gemini系列模型为例进行演示，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><span class="hljs-keyword">from</span> mem0 <span class="hljs-keyword">import</span> Memory<br><br>load_dotenv()<br><br>os.environ[<span class="hljs-string">&quot;GEMINI_API_KEY&quot;</span>] = os.getenv(<span class="hljs-string">&quot;GEMINI_API_KEY&quot;</span>)<br> <br>config = &#123;<br>    <span class="hljs-string">&quot;embedder&quot;</span>: &#123;<br>        <span class="hljs-string">&quot;provider&quot;</span>: <span class="hljs-string">&quot;gemini&quot;</span>,<br>        <span class="hljs-string">&quot;config&quot;</span>: &#123;<br>            <span class="hljs-string">&quot;model&quot;</span>: <span class="hljs-string">&quot;models/text-embedding-004&quot;</span>,<br>        &#125;<br>    &#125;,<br>    <span class="hljs-string">&quot;llm&quot;</span>: &#123;<br>        <span class="hljs-string">&quot;provider&quot;</span>: <span class="hljs-string">&quot;gemini&quot;</span>,<br>        <span class="hljs-string">&quot;config&quot;</span>: &#123;<br>            <span class="hljs-string">&quot;model&quot;</span>: <span class="hljs-string">&quot;gemini-2.5-flash&quot;</span>,<br>            <span class="hljs-string">&quot;temperature&quot;</span>: <span class="hljs-number">0.0</span>,<br>            <span class="hljs-string">&quot;max_tokens&quot;</span>: <span class="hljs-number">2000</span>,<br>        &#125;<br>    &#125;,<br>    <span class="hljs-string">&quot;vector_store&quot;</span>: &#123;<br>        <span class="hljs-string">&quot;provider&quot;</span>: <span class="hljs-string">&quot;milvus&quot;</span>,<br>        <span class="hljs-string">&quot;config&quot;</span>: &#123;<br>            <span class="hljs-string">&quot;collection_name&quot;</span>: <span class="hljs-string">&quot;mem0_gemini&quot;</span>,<br>            <span class="hljs-string">&quot;embedding_model_dims&quot;</span>: <span class="hljs-string">&quot;768&quot;</span>,<br>            <span class="hljs-string">&quot;url&quot;</span>: <span class="hljs-string">&quot;http://localhost:19530&quot;</span>,<br>            <span class="hljs-string">&quot;metric_type&quot;</span>: <span class="hljs-string">&quot;L2&quot;</span><br>        &#125;<br>    &#125;<br>&#125;<br> <br>memory = Memory.from_config(config)<br><br>messages = [<br>    &#123; <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;我身体比较肥胖，但是小王就比较瘦，多动就容易出汗，有什么好的运动方式吗？&quot;</span> &#125;,<br>    &#123; <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;assistant&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;我建议你尝试一下羽毛球，羽毛球是一项很好的有氧运动，可以锻炼你的心肺功能，同时也可以锻炼你的协调性和反应能力。&quot;</span> &#125;,<br>    &#123; <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;我和小王今天打了三个小时的羽毛球。&quot;</span> &#125;,<br>    &#123; <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;assistant&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;很棒啊，继续加油！&quot;</span> &#125;,<br>    &#123; <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;最近是夏天，听说云南的天气很凉爽，我想去云南旅游。&quot;</span> &#125;,<br>    &#123; <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;assistant&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;云南的天气确实很凉爽，但是最近是旅游旺季，人很多，你可以考虑错峰出行。&quot;</span> &#125;,<br>    &#123; <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;我最近在学Python，我想用Python写一个爬虫，爬取豆瓣电影的Top250。&quot;</span> &#125;,<br>    &#123; <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;assistant&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;Python写爬虫是一个很好的选择，但是你需要先学习爬虫的基础知识，比如HTTP请求、HTML解析、数据存储等。&quot;</span> &#125;,<br>]<br><br>memory.add(messages, user_id=<span class="hljs-string">&quot;Tom&quot;</span>)<br><br></code></pre></td></tr></table></figure>
+<h2 id="总结">总结</h2>
+<p>本文简单介绍了<code>Memo</code>工具是如何在大模型中加入记忆，并实现记忆的增删改查，同时还介绍了<code>Memo</code>中如何支持自定义的向量数据库和大模型、Embedding模型。</p>
+<p>后续笔者将会更加深入调研<code>Memo</code>工具，欢迎大家阅读~</p>
+<h2 id="参考文献">参考文献</h2>
+<ol>
+<li>Integrating Long-Term Memory with Gemini 2.5: <a target="_blank" rel="noopener" href="https://www.philschmid.de/gemini-with-memory">https://www.philschmid.de/gemini-with-memory</a></li>
+<li>Mem0 Documentation: <a target="_blank" rel="noopener" href="https://docs.mem0.ai/what-is-mem0">https://docs.mem0.ai/what-is-mem0</a></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/NLP/" class="print-no-link">#NLP</a>
+      
+        <a href="/tags/mem0/" class="print-no-link">#mem0</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（一百二十二）使用mem0为你的大模型加入记忆层</div>
+      <div>https://percent4.github.io/NLP（一百二十二）使用mem0为你的大模型加入记忆层/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年7月13日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/HTTP%E8%AF%B7%E6%B1%82%E9%89%B4%E6%9D%83%E4%B9%8BJWT/" title="HTTP请求鉴权之JWT">
+                        <span class="hidden-mobile">HTTP请求鉴权之JWT</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

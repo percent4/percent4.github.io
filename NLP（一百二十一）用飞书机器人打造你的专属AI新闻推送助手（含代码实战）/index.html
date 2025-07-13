@@ -1,0 +1,976 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jclian91">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文将会介绍如何在飞书群中，使用群机器人实现每日AI新闻推送。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLP（一百二十一）用飞书机器人打造你的专属AI新闻推送助手（含代码实战）">
+<meta property="og:url" content="https://percent4.github.io/NLP%EF%BC%88%E4%B8%80%E7%99%BE%E4%BA%8C%E5%8D%81%E4%B8%80%EF%BC%89%E7%94%A8%E9%A3%9E%E4%B9%A6%E6%9C%BA%E5%99%A8%E4%BA%BA%E6%89%93%E9%80%A0%E4%BD%A0%E7%9A%84%E4%B8%93%E5%B1%9EAI%E6%96%B0%E9%97%BB%E6%8E%A8%E9%80%81%E5%8A%A9%E6%89%8B%EF%BC%88%E5%90%AB%E4%BB%A3%E7%A0%81%E5%AE%9E%E6%88%98%EF%BC%89/index.html">
+<meta property="og:site_name" content="My Github Blog">
+<meta property="og:description" content="本文将会介绍如何在飞书群中，使用群机器人实现每日AI新闻推送。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+<meta property="og:image" content="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg">
+<meta property="og:image" content="https://s2.loli.net/2025/05/09/in83pTcRoOk4A9X.png">
+<meta property="og:image" content="https://s2.loli.net/2025/05/09/TZyJIwzf2VCv68a.png">
+<meta property="og:image" content="https://s2.loli.net/2025/05/09/6bgcCMHAPJvs15m.png">
+<meta property="og:image" content="https://s2.loli.net/2025/05/09/DBCxrK2ZkucOmgv.png">
+<meta property="article:published_time" content="2025-07-13T09:20:36.000Z">
+<meta property="article:modified_time" content="2025-07-13T09:21:07.952Z">
+<meta property="article:author" content="Jclian91">
+<meta property="article:tag" content="NLP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg">
+  
+  
+  
+  <title>NLP（一百二十一）用飞书机器人打造你的专属AI新闻推送助手（含代码实战） - My Github Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/csdn/iconfont.css">
+<link rel="stylesheet" href="/css/toutiao/iconfont.css">
+<link rel="stylesheet" href="/css/huggingface/iconfont.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"percent4.github.io","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","app_key":"MCARXkAOuxb8aiWTb3WdAsyn","server_url":"https://yusfsnlf.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+  <meta name="google-site-verification" content="iwt9R4ZjOOtNMseCGP-F5CgwNqJSQ8hf1OsBse50Cyo" />
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NLP（一百二十一）用飞书机器人打造你的专属AI新闻推送助手（含代码实战）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-07-13 17:20" pubdate>
+          星期日, 七月 13日 2025, 5:20 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          17k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          141 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NLP（一百二十一）用飞书机器人打造你的专属AI新闻推送助手（含代码实战）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文将会介绍如何在飞书群中，使用群机器人实现每日AI新闻推送。</p>
+</blockquote>
+<p>欢迎关注我的公众号<strong>NLP奇幻之旅</strong>，原创技术文章第一时间推送。</p>
+<center>
+    <img src="https://s2.loli.net/2023/09/07/BFUl9i4872wWATx.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+<p>欢迎关注我的知识星球“<strong>自然语言处理奇幻之旅</strong>”，笔者正在努力构建自己的技术社区。</p>
+<center>
+    <img src="https://s2.loli.net/2023/09/07/bYtEecQBfjRlUd1.jpg" srcset="/img/loading.gif" lazyload style="width:200px;">
+</center>
+<h2 id="引言">引言</h2>
+<p>在我们的日常工作中，不少公司都会选择飞书来作为其沟通工具。笔者在了解了飞书群中的群机器人后，萌生了一个想法：能不能每天定时爬取AI新闻，并使用大模型进行总结，然后发送至飞书群中。这样，对于我们关心的AI新闻，不用每一篇都精读，通过总结后的内容了解每日AI动态，对于特别感兴趣的文章，也可以点击进去细读。</p>
+<p>首先，笔者先介绍下如何在飞书群中，使用Python来操作群机器人发送文本消息和富文本消息。</p>
+<h2 id="飞书群机器人">飞书群机器人</h2>
+<p>在飞书群众，点击 <code>设置 -&gt; 群机器人 —&gt; 添加机器人 -&gt; 自定义机器人</code>，完成信息配置后，系统会自动生成该机器人的API URL和Secret(需手动开启)，如下图所示：</p>
+<p><img src="https://s2.loli.net/2025/05/09/in83pTcRoOk4A9X.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p>使用Python操作该机器人在对应群众发送文本消息，代码如下:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> hashlib<br><span class="hljs-keyword">import</span> base64<br><span class="hljs-keyword">import</span> hmac<br><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><br>load_dotenv()<br><br><br>url = os.getenv(<span class="hljs-string">&#x27;LARK_API_URL&#x27;</span>)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">gen_sign</span>():<br>    secret = os.getenv(<span class="hljs-string">&#x27;LARK_API_SECRET&#x27;</span>)<br>    timestamp = <span class="hljs-built_in">int</span>(time.time())<br>    <span class="hljs-comment"># 拼接timestamp和secret</span><br>    string_to_sign = <span class="hljs-string">&#x27;&#123;&#125;\n&#123;&#125;&#x27;</span>.<span class="hljs-built_in">format</span>(timestamp, secret)<br>    hmac_code = hmac.new(string_to_sign.encode(<span class="hljs-string">&quot;utf-8&quot;</span>), digestmod=hashlib.sha256).digest()<br><br>    <span class="hljs-comment"># 对结果进行base64处理</span><br>    sign = base64.b64encode(hmac_code).decode(<span class="hljs-string">&#x27;utf-8&#x27;</span>)<br><br>    <span class="hljs-keyword">return</span> timestamp, sign<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">request_feishu</span>():<br>    timestamp, sign = gen_sign()<br>    <span class="hljs-built_in">print</span>(timestamp, sign)<br>    data = &#123;<br>        <span class="hljs-string">&quot;timestamp&quot;</span>: timestamp,<br>        <span class="hljs-string">&quot;sign&quot;</span>: sign,<br>        <span class="hljs-string">&quot;msg_type&quot;</span>: <span class="hljs-string">&quot;text&quot;</span>,<br>        <span class="hljs-string">&quot;content&quot;</span>: &#123;<span class="hljs-string">&quot;text&quot;</span>: <span class="hljs-string">&quot;嘻嘻&quot;</span>&#125;<br>    &#125;<br>    headers = &#123;<br>        <span class="hljs-string">&quot;Content-Type&quot;</span>: <span class="hljs-string">&quot;application/json&quot;</span>,<br>    &#125;<br>    result = requests.post(url, json=data, headers=headers)<br>    <span class="hljs-built_in">print</span>(result.json())<br>    <span class="hljs-keyword">return</span><br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    request_feishu()<br></code></pre></td></tr></table></figure>
+<p>效果图如下：</p>
+<p><img src="https://s2.loli.net/2025/05/09/TZyJIwzf2VCv68a.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p>发送富文本消息的代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> hashlib<br><span class="hljs-keyword">import</span> base64<br><span class="hljs-keyword">import</span> hmac<br><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><br>load_dotenv()<br><br>url = os.getenv(<span class="hljs-string">&#x27;LARK_API_URL&#x27;</span>)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">gen_sign</span>():<br>    secret = os.getenv(<span class="hljs-string">&#x27;LARK_API_SECRET&#x27;</span>)<br>    timestamp = <span class="hljs-built_in">int</span>(time.time())<br>    <span class="hljs-comment"># 拼接timestamp和secret</span><br>    string_to_sign = <span class="hljs-string">&#x27;&#123;&#125;\n&#123;&#125;&#x27;</span>.<span class="hljs-built_in">format</span>(timestamp, secret)<br>    hmac_code = hmac.new(string_to_sign.encode(<span class="hljs-string">&quot;utf-8&quot;</span>), digestmod=hashlib.sha256).digest()<br><br>    <span class="hljs-comment"># 对结果进行base64处理</span><br>    sign = base64.b64encode(hmac_code).decode(<span class="hljs-string">&#x27;utf-8&#x27;</span>)<br><br>    <span class="hljs-keyword">return</span> timestamp, sign<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">request_feishu</span>():<br>    timestamp, sign = gen_sign()<br>    <span class="hljs-built_in">print</span>(timestamp, sign)<br>    data = &#123;<br>        <span class="hljs-string">&quot;timestamp&quot;</span>: timestamp,<br>        <span class="hljs-string">&quot;sign&quot;</span>: sign,<br>        <span class="hljs-string">&quot;msg_type&quot;</span>: <span class="hljs-string">&quot;post&quot;</span>,<br>        <span class="hljs-string">&quot;content&quot;</span>: &#123;<br>            <span class="hljs-string">&quot;post&quot;</span>: &#123;<br>                <span class="hljs-string">&quot;zh-CN&quot;</span>: &#123;<br>                    <span class="hljs-string">&quot;title&quot;</span>: <span class="hljs-string">&quot;2025-04-29今日新闻&quot;</span>,<br>                    <span class="hljs-string">&quot;content&quot;</span>: [<br>                        [<br>                            &#123;<br>                                <span class="hljs-string">&quot;tag&quot;</span>: <span class="hljs-string">&quot;text&quot;</span>,<br>                                <span class="hljs-string">&quot;text&quot;</span>: <span class="hljs-string">&quot;1. 上海“模速空间”：将形成人工智能“北斗七星”和群星态势&quot;</span><br>                            &#125;,<br>                            &#123;<br>                                <span class="hljs-string">&quot;tag&quot;</span>: <span class="hljs-string">&quot;a&quot;</span>,<br>                                <span class="hljs-string">&quot;text&quot;</span>: <span class="hljs-string">&quot;点击查看&quot;</span>,<br>                                <span class="hljs-string">&quot;href&quot;</span>: <span class="hljs-string">&quot;https://www.thepaper.cn/newsDetail_forward_30745446&quot;</span><br>                            &#125;<br>                        ],<br>                        [<br>                            &#123;<br>                                <span class="hljs-string">&quot;tag&quot;</span>: <span class="hljs-string">&quot;text&quot;</span>,<br>                                <span class="hljs-string">&quot;text&quot;</span>: <span class="hljs-string">&quot;2. 解读｜特朗普“助攻”下加拿大自由党“惨胜”，卡尼仍需克服“特鲁多阴影”&quot;</span><br>                            &#125;,<br>                            &#123;<br>                                <span class="hljs-string">&quot;tag&quot;</span>: <span class="hljs-string">&quot;a&quot;</span>,<br>                                <span class="hljs-string">&quot;text&quot;</span>: <span class="hljs-string">&quot;点击查看&quot;</span>,<br>                                <span class="hljs-string">&quot;href&quot;</span>: <span class="hljs-string">&quot;https://www.thepaper.cn/newsDetail_forward_30744086&quot;</span><br>                            &#125;<br>                        ],<br>                        [<br>                            &#123;<br>                                <span class="hljs-string">&quot;tag&quot;</span>: <span class="hljs-string">&quot;text&quot;</span>,<br>                                <span class="hljs-string">&quot;text&quot;</span>: <span class="hljs-string">&quot;3. 临港迎来鸿蒙智行“尚界”整车及电池配套项目，首款车型今秋上市&quot;</span><br>                            &#125;,<br>                            &#123;<br>                                <span class="hljs-string">&quot;tag&quot;</span>: <span class="hljs-string">&quot;a&quot;</span>,<br>                                <span class="hljs-string">&quot;text&quot;</span>: <span class="hljs-string">&quot;点击查看&quot;</span>,<br>                                <span class="hljs-string">&quot;href&quot;</span>: <span class="hljs-string">&quot;https://www.thepaper.cn/newsDetail_forward_30744384&quot;</span><br>                            &#125;<br>                        ]<br>                    ]<br>                &#125;<br>            &#125;<br>        &#125;<br>    &#125;<br>    headers = &#123;<br>        <span class="hljs-string">&quot;Content-Type&quot;</span>: <span class="hljs-string">&quot;application/json&quot;</span>,<br>    &#125;<br>    result = requests.post(url, json=data, headers=headers)<br>    <span class="hljs-built_in">print</span>(result.json())<br>    <span class="hljs-keyword">return</span><br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    request_feishu()<br></code></pre></td></tr></table></figure>
+<p>效果图如下：</p>
+<p><img src="https://s2.loli.net/2025/05/09/6bgcCMHAPJvs15m.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<h2 id="每日AI新闻总结">每日AI新闻总结</h2>
+<p>笔者想在自己创建的飞书群中，每天定时爬取关注网站当天的AI新闻，通过大模型进行总结，发送至飞书群中，省时省力。</p>
+<p>以<code>techcrunch</code>网站为例，它每天都会推送不少AI新闻，也是笔者关注的网站之一。</p>
+<p>整体流程如下：</p>
+<ul>
+<li>使用Docker启动Python定时任务程序</li>
+<li>每天定时爬取对应网站当天的AI新闻</li>
+<li>使用DeepL翻译文章标题，使用GPT-4o总结文章内容</li>
+<li>通过飞书机器人发送至飞书群中</li>
+</ul>
+<p>每日定时爬取网站的文章，并翻译标题和总结内容的Python程序如下:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">from</span> tqdm <span class="hljs-keyword">import</span> tqdm<br><span class="hljs-keyword">from</span> openai <span class="hljs-keyword">import</span> OpenAI<br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><span class="hljs-keyword">from</span> bs4 <span class="hljs-keyword">import</span> BeautifulSoup<br><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime, timedelta<br><br>load_dotenv()<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_today_date</span>():<br>    <span class="hljs-comment"># 获取当前日期的前一天</span><br>    <span class="hljs-keyword">return</span> (datetime.now() - timedelta(days=<span class="hljs-number">1</span>)).strftime(<span class="hljs-string">&quot;%Y-%m-%d&quot;</span>)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_title_and_link_list</span>():<br>    news_list = []<br>    <span class="hljs-keyword">for</span> page <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, <span class="hljs-number">10</span>):<br>        url = <span class="hljs-string">f&#x27;https://techcrunch.com/latest/page/<span class="hljs-subst">&#123;page&#125;</span>&#x27;</span><br>        response = requests.get(url)<br>        soup = BeautifulSoup(response.text, <span class="hljs-string">&#x27;lxml&#x27;</span>)<br>        ul = soup.find(<span class="hljs-string">&#x27;ul&#x27;</span>, class_=<span class="hljs-string">&#x27;wp-block-post-template is-layout-flow wp-block-post-template-is-layout-flow&#x27;</span>).find_all(<span class="hljs-string">&#x27;li&#x27;</span>)<br>        stop_flag = <span class="hljs-literal">False</span><br>        <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> ul:<br>            title = item.find(<span class="hljs-string">&#x27;h3&#x27;</span>, class_=<span class="hljs-string">&#x27;loop-card__title&#x27;</span>)<br>            <span class="hljs-keyword">if</span> title:<br>                link = title.find(<span class="hljs-string">&#x27;a&#x27;</span>, class_=<span class="hljs-string">&#x27;loop-card__title-link&#x27;</span>)<br>                news_link = link.get(<span class="hljs-string">&#x27;href&#x27;</span>)<br>                news_title = link.text<br>                <span class="hljs-comment"># fine the date of the news</span><br>                spans = news_link.replace(<span class="hljs-string">&quot;https://&quot;</span>, <span class="hljs-string">&quot;&quot;</span>).split(<span class="hljs-string">&quot;/&quot;</span>)<br>                news_date = <span class="hljs-string">&quot;-&quot;</span>.join(spans[<span class="hljs-number">1</span>:<span class="hljs-number">4</span>])  <span class="hljs-comment"># date format: %Y-%m-%d</span><br>                <span class="hljs-keyword">if</span> news_date != get_today_date():<br>                    stop_flag = <span class="hljs-literal">True</span><br>                <span class="hljs-keyword">else</span>:<br>                    news_list.append(&#123;<br>                        <span class="hljs-string">&#x27;title&#x27;</span>: news_title,<br>                        <span class="hljs-string">&#x27;link&#x27;</span>: news_link<br>                    &#125;)<br>        <span class="hljs-keyword">if</span> stop_flag:<br>            <span class="hljs-keyword">break</span><br>    <span class="hljs-keyword">return</span> news_list<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_news_content</span>(<span class="hljs-params">news_link: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">str</span>:<br>    response = requests.get(news_link)<br>    soup = BeautifulSoup(response.text, <span class="hljs-string">&#x27;lxml&#x27;</span>)<br>    paragraphs = soup.find(<span class="hljs-string">&#x27;div&#x27;</span>, class_=<span class="hljs-string">&#x27;entry-content wp-block-post-content is-layout-constrained wp-block-post-content-is-layout-constrained&#x27;</span>).find_all(<span class="hljs-string">&#x27;p&#x27;</span>, class_=<span class="hljs-string">&#x27;wp-block-paragraph&#x27;</span>)<br>    contents = []<br>    <span class="hljs-keyword">for</span> paragraph <span class="hljs-keyword">in</span> paragraphs:<br>        contents.append(paragraph.text)<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;\n&quot;</span>.join(contents)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">translate_news_title</span>(<span class="hljs-params">news_title: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">str</span>:<br>    headers = &#123;<br>        <span class="hljs-string">&#x27;Authorization&#x27;</span>: <span class="hljs-string">f&#x27;DeepL-Auth-Key <span class="hljs-subst">&#123;os.getenv(<span class="hljs-string">&quot;DEEPL_API_KEY&quot;</span>)&#125;</span>&#x27;</span>,<br>        <span class="hljs-string">&#x27;Content-Type&#x27;</span>: <span class="hljs-string">&#x27;application/json&#x27;</span>,<br>    &#125;<br><br>    json_data = &#123;<br>        <span class="hljs-string">&#x27;text&#x27;</span>: [news_title],<br>        <span class="hljs-string">&#x27;target_lang&#x27;</span>: <span class="hljs-string">&#x27;ZH&#x27;</span>,<br>    &#125;<br><br>    response = requests.post(<span class="hljs-string">&#x27;https://api.deepl.com/v2/translate&#x27;</span>, headers=headers, json=json_data)<br>    result = response.json()[<span class="hljs-string">&#x27;translations&#x27;</span>][<span class="hljs-number">0</span>][<span class="hljs-string">&#x27;text&#x27;</span>]<br>    <span class="hljs-keyword">return</span> result<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">summarize_news_content</span>(<span class="hljs-params">news_content: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">str</span>:<br>    <span class="hljs-comment"># 使用openai的gpt-4o模型，对news_content进行总结</span><br>    client = OpenAI(api_key=os.getenv(<span class="hljs-string">&quot;OPENAI_API_KEY&quot;</span>))<br>    response = client.responses.create(<br>        model=<span class="hljs-string">&quot;gpt-4o&quot;</span>,<br>        instructions=<span class="hljs-string">&quot;对下面的新闻内容使用中文进行总结，总结内容不超过100个单词或汉字。&quot;</span>,<br>        <span class="hljs-built_in">input</span>=[<br>            &#123;<br>                <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>,<br>                <span class="hljs-string">&quot;content&quot;</span>: news_content<br>            &#125;<br>        ]<br>    )<br>    <span class="hljs-keyword">return</span> response.output_text<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">news_run</span>():<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Start to get news list at &#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(get_today_date()))<br>    news_list = get_title_and_link_list()<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Get &#123;&#125; news&quot;</span>.<span class="hljs-built_in">format</span>(<span class="hljs-built_in">len</span>(news_list)))<br>    news_output_list = []<br>    <span class="hljs-keyword">for</span> news <span class="hljs-keyword">in</span> tqdm(news_list, desc=<span class="hljs-string">&quot;Getting news content&quot;</span>):<br>        <span class="hljs-keyword">try</span>:<br>            title = news[<span class="hljs-string">&#x27;title&#x27;</span>]<br>            news_content = get_news_content(news[<span class="hljs-string">&#x27;link&#x27;</span>])<br>            news_dict = &#123;<br>                <span class="hljs-string">&quot;title&quot;</span>: title,<br>                <span class="hljs-string">&quot;link&quot;</span>: news[<span class="hljs-string">&#x27;link&#x27;</span>],<br>                <span class="hljs-string">&quot;content&quot;</span>: news_content,<br>                <span class="hljs-string">&quot;zh_title&quot;</span>: translate_news_title(title),<br>                <span class="hljs-string">&quot;summary&quot;</span>: summarize_news_content(news_content)<br>            &#125;<br>            news_output_list.append(news_dict)<br>        <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Error: <span class="hljs-subst">&#123;e&#125;</span>&quot;</span>)<br>            <span class="hljs-keyword">continue</span><br>    <span class="hljs-built_in">print</span>(news_output_list)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;End to get news list at &#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(get_today_date()))<br>    <span class="hljs-keyword">return</span> news_output_list<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    news_run()<br></code></pre></td></tr></table></figure>
+<p>启动定时任务，通过群机器人将上述内容发送至飞书群中，Python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> hashlib<br><span class="hljs-keyword">import</span> base64<br><span class="hljs-keyword">import</span> hmac<br><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">import</span> schedule<br><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv<br><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime<br><br><span class="hljs-keyword">from</span> ai_news_daily <span class="hljs-keyword">import</span> news_run<br><br>load_dotenv()<br><br>url = os.getenv(<span class="hljs-string">&#x27;LARK_API_URL&#x27;</span>)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">gen_sign</span>():<br>    secret = os.getenv(<span class="hljs-string">&#x27;LARK_API_SECRET&#x27;</span>)<br>    timestamp = <span class="hljs-built_in">int</span>(time.time())<br>    <span class="hljs-comment"># 拼接timestamp和secret</span><br>    string_to_sign = <span class="hljs-string">&#x27;&#123;&#125;\n&#123;&#125;&#x27;</span>.<span class="hljs-built_in">format</span>(timestamp, secret)<br>    hmac_code = hmac.new(string_to_sign.encode(<span class="hljs-string">&quot;utf-8&quot;</span>), digestmod=hashlib.sha256).digest()<br><br>    <span class="hljs-comment"># 对结果进行base64处理</span><br>    sign = base64.b64encode(hmac_code).decode(<span class="hljs-string">&#x27;utf-8&#x27;</span>)<br><br>    <span class="hljs-keyword">return</span> timestamp, sign<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">request_feishu</span>():<br>    timestamp, sign = gen_sign()<br><br>    news_list = news_run()<br>    send_news_list = []<br>    <span class="hljs-keyword">for</span> i, news <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(news_list):<br>        send_news_list.append(<br>            [<br>                &#123;<br>                    <span class="hljs-string">&quot;tag&quot;</span>: <span class="hljs-string">&quot;text&quot;</span>,<br>                    <span class="hljs-string">&quot;text&quot;</span>: <span class="hljs-built_in">str</span>(i+<span class="hljs-number">1</span>) + <span class="hljs-string">&quot;. &quot;</span> + news[<span class="hljs-string">&#x27;zh_title&#x27;</span>] + <span class="hljs-string">&quot;\n\n&quot;</span> + news[<span class="hljs-string">&#x27;summary&#x27;</span>] + <span class="hljs-string">&quot;\n\n&quot;</span><br>                &#125;,<br>                &#123;<br>                    <span class="hljs-string">&quot;tag&quot;</span>: <span class="hljs-string">&quot;a&quot;</span>,<br>                    <span class="hljs-string">&quot;text&quot;</span>: <span class="hljs-string">&quot;点击查看\n\n&quot;</span>,<br>                    <span class="hljs-string">&quot;href&quot;</span>: news[<span class="hljs-string">&#x27;link&#x27;</span>]<br>                &#125;<br>            ]<br>        )<br><br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(send_news_list) == <span class="hljs-number">0</span>:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;No news to send&quot;</span>)<br>        <span class="hljs-keyword">return</span><br><br>    today_date = datetime.now().strftime(<span class="hljs-string">&quot;%Y-%m-%d&quot;</span>)<br>    data = &#123;<br>        <span class="hljs-string">&quot;timestamp&quot;</span>: timestamp,<br>        <span class="hljs-string">&quot;sign&quot;</span>: sign,<br>        <span class="hljs-string">&quot;msg_type&quot;</span>: <span class="hljs-string">&quot;post&quot;</span>,<br>        <span class="hljs-string">&quot;content&quot;</span>: &#123;<br>            <span class="hljs-string">&quot;post&quot;</span>: &#123;<br>                <span class="hljs-string">&quot;zh-CN&quot;</span>: &#123;<br>                    <span class="hljs-string">&quot;title&quot;</span>: <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;today_date&#125;</span> 今日AI新闻&quot;</span>,<br>                    <span class="hljs-string">&quot;content&quot;</span>: send_news_list<br>                &#125;<br>            &#125;<br>        &#125;<br>    &#125;<br>    headers = &#123;<br>        <span class="hljs-string">&quot;Content-Type&quot;</span>: <span class="hljs-string">&quot;application/json&quot;</span>,<br>    &#125;<br>    result = requests.post(url, json=data, headers=headers)<br>    <span class="hljs-built_in">print</span>(result.json())<br>    <span class="hljs-keyword">return</span><br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    <span class="hljs-comment"># 设置为北京时间下午3点执行</span><br>    schedule.every().day.at(<span class="hljs-string">&quot;15:00&quot;</span>).do(request_feishu)<br><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;定时任务已启动，将在每天下午3点（北京时间）执行...&quot;</span>)<br>    <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>        schedule.run_pending()<br>        time.sleep(<span class="hljs-number">60</span>)  <span class="hljs-comment"># 每分钟检查一次是否需要执行任务</span><br></code></pre></td></tr></table></figure>
+<p>为了保证该任务每天能顺利执行，最好是将该服务部署至云服务器。但笔者没有这个条件，因此采用Docker来实现，这样只要笔者每天的电脑开着（上班当然要开电脑喽！），就能顺利执行。</p>
+<p>Dockerfile设置如下:</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># 使用Python 3.11作为基础镜像</span><br><span class="hljs-string">FROM</span> <span class="hljs-string">python:3.11-slim</span><br><br><span class="hljs-comment"># 设置工作目录</span><br><span class="hljs-string">WORKDIR</span> <span class="hljs-string">/app</span><br><br><span class="hljs-comment"># 设置时区为北京时间</span><br><span class="hljs-string">ENV</span> <span class="hljs-string">TZ=Asia/Shanghai</span><br><span class="hljs-string">RUN</span> <span class="hljs-string">ln</span> <span class="hljs-string">-snf</span> <span class="hljs-string">/usr/share/zoneinfo/$TZ</span> <span class="hljs-string">/etc/localtime</span> <span class="hljs-string">&amp;&amp;</span> <span class="hljs-string">echo</span> <span class="hljs-string">$TZ</span> <span class="hljs-string">&gt;</span> <span class="hljs-string">/etc/timezone</span><br><br><span class="hljs-comment"># 创建非root用户</span><br><span class="hljs-string">RUN</span> <span class="hljs-string">groupadd</span> <span class="hljs-string">-r</span> <span class="hljs-string">appuser</span> <span class="hljs-string">&amp;&amp;</span> <span class="hljs-string">useradd</span> <span class="hljs-string">-r</span> <span class="hljs-string">-g</span> <span class="hljs-string">appuser</span> <span class="hljs-string">appuser</span><br><br><span class="hljs-comment"># 复制项目文件</span><br><span class="hljs-string">COPY</span> <span class="hljs-string">./src</span> <span class="hljs-string">/app/src</span><br><br><span class="hljs-comment"># 设置pip镜像源为国内源，并安装依赖</span><br><span class="hljs-string">RUN</span> <span class="hljs-string">pip</span> <span class="hljs-string">install</span> <span class="hljs-string">--no-cache-dir</span> <span class="hljs-string">-i</span> <span class="hljs-string">https://pypi.tuna.tsinghua.edu.cn/simple</span> <span class="hljs-string">-r</span> <span class="hljs-string">/app/src/requirements.txt</span><br><br><span class="hljs-comment"># 设置适当的权限</span><br><span class="hljs-string">RUN</span> <span class="hljs-string">chown</span> <span class="hljs-string">-R</span> <span class="hljs-string">appuser:appuser</span> <span class="hljs-string">/app</span><br><br><span class="hljs-comment"># 切换到非root用户</span><br><span class="hljs-string">USER</span> <span class="hljs-string">appuser</span><br><br><span class="hljs-comment"># 运行定时任务</span><br><span class="hljs-string">CMD</span> [<span class="hljs-string">&quot;python&quot;</span>, <span class="hljs-string">&quot;-u&quot;</span>, <span class="hljs-string">&quot;/app/src/ai_news_sender.py&quot;</span>] <br></code></pre></td></tr></table></figure>
+<p>Docker镜像打包参考Dockerfile, 打包和执行命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash">docker build -t ai-news-bot .</span><br><span class="hljs-meta prompt_">$ </span><span class="language-bash">docker run -d --restart=always --name ai-news-bot ai-news-bot</span><br></code></pre></td></tr></table></figure>
+<p>以今日为例（由于与美国的时差，故发送的是昨日AI新闻），效果图如下：</p>
+<p><img src="https://s2.loli.net/2025/05/09/DBCxrK2ZkucOmgv.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p>笔者特意将上述内容的文本部分放在最后的附录中，以飨读者。</p>
+<h2 id="总结">总结</h2>
+<p>上述代码已开源至Github，网址为：<a target="_blank" rel="noopener" href="https://github.com/percent4/ai_news_bot">https://github.com/percent4/ai_news_bot</a></p>
+<p>本文介绍了笔者业余时间做的一个项目，也算是大模型在自己日常生活工作中的一个应用场景。</p>
+<h2 id="参考网站">参考网站</h2>
+<ol>
+<li>在群组中使用机器人: <a target="_blank" rel="noopener" href="https://www.feishu.cn/hc/zh-CN/articles/360024984973-%E5%9C%A8%E7%BE%A4%E7%BB%84%E4%B8%AD%E4%BD%BF%E7%94%A8%E6%9C%BA%E5%99%A8%E4%BA%BA">https://www.feishu.cn/hc/zh-CN/articles/360024984973-%E5%9C%A8%E7%BE%A4%E7%BB%84%E4%B8%AD%E4%BD%BF%E7%94%A8%E6%9C%BA%E5%99%A8%E4%BA%BA</a></li>
+<li>Python实现飞书机器人定时发送文本、图片等群消息: <a target="_blank" rel="noopener" href="https://blog.csdn.net/tyh_keephunger/article/details/129346297">https://blog.csdn.net/tyh_keephunger/article/details/129346297</a></li>
+<li>TechCrunch: <a target="_blank" rel="noopener" href="https://techcrunch.com/">https://techcrunch.com/</a></li>
+<li>ai_news_bot: <a target="_blank" rel="noopener" href="https://github.com/percent4/ai_news_bot">https://github.com/percent4/ai_news_bot</a></li>
+</ol>
+<h2 id="附录">附录</h2>
+<p>2025-05-09 今日AI新闻</p>
+<ol>
+<li>埃隆-马斯克（Elon Musk）的一位长期风险投资人在据称被解雇后起诉他的前雇主</li>
+</ol>
+<p>Josh Raffaelli起诉前雇主Brookfield资产管理公司，指控该公司隐瞒疫情相关房地产损失，并因他向SEC提交举报而解雇他。诉讼涉及欺诈和贿赂指控，Brookfield否认不当行为。此外，Raffaelli称Brookfield未按约定购买他获得购买权的马斯克公司股票。Raffaelli过去支持过马斯克的公司如SpaceX，并在马斯克收购推特时提供支持。Brookfield此前关闭了Raffaelli管理的风投部门。</p>
+<ol start="2">
+<li>微软总裁表示禁止微软员工使用 DeepSeek 应用程序</li>
+</ol>
+<p>微软禁止员工使用DeepSeek，原因是数据安全和宣传问题。微软副董事长Brad Smith在参议院听证会上表示，由于数据可能存储在中国，并可能受到中方宣传的影响，微软未将DeepSeek列入其应用商店。DeepSeek存储用户数据在中国服务器，需遵循中国法律，与情报机构合作。尽管微软在Azure云服务上提供了DeepSeek的R1模型，但它修改了模型以去除“有害效果”。微软未将其直接应用于Windows应用商店，强调数据安全的重要性。</p>
+<ol start="3">
+<li>韩国电信巨头 SKT 数据泄露事件时间表</li>
+</ol>
+<p>今年4月，韩国电信巨头SK电信遭遇网络攻击，导致约2300万客户的个人数据被盗。受影响客户中，已有约25万人更换服务提供商，若免除解约费，该数字可能增至250万。公司可能在三年内损失达50亿美元。调查显示，25类个人信息被泄露，包括手机号码和USIM数据等。SK电信已提供SIM卡保护和替换服务，并与多方展开调查。攻击可能与中国支持的黑客有关，涉及多个国家和行业。SK集团主席已就数据泄露事件道歉。</p>
+<ol start="4">
+<li>曙光公司将增加夜间行车和新路线，加强无人驾驶卡车服务</li>
+</ol>
+<p>自动驾驶技术公司Aurora Innovation计划扩展其无人驾驶卡车业务，包括夜间驾驶和在恶劣天气条件下运行。到2025年下半年，Aurora计划在达拉斯至休斯顿的路线基础上扩展到埃尔帕索和菲尼克斯，并实现收入增长。公司已完成4,000多英里的无人驾驶测试，并计划到2025年底运营&quot;数十辆&quot;卡车。Aurora联合创始人兼首席产品官Sterling Anderson辞职，公司预计2025年收入将达到中等个位数百万。</p>
+<ol start="5">
+<li>Aurora 联合创始人斯特林-安德森将离开这家自动驾驶卡车初创公司</li>
+</ol>
+<p>Aurora联合创始人Sterling Anderson宣布辞职，此时恰逢公司刚在德克萨斯推出自动驾驶卡车服务。他将于6月1日正式离职，并于8月31日退出董事会。公司声明称，辞职与任何运营或政策分歧无关。Anderson将赴一家全球知名公司担任高级领导角色。他表示，虽然离开Aurora是艰难决定，但公司已经达到了重要发展节点，技术和团队已准备就绪。Aurora于2021年通过特殊目的收购公司上市，目前专注于自动驾驶卡车领域。</p>
+<ol start="6">
+<li>Appfigures：苹果去年从美国应用商店佣金中获利超过 100 亿美元</li>
+</ol>
+<p>根据Appfigures分析，2024年苹果美国App Store收入超过100亿美元。2020至2024年间，该收入翻倍，开发者总收入达336.8亿美元，扣除苹果佣金后所得为235.7亿美元。苹果逐渐放宽对App Store外交易的限制，因法院裁定苹果在执行禁令时妨碍竞争。尽管苹果计划上诉，但新规则允许开发者添加外部支付链接，例如Spotify和Amazon Kindle已受益。苹果坚持佣金政策，并声称相关限制使其遭受财务损失。</p>
+<ol start="7">
+<li>ChatGPT 的深度研究工具有了 GitHub 连接器，可回答有关代码的问题</li>
+</ol>
+<p>OpenAI推出了增强版ChatGPT深度研究工具，新增对GitHub代码库的分析功能。这一新功能允许用户提出代码库和工程文档相关问题，并帮助分解产品规格、总结代码结构等。该服务目前在测试阶段，将逐步对ChatGPT Plus、Pro和Team用户开放，并计划对企业和教育版开放。OpenAI还提供了定制模型的微调选项，并投资于编程工具开发，例如购买AI编码助手Windsurf。该功能被视为节省时间的工具，而非专家替代品。</p>
+<ol start="8">
+<li>据报道，Synapse 前首席执行官正试图为其新的仿人机器人企业融资 1 亿美元</li>
+</ol>
+<p>Sankaet Pathak的上一家初创公司Synapse在2024年因合作方Evolve Bank &amp; Trust的问题申请破产，数千万美元的存款去向不明。然而，Pathak现在正努力为其新的人形机器人初创公司Foundation筹集资金，目标是筹集1亿美元，估值达10亿美元。这家公司仅在今年推出了其机器人Phantom，此前8月才通过pre-seed轮获得1100万美元。这项新项目旨在通过创建复杂环境下运行的高级人形机器人来解决劳动力短缺问题。</p>
+<ol start="9">
+<li>社交媒体初创公司 Fizz 起诉 Instacart 和 Partiful 侵犯新 Fizz 应用程序的商标权</li>
+</ol>
+<p>社交媒体初创公司Fizz起诉Instacart和活动策划应用Partiful涉嫌商标侵权。Instacart刚推出名为Fizz的饮料和零食配送应用，并与Partiful集成。Fizz要求法院限制两家公司在社交或活动策划服务中使用“FIZZ”名称，并索赔损害赔偿。Fizz称自2022年1月起使用该商标，指责Instacart和Partiful故意使用相同名称，导致消费者混淆，并希望利用其在Z世代中的品牌知名度。Fizz此前还曾因不正当竞争起诉Sidechat。</p>
+<ol start="10">
+<li>Meta 聘用前谷歌 DeepMind 总监领导其人工智能研究实验室</li>
+</ol>
+<p>Meta任命Robert Fergus领导其基础AI研究实验室FAIR。他曾任谷歌DeepMind研究总监，并有在Meta工作的经历。FAIR面临挑战，许多研究人员离开，转投其他公司或Meta的新人工智能团队。之前的AI研究副总裁Joelle Pineau四月离职。</p>
+<ol start="11">
+<li>谷歌推出 “隐式缓存”，让访问最新人工智能模型更便宜</li>
+</ol>
+<p>Google在Gemini API中引入了一项名为“隐式缓存”的新功能，声称能为第三方开发者降低AI模型的使用成本，节省约75%的重复上下文处理费用。该功能自动启用，适用于Gemini 2.5 Pro和2.5 Flash模型，旨在减少手动工作的需要，并通过缓存提高效率。此前的明确缓存需要开发者手动定义高频请求，导致一些用户不满。新功能自动识别相同前缀请求，动态回馈成本节省。然而，Google并未提供第三方验证其效果。</p>
+<ol start="12">
+<li>Instagram Threads 将推出视频广告</li>
+</ol>
+<p>Meta宣布Instagram Threads将测试视频广告，以增强其广告功能。仅少数广告商将在Threads中测试19:9或1:1的视频广告，这些广告会出现在用户生成内容之间。此外，Meta透露Threads的月活跃用户已超过3.5亿，并且用户使用时间增加了35%。与此同时，Meta还在测试Reels趋势广告和其他广告产品，以增强广告主与趋势内容的连接。Meta还将在Creator Marketplace中引入趋势测试，帮助广告主更有效地与受欢迎的创作者合作。</p>
+<ol start="13">
+<li>PowerSchool 支付了黑客的赎金，但现在学校说他们被勒索了</li>
+</ol>
+<p>教育软件公司PowerSchool在2024年12月遭黑客攻击后付款赎回学生数据，但至少一所学校现被勒索，表示数据未被删除。该公司软件服务于数百万学生，存储有重要的个人信息。多地学校收到勒索信，专家和执法部门对支付赎金持反对态度。最新情况涉及多地学校，估计影响数百万人。PowerSchool认为这不是新事件，因为数据与前次被盗数据相符。目前暂不清楚受影响人数。</p>
+<ol start="14">
+<li>谷歌推出人工智能工具，保护 Chrome 浏览器用户免受欺诈</li>
+</ol>
+<p>Google推出新的AI驱动防护措施以打击Chrome浏览器的网络骗局。其Gemini Nano模型将在桌面端提供增强保护，帮助识别并防范新型骗局。同时，Google在Android版本中引入AI警告，提醒用户注意垃圾通知。此举旨在即刻识别危险网站，从而保护用户免受未曾出现的骗局伤害。此外，Google计划扩展AI防护到更多设备和更多骗局类型，并在搜索中使用AI检测以阻止数百万的诈骗结果，已减少80%以上的假冒航空客服诈骗风险。</p>
+<ol start="15">
+<li>在与美国的贸易战中，中国吉利拟将电动汽车初创企业 Zeekr 私有化</li>
+</ol>
+<p>吉利计划将其豪华电动车品牌极氪从纽约证券交易所退市，此举与特朗普政府可能将中国公司逐出美国股市的计划有关。吉利提议以每份美国存托凭证（ADS）25.66美元的价格收购余下股份，较前一日收盘价高约14%。吉利已拥有极氪65.7%的股份，收购其余股份需约22亿美元，有助于极氪抵御市场挑战并保护投资。此外，极氪与Waymo合作开发自动驾驶出租车，退市可能影响合作。</p>
+<ol start="16">
+<li>在 TechCrunch 会议上展示您的初创企业：人工智能，趁现在还来得及！</li>
+</ol>
+<p>TechCrunch Sessions: AI即将在6月5日于UC Berkeley’s Zellerbach Hall召开，这是一个聚集AI行业顶级人才和投资者的活动。参展可以让你的品牌在AI社区内获得更多关注，并与潜在合作伙伴接触。展示创新尤为重要，因为市场噪音大，需提高可见度。参展报名截止日期为5月9日晚上11:59（太平洋时间）。抓住最后的24小时机会，预定展位。</p>
+<ol start="17">
+<li>星链》在印度的推出只是时间问题，而不是是否推出的问题</li>
+</ol>
+<p>Starlink获得印度政府批准，可以在印度市场展开运营。SpaceX需提交合规文件并获得印度空间监管机构IN-SPACe的许可。预计Starlink在印度的正式推出需六到九个月。此前，SpaceX未经许可在印提供服务被责令退款，现在印度已指定卫星通信新规。尽管面临当地和国际竞争者，Starlink仍看好印度这一互联网用户增长潜力市场。印政府将分配卫星互联网频谱，但具体费用和要求尚未公布。</p>
+<ol start="18">
+<li>红杉牵头 15 亿美元收购销售自动化初创公司 Clay</li>
+</ol>
+<p>Clay的联合创始人兼CEO Kareem Amin在2022年看到公司产品成功起飞。自此，公司估值超过10亿美元，员工从几十人扩展到150多人。Clay允许至少工作一年以上的员工出售部分股份给现有投资者红杉资本，公司估值升至15亿美元。Clay的技术帮助销售和市场人员实现自动化策略，吸引了OpenAI等客户，并在社区轮中筹集100万美元，支持用户参与公司成长。Amin希望此举能激励其他初创企业为员工提供流动性。</p>
+<ol start="19">
+<li>OpenAI 在亚洲启动数据驻留计划</li>
+</ol>
+<p>OpenAI在亚洲推出新的数据驻留计划，继2月在欧洲推出后，为ChatGPT Enterprise、ChatGPT Edu和OpenAI API等产品提供支持。这一计划旨在帮助亚洲组织满足当地数据主权要求，数据可存储在日本、印度、新加坡和韩国等国家。OpenAI强调数据的机密性和安全性，并表示数据完全由用户拥有。此举标志着OpenAI加快海外扩展，同时推出“OpenAI for Countries”以改进国际基础设施服务。</p>
+<ol start="20">
+<li>比尔-盖茨要求其基金会在 2045 年前花光所有资金</li>
+</ol>
+<p>比尔·盖茨宣布其基金会将在未来20年内花光所有资金并结束运营。他承诺捐出99%的财富（估价1070亿美元），预计基金会将花费超过2000亿美元。这标志着基金会路线的重大转变，此前规定为盖茨去世后20年关闭。基金会致力于健康、教育、全球发展等领域，已支出超过1000亿美元，主要受益人为低收入国家的人们。此举恰逢美国削减对外援助之际。</p>
+<ol start="21">
+<li>火柴公司将裁员 13</li>
+</ol>
+<p>Match Group将裁员13%，大约影响325名员工，旨在降低成本、优化利润率并精简组织结构。此次重组将减少管理层级，集中关键职能，包括技术和数据服务等。该公司预计可节省超过1亿美元，并在2025年节省约4500万美元。第一季度收入同比下降3%至8.312亿美元，净利润下降4.6%至1.176亿美元。</p>
+<ol start="22">
+<li>亚马逊最新的人工智能工具旨在改进产品列表</li>
+</ol>
+<p>亚马逊推出了一款名为“Enhance My Listing”的生成式AI工具，帮助商家改善产品列表。这款工具能够根据季节趋势自动建议产品标题、属性和描述，商家可以选择接受、拒绝或修改建议。此次发布首先针对美国部分商家，未来几周将进一步扩展。自2023年以来，亚马逊已陆续推出多种生成式AI工具，目前已有超过90万商家使用这些工具，90%的生成内容被商家接受。其他公司如谷歌、eBay、Meta及Shopify也在推出类似的AI工具。</p>
+<ol start="23">
+<li>Reddit 为企业客户推出新的个人资料工具</li>
+</ol>
+<p>Reddit推出针对企业用户的Reddit Pro新功能，帮助品牌融入社区。企业在注册时可获取自动生成的个人简介，并展示社区帖子、评论及行业趋势。Reddit的新品功能旨在提升企业在平台的影响力和信誉，同时促进企业增长。最新财季Reddit表现强劲，营收达3.924亿美元，同比增61%，日活跃用户1.081亿，同比增31%。</p>
+<ol start="24">
+<li>研究发现：向聊天机器人询问简短答案会增加幻觉</li>
+</ol>
+<p>一项由巴黎AI测试公司Giskard进行的研究表明，要求AI聊天机器人简洁回答可能导致其更频繁出现“幻觉”，即生成不准确的信息。研究发现，在处理模糊或错误前提的问题时，短答提示会显著影响AI模型的准确性。即使是OpenAI的最新模型，简短要求也会导致准确性的下降。研究指出，简洁指令可能会妨碍模型识别和纠正错误信息，而用户偏好的模型不一定最真实。这反映了提升用户体验与保持信息准确之间的矛盾。</p>
+<ol start="25">
+<li>风险投资公司 Insight Partners 证实个人数据在一月份的黑客攻击中被盗</li>
+</ol>
+<p>风投公司Insight Partners在一月份遭受网络攻击后将通知某些人其个人信息被窃取。被盗信息包括现任和前任员工及有限合伙人的个人资料、某些基金、管理公司和投资组合公司的银行和税务信息。这是该公司首次承认数据在攻击中被窃取。Insight此前将黑客攻击归因于复杂的社会工程攻击，但未提供证据。该公司管理超过900亿美元资产。近年来，多家风投公司遭遇类似攻击。</p>
+<ol start="26">
+<li>Hims &amp; Hers 为何转向自动驾驶汽车行业寻找精通人工智能的首席技术官？</li>
+</ol>
+<p>Hims &amp; Hers聘请自动驾驶行业资深人士Mo Elshenawy担任首席技术官，以加速其AI产品议程。Elshenawy曾是自动驾驶公司Cruise的总裁兼CTO，他认为AI在医疗和自动驾驶领域有类似挑战。Hims &amp; Hers是一家总部位于旧金山的远程医疗公司，通过与特殊目的收购公司合并于2021年上市。公司致力于通过AI模型提升诊断和治疗效率，同时强调人类医生仍在决策过程中发挥重要作用。</p>
+<ol start="27">
+<li>苹果公司试图推迟禁止其从外部应用支付中抽成的裁决</li>
+</ol>
+<p>苹果试图延迟一项法院裁决，该裁决要求苹果允许iOS开发者在美国引导用户使用外部支付系统，以避免支付给苹果的佣金。苹果已提出紧急动议，要求暂停相关规定的执行。此前，一项新的法院裁决支持Epic Games，迫使苹果允许应用在美国App Store内包含外部购买链接，停止收取相关佣金及弹出警告信息。苹果认为，这一裁决对其业务造成重大损失且不合理。Epic批评苹果此举意在阻止竞争并从消费者和开发者中获得高费用。</p>
+<ol start="28">
+<li>博世风险投资 2.7 亿美元新基金将目光转向北美地区</li>
+</ol>
+<p>博世创投推出新的2.7亿美元基金，旨在投资北美的深科技初创公司。尽管面临中美贸易战、股市波动和经济衰退的担忧，博世创投认为北美的项目流仍然强劲。该基金计划进行20到25项投资，重点关注汽车、气候技术、网络安全、半导体制造、能源效率和企业软件等领域。生成式AI在制造业的应用也备受关注。博世自2017年起就高度重视AI，现在所有产品均利用AI开发或生产。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/NLP/" class="category-chain-item">NLP</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/NLP/" class="print-no-link">#NLP</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>NLP（一百二十一）用飞书机器人打造你的专属AI新闻推送助手（含代码实战）</div>
+      <div>https://percent4.github.io/NLP（一百二十一）用飞书机器人打造你的专属AI新闻推送助手（含代码实战）/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jclian91</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年7月13日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/HTTP%E8%AF%B7%E6%B1%82%E9%89%B4%E6%9D%83%E4%B9%8BJWT/" title="HTTP请求鉴权之JWT">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">HTTP请求鉴权之JWT</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/Redis%E8%BF%9B%E9%98%B6%EF%BC%88%E4%BA%8C%EF%BC%89%E5%AE%9E%E7%8E%B0%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" title="Redis进阶（二）实现消息队列">
+                        <span class="hidden-mobile">Redis进阶（二）实现消息队列</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appKey":"MCARXkAOuxb8aiWTb3WdAsyn","path":"window.location.pathname","placeholder":"文章对您有启发吗？","avatar":"retro","meta":["nick"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"https://yusfsnlf.lc-cn-n1-shared.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false,"appid":"YUsFSnlfB9167rgyk6dKxO3n-gzGzoHsz","appkey":"MCARXkAOuxb8aiWTb3WdAsyn","mathJax":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <br> <span id="runtime_span"></span> <script type="text/javascript">function show_runtime(){window.setTimeout("show_runtime()",1000);X=new Date("7/6/2023 13:03:50");Y=new Date();T=(Y.getTime()-X.getTime());M=24*60*60*1000;a=T/M;A=Math.floor(a);b=(a-A)*24;B=Math.floor(b);c=(b-B)*60;C=Math.floor((b-B)*60);D=Math.floor((c-C)*60);runtime_span.innerHTML="本站已运行"+A+"天"+B+"小时"+C+"分"+D+"秒"}show_runtime();</script> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
